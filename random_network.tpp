@@ -1,3 +1,4 @@
+#include <random>
 namespace dag {
   template <typename VertT>
   undirected_network<VertT> gnp_random_graph(size_t n, double p,
