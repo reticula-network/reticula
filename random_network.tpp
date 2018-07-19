@@ -43,9 +43,9 @@ namespace dag {
       throw dag::vertex_type_too_small_error(
           "n is too large for selected vertex type");
 
-    if (n < m || m == 0)
+    if (n <= m || m == 0)
       throw std::invalid_argument(
-          "BA network must have m >= 1 and n >= m");
+          "BA network must have m >= 1 and n > m");
 
     undirected_network<VertT> net;
     net.reserve(m*n);
@@ -55,15 +55,24 @@ namespace dag {
     std::unordered_set<size_t> targets;
     targets.reserve(m);
 
-    for (size_t current_node = m; current_node < n; current_node++) {
+    for (size_t i = 0; i < m; i++) {
+      net.add_edge({(VertT)i, (VertT)m});
+      degrees[i] += 1;
+      degrees[m] += 1;
+    }
+
+    for (size_t current_node = m+1; current_node < n; current_node++) {
       std::discrete_distribution dist(degrees.begin(),
           degrees.begin() + current_node);
 
       while (targets.size() < m)
         targets.insert(dist(generator))
 
-      for (const auto& i: targets)
+      for (const auto& i: targets) {
         net.add_edge({(VertT)current_node, (VertT)i});
+        degrees[i] += 1;
+        degrees[current_node] += 1;
+      }
     }
 
     return net;
