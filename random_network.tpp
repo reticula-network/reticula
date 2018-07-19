@@ -32,4 +32,41 @@ namespace dag {
     return net;
   }
 
+  template <typename VertT>
+  undirected_network<VertT> ba_random_graph(size_t n, size_t m,
+      std::mt19937_64& generator) {
+    static_assert(std::is_integral<VertT>::value,
+        "vertices should be of integral type");
+    uintmax_t max_n = std::numeric_limits<VertT>::max()
+                    - std::numeric_limits<VertT>::min();
+    if (max_n <= n)
+      throw dag::vertex_type_too_small_error(
+          "n is too large for selected vertex type");
+
+    if (n < m || m == 0)
+      throw std::invalid_argument(
+          "BA network must have m >= 1 and n >= m");
+
+    undirected_network<VertT> net;
+    net.reserve(m*n);
+
+    std::vector<size_t> degrees(n);
+
+    std::unordered_set<size_t> targets;
+    targets.reserve(m);
+
+    for (size_t current_node = m; current_node < n; current_node++) {
+      std::discrete_distribution dist(degrees.begin(),
+          degrees.begin() + current_node);
+
+      while (targets.size() < m)
+        targets.insert(dist(generator))
+
+      for (const auto& i: targets)
+        net.add_edge({(VertT)current_node, (VertT)i});
+    }
+
+    return net;
+  }
+
 }
