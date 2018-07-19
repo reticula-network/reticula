@@ -62,11 +62,11 @@ namespace dag {
     }
 
     for (size_t current_node = m+1; current_node < n; current_node++) {
-      std::discrete_distribution dist(degrees.begin(),
+      std::discrete_distribution<> dist(degrees.begin(),
           degrees.begin() + current_node);
 
       while (targets.size() < m)
-        targets.insert(dist(generator))
+        targets.insert(dist(generator));
 
       for (const auto& i: targets) {
         net.add_edge({(VertT)current_node, (VertT)i});
