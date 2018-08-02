@@ -5,14 +5,15 @@
 
 namespace dag {
   template <typename VertT, typename TimeT>
-  directed_network<temporal_edge<VertT, TimeT>>
-  event_graph(const temporal_network<VertT, TimeT>& temp, TimeT max_delta_t) {
+  directed_network<undirected_temporal_edge<VertT, TimeT>>
+  event_graph(const undirected_temporal_network<VertT, TimeT>& temp,
+      TimeT max_delta_t) {
     std::unordered_set<VertT> verts = temp.vertices();
-    directed_network<temporal_edge<VertT, TimeT>> eg;
+    directed_network<undirected_temporal_edge<VertT, TimeT>> eg;
     auto incident_events = temp.incident_edges();
     for (const auto &v: verts) {
       auto events_set = incident_events[v];
-      std::vector<temporal_edge<VertT, TimeT>> events(
+      std::vector<undirected_temporal_edge<VertT, TimeT>> events(
           events_set.begin(), events_set.end());
       std::sort(events.begin(), events.end());
       for (size_t i = 0; i < events.size(); i++)
@@ -20,7 +21,8 @@ namespace dag {
             j < events.size() &&
             events[j].time - events[i].time <= max_delta_t;
             j++) {
-          directed_edge<temporal_edge<VertT, TimeT>> e(events[i], events[j]);
+          directed_edge<undirected_temporal_edge<VertT, TimeT>>
+            e(events[i], events[j]);
           eg.add_edge(e);
         }
     }

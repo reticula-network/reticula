@@ -69,26 +69,73 @@ namespace dag {
   };
 
   template <typename VertT, typename TimeT>
-  class temporal_edge {
+  class directed_temporal_edge {
   public:
     using VertexType = VertT;
     using TimeType = TimeT;
     VertT v1, v2;
     TimeT time;
-    temporal_edge(const VertT v1, const VertT v2, const TimeT time);
+    directed_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
 
-    inline bool operator==(const temporal_edge<VertT, TimeT>& other) const {
+    inline bool
+      operator==(const directed_temporal_edge<VertT, TimeT>& other) const {
+      auto t = std::tie(v1, v2, time);
+      auto o = std::tie(other.v1, other.v2, other.time);
+      return t == o;
+    }
+
+    inline bool
+      operator<(const directed_temporal_edge<VertT, TimeT>& other) const {
+      return (time < other.time);
+    }
+
+    inline bool
+      operator!=(const directed_temporal_edge<VertT, TimeT>& other) const {
+      return !(this == other);
+    }
+
+    inline VertT head_vert() const {
+      return v2;
+    }
+    inline VertT tail_vert() const {
+      return v1;
+    }
+
+    inline bool is_out_incident(const VertT vert) const {
+      return (v1 == vert);
+    }
+    inline bool is_in_incident(const VertT vert) const  {
+      return (v2 == vert);
+    }
+    inline bool is_incident(const VertT vert) const {
+      return (v1 == vert || v2 == vert);
+    }
+  };
+
+  template <typename VertT, typename TimeT>
+  class undirected_temporal_edge {
+  public:
+    using VertexType = VertT;
+    using TimeType = TimeT;
+    VertT v1, v2;
+    TimeT time;
+    undirected_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
+
+    inline bool
+      operator==(const undirected_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(v1, v2, time);
       auto o1 = std::tie(other.v1, other.v2, other.time);
       auto o2 = std::tie(other.v2, other.v1, other.time);
       return (t == o1 || t == o2);
     }
 
-    inline bool operator<(const temporal_edge<VertT, TimeT>& other) const {
+    inline bool
+      operator<(const undirected_temporal_edge<VertT, TimeT>& other) const {
       return (time < other.time);
     }
 
-    inline bool operator!=(const temporal_edge<VertT, TimeT>& other) const {
+    inline bool
+      operator!=(const undirected_temporal_edge<VertT, TimeT>& other) const {
       return !(this == other);
     }
 
@@ -147,11 +194,15 @@ namespace dag {
   using undirected_network = network<undirected_edge<VertT>>;
 
   template <typename VertT, typename TimeT>
-  using temporal_network = network<temporal_edge<VertT, TimeT>>;
+  using directed_temporal_network = network<directed_temporal_edge<VertT, TimeT>>;
 
   template <typename VertT, typename TimeT>
-  directed_network<temporal_edge<VertT, TimeT>>
-  event_graph(const temporal_network<VertT, TimeT>& temp, TimeT max_delta_t);
+  using undirected_temporal_network = network<undirected_temporal_edge<VertT, TimeT>>;
+
+  template <typename VertT, typename TimeT>
+  directed_network<undirected_temporal_edge<VertT, TimeT>>
+  event_graph(const undirected_temporal_network<VertT, TimeT>& temp,
+      TimeT max_delta_t);
 
   template <typename VertT>
   std::vector<VertT> topological_order(const directed_network<VertT>& dir);
