@@ -14,15 +14,25 @@ inline size_t unordered_hash(const T1& t1, const T2& t2) {
 
 namespace std {
   template<typename VertT, typename TimeT>
-  struct hash<dag::temporal_edge<VertT, TimeT>> {
-    size_t operator()(const dag::temporal_edge<VertT, TimeT>& e) const {
+  struct hash<dag::undirected_temporal_edge<VertT, TimeT>> {
+    size_t
+    operator()(const dag::undirected_temporal_edge<VertT, TimeT>& e) const {
       return combine_hash(unordered_hash(e.v1, e.v2), e.time);
+    }
+  };
+
+  template<typename VertT, typename TimeT>
+  struct hash<dag::directed_temporal_edge<VertT, TimeT>> {
+    size_t
+    operator()(const dag::directed_temporal_edge<VertT, TimeT>& e) const {
+      return combine_hash(combine_hash(std::hash<VertT>{}(e.v1), e.v2), e.time);
     }
   };
 
   template<typename VertT>
   struct hash<dag::directed_edge<VertT>> {
-    size_t operator()(const dag::directed_edge<VertT>& e) const {
+    size_t
+    operator()(const dag::directed_edge<VertT>& e) const {
       return combine_hash(std::hash<VertT>{}(e.v1), e.v2);
     }
   };
@@ -37,8 +47,12 @@ namespace std {
 
 namespace dag {
   template <typename VertT, typename TimeT>
-  temporal_edge<VertT, TimeT>::temporal_edge(VertT v1, VertT v2, TimeT time)
-    : v1(v1), v2(v2), time(time) {}
+  undirected_temporal_edge<VertT, TimeT>::undirected_temporal_edge(
+      VertT v1, VertT v2, TimeT time) : v1(v1), v2(v2), time(time) {}
+
+  template <typename VertT, typename TimeT>
+  directed_temporal_edge<VertT, TimeT>::directed_temporal_edge(
+      VertT v1, VertT v2, TimeT time) : v1(v1), v2(v2), time(time) {}
 
   template <typename VertT>
   std::ostream &operator<<(std::ostream &os,
@@ -62,7 +76,12 @@ namespace dag {
 
   template <typename VertT, typename TimeT>
   std::ostream &operator<<(std::ostream &os,
-      temporal_edge<VertT, TimeT> const &e) {
+      undirected_temporal_edge<VertT, TimeT> const &e) {
     return os << "{" << e.v1 << ", " << e.v2 << ", t=" << e.time << "}";
+
+  template <typename VertT, typename TimeT>
+  std::ostream &operator<<(std::ostream &os,
+      directed_temporal_edge<VertT, TimeT> const &e) {
+    return os << "(" << e.v1 << ", " << e.v2 << ", t=" << e.time << ")";
   }
 }
