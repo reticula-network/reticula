@@ -78,6 +78,7 @@ namespace dag {
   std::ostream &operator<<(std::ostream &os,
       undirected_temporal_edge<VertT, TimeT> const &e) {
     return os << "{" << e.v1 << ", " << e.v2 << ", t=" << e.time << "}";
+  }
 
   template <typename VertT, typename TimeT>
   std::ostream &operator<<(std::ostream &os,
