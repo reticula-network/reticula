@@ -19,6 +19,7 @@ namespace dag {
       for (size_t i = 0; i < events.size(); i++)
         for (size_t j = i+1;
             j < events.size() &&
+            events[j].time > events[i].time &&
             events[j].time - events[i].time <= max_delta_t;
             j++) {
           directed_edge<undirected_temporal_edge<VertT, TimeT>>
