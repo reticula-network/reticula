@@ -16,16 +16,17 @@ namespace dag {
       std::vector<undirected_temporal_edge<VertT, TimeT>> events(
           events_set.begin(), events_set.end());
       std::sort(events.begin(), events.end());
+
       for (size_t i = 0; i < events.size(); i++)
         for (size_t j = i+1;
             j < events.size() &&
-            events[j].time > events[i].time &&
             events[j].time - events[i].time <= max_delta_t;
-            j++) {
-          directed_edge<undirected_temporal_edge<VertT, TimeT>>
-            e(events[i], events[j]);
-          eg.add_edge(e);
-        }
+            j++)
+          if (events[j].time > events[i].time) {
+            directed_edge<undirected_temporal_edge<VertT, TimeT>>
+              e(events[i], events[j]);
+            eg.add_edge(e);
+          }
     }
     return eg;
   }
