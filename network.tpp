@@ -1,7 +1,7 @@
 namespace dag {
 
   template <typename EdgeT>
-  void network<EdgeT>::add_edges(const std::vector<EdgeT> es) {
+  void network<EdgeT>::add_edges(const std::vector<EdgeT>& es) {
     for (const auto &e: es) add_edge(e);
   }
 

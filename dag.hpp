@@ -159,7 +159,7 @@ namespace dag {
       edge_list.insert(new_edge);
     };
 
-    void add_edges(const std::vector<EdgeT> new_edges);
+    void add_edges(const std::vector<EdgeT>& new_edges);
 
     inline const std::unordered_set<EdgeT>& edges() const { return edge_list; }
     inline void reserve(size_t count) { edge_list.reserve(count); }
@@ -202,6 +202,11 @@ namespace dag {
   template <typename VertT, typename TimeT>
   directed_network<undirected_temporal_edge<VertT, TimeT>>
   event_graph(const undirected_temporal_network<VertT, TimeT>& temp,
+      TimeT max_delta_t);
+
+  template <typename VertT, typename TimeT>
+  directed_network<directed_temporal_edge<VertT, TimeT>>
+  event_graph(const directed_temporal_network<VertT, TimeT>& temp,
       TimeT max_delta_t);
 
   template <typename VertT>
