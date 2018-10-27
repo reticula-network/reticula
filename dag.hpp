@@ -86,7 +86,9 @@ namespace dag {
 
     inline bool
       operator<(const directed_temporal_edge<VertT, TimeT>& other) const {
-      return (time < other.time);
+      auto t = std::tie(time, v1, v2);
+      auto o = std::tie(other.time, other.v1, other.v2);
+      return t < o;
     }
 
     inline bool
@@ -131,7 +133,13 @@ namespace dag {
 
     inline bool
       operator<(const undirected_temporal_edge<VertT, TimeT>& other) const {
-      return (time < other.time);
+      auto t = std::tie(time,
+          std::min(v1, v2),
+          std::max(v1, v2));
+      auto o = std::tie(other.time,
+          std::min(other.v1, other.v2),
+          std::max(other.v1, other.v2));
+      return (t < o);
     }
 
     inline bool
