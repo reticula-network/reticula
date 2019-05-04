@@ -41,6 +41,14 @@ namespace dag {
     inline bool is_incident(const VertT vert) const {
       return (is_out_incident(vert) || is_in_incident(vert));
     }
+
+    std::vector<VertT> mutator_verts() const {
+      return {v1};
+    }
+
+    std::vector<VertT> mutated_verts() const {
+      return {v2};
+    }
   };
 
 
@@ -65,6 +73,14 @@ namespace dag {
 
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
+    }
+
+    std::vector<VertT> mutator_verts() const {
+      return {v1, v2};
+    }
+
+    std::vector<VertT> mutated_verts() const {
+      return {v1, v2};
     }
   };
 
@@ -112,6 +128,14 @@ namespace dag {
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
+
+    std::vector<VertT> mutator_verts() const {
+      return {v1};
+    }
+
+    std::vector<VertT> mutated_verts() const {
+      return {v2};
+    }
   };
 
   template <typename VertT, typename TimeT>
@@ -151,6 +175,14 @@ namespace dag {
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
+
+    std::vector<VertT> mutator_verts() const {
+      return {v1, v2};
+    }
+
+    std::vector<VertT> mutated_verts() const {
+      return {v1, v2};
+    }
   };
 
 
@@ -160,6 +192,7 @@ namespace dag {
     std::unordered_set<EdgeT> edge_list;
   public:
     using VertexType = typename EdgeT::VertexType;
+    using EdgeType = EdgeT;
     network() = default;
     std::unordered_set<VertexType> vertices() const;
 
