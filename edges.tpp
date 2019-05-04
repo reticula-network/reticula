@@ -55,9 +55,15 @@ namespace dag {
       VertT v1, VertT v2, TimeT time) : v1(v1), v2(v2), time(time) {}
 
   template <typename VertT>
-  std::ostream &operator<<(std::ostream &os,
-      directed_edge<VertT> const &e) {
-    return os << "(" << e.tail_vert() << ", " << e.head_vert() << ")";
+  std::ostream& operator<<(std::ostream& os,
+      const directed_edge<VertT>& e) {
+    return os << e.tail_vert() << " " << e.head_vert();
+  }
+
+  template <typename VertT>
+  std::istream& operator>>(std::istream& is,
+      directed_edge<VertT>& e) {
+    return is >> e.v1 >> e.v2;
   }
 
   template <typename VertT>
@@ -65,9 +71,15 @@ namespace dag {
     : v1(v1), v2(v2) {}
 
   template <typename VertT>
-  std::ostream &operator<<(std::ostream &os,
-      undirected_edge<VertT> const &e) {
-    return os << "{" << e.v1 << ", " << e.v2 << "}";
+  std::ostream& operator<<(std::ostream &os,
+      const undirected_edge<VertT>& e) {
+    return os << e.v1 << " " << e.v2;
+  }
+
+  template <typename VertT>
+  std::istream& operator>>(std::istream& is,
+      undirected_edge<VertT>& e) {
+    return is >> e.v1 >> e.v2;
   }
 
   template <typename VertT>
@@ -75,14 +87,26 @@ namespace dag {
     : v1(v1), v2(v2) {}
 
   template <typename VertT, typename TimeT>
-  std::ostream &operator<<(std::ostream &os,
-      undirected_temporal_edge<VertT, TimeT> const &e) {
-    return os << "{" << e.v1 << ", " << e.v2 << ", t=" << e.time << "}";
+  std::ostream& operator<<(std::ostream& os,
+      const undirected_temporal_edge<VertT, TimeT>& e) {
+    return os <<  e.v1 << " " << e.v2 << " " << e.time;
   }
 
   template <typename VertT, typename TimeT>
-  std::ostream &operator<<(std::ostream &os,
-      directed_temporal_edge<VertT, TimeT> const &e) {
-    return os << "(" << e.v1 << ", " << e.v2 << ", t=" << e.time << ")";
+  std::istream& operator>>(std::istream& is,
+      undirected_temporal_edge<VertT, TimeT>& e) {
+    return is >> e.v1 >> e.v2 >> e.time;
+  }
+
+  template <typename VertT, typename TimeT>
+  std::ostream& operator<<(std::ostream& os,
+      const directed_temporal_edge<VertT, TimeT>& e) {
+    return os << e.v1 << " " << e.v2 << " " << e.time;
+  }
+
+  template <typename VertT, typename TimeT>
+  std::istream& operator>>(std::istream& is,
+      directed_temporal_edge<VertT, TimeT>& e) {
+    return is >> e.v1 >> e.v2 >> e.time;
   }
 }
