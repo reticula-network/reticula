@@ -1,3 +1,6 @@
+#ifndef DAG_H
+#define DAG_H
+
 #include <unordered_set>
 #include <unordered_map>
 #include <random>
@@ -91,6 +94,9 @@ namespace dag {
     using TimeType = TimeT;
     VertT v1, v2;
     TimeT time;
+
+    directed_temporal_edge() = default;
+
     directed_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
 
     inline bool
@@ -119,6 +125,74 @@ namespace dag {
       return v1;
     }
 
+    inline TimeT effect_time() const {
+      return time;
+    }
+
+    inline bool is_out_incident(const VertT vert) const {
+      return (v1 == vert);
+    }
+    inline bool is_in_incident(const VertT vert) const  {
+      return (v2 == vert);
+    }
+    inline bool is_incident(const VertT vert) const {
+      return (v1 == vert || v2 == vert);
+    }
+
+    std::vector<VertT> mutator_verts() const {
+      return {v1};
+    }
+
+    std::vector<VertT> mutated_verts() const {
+      return {v2};
+    }
+  };
+
+  template <typename VertT, typename TimeT>
+  class directed_delayed_temporal_edge {
+  public:
+    using VertexType = VertT;
+    using TimeType = TimeT;
+    VertT v1, v2;
+    TimeT time;
+    TimeT delay;
+
+    directed_delayed_temporal_edge() = default;
+
+    directed_delayed_temporal_edge(
+        const VertT v1, const VertT v2,
+        const TimeT time, const TimeT delay);
+
+    inline bool
+      operator==(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+      auto t = std::tie(v1, v2, time, delay);
+      auto o = std::tie(other.v1, other.v2, other.time, other.delay);
+      return t == o;
+    }
+
+    inline bool
+      operator<(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+        auto t = std::tie(time, delay, v1, v2);
+        auto o = std::tie(other.time, other.delay, other.v1, other.v2);
+      return t < o;
+    }
+
+    inline bool
+      operator!=(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+      return !(this == other);
+    }
+
+    inline VertT head_vert() const {
+      return v2;
+    }
+    inline VertT tail_vert() const {
+      return v1;
+    }
+
+    inline TimeT effect_time() const {
+      return time+delay;
+    }
+
     inline bool is_out_incident(const VertT vert) const {
       return (v1 == vert);
     }
@@ -145,6 +219,8 @@ namespace dag {
     using TimeType = TimeT;
     VertT v1, v2;
     TimeT time;
+
+    undirected_temporal_edge() = default;
     undirected_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
 
     inline bool
@@ -171,6 +247,9 @@ namespace dag {
       return !(this == other);
     }
 
+    inline TimeT effect_time() const {
+      return time;
+    }
 
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
@@ -238,6 +317,9 @@ namespace dag {
   using directed_temporal_network = network<directed_temporal_edge<VertT, TimeT>>;
 
   template <typename VertT, typename TimeT>
+  using directed_delayed_temporal_network = network<directed_delayed_temporal_edge<VertT, TimeT>>;
+
+  template <typename VertT, typename TimeT>
   using undirected_temporal_network = network<undirected_temporal_edge<VertT, TimeT>>;
 
   template <typename VertT, typename TimeT>
@@ -274,3 +356,5 @@ namespace dag {
 #include "network.tpp"
 #include "random_network.tpp"
 #include "algorithms.tpp"
+
+#endif /* DAG_H */

@@ -29,6 +29,18 @@ namespace std {
     }
   };
 
+  template<typename VertT, typename TimeT>
+  struct hash<dag::directed_delayed_temporal_edge<VertT, TimeT>> {
+    size_t
+    operator()(const dag::directed_delayed_temporal_edge<VertT, TimeT>& e) const {
+      return combine_hash(
+              combine_hash(
+                combine_hash(std::hash<VertT>{}(e.v1), e.v2),
+                e.time),
+              e.delay);
+    }
+  };
+
   template<typename VertT>
   struct hash<dag::directed_edge<VertT>> {
     size_t
@@ -53,6 +65,11 @@ namespace dag {
   template <typename VertT, typename TimeT>
   directed_temporal_edge<VertT, TimeT>::directed_temporal_edge(
       VertT v1, VertT v2, TimeT time) : v1(v1), v2(v2), time(time) {}
+
+  template <typename VertT, typename TimeT>
+  directed_delayed_temporal_edge<VertT, TimeT>::directed_delayed_temporal_edge(
+      VertT v1, VertT v2, TimeT time, TimeT delay)
+  : v1(v1), v2(v2), time(time), delay(delay) {}
 
   template <typename VertT>
   std::ostream& operator<<(std::ostream& os,
@@ -108,5 +125,21 @@ namespace dag {
   std::istream& operator>>(std::istream& is,
       directed_temporal_edge<VertT, TimeT>& e) {
     return is >> e.v1 >> e.v2 >> e.time;
+  }
+
+  template <typename VertT, typename TimeT>
+  std::ostream& operator<<(std::ostream& os,
+      const directed_delayed_temporal_edge<VertT, TimeT>& e) {
+    return os << e.v1 << " "
+      << e.v2 << " "
+      << e.time << " "
+      << e.time << " "
+      << e.delay;
+  }
+
+  template <typename VertT, typename TimeT>
+  std::istream& operator>>(std::istream& is,
+      directed_delayed_temporal_edge<VertT, TimeT>& e) {
+    return is >> e.v1 >> e.v2 >> e.time >> e.delay;
   }
 }
