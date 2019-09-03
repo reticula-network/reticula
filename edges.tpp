@@ -133,7 +133,6 @@ namespace dag {
     return os << e.v1 << " "
       << e.v2 << " "
       << e.time << " "
-      << e.time << " "
       << e.delay;
   }
 
