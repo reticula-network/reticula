@@ -102,5 +102,22 @@ namespace dag {
           out_component.insert(edge.head_vert());
     return out_component;
   }
+
+  template <typename VertT>
+  std::unordered_set<VertT> in_component(
+      const directed_network<VertT>& dir,
+      const  VertT& vert,
+      size_t size_hint=0) {
+    std::unordered_set<VertT> in_component;
+    if (size_hint > 0) in_component.reserve(size_hint);
+    in_component.insert(vert);
+    auto topo = topological_order(dir);
+    auto in_edges = dir.in_edges();
+    for (const VertT& vert: topo)
+      if (in_component.find(vert) != in_component.end())
+        for (const auto& edge: in_edges[vert])
+          in_component.insert(edge.tail_vert());
+    return in_component;
+  }
 };
 

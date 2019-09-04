@@ -1,0 +1,136 @@
+#include "catch.hpp"
+
+#include <sstream>
+#include <string>
+
+#include "../../../include/dag.hpp"
+
+TEST_CASE("undirected edges", "[dag::undirected_edge]") {
+  SECTION("are read correctly") {
+    std::istringstream s("1 2\n3 4\n5 6\n");
+    dag::undirected_edge<int> a, b, c;
+    s >> a >> b >> c;
+    REQUIRE(a == dag::undirected_edge<int>(1, 2));
+    REQUIRE(b == dag::undirected_edge<int>(3, 4));
+    REQUIRE(c == dag::undirected_edge<int>(5, 6));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::undirected_edge<int>(1, 2) == dag::undirected_edge<int>(1, 2));
+    REQUIRE(dag::undirected_edge<int>(1, 2) == dag::undirected_edge<int>(2, 1));
+    REQUIRE(dag::undirected_edge<int>(1, 2) != dag::undirected_edge<int>(2, 3));
+  }
+}
+
+
+TEST_CASE("directed edges", "[directed_edge]") {
+  SECTION( "are read correctly") {
+    std::istringstream s("1 2\n3 4\n5 6\n");
+    dag::directed_edge<int> a, b, c;
+    s >> a >> b >> c;
+    REQUIRE(a == dag::directed_edge<int>(1, 2));
+    REQUIRE(b == dag::directed_edge<int>(3, 4));
+    REQUIRE(c == dag::directed_edge<int>(5, 6));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::directed_edge<int>(1, 2) == dag::directed_edge<int>(1, 2));
+    REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 1));
+    REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 3));
+  }
+}
+
+TEST_CASE("undirected temporal edges", "[undirected_temporal_edge]") {
+  SECTION("are read correctly") {
+    std::istringstream s("1 2 3\n4 5 6\n7 8 9\n");
+    dag::undirected_temporal_edge<int, int> a, b, c;
+    s >> a >> b >> c;
+    REQUIRE(a == dag::undirected_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(b == dag::undirected_temporal_edge<int, int>(4, 5, 6));
+    REQUIRE(c == dag::undirected_temporal_edge<int, int>(7, 8, 9));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) ==
+        dag::undirected_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) ==
+        dag::undirected_temporal_edge<int, int>(2, 1, 3));
+    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) !=
+        dag::undirected_temporal_edge<int, int>(1, 2, 2));
+    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) >
+        dag::undirected_temporal_edge<int, int>(1, 2, 2));
+  }
+
+  SECTION("compare stably") {
+    bool comp1 = dag::undirected_temporal_edge<int, int>(1, 2, 3) >
+        dag::undirected_temporal_edge<int, int>(3, 4, 3);
+    bool comp2 = dag::undirected_temporal_edge<int, int>(3, 4, 3) <
+        dag::undirected_temporal_edge<int, int>(1, 2, 3);
+    REQUIRE(comp1 == comp2);
+  }
+}
+
+TEST_CASE("directed temporal edges", "[directed_temporal_edge]") {
+  SECTION("are read correctly") {
+    std::istringstream s("1 2 3\n4 5 6\n7 8 9\n");
+    dag::directed_temporal_edge<int, int> a, b, c;
+    s >> a >> b >> c;
+    REQUIRE(a == dag::directed_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(b == dag::directed_temporal_edge<int, int>(4, 5, 6));
+    REQUIRE(c == dag::directed_temporal_edge<int, int>(7, 8, 9));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) ==
+        dag::directed_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) !=
+        dag::directed_temporal_edge<int, int>(2, 1, 3));
+    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) !=
+        dag::directed_temporal_edge<int, int>(1, 2, 2));
+    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) >
+        dag::directed_temporal_edge<int, int>(1, 2, 2));
+  }
+
+  SECTION("compare stably") {
+    bool comp1 = dag::directed_temporal_edge<int, int>(1, 2, 3) >
+        dag::directed_temporal_edge<int, int>(3, 4, 3);
+    bool comp2 = dag::directed_temporal_edge<int, int>(3, 4, 3) <
+        dag::directed_temporal_edge<int, int>(1, 2, 3);
+    REQUIRE(comp1 == comp2);
+  }
+}
+
+TEST_CASE("directed delayed temporal edges",
+    "[directed_delayed_temporal_edge]") {
+  SECTION("are read correctly") {
+    std::istringstream s("1 2 3 4\n5 6 7 8\n9 10 11 12\n");
+    dag::directed_delayed_temporal_edge<int, int> a, b, c;
+    s >> a >> b >> c;
+    REQUIRE(a == dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
+    REQUIRE(b == dag::directed_delayed_temporal_edge<int, int>(5, 6, 7, 8));
+    REQUIRE(c == dag::directed_delayed_temporal_edge<int, int>(9, 10, 11, 12));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) ==
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) !=
+        dag::directed_delayed_temporal_edge<int, int>(2, 1, 3, 4));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) !=
+        dag::directed_delayed_temporal_edge<int, int>(1, 1, 3, 3));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) !=
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 2));
+  }
+
+  SECTION("compare stably") {
+    bool comp1 = dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
+        dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4);
+    bool comp2 = dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4) <
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4);
+    REQUIRE(comp1 == comp2);
+  }
+}

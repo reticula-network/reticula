@@ -14,44 +14,45 @@ namespace dag {
   public:
     using VertexType = VertT;
     VertT v1, v2;
-    directed_edge(const VertT v1, const VertT v2);
 
+    directed_edge() = default;
+    directed_edge(const VertT v1, const VertT v2)
+      : v1(v1), v2(v2) {}
+
+    [[nodiscard]]
     inline bool operator==(const directed_edge<VertT>& other) const {
       auto t = std::tie(v1, v2);
       auto o = std::tie(other.v1, other.v2);
       return (t == o);
     }
 
+    [[nodiscard]]
     inline bool operator!=(const directed_edge<VertT>& other) const {
-      return !(this == other);
+      return !(*this == other);
     }
 
-    inline VertT head_vert() const {
-      return v2;
-    }
+    [[nodiscard]]
+    inline VertT head_vert() const { return v2; }
 
-    inline VertT tail_vert() const {
-      return v1;
-    }
+    [[nodiscard]]
+    inline VertT tail_vert() const { return v1; }
 
+    [[nodiscard]]
+    inline bool is_out_incident(const VertT vert) const { return (v1 == vert); }
 
-    inline bool is_out_incident(const VertT vert) const {
-      return (v1 == vert);
-    }
-    inline bool is_in_incident(const VertT vert) const  {
-      return (v2 == vert);
-    }
+    [[nodiscard]]
+    inline bool is_in_incident(const VertT vert) const  { return (v2 == vert); }
+
+    [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
       return (is_out_incident(vert) || is_in_incident(vert));
     }
 
-    std::vector<VertT> mutator_verts() const {
-      return {v1};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutator_verts() const { return {v1}; }
 
-    std::vector<VertT> mutated_verts() const {
-      return {v2};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutated_verts() const { return {v2}; }
   };
 
 
@@ -60,8 +61,12 @@ namespace dag {
   public:
     using VertexType = VertT;
     VertT v1, v2;
-    undirected_edge(const VertT v1, const VertT v2);
 
+    undirected_edge() = default;
+    undirected_edge(const VertT v1, const VertT v2)
+      : v1(v1), v2(v2) {}
+
+    [[nodiscard]]
     inline bool operator==(const undirected_edge<VertT>& other) const {
       auto t = std::tie(v1, v2);
       auto o1 = std::tie(other.v1, other.v2);
@@ -69,22 +74,21 @@ namespace dag {
       return (t == o1 || t == o2);
     }
 
+    [[nodiscard]]
     inline bool operator!=(const undirected_edge<VertT>& other) const {
-      return !(this == other);
+      return !(*this == other);
     }
 
-
+    [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
 
-    std::vector<VertT> mutator_verts() const {
-      return {v1, v2};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutator_verts() const { return {v1, v2}; }
 
-    std::vector<VertT> mutated_verts() const {
-      return {v1, v2};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutated_verts() const { return {v1, v2}; }
   };
 
   template <typename VertT, typename TimeT>
@@ -97,54 +101,70 @@ namespace dag {
 
     directed_temporal_edge() = default;
 
-    directed_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
+    directed_temporal_edge(const VertT v1, const VertT v2, const TimeT time)
+      : v1(v1), v2(v2), time(time) {}
 
+    [[nodiscard]]
     inline bool
-      operator==(const directed_temporal_edge<VertT, TimeT>& other) const {
+    operator==(const directed_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(v1, v2, time);
       auto o = std::tie(other.v1, other.v2, other.time);
       return t == o;
     }
 
+    [[nodiscard]]
     inline bool
-      operator<(const directed_temporal_edge<VertT, TimeT>& other) const {
+    operator<(const directed_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(time, v1, v2);
       auto o = std::tie(other.time, other.v1, other.v2);
       return t < o;
     }
 
+    [[nodiscard]]
     inline bool
-      operator!=(const directed_temporal_edge<VertT, TimeT>& other) const {
-      return !(this == other);
+    operator>(const directed_temporal_edge<VertT, TimeT>& other) const {
+      return !(*this < other || *this == other);
     }
 
-    inline VertT head_vert() const {
-      return v2;
-    }
-    inline VertT tail_vert() const {
-      return v1;
-    }
-
-    inline TimeT effect_time() const {
-      return time;
+    [[nodiscard]]
+    inline bool
+    operator!=(const directed_temporal_edge<VertT, TimeT>& other) const {
+      return !(*this == other);
     }
 
-    inline bool is_out_incident(const VertT vert) const {
-      return (v1 == vert);
-    }
-    inline bool is_in_incident(const VertT vert) const  {
-      return (v2 == vert);
-    }
+    [[nodiscard]]
+    inline VertT head_vert() const { return v2; }
+
+    [[nodiscard]]
+    inline VertT tail_vert() const { return v1; }
+
+    [[nodiscard]]
+    inline TimeT effect_time() const { return time; }
+
+    [[nodiscard]]
+    inline bool is_out_incident(const VertT vert) const { return (v1 == vert); }
+
+    [[nodiscard]]
+    inline bool is_in_incident(const VertT vert) const  { return (v2 == vert); }
+
+    [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
 
-    std::vector<VertT> mutator_verts() const {
-      return {v1};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutator_verts() const { return {v1}; }
 
-    std::vector<VertT> mutated_verts() const {
-      return {v2};
+    [[nodiscard]]
+    std::vector<VertT> mutated_verts() const { return {v2}; }
+
+    [[nodiscard]]
+    inline bool
+    is_adjacent_to(const directed_temporal_edge<VertT, TimeT>& other) const {
+      if ((other.time > time) && (head_vert() == other.tail_vert()))
+        return true;
+      else
+        return false;
     }
   };
 
@@ -161,54 +181,70 @@ namespace dag {
 
     directed_delayed_temporal_edge(
         const VertT v1, const VertT v2,
-        const TimeT time, const TimeT delay);
+        const TimeT time, const TimeT delay)
+      : v1(v1), v2(v2), time(time), delay(delay) {}
 
+    [[nodiscard]]
     inline bool
-      operator==(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+    operator==(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(v1, v2, time, delay);
       auto o = std::tie(other.v1, other.v2, other.time, other.delay);
       return t == o;
     }
 
+    [[nodiscard]]
     inline bool
-      operator<(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+    operator<(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
         auto t = std::tie(time, delay, v1, v2);
         auto o = std::tie(other.time, other.delay, other.v1, other.v2);
       return t < o;
     }
 
+    [[nodiscard]]
     inline bool
-      operator!=(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
-      return !(this == other);
+    operator>(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+      return !(*this < other || *this == other);
     }
 
-    inline VertT head_vert() const {
-      return v2;
-    }
-    inline VertT tail_vert() const {
-      return v1;
-    }
-
-    inline TimeT effect_time() const {
-      return time+delay;
+    [[nodiscard]]
+    inline bool
+    operator!=(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+      return !(*this == other);
     }
 
-    inline bool is_out_incident(const VertT vert) const {
-      return (v1 == vert);
-    }
-    inline bool is_in_incident(const VertT vert) const  {
-      return (v2 == vert);
-    }
+    [[nodiscard]]
+    inline VertT head_vert() const { return v2; }
+
+    [[nodiscard]]
+    inline VertT tail_vert() const { return v1; }
+
+    [[nodiscard]]
+    inline TimeT effect_time() const { return time+delay; }
+
+    [[nodiscard]]
+    inline bool is_out_incident(const VertT vert) const { return (v1 == vert); }
+
+    [[nodiscard]]
+    inline bool is_in_incident(const VertT vert) const  { return (v2 == vert); }
+
+    [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
 
-    std::vector<VertT> mutator_verts() const {
-      return {v1};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutator_verts() const { return {v1}; }
 
-    std::vector<VertT> mutated_verts() const {
-      return {v2};
+    [[nodiscard]]
+    std::vector<VertT> mutated_verts() const { return {v2}; }
+
+    [[nodiscard]]
+    inline bool
+    is_adjacent_to(const directed_delayed_temporal_edge<VertT, TimeT>& other) const {
+      if ((other.time > effect_time()) && (head_vert() == other.tail_vert()))
+        return true;
+      else
+        return false;
     }
   };
 
@@ -221,18 +257,21 @@ namespace dag {
     TimeT time;
 
     undirected_temporal_edge() = default;
-    undirected_temporal_edge(const VertT v1, const VertT v2, const TimeT time);
+    undirected_temporal_edge(const VertT v1, const VertT v2, const TimeT time)
+      : v1(v1), v2(v2), time(time) {}
 
+    [[nodiscard]]
     inline bool
-      operator==(const undirected_temporal_edge<VertT, TimeT>& other) const {
+    operator==(const undirected_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(v1, v2, time);
       auto o1 = std::tie(other.v1, other.v2, other.time);
       auto o2 = std::tie(other.v2, other.v1, other.time);
       return (t == o1 || t == o2);
     }
 
+    [[nodiscard]]
     inline bool
-      operator<(const undirected_temporal_edge<VertT, TimeT>& other) const {
+    operator<(const undirected_temporal_edge<VertT, TimeT>& other) const {
       auto t = std::tie(time,
           std::min(v1, v2),
           std::max(v1, v2));
@@ -242,25 +281,41 @@ namespace dag {
       return (t < o);
     }
 
+    [[nodiscard]]
+    inline bool
+    operator>(const undirected_temporal_edge<VertT, TimeT>& other) const {
+      return !(*this < other || *this == other);
+    }
+
+    [[nodiscard]]
     inline bool
       operator!=(const undirected_temporal_edge<VertT, TimeT>& other) const {
-      return !(this == other);
+      return !(*this == other);
     }
 
-    inline TimeT effect_time() const {
-      return time;
-    }
+    [[nodiscard]]
+    inline TimeT effect_time() const { return time; }
 
+    [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
       return (v1 == vert || v2 == vert);
     }
 
-    std::vector<VertT> mutator_verts() const {
-      return {v1, v2};
-    }
+    [[nodiscard]]
+    std::vector<VertT> mutator_verts() const { return {v1, v2}; }
 
-    std::vector<VertT> mutated_verts() const {
-      return {v1, v2};
+    [[nodiscard]]
+    std::vector<VertT> mutated_verts() const { return {v1, v2}; }
+
+    [[nodiscard]]
+    inline bool
+    is_adjacent_to(const undirected_temporal_edge<VertT, TimeT>& other) const {
+      if ((other.time > time)
+          && (v1 == other.v1 || v1 == other.v2 ||
+                v2 == other.v1 || v2 == other.v2))
+        return true;
+      else
+        return false;
     }
   };
 
@@ -352,9 +407,11 @@ namespace dag {
   };
 };
 
-#include "edges.tpp"
-#include "network.tpp"
-#include "random_network.tpp"
-#include "algorithms.tpp"
+#include "../src/utils.tpp"
+#include "../src/edges.tpp"
+#include "../src/network.tpp"
+#include "../src/random_network.tpp"
+#include "../src/algorithms.tpp"
+#include "../src/implicit_event_graph.tpp"
 
 #endif /* DAG_H */
