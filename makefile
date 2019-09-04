@@ -13,8 +13,6 @@ $(shell mkdir -p $(TSTDEPDIR) >/dev/null)
 SRCDIR := src
 TSTDIR := $(SRCDIR)/test/dag
 
-INCDIR := include
-
 # dependency object files needed for linker
 EXTDEP := dep/HyperLogLog/MurmurHash3.o
 
