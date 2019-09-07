@@ -2,7 +2,7 @@
 #include <istream>
 #include <ostream>
 
-#include "../../../include/utils.hpp"
+#include "../include/dag/utils.hpp"
 
 namespace std {
   template<typename VertT, typename TimeT>

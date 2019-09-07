@@ -77,6 +77,6 @@ namespace dag {
 
 }
 
-#include "../src/implicit_event_graph.tpp"
+#include "../../src/implicit_event_graph.tpp"
 
 #endif /* DAG_IMPLICIT_EVENT_GRAPH_H */

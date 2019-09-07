@@ -231,6 +231,6 @@ namespace dag {
   };
 }
 
-#include "../src/temporal_edges.tpp"
+#include "../../src/temporal_edges.tpp"
 
 #endif /* DAG_TEMPORAL_EDGES_H */

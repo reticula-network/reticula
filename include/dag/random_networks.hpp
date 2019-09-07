@@ -13,6 +13,6 @@ namespace dag {
       std::mt19937_64& generator);
 }
 
-#include "../src/random_networks.tpp"
+#include "../../src/random_networks.tpp"
 
 #endif /* DAG_RANDOM_NETWORKS_H */

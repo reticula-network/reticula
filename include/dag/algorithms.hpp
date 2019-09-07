@@ -25,6 +25,6 @@ namespace dag {
       size_t size_hint=0);
 }
 
-#include "../src/algorithms.tpp"
+#include "../../src/algorithms.tpp"
 
 #endif /* DAG_ALGORITHMS_H */

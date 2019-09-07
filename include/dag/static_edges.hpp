@@ -85,6 +85,6 @@ namespace dag {
   };
 }
 
-#include "../src/static_edges.tpp"
+#include "../../src/static_edges.tpp"
 
 #endif /* DAG_STATIC_EDGES_H */

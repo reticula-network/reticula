@@ -5,7 +5,7 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-#include "../../../include/static_edges.hpp"
+#include "../../../include/dag/static_edges.hpp"
 
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
   SECTION("are read correctly") {
@@ -75,7 +75,7 @@ TEST_CASE("directed edges", "[directed_edge]") {
   }
 }
 
-#include "../../../include/temporal_edges.hpp"
+#include "../../../include/dag/temporal_edges.hpp"
 
 TEST_CASE("undirected temporal edges", "[undirected_temporal_edge]") {
   SECTION("are read correctly") {

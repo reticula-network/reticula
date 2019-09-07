@@ -67,6 +67,6 @@ namespace dag {
     network<undirected_temporal_edge<VertT, TimeT>>;
 }
 
-#include "../src/networks.tpp"
+#include "../../src/networks.tpp"
 
 #endif /* DAG_NETWORKS_H */

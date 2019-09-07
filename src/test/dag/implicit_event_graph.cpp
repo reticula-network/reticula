@@ -5,7 +5,7 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-#include "../../../include/implicit_event_graph.hpp"
+#include "../../../include/dag/implicit_event_graph.hpp"
 
 TEST_CASE("deterministic adjacency probability",
     "[dag::adjacency_prob::deterministic]") {
