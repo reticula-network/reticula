@@ -29,10 +29,10 @@ any need for them right now but they are good to have:
 
 * [Spaceship operator `<=>` and `<compare>`][spaceship] for strong ordering of
   temporal edges.
-* [Empty type optimization `no_unique_address`][no-unique-address] to allow
+* [Empty type optimization with `[[no_unique_address]]`][no-unique-address] to allow
   all edges to contain optional data without suffering a few bytes of overhead
   or messy code for edges that don't have additional data.
 
 [spaceship]: https://en.cppreference.com/w/cpp/language/default_comparisons
-[no-unique-adress]: https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
+[no-unique-address]: https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
 `
