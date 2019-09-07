@@ -1,4 +1,5 @@
 #include <random>
+
 namespace dag {
   template <typename VertT>
   undirected_network<VertT> gnp_random_graph(size_t n, double p,
@@ -8,7 +9,7 @@ namespace dag {
     uintmax_t max_n = std::numeric_limits<VertT>::max()
                     - std::numeric_limits<VertT>::min();
     if (max_n <= n)
-      throw dag::vertex_type_too_small_error(
+      throw utils::vertex_type_too_small_error(
           "n is too large for selected vertex type");
 
     std::uniform_real_distribution<> rd;
@@ -40,7 +41,7 @@ namespace dag {
     uintmax_t max_n = std::numeric_limits<VertT>::max()
                     - std::numeric_limits<VertT>::min();
     if (max_n <= n)
-      throw dag::vertex_type_too_small_error(
+      throw utils::vertex_type_too_small_error(
           "n is too large for selected vertex type");
 
     if (n <= m || m < 1)

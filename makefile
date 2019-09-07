@@ -1,14 +1,10 @@
 # object files, auto generated from source files
 OBJDIR := .o
-$(shell mkdir -p $(OBJDIR) >/dev/null)
 TSTOBJDIR := $(OBJDIR)/test/dag
-$(shell mkdir -p $(TSTOBJDIR) >/dev/null)
 
 # dependency files, auto generated from source files
 DEPDIR := .d
-$(shell mkdir -p $(DEPDIR) >/dev/null)
 TSTDEPDIR := $(DEPDIR)/test/dag
-$(shell mkdir -p $(TSTDEPDIR) >/dev/null)
 
 SRCDIR := src
 TSTDIR := $(SRCDIR)/test/dag
@@ -39,34 +35,52 @@ POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
 LINK.o = $(LD) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
+.PHONY: all
 all: tests
+
+.PHONY: clean
+clean:
+	$(RM) -r $(OBJDIR) $(DEPDIR)
 
 
 dep/HyperLogLog/MurmurHash3.o:
 	$(MAKE) -C dep/HyperLogLog/MurmurHash3.o
 
 
-tests: $(TSTOBJDIR)/tests.o $(TSTOBJDIR)/edge_tests.o $(EXTDEPS)
+tests: $(TSTOBJDIR)/tests.o \
+			 $(TSTOBJDIR)/edge_tests.o\
+			 $(TSTOBJDIR)/implicit_event_graph.o\
+			 $(EXTDEPS)
 	$(LINK.o)
+
+BUILD_DIRS := $(DEPDIR) $(TSTDEPDIR) $(OBJDIR) $(TSTOBJDIR)
+$(OBJDIR):
+	$(shell mkdir -p $(OBJDIR))
+$(TSTOBJDIR):
+	$(shell mkdir -p $(TSTOBJDIR))
+$(DEPDIR):
+	$(shell mkdir -p $(DEPDIR))
+$(TSTDEPDIR):
+	$(shell mkdir -p $(TSTDEPDIR))
 
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.c
-$(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d
+$(OBJDIR)/%.o : $(SRCDIR)/%.c $(DEPDIR)/%.d | $(BUILD_DIRS)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 	$(POSTCOMPILE)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cc
-$(OBJDIR)/%.o : $(SRCDIR)/%.cc $(DEPDIR)/%.d
+$(OBJDIR)/%.o : $(SRCDIR)/%.cc $(DEPDIR)/%.d | $(BUILD_DIRS)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 	$(POSTCOMPILE)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-$(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(DEPDIR)/%.d
+$(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(DEPDIR)/%.d | $(BUILD_DIRS)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 	$(POSTCOMPILE)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cxx
-$(OBJDIR)/%.o : $(SRCDIR)/%.cxx $(DEPDIR)/%.d
+$(OBJDIR)/%.o : $(SRCDIR)/%.cxx $(DEPDIR)/%.d | $(BUILD_DIRS)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 	$(POSTCOMPILE)
 

@@ -1,9 +1,11 @@
-#include "catch.hpp"
-
 #include <sstream>
 #include <string>
 
-#include "../../../include/dag.hpp"
+#include "catch.hpp"
+using Catch::Matchers::Equals;
+using Catch::Matchers::UnorderedEquals;
+
+#include "../../../include/static_edges.hpp"
 
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
   SECTION("are read correctly") {
@@ -13,6 +15,21 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
     REQUIRE(a == dag::undirected_edge<int>(1, 2));
     REQUIRE(b == dag::undirected_edge<int>(3, 4));
     REQUIRE(c == dag::undirected_edge<int>(5, 6));
+  }
+
+  SECTION("have correct properties") {
+    dag::undirected_edge<int> edge(1, 2);
+
+    REQUIRE_THAT(edge.mutated_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.mutator_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+
+    REQUIRE(edge.is_incident(1));
+
+    REQUIRE(edge.is_incident(2));
+
+    REQUIRE_FALSE(edge.is_incident(3));
   }
 
   SECTION("compare correctly") {
@@ -33,12 +50,32 @@ TEST_CASE("directed edges", "[directed_edge]") {
     REQUIRE(c == dag::directed_edge<int>(5, 6));
   }
 
+  SECTION("have correct properties") {
+    dag::directed_edge<int> edge(1, 2);
+
+    REQUIRE_THAT(edge.mutated_verts(),
+        Equals(std::vector<int>({2})));
+    REQUIRE_THAT(edge.mutator_verts(),
+        Equals(std::vector<int>({1})));
+
+    REQUIRE(edge.is_out_incident(1));
+    REQUIRE_FALSE(edge.is_out_incident(2));
+
+    REQUIRE(edge.is_in_incident(2));
+    REQUIRE_FALSE(edge.is_in_incident(1));
+
+    REQUIRE_FALSE(edge.is_in_incident(3));
+    REQUIRE_FALSE(edge.is_out_incident(3));
+  }
+
   SECTION("compare correctly") {
     REQUIRE(dag::directed_edge<int>(1, 2) == dag::directed_edge<int>(1, 2));
     REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 1));
     REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 3));
   }
 }
+
+#include "../../../include/temporal_edges.hpp"
 
 TEST_CASE("undirected temporal edges", "[undirected_temporal_edge]") {
   SECTION("are read correctly") {
