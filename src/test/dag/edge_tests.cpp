@@ -94,16 +94,8 @@ TEST_CASE("undirected temporal edges", "[undirected_temporal_edge]") {
         dag::undirected_temporal_edge<int, int>(2, 1, 3));
     REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) !=
         dag::undirected_temporal_edge<int, int>(1, 2, 2));
-    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) >
-        dag::undirected_temporal_edge<int, int>(1, 2, 2));
-  }
-
-  SECTION("compare stably") {
-    bool comp1 = dag::undirected_temporal_edge<int, int>(1, 2, 3) >
-        dag::undirected_temporal_edge<int, int>(3, 4, 3);
-    bool comp2 = dag::undirected_temporal_edge<int, int>(3, 4, 3) <
-        dag::undirected_temporal_edge<int, int>(1, 2, 3);
-    REQUIRE(comp1 == comp2);
+    REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 2) <
+        dag::undirected_temporal_edge<int, int>(1, 2, 3));
   }
 }
 
@@ -124,16 +116,8 @@ TEST_CASE("directed temporal edges", "[directed_temporal_edge]") {
         dag::directed_temporal_edge<int, int>(2, 1, 3));
     REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) !=
         dag::directed_temporal_edge<int, int>(1, 2, 2));
-    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 3) >
-        dag::directed_temporal_edge<int, int>(1, 2, 2));
-  }
-
-  SECTION("compare stably") {
-    bool comp1 = dag::directed_temporal_edge<int, int>(1, 2, 3) >
-        dag::directed_temporal_edge<int, int>(3, 4, 3);
-    bool comp2 = dag::directed_temporal_edge<int, int>(3, 4, 3) <
-        dag::directed_temporal_edge<int, int>(1, 2, 3);
-    REQUIRE(comp1 == comp2);
+    REQUIRE(dag::directed_temporal_edge<int, int>(1, 2, 2) <
+        dag::directed_temporal_edge<int, int>(1, 2, 3));
   }
 }
 
@@ -157,17 +141,9 @@ TEST_CASE("directed delayed temporal edges",
         dag::directed_delayed_temporal_edge<int, int>(1, 1, 3, 3));
     REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) !=
         dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4));
-    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
-        dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4));
-    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
-        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 2));
-  }
-
-  SECTION("compare stably") {
-    bool comp1 = dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) >
-        dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4);
-    bool comp2 = dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4) <
-        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4);
-    REQUIRE(comp1 == comp2);
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4) <
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 2) <
+        dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
   }
 }

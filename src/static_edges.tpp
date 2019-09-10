@@ -21,32 +21,3 @@ namespace std {
     }
   };
 }
-
-namespace dag {
-  // directed edge IO:
-  template <typename VertT>
-  std::ostream& operator<<(std::ostream& os,
-      const directed_edge<VertT>& e) {
-    return os << e.tail_vert() << " " << e.head_vert();
-  }
-
-  template <typename VertT>
-  std::istream& operator>>(std::istream& is,
-      directed_edge<VertT>& e) {
-    return is >> e.v1 >> e.v2;
-  }
-
-
-  // undirected edge IO:
-  template <typename VertT>
-  std::ostream& operator<<(std::ostream &os,
-      const undirected_edge<VertT>& e) {
-    return os << e.v1 << " " << e.v2;
-  }
-
-  template <typename VertT>
-  std::istream& operator>>(std::istream& is,
-      undirected_edge<VertT>& e) {
-    return is >> e.v1 >> e.v2;
-  }
-}

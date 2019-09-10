@@ -1,171 +1,142 @@
 namespace dag {
-
   template <typename EdgeT>
-  void network<EdgeT>::add_edges(const std::vector<EdgeT>& es) {
-    for (const auto &e: es) add_edge(e);
-  }
+  network<EdgeT>::network(const std::vector<EdgeT>& edges) : _edges{edges} {
+    std::sort(_edges.begin(), _edges.end());
+    _edges.erase(std::unique(_edges.begin(), _edges.end()), _edges.end());
+    _edges.shrink_to_fit();
 
-  template <typename EdgeT>
-  std::ostream &operator<<(std::ostream &os,
-      network<EdgeT> const &n) {
-    os << "{";
-    std::string separator;
-    for (const auto &e: n.edges()) {
-      os << separator << e;
-      separator = ", ";
+    for (const auto& e: _edges) {
+      for (auto&& v: e.mutator_verts())
+        _out_edges[v].push_back(e);
+      for (auto&& v: e.mutated_verts())
+        _in_edges[v].push_back(e);
     }
-    os << "}";
-    return os;
-  }
 
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType, size_t>
-  network<EdgeT>::in_degree() const {
-    auto edges = in_edges();
-    std::unordered_map<typename network<EdgeT>::VertexType, size_t> degrees;
-    for (const auto &p: edges)
-      degrees[p.first] = p.second.size();
-    return degrees;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType, size_t>
-  network<EdgeT>::out_degree() const {
-    auto edges = out_edges();
-    std::unordered_map<typename network<EdgeT>::VertexType, size_t> degrees;
-    for (const auto &p: edges)
-      degrees[p.first] = p.second.size();
-    return degrees;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType, size_t>
-    network<EdgeT>::degree() const {
-    auto edges = incident_edges();
-    std::unordered_map<typename network<EdgeT>::VertexType, size_t> degrees;
-    for (const auto &p: edges)
-      degrees[p.first] = p.second.size();
-    return degrees;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<EdgeT>>
-  network<EdgeT>::in_edges() const {
-    std::unordered_map<typename network<EdgeT>::VertexType,
-      std::unordered_set<EdgeT>> ins;
-
-    for (const auto &v: vertices())
-      ins[v] = std::unordered_set<EdgeT>();
-
-    for (const auto &e: edge_list)
-      ins[e.head_vert()].insert(e);
-    return ins;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<EdgeT>>
-  network<EdgeT>::out_edges() const {
-    std::unordered_map<network<EdgeT>::VertexType,
-      std::unordered_set<EdgeT>> outs;
-
-    for (const auto &v: vertices())
-      outs[v] = std::unordered_set<EdgeT>();
-
-    for (const auto &e: edge_list)
-      outs[e.tail_vert()].insert(e);
-    return outs;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<EdgeT>>
-  network<EdgeT>::incident_edges() const {
-    std::unordered_map<network<EdgeT>::VertexType,
-      std::unordered_set<EdgeT>> incs;
-    for (const auto &e: edge_list) {
-      incs[e.v1].insert(e);
-      incs[e.v2].insert(e);
+    for (auto&& p: _in_edges) {
+      std::sort(p.second.begin(), p.second.end(),
+          [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+      p.second.erase(std::unique(p.second.begin(), p.second.end()),
+          p.second.end());
+      p.second.shrink_to_fit();
     }
-    return incs;
-  }
 
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<typename network<EdgeT>::VertexType>>
-  network<EdgeT>::predecessors() const {
-    std::unordered_map<typename network<EdgeT>::VertexType,
-      std::unordered_set<typename network<EdgeT>::VertexType>> res;
-    for (const auto &e: edge_list)
-      res[e.head_vert()].insert(e.tail_vert());
-    return res;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<typename network<EdgeT>::VertexType>>
-  network<EdgeT>::successors() const {
-    std::unordered_map<typename network<EdgeT>::VertexType,
-      std::unordered_set<typename network<EdgeT>::VertexType>> res;
-    for (const auto &e: edge_list)
-      res[e.tail_vert()].insert(e.head_vert());
-    return res;
-  }
-
-  template <typename EdgeT>
-  std::unordered_map<typename network<EdgeT>::VertexType,
-    std::unordered_set<typename network<EdgeT>::VertexType>>
-  network<EdgeT>::neighbours() const {
-    std::unordered_map<typename network<EdgeT>::VertexType,
-      std::unordered_set<typename network<EdgeT>::VertexType>> res;
-    for (const auto &e: edge_list) {
-      res[e.v1].insert(e.v2);
-      res[e.v2].insert(e.v1);
+    for (auto&& p: _out_edges) {
+      std::sort(p.second.begin(), p.second.end());
+      p.second.erase(std::unique(p.second.begin(), p.second.end()),
+          p.second.end());
+      p.second.shrink_to_fit();
     }
-    return res;
   }
 
   template <typename EdgeT>
-  std::unordered_set<EdgeT>
-  network<EdgeT>::in_edges(network<EdgeT>::VertexType vert) const {
-    std::unordered_set<EdgeT> ins;
-    for (const auto &e: edge_list)
-      if (e.is_in_incident(vert)) ins.insert(e);
-    return ins;
+  size_t network<EdgeT>::in_degree(
+      const typename EdgeT::VertexType& v) const {
+    return in_edges(v).size();
+  }
+
+  template <typename EdgeT>
+  size_t network<EdgeT>::out_degree(
+      const typename EdgeT::VertexType& v) const {
+    return out_edges(v).size();
+  }
+
+  template <typename EdgeT>
+  size_t network<EdgeT>::degree(
+      const typename EdgeT::VertexType& v) const {
+    return incident_edges(v).size();
+  }
+
+  template <typename EdgeT>
+  std::vector<EdgeT>
+  network<EdgeT>::in_edges(
+      const typename EdgeT::VertexType& v) const {
+    auto p = _in_edges.find(v);
+    if (p == _in_edges.end())
+      return std::vector<EdgeT>();
+    else
+      return p->second;
+  }
+
+  template <typename EdgeT>
+  std::vector<EdgeT>
+  network<EdgeT>::out_edges(
+      const typename EdgeT::VertexType& v) const {
+    auto p = _out_edges.find(v);
+    if (p == _out_edges.end())
+      return std::vector<EdgeT>();
+    else
+      return p->second;
+  }
+
+  template <typename EdgeT>
+  std::vector<EdgeT>
+  network<EdgeT>::incident_edges(
+      const typename EdgeT::VertexType& v) const {
+    std::vector<EdgeT> inc(in_edges(v));
+    std::vector<EdgeT> out(out_edges(v));
+    inc.insert(inc.end(), out.begin(), out.end());
+    std::sort(inc.begin(), inc.end());
+    inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    return inc;
   }
 
 
+
   template <typename EdgeT>
-  std::unordered_set<EdgeT>
-  network<EdgeT>::out_edges(network<EdgeT>::VertexType vert) const {
-    std::unordered_set<EdgeT> outs;
-    for (const auto &e: edge_list)
-      if (e.is_out_incident(vert)) outs.insert(e);
-    return outs;
+  std::vector<typename EdgeT::VertexType>
+  network<EdgeT>::predecessors(const typename EdgeT::VertexType& v) const {
+    std::unordered_set<typename EdgeT::VertexType> preds;
+    auto p = _in_edges.find(v);
+    if (p != _in_edges.end()) {
+      preds.reserve(p->second.size());
+      for (auto&& e: p->second)
+        for (auto&& u: e.mutator_verts())
+          if (u != v) preds.insert(u);
+    }
+    return std::vector<typename EdgeT::VertexType>(preds.begin(), preds.end());
   }
 
-
-
   template <typename EdgeT>
-  std::unordered_set<EdgeT>
-  network<EdgeT>::incident_edges(network<EdgeT>::VertexType vert) const {
-    std::unordered_set<EdgeT> incs;
-    for (const auto &e: edge_list)
-      if (e.is_incident(vert)) incs.insert(e);
-    return incs;
+  std::vector<typename EdgeT::VertexType>
+  network<EdgeT>::successors(const typename EdgeT::VertexType& v) const {
+    std::unordered_set<typename EdgeT::VertexType> succ;
+    auto p =_out_edges.find(v);
+    if (p != _out_edges.end()) {
+      succ.reserve(p->second.size());
+      for (auto&& e: p->second)
+        for (auto&& u: e.mutated_verts())
+          if (u != v) succ.insert(u);
+    }
+    return std::vector<typename EdgeT::VertexType>(succ.begin(), succ.end());
   }
 
+  template <typename EdgeT>
+  std::vector<typename EdgeT::VertexType>
+  network<EdgeT>::neighbours(const typename EdgeT::VertexType& v) const {
+    std::vector<typename EdgeT::VertexType> inc(predecessors(v));
+    std::vector<typename EdgeT::VertexType> succ(successors(v));
+
+    inc.insert(inc.end(), succ.begin(), succ.end());
+    std::sort(inc.begin(), inc.end());
+    inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    return inc;
+  }
 
   template <typename EdgeT>
-  std::unordered_set<typename network<EdgeT>::VertexType>
+  const std::vector<EdgeT>&
+  network<EdgeT>::edges() const {
+    return _edges;
+  }
+
+  template <typename EdgeT>
+  std::vector<typename EdgeT::VertexType>
   network<EdgeT>::vertices() const {
     std::unordered_set<network<EdgeT>::VertexType> verts;
-    for (const auto &e: edge_list) {
-      verts.insert(e.v1);
-      verts.insert(e.v2);
-    }
-    return verts;
+    verts.reserve(_in_edges.size());
+    for (const auto &p: _in_edges)
+      verts.insert(p.first);
+    for (const auto &p: _out_edges)
+      verts.insert(p.first);
+    return std::vector<typename EdgeT::VertexType>(verts.begin(), verts.end());
   }
 }

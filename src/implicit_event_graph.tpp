@@ -10,7 +10,8 @@ namespace dag {
 
     template <class EdgeT>
     double deterministic<EdgeT>::p(const EdgeT& a, const EdgeT& b) const {
-      if (b.time > a.effect_time() && b.time - a.effect_time() < _dt)
+      if (b.cause_time() > a.effect_time() &&
+          b.cause_time() - a.effect_time() < _dt)
         return 1;
       else
         return 0;
@@ -22,9 +23,9 @@ namespace dag {
 
     template <class EdgeT>
     double exponential<EdgeT>::p(const EdgeT& a, const EdgeT& b) const {
-      if (b.time < a.effect_time())
+      if (b.cause_time() < a.effect_time())
         return 0;
-      typename EdgeT::TimeType dt = b.time - a.effect_time();
+      typename EdgeT::TimeType dt = b.cause_time() - a.effect_time();
       double lambda = (1.0/(double)_dt);
       return lambda*std::exp(-lambda*((double)dt));
     }
@@ -36,8 +37,7 @@ namespace dag {
     seed(seed), _topo(events), prob(prob) {
 
     std::sort(_topo.begin(), _topo.end());
-    auto last = std::unique(_topo.begin(), _topo.end());
-    _topo.erase(last, _topo.end());
+    _topo.erase(std::unique(_topo.begin(), _topo.end()), _topo.end());
     _topo.shrink_to_fit();
 
     for (const auto& e: _topo) {
@@ -68,8 +68,8 @@ namespace dag {
 
       std::sort(p.second.begin(), p.second.end(),
           [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.time, e1) <
-            std::make_pair(e2.time, e2);
+          return std::make_pair(e1.cause_time(), e1) <
+            std::make_pair(e2.cause_time(), e2);
           });
     }
   }
@@ -96,7 +96,9 @@ namespace dag {
     if (_topo.empty())
       return std::make_pair(0, 0);
     else
-      return std::make_pair(_topo.front().time, _topo.back().time);
+      return std::make_pair(
+          _topo.front().cause_time(),
+          _topo.back().cause_time());
   }
 
   template <class EdgeT, class AdjacencyProbT>
@@ -196,15 +198,17 @@ namespace dag {
     if (inc != inc_out_map.end()) {
       auto other = std::lower_bound(inc->second.begin(), inc->second.end(), e,
           [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.time, e1) < std::make_pair(e2.time, e2);
+          return std::make_pair(e1.cause_time(), e1) <
+                  std::make_pair(e2.cause_time(), e2);
           });
       res.reserve(std::min<size_t>(reserve_max, inc->second.end() - other));
       double last_p = 1.0;
       while ((other < inc->second.end()) && last_p > cutoff) {
-        if (e.is_adjacent_to(*other)) {
+        if (adjacent(e, *other)) {
           last_p = prob.p(e, *other);
           if (bernoulli_trial(e, *other, last_p)) {
-            if (just_first && !res.empty() && res[0].time != other->time)
+            if (just_first && !res.empty() &&
+                res[0].cause_time() != other->cause_time())
               return res;
             else
               res.push_back(*other);
@@ -237,10 +241,11 @@ namespace dag {
       res.reserve(std::min<size_t>(reserve_max, other - inc->second.begin()));
       double last_p = 1.0;
       while ((other >= inc->second.begin()) && last_p > cutoff) {
-        if (other->is_adjacent_to(e)) {
+        if (adjacent(*other, e)) {
           last_p = prob.p(*other, e);
           if(bernoulli_trial(*other, e, last_p)) {
-            if (just_first && !res.empty() && res[0].time != other->time)
+            if (just_first && !res.empty() &&
+                res[0].cause_time() != other->cause_time())
               return res;
             else
               res.push_back(*other);

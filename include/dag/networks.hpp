@@ -9,43 +9,32 @@
 namespace dag {
   template <typename EdgeT>
   class network {
-    std::unordered_set<EdgeT> edge_list;
   public:
     using VertexType = typename EdgeT::VertexType;
     using EdgeType = EdgeT;
+
     network() = default;
-    std::unordered_set<VertexType> vertices() const;
+    network(const std::vector<EdgeT>& edges);
 
-    inline void add_edge(const EdgeT& new_edge) {
-      edge_list.insert(new_edge);
-    };
+    std::vector<VertexType> vertices() const;
+    const std::vector<EdgeType>& edges() const;
 
-    void add_edges(const std::vector<EdgeT>& new_edges);
+    std::vector<EdgeType> in_edges(const VertexType& vert) const;
+    std::vector<EdgeType> out_edges(const VertexType& vert) const;
+    std::vector<EdgeType> incident_edges(const VertexType& vert) const;
 
-    inline const std::unordered_set<EdgeT>& edges() const { return edge_list; }
-    inline void reserve(size_t count) { edge_list.reserve(count); }
+    size_t in_degree(const VertexType& vert) const;
+    size_t out_degree(const VertexType& vert) const;
+    size_t degree(const VertexType& vert) const;
 
-    std::unordered_map<VertexType, std::unordered_set<EdgeT>>
-      in_edges() const;
-    std::unordered_map<VertexType, std::unordered_set<EdgeT>>
-      out_edges() const;
-    std::unordered_map<VertexType, std::unordered_set<EdgeT>>
-      incident_edges() const;
+    std::vector<VertexType> predecessors(const VertexType& v) const;
+    std::vector<VertexType> successors(const VertexType& v) const;
+    std::vector<VertexType> neighbours(const VertexType& v) const;
 
-    std::unordered_map<VertexType, size_t> in_degree() const;
-    std::unordered_map<VertexType, size_t> out_degree() const;
-    std::unordered_map<VertexType, size_t> degree() const;
-
-    std::unordered_map<VertexType, std::unordered_set<VertexType>>
-      predecessors() const;
-    std::unordered_map<VertexType, std::unordered_set<VertexType>>
-      successors() const;
-    std::unordered_map<VertexType, std::unordered_set<VertexType>>
-      neighbours() const;
-
-    std::unordered_set<EdgeT> in_edges(const VertexType vert) const;
-    std::unordered_set<EdgeT> out_edges(const VertexType vert) const;
-    std::unordered_set<EdgeT> incident_edges(const VertexType vert) const;
+  private:
+    std::vector<EdgeType> _edges;
+    std::unordered_map<VertexType, std::vector<EdgeType>> _in_edges;
+    std::unordered_map<VertexType, std::vector<EdgeType>> _out_edges;
   };
 
   template <typename VertT>

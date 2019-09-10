@@ -6,29 +6,11 @@ namespace dag {
   class directed_edge {
   public:
     using VertexType = VertT;
-    VertT v1, v2;
 
     directed_edge() = default;
     directed_edge(const VertT v1, const VertT v2)
       : v1(v1), v2(v2) {}
 
-    [[nodiscard]]
-    inline bool operator==(const directed_edge<VertT>& other) const {
-      auto t = std::tie(v1, v2);
-      auto o = std::tie(other.v1, other.v2);
-      return (t == o);
-    }
-
-    [[nodiscard]]
-    inline bool operator!=(const directed_edge<VertT>& other) const {
-      return !(*this == other);
-    }
-
-    [[nodiscard]]
-    inline VertT head_vert() const { return v2; }
-
-    [[nodiscard]]
-    inline VertT tail_vert() const { return v1; }
 
     [[nodiscard]]
     inline bool is_out_incident(const VertT vert) const { return (v1 == vert); }
@@ -46,6 +28,62 @@ namespace dag {
 
     [[nodiscard]]
     std::vector<VertT> mutated_verts() const { return {v2}; }
+
+    [[nodiscard]]
+    friend bool operator!=(
+        const directed_edge<VertT>& a,
+        const directed_edge<VertT>& b){ return !(a == b); }
+
+    [[nodiscard]]
+    friend bool operator==(
+        const directed_edge<VertT>& a,
+        const directed_edge<VertT>& b){
+      return (a.cause_comp_tuple() == b.cause_comp_tuple());
+    }
+
+    [[nodiscard]]
+    friend bool operator<(
+        const directed_edge<VertT>& a,
+        const directed_edge<VertT>& b){
+      return (a.cause_comp_tuple() < b.cause_comp_tuple());
+    }
+
+    [[nodiscard]]
+    friend bool effect_lt(
+        const directed_edge<VertT>& a,
+        const directed_edge<VertT>& b){
+      return (a.effect_comp_tuple() < b.effect_comp_tuple());
+    }
+
+    [[nodiscard]]
+    friend bool adjacent(
+        const directed_edge<VertT>& a,
+        const directed_edge<VertT>& b) {
+      return (a.v2 == b.v1);
+    }
+
+    friend std::ostream& operator<<(std::ostream &os,
+        directed_edge<VertT>& e) {
+      return os << e.v1 << " " << e.v2;
+    }
+    friend std::istream& operator>>(std::istream &is,
+        directed_edge<VertT>& e) {
+      return is >> e.v1 >> e.v2;
+    }
+
+  private:
+    VertT v1, v2;
+    [[nodiscard]]
+    inline std::tuple<VertT, VertT> cause_comp_tuple() const {
+      return std::make_tuple(v1, v2);
+    }
+
+    [[nodiscard]]
+    inline std::tuple<VertT, VertT> effect_comp_tuple() const {
+      return std::make_tuple(v2, v1);
+    }
+
+    friend struct std::hash<directed_edge<VertT>>;
   };
 
 
@@ -53,24 +91,10 @@ namespace dag {
   class undirected_edge {
   public:
     using VertexType = VertT;
-    VertT v1, v2;
 
     undirected_edge() = default;
     undirected_edge(const VertT v1, const VertT v2)
       : v1(v1), v2(v2) {}
-
-    [[nodiscard]]
-    inline bool operator==(const undirected_edge<VertT>& other) const {
-      auto t = std::tie(v1, v2);
-      auto o1 = std::tie(other.v1, other.v2);
-      auto o2 = std::tie(other.v2, other.v1);
-      return (t == o1 || t == o2);
-    }
-
-    [[nodiscard]]
-    inline bool operator!=(const undirected_edge<VertT>& other) const {
-      return !(*this == other);
-    }
 
     [[nodiscard]]
     inline bool is_incident(const VertT vert) const {
@@ -82,6 +106,61 @@ namespace dag {
 
     [[nodiscard]]
     std::vector<VertT> mutated_verts() const { return {v1, v2}; }
+
+    [[nodiscard]]
+    friend bool operator!=(
+        const undirected_edge<VertT>& a,
+        const undirected_edge<VertT>& b){ return !(a == b); }
+
+    [[nodiscard]]
+    friend bool operator==(
+        const undirected_edge<VertT>& a,
+        const undirected_edge<VertT>& b){
+      return (a.comp_tuple() == b.comp_tuple());
+    }
+
+    [[nodiscard]]
+    friend bool operator<(
+        const undirected_edge<VertT>& a,
+        const undirected_edge<VertT>& b){
+      return (a.comp_tuple() < b.comp_tuple());
+    }
+
+    [[nodiscard]]
+    friend bool effect_lt(
+        const undirected_edge<VertT>& a,
+        const undirected_edge<VertT>& b){
+      return (a < b);
+    }
+
+    [[nodiscard]]
+    friend bool adjacent(
+        const undirected_edge<VertT>& a,
+        const undirected_edge<VertT>& b) {
+      return (a.v1 == b.v1 ||
+              a.v1 == b.v2 ||
+              a.v2 == b.v1 ||
+              a.v2 == b.v2);
+    }
+
+    friend std::ostream& operator<<(std::ostream &os,
+        undirected_edge<VertT>& e) {
+      return os << e.v1 << " " << e.v2;
+    }
+
+    friend std::istream& operator>>(std::istream &is,
+        undirected_edge<VertT>& e) {
+      return is >> e.v1 >> e.v2;
+    }
+
+  private:
+    VertT v1, v2;
+    [[nodiscard]]
+    inline std::tuple<VertT, VertT> comp_tuple() const {
+      return std::make_tuple(std::min(v1, v2), std::max(v1, v2));
+    }
+
+    friend struct std::hash<undirected_edge<VertT>>;
   };
 }
 

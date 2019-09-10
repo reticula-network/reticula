@@ -50,6 +50,7 @@ dep/HyperLogLog/MurmurHash3.o:
 tests: $(TSTOBJDIR)/tests.o \
 			 $(TSTOBJDIR)/edge_tests.o\
 			 $(TSTOBJDIR)/implicit_event_graph.o\
+			 $(TSTOBJDIR)/networks.o\
 			 $(EXTDEPS)
 	$(LINK.o)
 
