@@ -1,6 +1,6 @@
 [submodule "dep/HyperLogLog"]
 	path = dep/HyperLogLog
-	url = git@github.com:arashbm/HyperLogLog.git
+	url = https://github.com/arashbm/HyperLogLog.git
 [submodule "dep/disjoint_set"]
 	path = dep/disjoint_set
-	url = git@github.com:arashbm/disjoint_set
+	url = https://github.com/arashbm/disjoint_set.git
