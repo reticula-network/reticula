@@ -1,5 +1,4 @@
-name: C++ CI
-
+name: Tests
 on: [push, pull_request]
 
 jobs:
