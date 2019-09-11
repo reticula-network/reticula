@@ -11,8 +11,9 @@ jobs:
       with:
         submodules: true
     - uses: actions/setup-python@v1
-      with: python-version: '3.x'
-      architecture: 'x64'
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
     - name: install cpplint
       run: pip install cpplint=1.4.4
     - name: make lint
