@@ -15,6 +15,6 @@ jobs:
         python-version: '3.x'
         architecture: 'x64'
     - name: install cpplint
-      run: pip install cpplint=1.4.4
+      run: pip install cpplint==1.4.4
     - name: make lint
       run: make lint
