@@ -1,4 +1,4 @@
-# DAG
+# DAG [![Actions Status](https://github.com/arashbm/dag/workflows/Tests/badge.svg)](https://github.com/arashbm/dag/actions)
 `dag` is a general-purpose complex network analysis tool with focus on [temporal
 networks][temp] and [event graphs][event] and [reachability][out-component].
 
