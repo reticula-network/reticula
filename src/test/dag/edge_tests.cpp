@@ -41,7 +41,7 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
 
 
 TEST_CASE("directed edges", "[directed_edge]") {
-  SECTION( "are read correctly") {
+  SECTION("are read correctly") {
     std::istringstream s("1 2\n3 4\n5 6\n");
     dag::directed_edge<int> a, b, c;
     s >> a >> b >> c;

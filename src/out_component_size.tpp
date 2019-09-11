@@ -5,7 +5,6 @@ namespace dag {
       const EdgeT& root,
       size_t node_size_est,
       size_t edge_size_est) {
-
     using TimeT = typename EdgeT::TimeType;
     using VertT = typename EdgeT::VertexType;
     using delayed = dag::directed_delayed_temporal_edge<VertT, TimeT>;
@@ -31,7 +30,6 @@ namespace dag {
       const EdgeT& root,
       size_t node_size_est,
       size_t edge_size_est) {
-
     std::queue<EdgeT> search({root});
     component_size_counter<EdgeT, exact_estimator>
       out_component(0, edge_size_est, node_size_est);
@@ -57,7 +55,6 @@ namespace dag {
       const EdgeT& root,
       size_t node_size_est,
       size_t edge_size_est) {
-
     auto comp_function = [](const EdgeT& e1, const EdgeT& e2) {
       return (e1.effect_time()) > (e2.effect_time());
     };
@@ -88,7 +85,6 @@ namespace dag {
     while (topo_it < eg.topo().end() &&
         (topo_it->time < last_infect_time ||
         topo_it->time - last_infect_time < eg.expected_dt())) {
-
       while (!in_transition.empty() &&
           in_transition.top().effect_time() < topo_it->time) {
         for (auto && v: in_transition.top().mutated_verts()) {
@@ -114,7 +110,9 @@ namespace dag {
           out_component.insert(*topo_it);
           for (auto && v: topo_it->mutated_verts())
             last_infected[v] = topo_it->time;
-        } else in_transition.push(*topo_it);
+        } else {
+          in_transition.push(*topo_it);
+        }
         last_infect_time =
           std::max(topo_it->effect_time(), last_infect_time);
       }
@@ -129,4 +127,4 @@ namespace dag {
 
     return out_component;
   }
-}
+}  // namespace dag

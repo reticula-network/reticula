@@ -1,5 +1,8 @@
-#ifndef DAG_ALGORITHMS_H
-#define DAG_ALGORITHMS_H
+#ifndef INCLUDE_DAG_ALGORITHMS_HPP_
+#define INCLUDE_DAG_ALGORITHMS_HPP_
+
+#include <vector>
+#include <unordered_set>
 
 namespace dag {
   template <typename EdgeT>
@@ -15,16 +18,16 @@ namespace dag {
   std::unordered_set<VertT> out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
-      size_t size_hint=0,
-      bool revert_graph=false);
+      size_t size_hint = 0,
+      bool revert_graph = false);
 
   template <typename VertT>
   std::unordered_set<VertT> in_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
-      size_t size_hint=0);
-}
+      size_t size_hint = 0);
+}  // namespace dag
 
 #include "../../src/algorithms.tpp"
 
-#endif /* DAG_ALGORITHMS_H */
+#endif  // INCLUDE_DAG_ALGORITHMS_HPP_

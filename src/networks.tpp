@@ -100,7 +100,7 @@ namespace dag {
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::successors(const typename EdgeT::VertexType& v) const {
     std::unordered_set<typename EdgeT::VertexType> succ;
-    auto p =_out_edges.find(v);
+    auto p = _out_edges.find(v);
     if (p != _out_edges.end()) {
       succ.reserve(p->second.size());
       for (auto&& e: p->second)
@@ -139,4 +139,4 @@ namespace dag {
       verts.insert(p.first);
     return std::vector<typename EdgeT::VertexType>(verts.begin(), verts.end());
   }
-}
+}  // namespace dag

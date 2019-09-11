@@ -1,5 +1,5 @@
-#ifndef DAG_RANDOM_NETWORKS_H
-#define DAG_RANDOM_NETWORKS_H
+#ifndef INCLUDE_DAG_RANDOM_NETWORKS_HPP_
+#define INCLUDE_DAG_RANDOM_NETWORKS_HPP_
 
 #include <random>
 
@@ -15,4 +15,4 @@ namespace dag {
 
 #include "../../src/random_networks.tpp"
 
-#endif /* DAG_RANDOM_NETWORKS_H */
+#endif  // INCLUDE_DAG_RANDOM_NETWORKS_HPP_

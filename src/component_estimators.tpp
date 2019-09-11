@@ -4,13 +4,15 @@
 namespace dag {
   template <typename EdgeT,
           template<typename> class NodeEstimatorT,
-          template<typename> class EdgeEstimatorT=NodeEstimatorT>
+          template<typename> class EdgeEstimatorT = NodeEstimatorT>
   class component_size_counter {
   public:
     using TimeType = typename EdgeT::TimeType;
     using VertexType = typename EdgeT::VertexType;
 
-    component_size_counter(uint32_t seed, size_t node_est=0, size_t edge_est=0):
+    explicit component_size_counter(uint32_t seed,
+        size_t node_est = 0,
+        size_t edge_est = 0):
       _node_set(seed, node_est),
       _edge_set(seed, edge_est),
       min_time(std::numeric_limits<TimeType>::max()),
@@ -63,7 +65,8 @@ namespace dag {
   template <typename T, typename HyperLogLogT>
   class hll_estimator {
   public:
-    hll_estimator(uint32_t seed, size_t /*size_est*/) : _estimator(true, seed) {}
+    hll_estimator(uint32_t seed, size_t /*size_est*/) :
+      _estimator(true, seed) {}
 
     double estimate() const { return _estimator.estimate(); }
 
@@ -76,8 +79,7 @@ namespace dag {
     const HyperLogLogT& estimator() const { return _estimator; }
 
     static double p_larger(double estimate, size_t limit,
-        size_t max_size=std::numeric_limits<std::size_t>::max() ) {
-
+        size_t max_size = std::numeric_limits<std::size_t>::max()) {
       if (limit > max_size)
         return 0.0;
 
@@ -88,23 +90,28 @@ namespace dag {
       double p_larger = 0.0;
       double p_total = 0.0;
 
-      if (estimate < (double)limit*(1-sigma*6))
+      if (estimate < static_cast<double>(limit)*(1-sigma*6))
         return 0;
 
-      double p_size = normal_pdf(estimate, (double)limit, sigma*(double)limit);
+      double p_size = normal_pdf(
+          estimate,
+          static_cast<double>(limit),
+          sigma*static_cast<double>(limit));
 
       if (p_size < cutoff) {
-        if (estimate < (double)limit)
+        if (estimate < static_cast<double>(limit))
           return 0;
         else
           return 1;
       }
 
       double min_search = (1 > 6*sigma) ? estimate - 6*sigma*estimate : 1;
-      size_t i = (size_t)min_search;
+      size_t i = static_cast<size_t>(min_search);
       while (i <= limit || (p_size > cutoff && i <= max_size)) {
-
-        p_size = normal_pdf(estimate, (double)i, sigma*(double)i);
+        p_size = normal_pdf(
+            estimate,
+            static_cast<double>(i),
+            sigma*static_cast<double>(i));
         p_total += p_size;
         if (i > limit)
           p_larger += p_size;
@@ -123,7 +130,6 @@ namespace dag {
 
       return inv_sqrt_2pi/stddev*std::exp(-0.5*a*a);
     }
-
   };
 
   template <typename T>
@@ -152,9 +158,10 @@ namespace dag {
   class hll_estimator_readonly {
   public:
     hll_estimator_readonly(uint32_t /*seed*/, size_t size_est)
-      : _est((double)size_est) {}
+      : _est(static_cast<double>(size_est)) {}
 
-    hll_estimator_readonly(const hll_estimator<T, HyperLogLogT>& hll_est) {
+   explicit hll_estimator_readonly(
+       const hll_estimator<T, HyperLogLogT>& hll_est) {
       _est = hll_est.estimate();
     }
 
@@ -167,11 +174,12 @@ namespace dag {
     }
 
     static double p_larger(double estimate, size_t limit,
-        size_t max_size=std::numeric_limits<std::size_t>::max() ) {
-      return hll_estimator<T, HyperLogLogT>::p_larger(estimate, limit, max_size);
+        size_t max_size = std::numeric_limits<std::size_t>::max()) {
+      return hll_estimator<T, HyperLogLogT>::p_larger(
+          estimate, limit, max_size);
     }
 
   private:
     double _est;
   };
-}
+}  // namespace dag

@@ -107,7 +107,6 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       REQUIRE_THAT(eg.predecessors(EdgeType(1, 2, 5), true),
           Equals(std::vector<EdgeType>({EdgeType(2, 1, 2)})));
-
     }
   }
 }

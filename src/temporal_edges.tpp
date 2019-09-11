@@ -37,4 +37,4 @@ namespace std {
               e.delay);
     }
   };
-}
+}  // namespace std

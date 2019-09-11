@@ -20,4 +20,4 @@ namespace std {
       return dag::utils::unordered_hash(e.v1, e.v2);
     }
   };
-}
+}  // namespace std

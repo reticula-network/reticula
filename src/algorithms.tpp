@@ -6,7 +6,8 @@
 namespace dag {
   template <typename EdgeT>
   directed_network<EdgeT>
-  event_graph(const network<EdgeT>& temp, typename EdgeT::TimeType max_delta_t) {
+  event_graph(const network<EdgeT>& temp,
+      typename EdgeT::TimeType max_delta_t) {
     std::unordered_set<typename EdgeT::VertexType> verts = temp.vertices();
     directed_network<EdgeT> eg;
     auto events = temp.incident_edges();
@@ -30,7 +31,6 @@ namespace dag {
   template <typename VertT>
   std::vector<VertT> topological_order(
       const directed_network<VertT>& dir) {
-
     auto succs = dir.successors();
     auto in_degrees = dir.in_degree();
 
@@ -79,4 +79,4 @@ namespace dag {
       size_t size_hint) {
     return out_component(dir, vert, size_hint, true);
   }
-};
+}  // namespace dag

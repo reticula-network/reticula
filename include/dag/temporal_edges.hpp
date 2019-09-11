@@ -1,5 +1,9 @@
-#ifndef DAG_TEMPORAL_EDGES_H
-#define DAG_TEMPORAL_EDGES_H
+#ifndef INCLUDE_DAG_TEMPORAL_EDGES_HPP_
+#define INCLUDE_DAG_TEMPORAL_EDGES_HPP_
+
+#include <tuple>
+#include <vector>
+#include <algorithm>
 
 namespace dag {
   template <typename VertT, typename TimeT>
@@ -46,26 +50,26 @@ namespace dag {
     [[nodiscard]]
     friend bool operator!=(
         const directed_temporal_edge<VertT, TimeT>& a,
-        const directed_temporal_edge<VertT, TimeT>& b){ return !(a == b); }
+        const directed_temporal_edge<VertT, TimeT>& b) { return !(a == b); }
 
     [[nodiscard]]
     friend bool operator==(
         const directed_temporal_edge<VertT, TimeT>& a,
-        const directed_temporal_edge<VertT, TimeT>& b){
+        const directed_temporal_edge<VertT, TimeT>& b) {
       return (a.cause_comp_tuple() == b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool operator<(
         const directed_temporal_edge<VertT, TimeT>& a,
-        const directed_temporal_edge<VertT, TimeT>& b){
+        const directed_temporal_edge<VertT, TimeT>& b) {
       return (a.cause_comp_tuple() < b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool effect_lt(
         const directed_temporal_edge<VertT, TimeT>& a,
-        const directed_temporal_edge<VertT, TimeT>& b){
+        const directed_temporal_edge<VertT, TimeT>& b) {
       return (a.effect_comp_tuple() < b.effect_comp_tuple());
     }
 
@@ -140,26 +144,28 @@ namespace dag {
     [[nodiscard]]
     friend bool operator!=(
         const directed_delayed_temporal_edge<VertT, TimeT>& a,
-        const directed_delayed_temporal_edge<VertT, TimeT>& b){ return !(a == b); }
+        const directed_delayed_temporal_edge<VertT, TimeT>& b) {
+      return !(a == b);
+    }
 
     [[nodiscard]]
     friend bool operator==(
         const directed_delayed_temporal_edge<VertT, TimeT>& a,
-        const directed_delayed_temporal_edge<VertT, TimeT>& b){
+        const directed_delayed_temporal_edge<VertT, TimeT>& b) {
       return (a.cause_comp_tuple() == b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool operator<(
         const directed_delayed_temporal_edge<VertT, TimeT>& a,
-        const directed_delayed_temporal_edge<VertT, TimeT>& b){
+        const directed_delayed_temporal_edge<VertT, TimeT>& b) {
       return (a.cause_comp_tuple() < b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool effect_lt(
         const directed_delayed_temporal_edge<VertT, TimeT>& a,
-        const directed_delayed_temporal_edge<VertT, TimeT>& b){
+        const directed_delayed_temporal_edge<VertT, TimeT>& b) {
       return (a.effect_comp_tuple() < b.effect_comp_tuple());
     }
 
@@ -231,26 +237,26 @@ namespace dag {
     [[nodiscard]]
     friend bool operator!=(
         const undirected_temporal_edge<VertT, TimeT>& a,
-        const undirected_temporal_edge<VertT, TimeT>& b){ return !(a == b); }
+        const undirected_temporal_edge<VertT, TimeT>& b) { return !(a == b); }
 
     [[nodiscard]]
     friend bool operator==(
         const undirected_temporal_edge<VertT, TimeT>& a,
-        const undirected_temporal_edge<VertT, TimeT>& b){
+        const undirected_temporal_edge<VertT, TimeT>& b) {
       return (a.comp_tuple() == b.comp_tuple());
     }
 
     [[nodiscard]]
     friend bool operator<(
         const undirected_temporal_edge<VertT, TimeT>& a,
-        const undirected_temporal_edge<VertT, TimeT>& b){
+        const undirected_temporal_edge<VertT, TimeT>& b) {
       return (a.comp_tuple() < b.comp_tuple());
     }
 
     [[nodiscard]]
     friend bool effect_lt(
         const undirected_temporal_edge<VertT, TimeT>& a,
-        const undirected_temporal_edge<VertT, TimeT>& b){
+        const undirected_temporal_edge<VertT, TimeT>& b) {
       return (a < b);
     }
 
@@ -274,8 +280,8 @@ namespace dag {
 
     friend struct std::hash<undirected_temporal_edge<VertT, TimeT>>;
   };
-}
+}  // namespace dag
 
 #include "../../src/temporal_edges.tpp"
 
-#endif /* DAG_TEMPORAL_EDGES_H */
+#endif  // INCLUDE_DAG_TEMPORAL_EDGES_HPP_

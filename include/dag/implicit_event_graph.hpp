@@ -1,7 +1,11 @@
-#ifndef DAG_IMPLICIT_EVENT_GRAPH_H
-#define DAG_IMPLICIT_EVENT_GRAPH_H
+#ifndef INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_HPP_
+#define INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_HPP_
 
+#include <utility>
+#include <vector>
 #include <unordered_set>
+#include <unordered_map>
+
 #include "temporal_edges.hpp"
 
 namespace dag {
@@ -9,7 +13,7 @@ namespace dag {
     template <class EdgeT>
     class deterministic {
     public:
-      deterministic(typename EdgeT::TimeType dt);
+      explicit deterministic(typename EdgeT::TimeType dt);
       double p(const EdgeT& a, const EdgeT& b) const;
     private:
       typename EdgeT::TimeType _dt;
@@ -19,12 +23,12 @@ namespace dag {
     template <class EdgeT>
     class exponential {
     public:
-      exponential(typename EdgeT::TimeType expected_dt);
+      explicit exponential(typename EdgeT::TimeType expected_dt);
       double p(const EdgeT& a, const EdgeT& b) const;
     private:
       typename EdgeT::TimeType _dt;
     };
-  }
+  }  // namespace adjacency_prob
 
 
   template <class EdgeT, class AdjacencyProbT>
@@ -43,14 +47,15 @@ namespace dag {
     std::pair<TimeType, TimeType> time_window() const;
 
     std::vector<EdgeT>
-    predecessors(const EdgeT& e, bool just_first=false) const;
+    predecessors(const EdgeT& e, bool just_first = false) const;
 
     std::vector<EdgeT>
-    successors(const EdgeT& e, bool just_first=false) const;
+    successors(const EdgeT& e, bool just_first = false) const;
 
 
     // TODO: should I even have this? I kinda wanna go full immutable on this
     void remove_events(const std::unordered_set<EdgeT>& events);
+
   private:
     size_t seed;
     std::vector<EdgeT> _topo;
@@ -75,8 +80,8 @@ namespace dag {
       AdjacencyProbT, dag::adjacency_prob::deterministic<EdgeT>>::value;
   };
 
-}
+}  // namespace dag
 
 #include "../../src/implicit_event_graph.tpp"
 
-#endif /* DAG_IMPLICIT_EVENT_GRAPH_H */
+#endif  // INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_HPP_

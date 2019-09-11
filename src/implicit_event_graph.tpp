@@ -26,16 +26,15 @@ namespace dag {
       if (b.cause_time() < a.effect_time())
         return 0;
       typename EdgeT::TimeType dt = b.cause_time() - a.effect_time();
-      double lambda = (1.0/(double)_dt);
-      return lambda*std::exp(-lambda*((double)dt));
+      double lambda = (1.0/static_cast<double>(_dt));
+      return lambda*std::exp(-lambda*(static_cast<double>(dt)));
     }
-  }
+  }  // namespace adjacency_prob
 
   template <class EdgeT, class AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       std::vector<EdgeT> events, const AdjacencyProbT& prob, size_t seed) :
     seed(seed), _topo(events), prob(prob) {
-
     std::sort(_topo.begin(), _topo.end());
     _topo.erase(std::unique(_topo.begin(), _topo.end()), _topo.end());
     _topo.shrink_to_fit();
@@ -169,11 +168,11 @@ namespace dag {
   template <class EdgeT, class AdjacencyProbT>
   bool implicit_event_graph<EdgeT, AdjacencyProbT>::bernoulli_trial(
       const EdgeT& a, const EdgeT& b, double p) const {
-    if (p == 1)
+    if (p == 1) {
       return true;
-    else if (p == 0)
+    } else if (p == 0) {
       return false;
-    else {
+    } else {
       size_t dag_edge_seed = utils::combine_hash(seed, a);
       dag_edge_seed = utils::combine_hash(dag_edge_seed, b);
 
@@ -243,7 +242,7 @@ namespace dag {
       while ((other >= inc->second.begin()) && last_p > cutoff) {
         if (adjacent(*other, e)) {
           last_p = prob.p(*other, e);
-          if(bernoulli_trial(*other, e, last_p)) {
+          if (bernoulli_trial(*other, e, last_p)) {
             if (just_first && !res.empty() &&
                 res[0].cause_time() != other->cause_time())
               return res;
@@ -256,4 +255,4 @@ namespace dag {
     }
     return res;
   }
-}
+}  // namespace dag

@@ -7,9 +7,14 @@ namespace dag {
       RealType exponent, x0, x1, constant, mean;
       std::uniform_real_distribution<RealType> dist;
 
-      truncated_power_law_distribution(RealType exponent, RealType x0, RealType x1,
-          RealType average) : exponent(exponent), x0(x0), x1(x1) {
-        constant = (std::pow(x1,(exponent+1.0)) - std::pow(x0,(exponent+1.0)));
+      truncated_power_law_distribution(
+          RealType exponent,
+          RealType x0,
+          RealType x1,
+          RealType average) :
+        exponent(exponent), x0(x0), x1(x1) {
+        constant = (std::pow(x1, (exponent+1.0)) -
+                        std::pow(x0, (exponent+1.0)));
         mean = ((std::pow(x1, exponent+2.0)-std::pow(x0, exponent+2.0))
             /(exponent+2.0))/(constant/(exponent+1.0));
         mean = mean/average;
@@ -52,7 +57,7 @@ namespace dag {
     size_t w = std::lround(std::log(1.0 - rd(generator))/lp);
 
     while (v < n) {
-      while (w >= v and v < n) {
+      while (w >= v && v < n) {
         w = w - v;
         v = v + 1;
       }
@@ -122,17 +127,19 @@ namespace dag {
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       size_t seed,
-      size_t size_hint=0) {
+      size_t size_hint = 0) {
     std::vector<EdgeT> temp;
-    if (size_hint > 0)
+    if (size_hint > 0) {
       temp.reserve(size_hint);
-    else {
-      typename EdgeT::TimeType size_part = (double)net.edges().size()*max_t;
+    } else {
+      typename EdgeT::TimeType size_part =
+        static_cast<double>(net.edges().size())*max_t;
       if constexpr (std::is_same<Distribution,
           std::exponential_distribution<typename EdgeT::TimeType>>::value)
           temp.reserve(std::lround(size_part*inter_event_time_dist.lambda));
       else if constexpr (std::is_same<Distribution,
-          std::truncated_power_law_distribution<typename EdgeT::TimeType>>::value)
+          std::truncated_power_law_distribution<
+                typename EdgeT::TimeType>>::value)
           temp.reserve(std::lround(size_part/inter_event_time_dist.mean));
       else if constexpr (std::is_same<Distribution,
           std::poisson_distribution<typename EdgeT::TimeType>>::value)
@@ -151,4 +158,4 @@ namespace dag {
     }
     return temp;
   }
-}
+}  // namespace dag

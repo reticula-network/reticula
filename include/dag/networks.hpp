@@ -1,7 +1,9 @@
-#ifndef DAG_NETWORKS_H
-#define DAG_NETWORKS_H
+#ifndef INCLUDE_DAG_NETWORKS_HPP_
+#define INCLUDE_DAG_NETWORKS_HPP_
 
+#include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"
@@ -14,7 +16,7 @@ namespace dag {
     using EdgeType = EdgeT;
 
     network() = default;
-    network(const std::vector<EdgeT>& edges);
+    explicit network(const std::vector<EdgeT>& edges);
 
     std::vector<VertexType> vertices() const;
     const std::vector<EdgeType>& edges() const;
@@ -54,8 +56,8 @@ namespace dag {
   template <typename VertT, typename TimeT>
   using undirected_temporal_network =
     network<undirected_temporal_edge<VertT, TimeT>>;
-}
+}  // namespace dag
 
 #include "../../src/networks.tpp"
 
-#endif /* DAG_NETWORKS_H */
+#endif  // INCLUDE_DAG_NETWORKS_HPP_

@@ -1,5 +1,9 @@
-#ifndef DAG_STATIC_EDGES_H
-#define DAG_STATIC_EDGES_H
+#ifndef INCLUDE_DAG_STATIC_EDGES_HPP_
+#define INCLUDE_DAG_STATIC_EDGES_HPP_
+
+#include <tuple>
+#include <vector>
+#include <algorithm>
 
 namespace dag {
   template <typename VertT>
@@ -32,26 +36,26 @@ namespace dag {
     [[nodiscard]]
     friend bool operator!=(
         const directed_edge<VertT>& a,
-        const directed_edge<VertT>& b){ return !(a == b); }
+        const directed_edge<VertT>& b) { return !(a == b); }
 
     [[nodiscard]]
     friend bool operator==(
         const directed_edge<VertT>& a,
-        const directed_edge<VertT>& b){
+        const directed_edge<VertT>& b) {
       return (a.cause_comp_tuple() == b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool operator<(
         const directed_edge<VertT>& a,
-        const directed_edge<VertT>& b){
+        const directed_edge<VertT>& b) {
       return (a.cause_comp_tuple() < b.cause_comp_tuple());
     }
 
     [[nodiscard]]
     friend bool effect_lt(
         const directed_edge<VertT>& a,
-        const directed_edge<VertT>& b){
+        const directed_edge<VertT>& b) {
       return (a.effect_comp_tuple() < b.effect_comp_tuple());
     }
 
@@ -110,26 +114,26 @@ namespace dag {
     [[nodiscard]]
     friend bool operator!=(
         const undirected_edge<VertT>& a,
-        const undirected_edge<VertT>& b){ return !(a == b); }
+        const undirected_edge<VertT>& b) { return !(a == b); }
 
     [[nodiscard]]
     friend bool operator==(
         const undirected_edge<VertT>& a,
-        const undirected_edge<VertT>& b){
+        const undirected_edge<VertT>& b) {
       return (a.comp_tuple() == b.comp_tuple());
     }
 
     [[nodiscard]]
     friend bool operator<(
         const undirected_edge<VertT>& a,
-        const undirected_edge<VertT>& b){
+        const undirected_edge<VertT>& b) {
       return (a.comp_tuple() < b.comp_tuple());
     }
 
     [[nodiscard]]
     friend bool effect_lt(
         const undirected_edge<VertT>& a,
-        const undirected_edge<VertT>& b){
+        const undirected_edge<VertT>& b) {
       return (a < b);
     }
 
@@ -162,8 +166,8 @@ namespace dag {
 
     friend struct std::hash<undirected_edge<VertT>>;
   };
-}
+}  // namespace dag
 
 #include "../../src/static_edges.tpp"
 
-#endif /* DAG_STATIC_EDGES_H */
+#endif  // INCLUDE_DAG_STATIC_EDGES_HPP_
