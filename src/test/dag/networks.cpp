@@ -103,16 +103,13 @@ TEST_CASE("undirected temporal networks",
           UnorderedEquals(std::vector<int>({1, 3})));
 
       REQUIRE_THAT(graph.out_edges(2),
-          UnorderedEquals(
-            std::vector<dag::undirected_temporal_edge<int, int>>(
+          Equals(std::vector<dag::undirected_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}})));
       REQUIRE_THAT(graph.in_edges(2),
-          UnorderedEquals(
-            std::vector<dag::undirected_temporal_edge<int, int>>(
+          Equals(std::vector<dag::undirected_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}})));
       REQUIRE_THAT(graph.incident_edges(2),
-          UnorderedEquals(
-            std::vector<dag::undirected_temporal_edge<int, int>>(
+          Equals(std::vector<dag::undirected_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}})));
 
       REQUIRE(graph.out_degree(2) == 4);
@@ -120,7 +117,7 @@ TEST_CASE("undirected temporal networks",
       REQUIRE(graph.degree(2) == 4);
 
       REQUIRE_THAT(graph.edges(),
-          UnorderedEquals(
+          Equals(
             std::vector<dag::undirected_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
 
@@ -147,16 +144,13 @@ TEST_CASE("directed temporal networks",
           UnorderedEquals(std::vector<int>({1, 3})));
 
       REQUIRE_THAT(graph.out_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_temporal_edge<int, int>>(
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
               {{2, 1, 2}, {2, 3, 6}})));
       REQUIRE_THAT(graph.in_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_temporal_edge<int, int>>(
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
               {{1, 2, 1}, {1, 2, 5}})));
       REQUIRE_THAT(graph.incident_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_temporal_edge<int, int>>(
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}})));
 
       REQUIRE(graph.out_degree(2) == 2);
@@ -164,8 +158,7 @@ TEST_CASE("directed temporal networks",
       REQUIRE(graph.degree(2) == 4);
 
       REQUIRE_THAT(graph.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_temporal_edge<int, int>>(
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
 
       REQUIRE_THAT(graph.vertices(),
@@ -180,7 +173,7 @@ TEST_CASE("directed delayed temporal networks",
     "[dag::directed_delayed_temporal_network]") {
   SECTION("when given one") {
     dag::directed_delayed_temporal_network<int, int> graph(
-        {{2, 3, 6, 1}, {3, 4, 8, 1}, {1, 2, 1, 2}, {2, 1, 2, 1}, {1, 2, 5, 3}});
+        {{2, 3, 6, 1}, {3, 4, 8, 1}, {1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}});
 
     SECTION("basic properties are correct") {
       REQUIRE_THAT(graph.successors(2),
@@ -191,26 +184,22 @@ TEST_CASE("directed delayed temporal networks",
           UnorderedEquals(std::vector<int>({1, 3})));
 
       REQUIRE_THAT(graph.out_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
               {{2, 1, 2, 1}, {2, 3, 6, 1}})));
       REQUIRE_THAT(graph.in_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 2}, {1, 2, 5, 3}})));
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+              {{1, 2, 5, 3}, {1, 2, 1, 8}})));
       REQUIRE_THAT(graph.incident_edges(2),
-          UnorderedEquals(
-            std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 2}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1}})));
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1}})));
 
       REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
       REQUIRE_THAT(graph.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 2}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
                {3, 4, 8, 1}})));
 
       REQUIRE_THAT(graph.vertices(),

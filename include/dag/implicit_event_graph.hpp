@@ -52,10 +52,6 @@ namespace dag {
     std::vector<EdgeT>
     successors(const EdgeT& e, bool just_first = false) const;
 
-
-    // TODO: should I even have this? I kinda wanna go full immutable on this
-    void remove_events(const std::unordered_set<EdgeT>& events);
-
   private:
     size_t seed;
     std::vector<EdgeT> _topo;
