@@ -153,19 +153,6 @@ namespace dag {
   }
 
   template <class EdgeT, class AdjacencyProbT>
-  void implicit_event_graph<EdgeT, AdjacencyProbT>::remove_events(
-      const std::unordered_set<EdgeT>& events) {
-    for (auto&& inc_map: {inc_in_map, inc_out_map})
-      for (auto&& p: inc_map)
-        p.second.erase(
-            std::remove_if(p.second.begin(), p.second.end(),
-              [&events](const EdgeT& e) {
-              return events.find(e) != events.end();
-              }),
-            p.second.end());
-  }
-
-  template <class EdgeT, class AdjacencyProbT>
   bool implicit_event_graph<EdgeT, AdjacencyProbT>::bernoulli_trial(
       const EdgeT& a, const EdgeT& b, double p) const {
     if (p == 1) {
