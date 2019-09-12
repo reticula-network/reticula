@@ -1,6 +1,11 @@
 #ifndef INCLUDE_DAG_DAG_HPP_
 #define INCLUDE_DAG_DAG_HPP_
 
+/**
+  Complex network analysis toolkit
+ */
+namespace dag {}
+
 #include "utils.hpp"
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"
