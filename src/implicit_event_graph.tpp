@@ -31,74 +31,41 @@ namespace dag {
     }
   }  // namespace adjacency_prob
 
+
   template <class EdgeT, class AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
-      std::vector<EdgeT> events, const AdjacencyProbT& prob, size_t seed) :
-    seed(seed), _topo(events), prob(prob) {
-    std::sort(_topo.begin(), _topo.end());
-    _topo.erase(std::unique(_topo.begin(), _topo.end()), _topo.end());
-    _topo.shrink_to_fit();
+      const std::vector<EdgeT>& events,
+      const AdjacencyProbT& prob,
+      size_t seed) :
+    _seed(seed), _temp(events), _prob(prob) {}
 
-    for (const auto& e: _topo) {
-      for (auto&& v: e.mutator_verts())
-        inc_out_map[v].push_back(e);
-      for (auto&& v: e.mutated_verts())
-        inc_in_map[v].push_back(e);
-    }
+  template <class EdgeT, class AdjacencyProbT>
+  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+      const network<EdgeT>& temp,
+      const AdjacencyProbT& prob,
+      size_t seed) :
+    _seed(seed), _temp(temp), _prob(prob) {}
 
-    for (auto&& p: inc_in_map) {
-      std::sort(p.second.begin(), p.second.end());
-      p.second.erase(std::unique(p.second.begin(), p.second.end()),
-          p.second.end());
-      p.second.shrink_to_fit();
 
-      std::sort(p.second.begin(), p.second.end(),
-        [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.effect_time(), e1) <
-                    std::make_pair(e2.effect_time(), e2);
-        });
-    }
-
-    for (auto&& p: inc_out_map) {
-      std::sort(p.second.begin(), p.second.end());
-      p.second.erase(std::unique(p.second.begin(), p.second.end()),
-          p.second.end());
-      p.second.shrink_to_fit();
-
-      std::sort(p.second.begin(), p.second.end(),
-          [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.cause_time(), e1) <
-            std::make_pair(e2.cause_time(), e2);
-          });
-    }
-  }
 
   template <class EdgeT, class AdjacencyProbT>
   const std::vector<EdgeT>&
-  implicit_event_graph<EdgeT, AdjacencyProbT>::topo() const { return _topo; }
-
-  template <class EdgeT, class AdjacencyProbT>
-  size_t
-  implicit_event_graph<EdgeT, AdjacencyProbT>::event_count() const {
-    return _topo.size();
+  implicit_event_graph<EdgeT, AdjacencyProbT>::events() const {
+    return _temp.edges();
   }
 
-  template <class EdgeT, class AdjacencyProbT>
-  size_t
-  implicit_event_graph<EdgeT, AdjacencyProbT>::node_count() const {
-    return inc_in_map.size();
-  }
 
   template <class EdgeT, class AdjacencyProbT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   implicit_event_graph<EdgeT, AdjacencyProbT>::time_window() const {
-    if (_topo.empty())
+    if (_temp.edges().empty())
       return std::make_pair(0, 0);
     else
       return std::make_pair(
-          _topo.front().cause_time(),
-          _topo.back().cause_time());
+          _temp.edges().front().cause_time(),
+          _temp.edges().back().cause_time());
   }
+
 
   template <class EdgeT, class AdjacencyProbT>
   std::vector<EdgeT>
@@ -110,8 +77,7 @@ namespace dag {
 
     for (auto&& v : e.mutator_verts()) {
       size_t middle_offset = pred.size();
-      auto res = predecessors_vert(e, v, just_first ||
-          (enable_deterministic_shortcut && is_prob_deterministic));
+      auto res = predecessors_vert(e, v, just_first);
       pred.reserve(pred.size()+res.size());
       std::sort(res.begin(), res.end());
       std::copy(
@@ -135,8 +101,7 @@ namespace dag {
 
     for (auto&& v : e.mutated_verts()) {
       size_t middle_offset = succ.size();
-      auto res = successors_vert(e, v, just_first ||
-          (enable_deterministic_shortcut && is_prob_deterministic));
+      auto res = successors_vert(e, v, just_first);
       succ.reserve(succ.size()+res.size());
       std::sort(res.begin(), res.end());
       std::copy(
@@ -160,7 +125,7 @@ namespace dag {
     } else if (p == 0) {
       return false;
     } else {
-      size_t dag_edge_seed = utils::combine_hash(seed, a);
+      size_t dag_edge_seed = utils::combine_hash(_seed, a);
       dag_edge_seed = utils::combine_hash(dag_edge_seed, b);
 
       std::mt19937_64 gen(dag_edge_seed);
@@ -180,18 +145,14 @@ namespace dag {
       reserve_max = 1;
 
     std::vector<EdgeT> res;
-    auto inc = inc_out_map.find(v);
-    if (inc != inc_out_map.end()) {
-      auto other = std::lower_bound(inc->second.begin(), inc->second.end(), e,
-          [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.cause_time(), e1) <
-                  std::make_pair(e2.cause_time(), e2);
-          });
-      res.reserve(std::min<size_t>(reserve_max, inc->second.end() - other));
+    auto out_edges = _temp.out_edges(v);
+      auto other = std::lower_bound(out_edges.begin(), out_edges.end(), e,
+          [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
+      res.reserve(std::min<size_t>(reserve_max, out_edges.end() - other));
       double last_p = 1.0;
-      while ((other < inc->second.end()) && last_p > cutoff) {
+      while ((other < out_edges.end()) && last_p > cutoff) {
         if (adjacent(e, *other)) {
-          last_p = prob.p(e, *other);
+          last_p = _prob.p(e, *other);
           if (bernoulli_trial(e, *other, last_p)) {
             if (just_first && !res.empty() &&
                 res[0].cause_time() != other->cause_time())
@@ -202,7 +163,6 @@ namespace dag {
         }
         other++;
       }
-    }
     return res;
   }
 
@@ -217,28 +177,23 @@ namespace dag {
     if (just_first)
       reserve_max = 1;
 
-    auto inc = inc_in_map.find(v);
-    if (inc != inc_in_map.end()) {
-      auto other = std::lower_bound(inc->second.begin(), inc->second.end(), e,
-          [](const EdgeT& e1, const EdgeT& e2) {
-          return std::make_pair(e1.effect_time(), e1) <
-          std::make_pair(e2.effect_time(), e2);
-          }) - 1;
-      res.reserve(std::min<size_t>(reserve_max, other - inc->second.begin()));
-      double last_p = 1.0;
-      while ((other >= inc->second.begin()) && last_p > cutoff) {
-        if (adjacent(*other, e)) {
-          last_p = prob.p(*other, e);
-          if (bernoulli_trial(*other, e, last_p)) {
-            if (just_first && !res.empty() &&
-                res[0].cause_time() != other->cause_time())
-              return res;
-            else
-              res.push_back(*other);
-          }
+    auto in_edges = _temp.in_edges(v);
+    auto other = std::lower_bound(in_edges.begin(), in_edges.end(), e,
+        [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e1, e2); }) - 1;
+    res.reserve(std::min<size_t>(reserve_max, other - in_edges.begin()));
+    double last_p = 1.0;
+    while ((other >= in_edges.begin()) && last_p > cutoff) {
+      if (adjacent(*other, e)) {
+        last_p = _prob.p(*other, e);
+        if (bernoulli_trial(*other, e, last_p)) {
+          if (just_first && !res.empty() &&
+              res[0].cause_time() != other->cause_time())
+            return res;
+          else
+            res.push_back(*other);
         }
-        other--;
       }
+      other--;
     }
     return res;
   }

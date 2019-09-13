@@ -50,9 +50,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
     dag::implicit_event_graph<EdgeType,
       dag::adjacency_prob::deterministic<EdgeType>>
         eg(event_list, prob, (size_t)0);
-    REQUIRE(eg.event_count() == 5);
-    REQUIRE(eg.node_count()  == 4);
-    REQUIRE_THAT(eg.topo(),
+    REQUIRE_THAT(eg.events(),
         Equals(std::vector<EdgeType>(
             {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
   }
@@ -73,10 +71,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
       REQUIRE(t1 == 1);
       REQUIRE(t2 == 8);
 
-      REQUIRE(eg.event_count() == 5);
-      REQUIRE(eg.node_count()  == 4);
-
-      REQUIRE_THAT(eg.topo(), Equals(event_list));
+      REQUIRE_THAT(eg.events(), Equals(event_list));
     }
 
     SECTION("successors are calculated correctly") {
