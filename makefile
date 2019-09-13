@@ -41,7 +41,7 @@ check: tests
 
 .PHONY: lint
 lint:
-	cpplint --extensions=tpp,cpp,hpp --recursive .
+	cpplint --extensions=tpp,cpp,hpp --quiet --recursive .
 
 .PHONY: clean
 clean:
