@@ -12,19 +12,19 @@ namespace dag {
         _in_edges[v].push_back(e);
     }
 
-    for (auto&& p: _in_edges) {
-      std::sort(p.second.begin(), p.second.end(),
+    for (auto&& [v, e_list]: _in_edges) {
+      std::sort(e_list.begin(), e_list.end(),
           [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-      p.second.erase(std::unique(p.second.begin(), p.second.end()),
-          p.second.end());
-      p.second.shrink_to_fit();
+      e_list.erase(std::unique(e_list.begin(), e_list.end()),
+          e_list.end());
+      e_list.shrink_to_fit();
     }
 
-    for (auto&& p: _out_edges) {
-      std::sort(p.second.begin(), p.second.end());
-      p.second.erase(std::unique(p.second.begin(), p.second.end()),
-          p.second.end());
-      p.second.shrink_to_fit();
+    for (auto&& [v, e_list]: _out_edges) {
+      std::sort(e_list.begin(), e_list.end());
+      e_list.erase(std::unique(e_list.begin(), e_list.end()),
+          e_list.end());
+      e_list.shrink_to_fit();
     }
   }
 
