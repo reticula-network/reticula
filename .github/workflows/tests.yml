@@ -5,12 +5,16 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     steps:
+    - name: Install GCC 8
+      run: |
+        sudo apt-get -qy update
+        sudo apt-get install g++-8=8.3.0-6ubuntu1~18.04.1
     - uses: actions/checkout@v1
       with:
         submodules: true
     - name: g++ version
       run: g++ -v
-    - name: make check
-      run: make check
+    - name: Run tests
+      run: make CXX=g++-8 check

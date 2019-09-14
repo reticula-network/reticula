@@ -22,7 +22,7 @@ CXXFLAGS = -Werror -Wall -Wextra -Wconversion \
 					 -Idep/HyperLogLog/include\
 					 -Idep/disjoint_set/include
 
-LD = g++
+LD = $(CXX)
 # LDLIBS = -static-libstdc++
 
 
