@@ -10,5 +10,7 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: true
+    - name: g++ version
+      run: g++ -v
     - name: make check
       run: make check
