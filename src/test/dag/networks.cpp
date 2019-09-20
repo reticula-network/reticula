@@ -40,6 +40,16 @@ TEST_CASE("undirected networks", "[dag::undirected_network]") {
             std::vector<dag::undirected_edge<int>>(
               {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
 
+      REQUIRE_THAT(graph.edges_cause(),
+          UnorderedEquals(
+            std::vector<dag::undirected_edge<int>>(
+              {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
+
+      REQUIRE_THAT(graph.edges_effect(),
+          UnorderedEquals(
+            std::vector<dag::undirected_edge<int>>(
+              {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
+
       REQUIRE_THAT(graph.vertices(),
           UnorderedEquals(
             std::vector<int>({1, 2, 3, 4, 5, 6})));
@@ -76,6 +86,16 @@ TEST_CASE("directed networks", "[dag::directed_network]") {
       REQUIRE(graph.degree(2) == 3);
 
       REQUIRE_THAT(graph.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<int>>(
+              {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+
+      REQUIRE_THAT(graph.edges_cause(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<int>>(
+              {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+
+      REQUIRE_THAT(graph.edges_effect(),
           UnorderedEquals(
             std::vector<dag::directed_edge<int>>(
               {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
@@ -121,6 +141,16 @@ TEST_CASE("undirected temporal networks",
             std::vector<dag::undirected_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
 
+      REQUIRE_THAT(graph.edges_cause(),
+          Equals(
+            std::vector<dag::undirected_temporal_edge<int, int>>(
+              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+
+      REQUIRE_THAT(graph.edges_effect(),
+          Equals(
+            std::vector<dag::undirected_temporal_edge<int, int>>(
+              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+
       REQUIRE_THAT(graph.vertices(),
           UnorderedEquals(
             std::vector<int>({1, 2, 3, 4})));
@@ -158,6 +188,14 @@ TEST_CASE("directed temporal networks",
       REQUIRE(graph.degree(2) == 4);
 
       REQUIRE_THAT(graph.edges(),
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
+              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+
+      REQUIRE_THAT(graph.edges_cause(),
+          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
+              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+
+      REQUIRE_THAT(graph.edges_effect(),
           Equals(std::vector<dag::directed_temporal_edge<int, int>>(
               {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
 
@@ -200,6 +238,16 @@ TEST_CASE("directed delayed temporal networks",
       REQUIRE_THAT(graph.edges(),
           Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
               {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
+               {3, 4, 8, 1}})));
+
+      REQUIRE_THAT(graph.edges_cause(),
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
+               {3, 4, 8, 1}})));
+
+      REQUIRE_THAT(graph.edges_effect(),
+          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
+              {{2, 1, 2, 1}, {2, 3, 6, 1}, {1, 2, 5, 3}, {1, 2, 1, 8},
                {3, 4, 8, 1}})));
 
       REQUIRE_THAT(graph.vertices(),

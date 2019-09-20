@@ -9,28 +9,6 @@
 #include "networks.hpp"
 
 namespace dag {
-  namespace adjacency_prob {
-    template <class EdgeT>
-    class deterministic {
-    public:
-      explicit deterministic(typename EdgeT::TimeType dt);
-      double p(const EdgeT& a, const EdgeT& b) const;
-    private:
-      typename EdgeT::TimeType _dt;
-    };
-
-
-    template <class EdgeT>
-    class exponential {
-    public:
-      explicit exponential(typename EdgeT::TimeType expected_dt);
-      double p(const EdgeT& a, const EdgeT& b) const;
-    private:
-      typename EdgeT::TimeType _dt;
-    };
-  }  // namespace adjacency_prob
-
-
   template <class EdgeT, class AdjacencyProbT>
   class implicit_event_graph {
   public:
@@ -47,7 +25,10 @@ namespace dag {
         const AdjacencyProbT& prob,
         size_t seed);
 
-    const std::vector<EdgeT>& events() const;
+    const std::vector<EdgeT>& events_cause() const;
+    const std::vector<EdgeT>& events_effect() const;
+    AdjacencyProbT adjacency_prob() const;
+
     std::pair<TimeType, TimeType> time_window() const;
 
     std::vector<EdgeT>
@@ -55,7 +36,6 @@ namespace dag {
 
     std::vector<EdgeT>
     successors(const EdgeT& e, bool just_first = false) const;
-
   private:
     size_t _seed;
     network<EdgeT> _temp;
@@ -68,14 +48,6 @@ namespace dag {
 
     std::vector<EdgeT>
     predecessors_vert(const EdgeT& e, VertexType v, bool just_first) const;
-
-    // Only enable deterministic shortcut (i.e. arXiv 1908.11831 appendix B) for
-    // undirected temporal edges
-    static constexpr bool enable_deterministic_shortcut = std::is_same<
-      EdgeT, dag::undirected_temporal_edge<VertexType, TimeType>>::value;
-
-    static constexpr bool is_prob_deterministic = std::is_same<
-      AdjacencyProbT, dag::adjacency_prob::deterministic<EdgeT>>::value;
   };
 
 }  // namespace dag

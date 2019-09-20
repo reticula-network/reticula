@@ -44,11 +44,22 @@ namespace dag {
     std::vector<VertexType> vertices() const;
 
     /**
-      List of unique edges in the network.
+      List of unique edges in the network sorted by operator<.
      */
     [[nodiscard]]
     const std::vector<EdgeType>& edges() const;
 
+    /**
+      List of unique edges in the network sorted by operator<.
+     */
+    [[nodiscard]]
+    const std::vector<EdgeType>& edges_cause() const;
+
+    /**
+      List of unique edges in the network sorted by effect_lt.
+     */
+    [[nodiscard]]
+    const std::vector<EdgeType>& edges_effect() const;
 
     /**
       List of edges in network incident to `vert`, i.e. 'vert' is mutated by
@@ -117,7 +128,8 @@ namespace dag {
     std::vector<VertexType> neighbours(const VertexType& v) const;
 
   private:
-    std::vector<EdgeType> _edges;
+    std::vector<EdgeType> _edges_cause;
+    std::vector<EdgeType> _edges_effect;
     std::unordered_map<VertexType, std::vector<EdgeType>> _in_edges;
     std::unordered_map<VertexType, std::vector<EdgeType>> _out_edges;
   };

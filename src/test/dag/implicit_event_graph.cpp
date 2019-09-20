@@ -1,43 +1,11 @@
 #include <vector>
-#include <cmath>
 
 #include "catch.hpp"
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
 #include "../../../include/dag/implicit_event_graph.hpp"
-
-TEST_CASE("deterministic adjacency probability",
-    "[dag::adjacency_prob::deterministic]") {
-  using EdgeType = dag::directed_temporal_edge<int, int>;
-  EdgeType a(1, 2, 3), b(2, 3, 4), c(2, 3, 5);
-  dag::adjacency_prob::deterministic<EdgeType> prob1(2);
-  dag::adjacency_prob::deterministic<EdgeType> prob2(3);
-
-  REQUIRE(prob1.p(a, b) == 1.0);
-  REQUIRE(prob2.p(a, b) == 1.0);
-
-  REQUIRE(prob1.p(a, c) == 0.0);
-  REQUIRE(prob2.p(a, c) == 1.0);
-
-  REQUIRE(prob1.p(c, a) == 0.0);
-}
-
-TEST_CASE("exponential adjacency probability",
-    "[dag::adjacency_prob::exponential]") {
-  using EdgeType = dag::directed_temporal_edge<int, int>;
-  EdgeType a(1, 2, 3), b(2, 3, 4), c(2, 3, 5);
-  dag::adjacency_prob::exponential<EdgeType> prob1(1);
-  dag::adjacency_prob::exponential<EdgeType> prob2(2);
-
-  REQUIRE(prob1.p(a, b) == Approx(std::exp(-1.0/1.0)));
-  REQUIRE(prob2.p(a, b) == Approx(1.0/2.0*std::exp(-1.0/2.0)));
-
-  REQUIRE(prob1.p(a, c) == Approx(std::exp(-2.0/1.0)));
-  REQUIRE(prob2.p(a, c) == Approx(1.0/2.0*std::exp(-2.0/2.0)));
-
-  REQUIRE(prob1.p(c, a) == 0.0);
-}
+#include "../../../include/dag/adjacency_prob.hpp"
 
 TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
   SECTION("handle duplicate and unordered event list") {
@@ -50,7 +18,10 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
     dag::implicit_event_graph<EdgeType,
       dag::adjacency_prob::deterministic<EdgeType>>
         eg(event_list, prob, (size_t)0);
-    REQUIRE_THAT(eg.events(),
+    REQUIRE_THAT(eg.events_cause(),
+        Equals(std::vector<EdgeType>(
+            {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+    REQUIRE_THAT(eg.events_cause(),
         Equals(std::vector<EdgeType>(
             {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
   }
@@ -71,7 +42,8 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
       REQUIRE(t1 == 1);
       REQUIRE(t2 == 8);
 
-      REQUIRE_THAT(eg.events(), Equals(event_list));
+      REQUIRE_THAT(eg.events_cause(), Equals(event_list));
+      REQUIRE_THAT(eg.events_effect(), Equals(event_list));
     }
 
     SECTION("successors are calculated correctly") {

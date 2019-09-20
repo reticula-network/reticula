@@ -56,6 +56,9 @@ tests: $(TSTOBJDIR)/tests.o \
 			 $(TSTOBJDIR)/edge_tests.o\
 			 $(TSTOBJDIR)/implicit_event_graph.o\
 			 $(TSTOBJDIR)/networks.o\
+			 $(TSTOBJDIR)/adjacency_prob.o\
+			 $(TSTOBJDIR)/algorithms.o\
+			 $(TSTOBJDIR)/temporal_components.o\
 			 $(EXTDEPS)
 	$(LINK.o)
 

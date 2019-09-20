@@ -138,7 +138,7 @@ namespace dag {
       tail and head vertex respectively.
      */
     friend std::ostream& operator<<(std::ostream &os,
-        directed_edge<VertexType>& e) {
+        const directed_edge<VertexType>& e) {
       return os << e.v1 << " " << e.v2;
     }
 
@@ -275,7 +275,7 @@ namespace dag {
       vertices in the same order as initialiser.
      */
     friend std::ostream& operator<<(std::ostream &os,
-        undirected_edge<VertexType>& e) {
+        const undirected_edge<VertexType>& e) {
       return os << e.v1 << " " << e.v2;
     }
 

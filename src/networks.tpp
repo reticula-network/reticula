@@ -1,11 +1,17 @@
 namespace dag {
   template <typename EdgeT>
-  network<EdgeT>::network(const std::vector<EdgeT>& edges) : _edges{edges} {
-    std::sort(_edges.begin(), _edges.end());
-    _edges.erase(std::unique(_edges.begin(), _edges.end()), _edges.end());
-    _edges.shrink_to_fit();
+  network<EdgeT>::network(const std::vector<EdgeT>& edges)
+  : _edges_cause{edges} {
+    std::sort(_edges_cause.begin(), _edges_cause.end());
+    _edges_cause.erase(std::unique(_edges_cause.begin(), _edges_cause.end()),
+        _edges_cause.end());
+    _edges_cause.shrink_to_fit();
 
-    for (const auto& e: _edges) {
+    _edges_effect = _edges_cause;
+    std::sort(_edges_effect.begin(), _edges_effect.end(),
+          [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+
+    for (const auto& e: _edges_cause) {
       for (auto&& v: e.mutator_verts())
         _out_edges[v].push_back(e);
       for (auto&& v: e.mutated_verts())
@@ -125,7 +131,19 @@ namespace dag {
   template <typename EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges() const {
-    return _edges;
+    return _edges_cause;
+  }
+
+  template <typename EdgeT>
+  const std::vector<EdgeT>&
+  network<EdgeT>::edges_cause() const {
+    return _edges_cause;
+  }
+
+  template <typename EdgeT>
+  const std::vector<EdgeT>&
+  network<EdgeT>::edges_effect() const {
+    return _edges_effect;
   }
 
   template <typename EdgeT>

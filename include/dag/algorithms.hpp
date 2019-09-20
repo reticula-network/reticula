@@ -5,9 +5,12 @@
 #include <unordered_set>
 
 namespace dag {
-  template <typename EdgeT>
+  template <class EdgeT, class AdjacencyProbT>
   directed_network<EdgeT>
-  event_graph(const network<EdgeT>& temp, typename EdgeT::TimeType max_delta_t);
+  event_graph(
+      const network<EdgeT>& temp,
+      const AdjacencyProbT& prob,
+      size_t seed);
 
 
   template <typename VertT>
@@ -15,14 +18,14 @@ namespace dag {
   topological_order(const directed_network<VertT>& dir);
 
   template <typename VertT>
-  std::unordered_set<VertT> out_component(
+  std::vector<VertT> out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
       size_t size_hint = 0,
       bool revert_graph = false);
 
   template <typename VertT>
-  std::unordered_set<VertT> in_component(
+  std::vector<VertT> in_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
       size_t size_hint = 0);

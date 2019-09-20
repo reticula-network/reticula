@@ -1,37 +1,9 @@
 #include <queue>
 #include <random>
-#include <cmath>
+
+#include "../include/dag/adjacency_prob.hpp"
 
 namespace dag {
-  namespace adjacency_prob {
-    template <class EdgeT>
-    deterministic<EdgeT>::deterministic(typename EdgeT::TimeType dt) :
-      _dt{dt} {};
-
-    template <class EdgeT>
-    double deterministic<EdgeT>::p(const EdgeT& a, const EdgeT& b) const {
-      if (b.cause_time() > a.effect_time() &&
-          b.cause_time() - a.effect_time() < _dt)
-        return 1;
-      else
-        return 0;
-    }
-
-    template <class EdgeT>
-    exponential<EdgeT>::exponential(typename EdgeT::TimeType expected_dt) :
-      _dt{expected_dt} {};
-
-    template <class EdgeT>
-    double exponential<EdgeT>::p(const EdgeT& a, const EdgeT& b) const {
-      if (b.cause_time() < a.effect_time())
-        return 0;
-      typename EdgeT::TimeType dt = b.cause_time() - a.effect_time();
-      double lambda = (1.0/static_cast<double>(_dt));
-      return lambda*std::exp(-lambda*(static_cast<double>(dt)));
-    }
-  }  // namespace adjacency_prob
-
-
   template <class EdgeT, class AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       const std::vector<EdgeT>& events,
@@ -47,11 +19,22 @@ namespace dag {
     _seed(seed), _temp(temp), _prob(prob) {}
 
 
+  template <class EdgeT, class AdjacencyProbT>
+  AdjacencyProbT
+  implicit_event_graph<EdgeT, AdjacencyProbT>::adjacency_prob() const {
+    return _prob;
+  }
 
   template <class EdgeT, class AdjacencyProbT>
   const std::vector<EdgeT>&
-  implicit_event_graph<EdgeT, AdjacencyProbT>::events() const {
-    return _temp.edges();
+  implicit_event_graph<EdgeT, AdjacencyProbT>::events_cause() const {
+    return _temp.edges_cause();
+  }
+
+  template <class EdgeT, class AdjacencyProbT>
+  const std::vector<EdgeT>&
+  implicit_event_graph<EdgeT, AdjacencyProbT>::events_effect() const {
+    return _temp.edges_effect();
   }
 
 
@@ -118,23 +101,6 @@ namespace dag {
   }
 
   template <class EdgeT, class AdjacencyProbT>
-  bool implicit_event_graph<EdgeT, AdjacencyProbT>::bernoulli_trial(
-      const EdgeT& a, const EdgeT& b, double p) const {
-    if (p == 1) {
-      return true;
-    } else if (p == 0) {
-      return false;
-    } else {
-      size_t dag_edge_seed = utils::combine_hash(_seed, a);
-      dag_edge_seed = utils::combine_hash(dag_edge_seed, b);
-
-      std::mt19937_64 gen(dag_edge_seed);
-      std::bernoulli_distribution dist(p);
-      return dist(gen);
-    }
-  }
-
-  template <class EdgeT, class AdjacencyProbT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::successors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
@@ -153,7 +119,7 @@ namespace dag {
       while ((other < out_edges.end()) && last_p > cutoff) {
         if (adjacent(e, *other)) {
           last_p = _prob.p(e, *other);
-          if (bernoulli_trial(e, *other, last_p)) {
+          if (adjacency_prob::bernoulli_trial(e, *other, last_p, _seed)) {
             if (just_first && !res.empty() &&
                 res[0].cause_time() != other->cause_time())
               return res;
@@ -185,7 +151,7 @@ namespace dag {
     while ((other >= in_edges.begin()) && last_p > cutoff) {
       if (adjacent(*other, e)) {
         last_p = _prob.p(*other, e);
-        if (bernoulli_trial(*other, e, last_p)) {
+        if (adjacency_prob::bernoulli_trial(*other, e, last_p, _seed)) {
           if (just_first && !res.empty() &&
               res[0].cause_time() != other->cause_time())
             return res;
