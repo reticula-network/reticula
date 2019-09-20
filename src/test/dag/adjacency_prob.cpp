@@ -55,7 +55,7 @@ TEST_CASE("bernoulli trial function",
     for (double p: {0.2, 0.4, 0.6, 0.8}) {
       size_t success = 0;
       for (size_t seed = 0; seed < total; seed++)
-        if(dag::adjacency_prob::bernoulli_trial(a, b, p, seed))
+        if (dag::adjacency_prob::bernoulli_trial(a, b, p, seed))
             success++;
       double ratio = static_cast<double>(success)/static_cast<double>(total);
       double sigma = std::sqrt(static_cast<double>(total)*p*(1-p));

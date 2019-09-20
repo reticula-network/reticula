@@ -12,7 +12,6 @@ namespace dag {
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
       size_t seed) {
-
     auto verts = temp.vertices();
     std::vector<directed_edge<EdgeT>> eg;
     for (const auto &v: verts) {

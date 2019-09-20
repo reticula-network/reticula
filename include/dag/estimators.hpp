@@ -70,7 +70,7 @@ namespace dag {
   private:
     std::unordered_set<T> _set;
   };
-}
+}  // namespace dag
 
 #include "../../src/estimators.tpp"
 

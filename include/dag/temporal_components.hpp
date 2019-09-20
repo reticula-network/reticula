@@ -56,7 +56,7 @@ namespace dag {
     TimeType _min_cause_time, _max_cause_time;
     TimeType _min_effect_time, _max_effect_time;
   };
-}
+}  // namespace dag
 
 #include "../../src/temporal_components.tpp"
 
@@ -108,7 +108,7 @@ namespace dag {
       size_t seed,
       size_t node_size_hint = 0,
       size_t edge_size_hint = 0);
-}
+}  // namespace dag
 
 #include "../../src/temporal_component_sizes.tpp"
 

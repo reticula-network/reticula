@@ -62,7 +62,7 @@ namespace dag {
     bool
     bernoulli_trial(const EdgeT& a, const EdgeT& b, double prob, size_t seed);
   }  // namespace adjacency_prob
-}  //namespace dag
+}  // namespace dag
 
 #include "../../src/adjacency_prob.tpp"
 

@@ -36,6 +36,7 @@ namespace dag {
 
     std::vector<EdgeT>
     successors(const EdgeT& e, bool just_first = false) const;
+
   private:
     size_t _seed;
     network<EdgeT> _temp;

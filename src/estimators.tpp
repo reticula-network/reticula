@@ -51,4 +51,4 @@ namespace dag {
 
     return p_larger/p_total;
   }
-}
+}  // namespace dag

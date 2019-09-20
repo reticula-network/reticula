@@ -258,7 +258,6 @@ namespace dag {
       size_t seed,
       size_t node_size_est,
       size_t edge_size_est) {
-
     auto comp_function = [](const EdgeT& e1, const EdgeT& e2) {
       return (e1.cause_time()) < (e2.cause_time());
     };
@@ -315,7 +314,8 @@ namespace dag {
         auto last_infected_it = last_infected.find(v);
         if (last_infected_it != last_infected.end() &&
             topo_it->effect_time() < last_infected_it->second &&
-            last_infected_it->second - topo_it->effect_time() < prob.cutoff_dt())
+            last_infected_it->second - topo_it->effect_time() <
+                prob.cutoff_dt())
           is_infecting = true;
       }
 
