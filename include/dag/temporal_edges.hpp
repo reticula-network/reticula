@@ -6,6 +6,36 @@
 #include <algorithm>
 
 namespace dag {
+  template <class VertT, class TimeT>
+  class undirected_temporal_edge;
+
+  template <class VertT, class TimeT>
+  class directed_temporal_edge;
+
+  template <class VertT, class TimeT>
+  class directed_delayed_temporal_edge;
+
+  template <class VertT, class TimeT>
+  bool effect_lt(
+      const undirected_temporal_edge<VertT, TimeT>& a,
+      const undirected_temporal_edge<VertT, TimeT>& b) {
+      return (a < b);
+  }
+
+  template <class VertT, class TimeT>
+  bool effect_lt(
+      const directed_temporal_edge<VertT, TimeT>& a,
+      const directed_temporal_edge<VertT, TimeT>& b) {
+      return (a.effect_comp_tuple() < b.effect_comp_tuple());
+  }
+
+  template <class VertT, class TimeT>
+  bool effect_lt(
+      const directed_delayed_temporal_edge<VertT, TimeT>& a,
+      const directed_delayed_temporal_edge<VertT, TimeT>& b) {
+      return (a.effect_comp_tuple() < b.effect_comp_tuple());
+  }
+
   /**
     A directed temporal edges (or event) indicate instantaneous unsymertic
     relation or orientation between the two nodes attributable to a specific
@@ -155,11 +185,9 @@ namespace dag {
       cause times are compared then head vertices and then tail vertices.
      */
     [[nodiscard]]
-    friend bool effect_lt(
+    friend bool ::dag::effect_lt<>(
         const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-    }
+        const directed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Inserts undirected edge formatted as `v1 v2 time` where `v1` and `v2` are
@@ -362,11 +390,9 @@ namespace dag {
     }
 
     [[nodiscard]]
-    friend bool effect_lt(
+    friend bool ::dag::effect_lt<>(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-    }
+        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     friend std::ostream& operator<<(std::ostream& os,
         const directed_delayed_temporal_edge<VertexType, TimeType>& e) {
@@ -513,11 +539,9 @@ namespace dag {
       Exactly the same as `operator<`.
      */
     [[nodiscard]]
-    friend bool effect_lt(
+    friend bool ::dag::effect_lt<>(
         const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b) {
-      return (a < b);
-    }
+        const undirected_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Inserts undirected temporal edge formatted as `v1 v2 time` where `v1` and

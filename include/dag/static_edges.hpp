@@ -6,6 +6,26 @@
 #include <algorithm>
 
 namespace dag {
+  template <typename VertT>
+  class directed_edge;
+
+  template <typename VertT>
+  class undirected_edge;
+
+  template <class VertT>
+  bool effect_lt(
+      const directed_edge<VertT>& a,
+      const directed_edge<VertT>& b) {
+      return (a.effect_comp_tuple() < b.effect_comp_tuple());
+  }
+
+  template <class VertT>
+  bool effect_lt(
+      const undirected_edge<VertT>& a,
+      const undirected_edge<VertT>& b) {
+      return (a < b);
+  }
+
   /**
     A directed edges (or link) indicate unsymertic relation or orientation in
     the relationship between the two nodes. Tail and head vertices allude to a
@@ -114,11 +134,9 @@ namespace dag {
       vertices compared before tail vertices.
      */
     [[nodiscard]]
-    friend bool effect_lt(
+    friend bool ::dag::effect_lt<>(
         const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-    }
+        const directed_edge<VertexType>& b);
 
     /**
       Two directed edges are adjacent if head of the first one is the tail of
@@ -248,11 +266,9 @@ namespace dag {
       Exactly the same as `operator<`.
      */
     [[nodiscard]]
-    friend bool effect_lt(
+    friend bool ::dag::effect_lt<>(
         const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b) {
-      return (a < b);
-    }
+        const undirected_edge<VertexType>& b);
 
     /**
       Two undirected edges are adjacent if they have at least one node in
