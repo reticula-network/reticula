@@ -37,8 +37,8 @@ namespace dag {
     explicit network(const std::vector<EdgeT>& edges);
 
     /**
-      Sorted list of unique vertices participating at least in one event in the
-      network.
+      list of unique vertices participating at least in one event in the
+      network sorted by operator<.
      */
     [[nodiscard]]
     std::vector<VertexType> vertices() const;
