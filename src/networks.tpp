@@ -1,3 +1,5 @@
+#include <set>
+
 namespace dag {
   template <typename EdgeT>
   network<EdgeT>::network(const std::vector<EdgeT>& edges)
@@ -149,8 +151,7 @@ namespace dag {
   template <typename EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::vertices() const {
-    std::unordered_set<network<EdgeT>::VertexType> verts;
-    verts.reserve(_in_edges.size());
+    std::set<network<EdgeT>::VertexType> verts;
     for (const auto &p: _in_edges)
       verts.insert(p.first);
     for (const auto &p: _out_edges)
