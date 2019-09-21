@@ -5,6 +5,9 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
+#include "../../../include/dag/static_edges.hpp"
+#include "../../../include/dag/temporal_edges.hpp"
+
 #include "../../../include/dag/networks.hpp"
 
 TEST_CASE("undirected networks", "[dag::undirected_network]") {
@@ -35,24 +38,24 @@ TEST_CASE("undirected networks", "[dag::undirected_network]") {
       REQUIRE(graph.in_degree(3) == 2);
       REQUIRE(graph.degree(3) == 2);
 
-      REQUIRE_THAT(graph.edges(),
-          UnorderedEquals(
-            std::vector<dag::undirected_edge<int>>(
-              {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
+      std::vector<dag::undirected_edge<int>> edges({
+          {1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}});
+      std::sort(edges.begin(), edges.end());
 
-      REQUIRE_THAT(graph.edges_cause(),
-          UnorderedEquals(
-            std::vector<dag::undirected_edge<int>>(
-              {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
+      REQUIRE_THAT(graph.edges(), Equals(edges));
+      REQUIRE_THAT(graph.edges_cause(), Equals(edges));
 
-      REQUIRE_THAT(graph.edges_effect(),
-          UnorderedEquals(
-            std::vector<dag::undirected_edge<int>>(
-              {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}})));
+      std::sort(edges.begin(), edges.end(),
+          [](const dag::undirected_edge<int>& a,
+            const dag::undirected_edge<int>& b) {
+            return dag::effect_lt(a, b);
+          });
 
+      REQUIRE_THAT(graph.edges_effect(), Equals(edges));
+
+      // test sorted output as well
       REQUIRE_THAT(graph.vertices(),
-          UnorderedEquals(
-            std::vector<int>({1, 2, 3, 4, 5, 6})));
+          Equals(std::vector<int>({1, 2, 3, 4, 5, 6})));
     }
   }
 }
@@ -85,24 +88,24 @@ TEST_CASE("directed networks", "[dag::directed_network]") {
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 3);
 
-      REQUIRE_THAT(graph.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<int>>(
-              {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+      std::vector<dag::directed_edge<int>> edges(
+          {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+      std::sort(edges.begin(), edges.end());
 
-      REQUIRE_THAT(graph.edges_cause(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<int>>(
-              {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+      REQUIRE_THAT(graph.edges(), Equals(edges));
+      REQUIRE_THAT(graph.edges_cause(), Equals(edges));
 
-      REQUIRE_THAT(graph.edges_effect(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<int>>(
-              {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+      std::sort(edges.begin(), edges.end(),
+          [](const dag::directed_edge<int>& a,
+            const dag::directed_edge<int>& b) {
+            return dag::effect_lt(a, b);
+          });
+
+      REQUIRE_THAT(graph.edges_effect(), Equals(edges));
+
 
       REQUIRE_THAT(graph.vertices(),
-          UnorderedEquals(
-            std::vector<int>({1, 2, 3, 4, 5, 6})));
+          Equals(std::vector<int>({1, 2, 3, 4, 5, 6})));
     }
   }
 }
@@ -187,17 +190,20 @@ TEST_CASE("directed temporal networks",
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
-      REQUIRE_THAT(graph.edges(),
-          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
-              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+      std::vector<dag::directed_temporal_edge<int, int>> edges(
+          {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+      std::sort(edges.begin(), edges.end());
 
-      REQUIRE_THAT(graph.edges_cause(),
-          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
-              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+      REQUIRE_THAT(graph.edges(), Equals(edges));
+      REQUIRE_THAT(graph.edges_cause(), Equals(edges));
 
-      REQUIRE_THAT(graph.edges_effect(),
-          Equals(std::vector<dag::directed_temporal_edge<int, int>>(
-              {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+      std::sort(edges.begin(), edges.end(),
+          [](const dag::directed_temporal_edge<int, int>& a,
+            const dag::directed_temporal_edge<int, int>& b) {
+            return dag::effect_lt(a, b);
+          });
+
+      REQUIRE_THAT(graph.edges_effect(), Equals(edges));
 
       REQUIRE_THAT(graph.vertices(),
           UnorderedEquals(
@@ -235,20 +241,21 @@ TEST_CASE("directed delayed temporal networks",
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
-      REQUIRE_THAT(graph.edges(),
-          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
-               {3, 4, 8, 1}})));
+      std::vector<dag::directed_delayed_temporal_edge<int, int>> edges(
+          {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
+               {3, 4, 8, 1}});
+      std::sort(edges.begin(), edges.end());
 
-      REQUIRE_THAT(graph.edges_cause(),
-          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
-               {3, 4, 8, 1}})));
+      REQUIRE_THAT(graph.edges(), Equals(edges));
+      REQUIRE_THAT(graph.edges_cause(), Equals(edges));
 
-      REQUIRE_THAT(graph.edges_effect(),
-          Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{2, 1, 2, 1}, {2, 3, 6, 1}, {1, 2, 5, 3}, {1, 2, 1, 8},
-               {3, 4, 8, 1}})));
+      std::sort(edges.begin(), edges.end(),
+          [](const dag::directed_delayed_temporal_edge<int, int>& a,
+            const dag::directed_delayed_temporal_edge<int, int>& b) {
+            return dag::effect_lt(a, b);
+          });
+
+      REQUIRE_THAT(graph.edges_effect(), Equals(edges));
 
       REQUIRE_THAT(graph.vertices(),
           UnorderedEquals(
