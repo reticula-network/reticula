@@ -23,9 +23,9 @@ namespace dag {
       @param seed Seed or hash or another 
       @param other Value that would be hashed and mixed with `seed` 
      */
-    template <class T, template<typename> typename Hash = std::hash>
+    template <class T>
     inline size_t combine_hash(const size_t seed, const T& other) {
-      return seed ^ (Hash<T>{}(other) +
+      return seed ^ (std::hash<T>{}(other) +
           DAG_UTIL_GOLDEN_RATIO + (seed << 6) + (seed >> 2));
     }
 
@@ -38,11 +38,11 @@ namespace dag {
               dag::utils::unordered_hash(13, 12));
       @endcode
      */
-    template <class T1, class T2, template<typename> typename Hash = std::hash>
+    template <class T1, class T2>
     inline size_t unordered_hash(const T1& t1, const T2& t2) {
       size_t h1, h2;
       std::tie(h1, h2) = std::minmax(
-          Hash<T1>{}(t1), Hash<T2>{}(t2));
+          std::hash<T1>{}(t1), std::hash<T2>{}(t2));
       return h1 ^ (h2 + DAG_UTIL_GOLDEN_RATIO + (h1 << 6) + (h1 >> 2));
     }
 
