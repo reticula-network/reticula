@@ -133,12 +133,12 @@ namespace dag {
       temp.reserve(size_hint);
     } else {
       typename EdgeT::TimeType size_part =
-        static_cast<double>(net.edges().size())*max_t;
+        static_cast<double>(base_net.edges().size())*max_t;
       if constexpr (std::is_same<Distribution,
           std::exponential_distribution<typename EdgeT::TimeType>>::value)
           temp.reserve(std::lround(size_part*inter_event_time_dist.lambda));
       else if constexpr (std::is_same<Distribution,
-          std::truncated_power_law_distribution<
+          truncated_power_law_distribution<
                 typename EdgeT::TimeType>>::value)
           temp.reserve(std::lround(size_part/inter_event_time_dist.mean));
       else if constexpr (std::is_same<Distribution,
@@ -148,7 +148,7 @@ namespace dag {
 
     for (const auto& e: base_net.edges()) {
       size_t edge_seed = utils::combine_hash(seed,
-          std::hash<base_net::EdgeType>{}(e));
+          std::hash<typename base_net::EdgeType>{}(e));
       std::mt19937_64 generator(edge_seed);
       typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
           inter_event_time_dist(generator));
