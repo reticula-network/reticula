@@ -21,3 +21,23 @@ namespace std {
     }
   };
 }  // namespace std
+
+// HLL hashing rules for edges
+namespace hll {
+  template<typename VertT>
+  struct hash<dag::directed_edge<VertT>> {
+    size_t
+    operator()(const dag::directed_edge<VertT>& e) const {
+      return dag::utils::combine_hash<VertT, hll::hash>(
+                  hll::hash<VertT>{}(e.v1),
+                e.v2);
+    }
+  };
+
+  template<typename VertT>
+  struct hash<dag::undirected_edge<VertT>> {
+    size_t operator()(const dag::undirected_edge<VertT>& e) const {
+      return dag::utils::unordered_hash<VertT, VertT, hll::hash>(e.v1, e.v2);
+    }
+  };
+}  // namespace hll

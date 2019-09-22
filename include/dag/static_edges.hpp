@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <hyperloglog.hpp>
 
 namespace dag {
   template <typename VertT>
@@ -182,6 +183,7 @@ namespace dag {
     }
 
     friend struct std::hash<directed_edge<VertexType>>;
+    friend struct hll::hash<directed_edge<VertexType>>;
   };
 
 
@@ -311,6 +313,7 @@ namespace dag {
     }
 
     friend struct std::hash<undirected_edge<VertexType>>;
+    friend struct hll::hash<undirected_edge<VertexType>>;
   };
 }  // namespace dag
 

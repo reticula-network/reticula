@@ -20,6 +20,7 @@ CXXFLAGS = -Werror -Wall -Wextra -Wconversion \
 					 -g \
 					 -Idep/catch2/include\
 					 -Idep/HyperLogLog/include\
+					 -Idep/HyperLogLog/dep/MurmurHash3/include\
 					 -Idep/disjoint_set/include
 
 LD = $(CXX)

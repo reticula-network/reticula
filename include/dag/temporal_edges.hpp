@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <hyperloglog.hpp>
 
 namespace dag {
   template <class VertT, class TimeT>
@@ -223,6 +224,7 @@ namespace dag {
     }
 
     friend struct std::hash<directed_temporal_edge<VertexType, TimeType>>;
+    friend struct hll::hash<directed_temporal_edge<VertexType, TimeType>>;
   };
 
   /**
@@ -420,6 +422,9 @@ namespace dag {
 
     friend struct
     std::hash<directed_delayed_temporal_edge<VertexType, TimeType>>;
+
+    friend struct
+    hll::hash<directed_delayed_temporal_edge<VertexType, TimeType>>;
   };
 
   /**
@@ -571,6 +576,7 @@ namespace dag {
     }
 
     friend struct std::hash<undirected_temporal_edge<VertexType, TimeType>>;
+    friend struct hll::hash<undirected_temporal_edge<VertexType, TimeType>>;
   };
 }  // namespace dag
 
