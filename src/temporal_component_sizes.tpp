@@ -1,8 +1,30 @@
 #include <unordered_map>
-
 #include <disjoint_set.hpp>
 
+#include "../include/dag/type_traits.hpp"
+
 namespace dag {
+  /**
+    Only enable reduced event graph (i.e. arXiv 1908.11831 appendix B) for
+    undirected temporal edges
+   */
+  template <class EventGraph>
+  struct is_reducable {
+    static constexpr bool value = false;
+  };
+
+  template <class EventGraph>
+  inline constexpr bool
+  is_reducable_v = is_reducable<EventGraph>::value;
+
+
+  template <class EdgeT>
+  struct is_reducable<
+    dag::implicit_event_graph<EdgeT,
+      dag::adjacency_prob::deterministic<EdgeT>>> {
+    static constexpr bool value = dag::is_undirected_v<EdgeT>;
+  };
+
   template <class EdgeT,
            class AdjacencyProbT,
            template<typename> class EstimatorT,
@@ -25,15 +47,16 @@ namespace dag {
     auto temp_edge_iter = eg.events_cause().rbegin();
     auto end = eg.events_cause().rend();
 
+    constexpr bool reducable = is_reducable_v<
+      implicit_event_graph<EdgeT, AdjacencyProbT>>;
+
     while (temp_edge_iter < end) {
       out_components.emplace(*temp_edge_iter, seed);
 
       std::vector<EdgeT> successors = eg.successors(
-          *temp_edge_iter,
-          reduced_event_graph(eg));
+          *temp_edge_iter, reducable);
       std::vector<EdgeT> predecessors = eg.predecessors(
-          *temp_edge_iter,
-          reduced_event_graph(eg));
+          *temp_edge_iter, reducable);
 
       in_degrees[*temp_edge_iter] = predecessors.size();
 
@@ -89,15 +112,17 @@ namespace dag {
     auto temp_edge_iter = eg.events_effect().begin();
     auto end = eg.events_effect().end();
 
+
+    constexpr bool reducable = is_reducable_v<
+      implicit_event_graph<EdgeT, AdjacencyProbT>>;
+
     while (temp_edge_iter < end) {
       out_components.emplace(*temp_edge_iter, seed);
 
       std::vector<EdgeT> successors = eg.successors(
-          *temp_edge_iter,
-          reduced_event_graph(eg));
+          *temp_edge_iter, reducable);
       std::vector<EdgeT> predecessors = eg.predecessors(
-          *temp_edge_iter,
-          reduced_event_graph(eg));
+          *temp_edge_iter, reducable);
 
       in_degrees[*temp_edge_iter] = successors.size();
 
@@ -149,12 +174,15 @@ namespace dag {
       root.mutator_verts() : root.mutated_verts());
     out_component.insert(root, nodes);
 
+    constexpr bool reducable = is_reducable_v<
+      implicit_event_graph<EdgeT, AdjacencyProbT>>;
+
     while (!search.empty()) {
       EdgeT e = search.front();
       search.pop();
       auto next_events = (revert_graph ?
-          eg.predecessors(e, reduced_event_graph(eg)) :
-          eg.successors(e, reduced_event_graph(eg)));
+          eg.predecessors(e, reducable) :
+          eg.successors(e, reducable));
       for (auto&& s: next_events)
         if (!out_component.edge_set().contains(s)) {
           search.push(s);
@@ -380,21 +408,6 @@ namespace dag {
           eg, root, seed, node_size_est, edge_size_est, revert_graph);
   }
 
-  /**
-    Only enable reduced event graph (i.e. arXiv 1908.11831 appendix B) for
-    undirected temporal edges
-   */
-  template <class EdgeT, class AdjacencyProbT>
-  constexpr bool reduced_event_graph(
-      implicit_event_graph<EdgeT, AdjacencyProbT> /* eg */) {
-    return
-      std::is_same_v<EdgeT,
-        dag::undirected_temporal_edge<typename EdgeT::VertexType,
-                                      typename EdgeT::TimeType>> &&
-      std::is_same_v<AdjacencyProbT,
-        dag::adjacency_prob::deterministic<EdgeT>>;
-  }
-
   template <class EdgeT,
            class AdjacencyProbT,
            template<typename> class EstimatorT>
@@ -436,12 +449,16 @@ namespace dag {
     auto disj_set = ds::disjoint_set<size_t>(eg.events_cause().size());
 
     auto temp_edge_iter = eg.events_cause().begin();
+
+    constexpr bool reducable = is_reducable_v<
+      implicit_event_graph<EdgeT, AdjacencyProbT>>;
+
     while (temp_edge_iter < eg.events_cause().end()) {
       size_t temp_edge_idx = std::distance(eg.events_cause().begin(),
           temp_edge_iter);
 
       for (auto&& other:
-            eg.successors(*temp_edge_iter, reduced_event_graph(eg))) {
+            eg.successors(*temp_edge_iter, reducable)) {
         auto other_it = std::lower_bound(
             temp_edge_iter+1,
             eg.events_cause().end(),
