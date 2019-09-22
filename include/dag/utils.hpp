@@ -23,7 +23,7 @@ namespace dag {
       @param seed Seed or hash or another 
       @param other Value that would be hashed and mixed with `seed` 
      */
-    template <class T, template<typename> typename Hash=std::hash>
+    template <class T, template<typename> typename Hash = std::hash>
     inline size_t combine_hash(const size_t seed, const T& other) {
       return seed ^ (Hash<T>{}(other) +
           DAG_UTIL_GOLDEN_RATIO + (seed << 6) + (seed >> 2));
