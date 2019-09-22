@@ -28,8 +28,12 @@ namespace dag {
     while (temp_edge_iter < end) {
       out_components.emplace(*temp_edge_iter, seed);
 
-      std::vector<EdgeT> successors = eg.successors(*temp_edge_iter);
-      std::vector<EdgeT> predecessors = eg.predecessors(*temp_edge_iter);
+      std::vector<EdgeT> successors = eg.successors(
+          *temp_edge_iter,
+          reduced_event_graph(eg));
+      std::vector<EdgeT> predecessors = eg.predecessors(
+          *temp_edge_iter,
+          reduced_event_graph(eg));
 
       in_degrees[*temp_edge_iter] = predecessors.size();
 
@@ -88,8 +92,12 @@ namespace dag {
     while (temp_edge_iter < end) {
       out_components.emplace(*temp_edge_iter, seed);
 
-      std::vector<EdgeT> successors = eg.successors(*temp_edge_iter);
-      std::vector<EdgeT> predecessors = eg.predecessors(*temp_edge_iter);
+      std::vector<EdgeT> successors = eg.successors(
+          *temp_edge_iter,
+          reduced_event_graph(eg));
+      std::vector<EdgeT> predecessors = eg.predecessors(
+          *temp_edge_iter,
+          reduced_event_graph(eg));
 
       in_degrees[*temp_edge_iter] = successors.size();
 
@@ -432,7 +440,8 @@ namespace dag {
       size_t temp_edge_idx = std::distance(eg.events_cause().begin(),
           temp_edge_iter);
 
-      for (auto&& other: eg.successors(*temp_edge_iter)) {
+      for (auto&& other:
+            eg.successors(*temp_edge_iter, reduced_event_graph(eg))) {
         auto other_it = std::lower_bound(
             temp_edge_iter+1,
             eg.events_cause().end(),
