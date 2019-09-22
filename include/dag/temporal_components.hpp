@@ -108,6 +108,15 @@ namespace dag {
       size_t seed,
       size_t node_size_hint = 0,
       size_t edge_size_hint = 0);
+
+  template <class EdgeT,
+           class AdjacencyProbT,
+           template<typename> class EstimatorT>
+  std::vector<temporal_component<EdgeT, EstimatorT>>
+  weakly_connected_components(
+      const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
+      size_t seed,
+      bool singletons = true);
 }  // namespace dag
 
 #include "../../src/temporal_component_sizes.tpp"

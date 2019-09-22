@@ -1,4 +1,5 @@
 #include <vector>
+#include <set>
 #include <unordered_set>
 
 #include "catch.hpp"
@@ -57,7 +58,7 @@ TEST_CASE("in- and out- components for implicit event graph",
     using CompType = dag::temporal_component<EdgeType, dag::exact_estimator>;
 
     dag::network<EdgeType> network(
-        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
     ProbType prob(3);
     dag::implicit_event_graph<EdgeType, ProbType> eg(network, prob, 0ul);
 
@@ -86,6 +87,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{1, 2, 5}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
         {{2, 3, 6}, {{2, 3, 6}, {3, 4, 8}}},
         {{3, 4, 8}, {{3, 4, 8}}},
+        {{5, 6, 1}, {{5, 6, 1}}},
       });
       SECTION("root out components") {
         auto out_comps = dag::out_components<
@@ -98,7 +100,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{1, 2, 1}, {1, 2, 5}})));
+              std::vector<EdgeType>({{1, 2, 1}, {1, 2, 5}, {5, 6, 1}})));
       }
 
       SECTION("root and non-root out components") {
@@ -121,6 +123,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{1, 2, 5}, {{1, 2, 5}}},
         {{2, 3, 6}, {{1, 2, 5}, {2, 3, 6}}},
         {{3, 4, 8}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
+        {{5, 6, 1}, {{5, 6, 1}}},
       });
       SECTION("root in components") {
         auto in_comps = dag::in_components<
@@ -133,7 +136,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{2, 1, 2}, {3, 4, 8}})));
+              std::vector<EdgeType>({{2, 1, 2}, {3, 4, 8}, {5, 6, 1}})));
       }
 
       SECTION("root and non-root in components") {
@@ -148,6 +151,37 @@ TEST_CASE("in- and out- components for implicit event graph",
         REQUIRE_THAT(keys, UnorderedEquals(network.edges_cause()));
       }
     }
+
+    SECTION("weakly connected components") {
+      std::set<EdgeType>
+        w1({{1, 2, 1}, {2, 1, 2}}),
+        w2({{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}}),
+        w3({{5, 6, 1}});
+
+      SECTION("with singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results ==
+            std::set<std::set<EdgeType>>({w1, w2, w3}));
+      }
+
+      SECTION("without singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul, false);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results ==
+            std::set<std::set<EdgeType>>({w1, w2}));
+      }
+    }
   }
 
   SECTION("directed temporal network") {
@@ -156,7 +190,7 @@ TEST_CASE("in- and out- components for implicit event graph",
     using CompType = dag::temporal_component<EdgeType, dag::exact_estimator>;
 
     dag::network<EdgeType> network(
-        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
     ProbType prob(3);
     dag::implicit_event_graph<EdgeType, ProbType> eg(network, prob, 0ul);
 
@@ -185,6 +219,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{1, 2, 5}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
         {{2, 3, 6}, {{2, 3, 6}, {3, 4, 8}}},
         {{3, 4, 8}, {{3, 4, 8}}},
+        {{5, 6, 1}, {{5, 6, 1}}},
       });
       SECTION("root out components") {
         auto out_comps = dag::out_components<
@@ -197,7 +232,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{1, 2, 1}, {1, 2, 5}})));
+              std::vector<EdgeType>({{1, 2, 1}, {1, 2, 5}, {5, 6, 1}})));
       }
 
       SECTION("root and non-root out components") {
@@ -220,6 +255,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{1, 2, 5}, {{1, 2, 5}}},
         {{2, 3, 6}, {{1, 2, 5}, {2, 3, 6}}},
         {{3, 4, 8}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
+        {{5, 6, 1}, {{5, 6, 1}}},
       });
       SECTION("root in components") {
         auto in_comps = dag::in_components<
@@ -232,7 +268,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{2, 1, 2}, {3, 4, 8}})));
+              std::vector<EdgeType>({{2, 1, 2}, {3, 4, 8}, {5, 6, 1}})));
       }
 
       SECTION("root and non-root in components") {
@@ -247,6 +283,37 @@ TEST_CASE("in- and out- components for implicit event graph",
         REQUIRE_THAT(keys, UnorderedEquals(network.edges_cause()));
       }
     }
+
+    SECTION("weakly connected components") {
+      std::set<EdgeType>
+        w1({{1, 2, 1}, {2, 1, 2}}),
+        w2({{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}}),
+        w3({{5, 6, 1}});
+
+      SECTION("with singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results ==
+            std::set<std::set<EdgeType>>({w1, w2, w3}));
+      }
+
+      SECTION("without singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul, false);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results ==
+            std::set<std::set<EdgeType>>({w1, w2}));
+      }
+    }
   }
 
   SECTION("directed delayed temporal network") {
@@ -255,7 +322,8 @@ TEST_CASE("in- and out- components for implicit event graph",
     using CompType = dag::temporal_component<EdgeType, dag::exact_estimator>;
 
     dag::network<EdgeType> network(
-        {{1, 2, 1, 4}, {2, 1, 2, 1}, {1, 2, 5, 0}, {2, 3, 6, 1}, {3, 4, 8, 1}});
+        {{1, 2, 1, 4}, {2, 1, 2, 1}, {1, 2, 5, 0}, {2, 3, 6, 1}, {3, 4, 8, 1},
+          {5, 6, 1, 2}});
     ProbType prob(3);
     dag::implicit_event_graph<EdgeType, ProbType> eg(network, prob, 0ul);
 
@@ -286,6 +354,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{1, 2, 5, 0}, {{1, 2, 5, 0}, {2, 3, 6, 1}, {3, 4, 8, 1}}},
         {{2, 3, 6, 1}, {{2, 3, 6, 1}, {3, 4, 8, 1}}},
         {{3, 4, 8, 1}, {{3, 4, 8, 1}}},
+        {{5, 6, 1, 2}, {{5, 6, 1, 2}}},
       });
       SECTION("root out components") {
         auto out_comps = dag::out_components<
@@ -298,7 +367,8 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{1, 2, 1, 4}, {2, 1, 2, 1}})));
+              std::vector<EdgeType>(
+                {{1, 2, 1, 4}, {2, 1, 2, 1}, {5, 6, 1, 2}})));
       }
 
       SECTION("root and non-root out components") {
@@ -324,6 +394,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         {{3, 4, 8, 1},
           {{2, 1, 2, 1}, {1, 2, 5, 0}, {2, 3, 6, 1},
             {1, 2, 1, 4}, {3, 4, 8, 1}}},
+        {{5, 6, 1, 2}, {{5, 6, 1, 2}}},
       });
       SECTION("root in components") {
         auto in_comps = dag::in_components<
@@ -336,7 +407,7 @@ TEST_CASE("in- and out- components for implicit event graph",
         }
         REQUIRE_THAT(keys,
             UnorderedEquals(
-              std::vector<EdgeType>({{3, 4, 8, 1}})));
+              std::vector<EdgeType>({{3, 4, 8, 1}, {5, 6, 1, 2}})));
       }
 
       SECTION("root and non-root in components") {
@@ -349,6 +420,35 @@ TEST_CASE("in- and out- components for implicit event graph",
           REQUIRE(c.edge_set().set() == true_ic[e]);
         }
         REQUIRE_THAT(keys, UnorderedEquals(network.edges_cause()));
+      }
+    }
+
+    SECTION("weakly connected components") {
+      std::set<EdgeType>
+        w1({{1, 2, 1, 4}, {2, 1, 2, 1}, {1, 2, 5, 0}, {2, 3, 6, 1},
+            {3, 4, 8, 1}}),
+        w2({{5, 6, 1, 2}});
+
+      SECTION("with singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results == std::set<std::set<EdgeType>>({w1, w2}));
+      }
+
+      SECTION("without singletons") {
+        auto weakly_comps = dag::weakly_connected_components<
+          EdgeType, ProbType, dag::exact_estimator>(eg, 0ul, false);
+
+        std::set<std::set<EdgeType>> results;
+        for (auto&& c: weakly_comps)
+          results.emplace(c.edge_set().set().begin(), c.edge_set().set().end());
+
+        REQUIRE(results == std::set<std::set<EdgeType>>({w1}));
       }
     }
   }

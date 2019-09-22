@@ -3,6 +3,8 @@
 #include <queue>
 #include <cmath>
 
+#include <disjoint_set.hpp>
+
 #include "../../../include/dag/adjacency_prob.hpp"
 
 namespace dag {
@@ -67,7 +69,7 @@ namespace dag {
   }
 
   template <typename VertT>
-  std::vector<VertT> out_component(
+  std::vector<VertT> _out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
       size_t size_hint,
@@ -98,6 +100,49 @@ namespace dag {
       const directed_network<VertT>& dir,
       const  VertT& vert,
       size_t size_hint) {
-    return out_component(dir, vert, size_hint, true);
+    return _out_component(dir, vert, size_hint, true);
+  }
+
+  template <typename VertT>
+  std::vector<VertT> out_component(
+      const directed_network<VertT>& dir,
+      const  VertT& vert,
+      size_t size_hint) {
+    return _out_component(dir, vert, size_hint, false);
+  }
+
+  template <typename VertT>
+  std::vector<std::vector<VertT>> weakly_connected_components(
+      const directed_network<VertT>& dir,
+      bool singleton) {
+    std::vector<VertT> verts = dir.vertices();
+    auto disj_set = ds::disjoint_set<size_t>(verts.size());
+
+    auto vert_iter = verts.begin();
+    while (vert_iter < verts.end()) {
+      size_t vert_idx = std::distance(verts.begin(), vert_iter);
+
+      for (auto&& other: dir.successors(*vert_iter)) {
+        auto other_it = std::lower_bound(vert_iter+1, verts.end(), other);
+        size_t other_idx = std::distance(verts.begin(), other_it);
+        disj_set.merge(vert_idx, other_idx);
+      }
+
+      vert_iter++;
+    }
+
+    auto sets = disj_set.sets(singleton);
+    std::vector<std::vector<VertT>> sets_vector;
+    sets_vector.reserve(sets.size());
+
+    for (const auto& [idx, set]: sets) {
+      sets_vector.emplace_back();
+      auto& current_set = sets_vector.back();
+      current_set.reserve(set.size());
+      for (const auto& event_idx: set)
+        current_set.push_back(verts.at(event_idx));
+    }
+
+    return sets_vector;
   }
 }  // namespace dag

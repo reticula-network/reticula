@@ -156,3 +156,16 @@ TEST_CASE("topological ordering", "[dag::topological_order]") {
                         Equals(std::vector<int>({1, 2, 3, 5, 6, 4})));
   }
 }
+
+TEST_CASE("weakly connected components", "[dag::weakly_connected_components]") {
+  dag::directed_network<int> graph({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+
+  std::vector<int> weak1({1, 2, 3, 4, 5, 6}), weak2({7, 8, 9});
+
+  auto comps = dag::weakly_connected_components(graph);
+  REQUIRE(comps.size() == 2);
+  REQUIRE_THAT(comps[0], UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE_THAT(comps[1], UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE_THAT(comps[0], !UnorderedEquals(comps[1]));
+}

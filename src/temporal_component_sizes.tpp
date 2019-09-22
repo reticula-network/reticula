@@ -1,3 +1,7 @@
+#include <unordered_map>
+
+#include <disjoint_set.hpp>
+
 namespace dag {
   template <class EdgeT,
            class AdjacencyProbT,
@@ -413,4 +417,61 @@ namespace dag {
         node_size_hint, edge_size_hint, true);
   }
 
+  template <class EdgeT,
+           class AdjacencyProbT,
+           template<typename> class EstimatorT>
+  std::vector<temporal_component<EdgeT, EstimatorT>>
+  weakly_connected_components(
+      const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
+      size_t seed,
+      bool singletons) {
+    auto disj_set = ds::disjoint_set<size_t>(eg.events_cause().size());
+
+    auto temp_edge_iter = eg.events_cause().begin();
+    while (temp_edge_iter < eg.events_cause().end()) {
+      size_t temp_edge_idx = std::distance(eg.events_cause().begin(),
+          temp_edge_iter);
+
+      for (auto&& other: eg.successors(*temp_edge_iter)) {
+        // We are benefiting from the fact that successors are always after the
+        // original event. Might consider searching linearly for caching or
+        // small networks?
+        //
+        // auto other_it = std::find(temp_edge_iter+1, eg.events_cause().end(), other);
+        auto other_it = std::lower_bound(
+            temp_edge_iter+1,
+            eg.events_cause().end(),
+            other);
+
+        size_t other_idx = std::distance(eg.events_cause().begin(), other_it);
+        disj_set.merge(temp_edge_idx, other_idx);
+      }
+
+      temp_edge_iter++;
+    }
+
+    auto sets = disj_set.sets(singletons);
+    std::vector<temporal_component<EdgeT, EstimatorT>> sets_vector;
+    sets_vector.reserve(sets.size());
+
+    for (const auto& [idx, set]: sets) {
+      sets_vector.emplace_back(seed, set.size(), set.size());
+      auto& current_set = sets_vector.back();
+      for (const auto& event_idx: set) {
+        auto event = eg.events_cause().at(event_idx);
+        std::unordered_set<typename EdgeT::VertexType> nodes;
+
+        for (auto&& v: event.mutator_verts())
+          nodes.insert(v);
+        for (auto&& v: event.mutated_verts())
+          nodes.insert(v);
+
+        current_set.insert(event,
+            std::vector<typename EdgeT::VertexType>(
+              nodes.begin(), nodes.end()));
+      }
+    }
+
+    return sets_vector;
+  }
 }  // namespace dag
