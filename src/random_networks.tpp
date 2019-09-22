@@ -148,7 +148,7 @@ namespace dag {
 
     for (const auto& e: base_net.edges()) {
       size_t edge_seed = utils::combine_hash(seed,
-          std::hash<typename base_net::EdgeType>{}(e));
+          std::hash<decltype(e)>{}(e));
       std::mt19937_64 generator(edge_seed);
       typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
           inter_event_time_dist(generator));

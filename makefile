@@ -59,6 +59,7 @@ tests: $(TSTOBJDIR)/tests.o \
 			 $(TSTOBJDIR)/adjacency_prob.o\
 			 $(TSTOBJDIR)/algorithms.o\
 			 $(TSTOBJDIR)/temporal_components.o\
+			 $(TSTOBJDIR)/compile.o\
 			 $(EXTDEPS)
 	$(LINK.o)
 

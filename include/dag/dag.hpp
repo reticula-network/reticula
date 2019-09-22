@@ -14,6 +14,7 @@ namespace dag {}
 #include "random_networks.hpp"
 #include "algorithms.hpp"
 #include "implicit_event_graph.hpp"
+#include "estimators.hpp"
 #include "temporal_components.hpp"
 
 #endif  // INCLUDE_DAG_DAG_HPP_
