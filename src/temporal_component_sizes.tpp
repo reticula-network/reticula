@@ -433,11 +433,6 @@ namespace dag {
           temp_edge_iter);
 
       for (auto&& other: eg.successors(*temp_edge_iter)) {
-        // We are benefiting from the fact that successors are always after the
-        // original event. Might consider searching linearly for caching or
-        // small networks?
-        //
-        // auto other_it = std::find(temp_edge_iter+1, eg.events_cause().end(), other);
         auto other_it = std::lower_bound(
             temp_edge_iter+1,
             eg.events_cause().end(),
