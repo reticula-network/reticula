@@ -132,6 +132,9 @@ namespace dag {
     std::vector<EdgeType> _edges_effect;
     std::unordered_map<VertexType, std::vector<EdgeType>> _in_edges;
     std::unordered_map<VertexType, std::vector<EdgeType>> _out_edges;
+
+    static constexpr bool instantaneous_undirected =
+      is_instantaneous_v<EdgeType> && is_undirected_v<EdgeType>;
   };
 
   /**

@@ -9,23 +9,28 @@ namespace dag {
         _edges_cause.end());
     _edges_cause.shrink_to_fit();
 
-    _edges_effect = _edges_cause;
-    std::sort(_edges_effect.begin(), _edges_effect.end(),
-          [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+    if (!instantaneous_undirected) {
+      _edges_effect = _edges_cause;
+      std::sort(_edges_effect.begin(), _edges_effect.end(),
+            [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+    }
 
     for (const auto& e: _edges_cause) {
       for (auto&& v: e.mutator_verts())
         _out_edges[v].push_back(e);
-      for (auto&& v: e.mutated_verts())
-        _in_edges[v].push_back(e);
+      if (!instantaneous_undirected)
+        for (auto&& v: e.mutated_verts())
+          _in_edges[v].push_back(e);
     }
 
-    for (auto&& [v, e_list]: _in_edges) {
-      std::sort(e_list.begin(), e_list.end(),
-          [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-      e_list.erase(std::unique(e_list.begin(), e_list.end()),
-          e_list.end());
-      e_list.shrink_to_fit();
+    if (!instantaneous_undirected) {
+      for (auto&& [v, e_list]: _in_edges) {
+        std::sort(e_list.begin(), e_list.end(),
+            [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+        e_list.erase(std::unique(e_list.begin(), e_list.end()),
+            e_list.end());
+        e_list.shrink_to_fit();
+      }
     }
 
     for (auto&& [v, e_list]: _out_edges) {
@@ -39,6 +44,9 @@ namespace dag {
   template <typename EdgeT>
   size_t network<EdgeT>::in_degree(
       const typename EdgeT::VertexType& v) const {
+    if (instantaneous_undirected)
+      return out_degree(v);
+
     return in_edges(v).size();
   }
 
@@ -51,6 +59,9 @@ namespace dag {
   template <typename EdgeT>
   size_t network<EdgeT>::degree(
       const typename EdgeT::VertexType& v) const {
+    if (instantaneous_undirected)
+      return out_degree(v);
+
     return incident_edges(v).size();
   }
 
@@ -58,6 +69,9 @@ namespace dag {
   std::vector<EdgeT>
   network<EdgeT>::in_edges(
       const typename EdgeT::VertexType& v) const {
+    if (instantaneous_undirected)
+      return out_edges(v);
+
     auto p = _in_edges.find(v);
     if (p == _in_edges.end())
       return std::vector<EdgeT>();
@@ -80,11 +94,16 @@ namespace dag {
   std::vector<EdgeT>
   network<EdgeT>::incident_edges(
       const typename EdgeT::VertexType& v) const {
-    std::vector<EdgeT> inc(in_edges(v));
-    std::vector<EdgeT> out(out_edges(v));
-    inc.insert(inc.end(), out.begin(), out.end());
-    std::sort(inc.begin(), inc.end());
-    inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    std::vector<EdgeT> inc(out_edges(v));
+
+    if (!instantaneous_undirected) {
+      auto in = in_edges(v);
+      inc.insert(inc.end(), in.begin(), in.end());
+
+      std::sort(inc.begin(), inc.end());
+      inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    }
+
     return inc;
   }
 
@@ -93,6 +112,9 @@ namespace dag {
   template <typename EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::predecessors(const typename EdgeT::VertexType& v) const {
+    if (instantaneous_undirected)
+      return successors(v);
+
     std::unordered_set<typename EdgeT::VertexType> preds;
     auto p = _in_edges.find(v);
     if (p != _in_edges.end()) {
@@ -121,12 +143,15 @@ namespace dag {
   template <typename EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::neighbours(const typename EdgeT::VertexType& v) const {
-    std::vector<typename EdgeT::VertexType> inc(predecessors(v));
-    std::vector<typename EdgeT::VertexType> succ(successors(v));
+    std::vector<typename EdgeT::VertexType> inc(successors(v));
 
-    inc.insert(inc.end(), succ.begin(), succ.end());
-    std::sort(inc.begin(), inc.end());
-    inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    if (!instantaneous_undirected) {
+      std::vector<typename EdgeT::VertexType> pred(predecessors(v));
+      inc.insert(inc.end(), pred.begin(), pred.end());
+
+      std::sort(inc.begin(), inc.end());
+      inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+    }
     return inc;
   }
 
@@ -145,6 +170,9 @@ namespace dag {
   template <typename EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges_effect() const {
+    if (instantaneous_undirected)
+      return _edges_cause;
+
     return _edges_effect;
   }
 
@@ -152,8 +180,9 @@ namespace dag {
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::vertices() const {
     std::set<network<EdgeT>::VertexType> verts;
-    for (const auto &p: _in_edges)
-      verts.insert(p.first);
+    if (!instantaneous_undirected)
+      for (const auto &p: _in_edges)
+        verts.insert(p.first);
     for (const auto &p: _out_edges)
       verts.insert(p.first);
     return std::vector<typename EdgeT::VertexType>(verts.begin(), verts.end());

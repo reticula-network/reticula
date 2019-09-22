@@ -7,6 +7,7 @@
 namespace dag {}
 
 #include "utils.hpp"
+#include "type_traits.hpp"
 #include "adjacency_prob.hpp"
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"

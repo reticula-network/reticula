@@ -6,15 +6,47 @@
 #include <algorithm>
 #include <hyperloglog.hpp>
 
+#include "type_traits.hpp"
+
 namespace dag {
   template <class VertT, class TimeT>
   class undirected_temporal_edge;
 
   template <class VertT, class TimeT>
+  struct is_instantaneous<undirected_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
+  };
+
+  template <class VertT, class TimeT>
+  struct is_undirected<undirected_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
+  };
+
+  template <class VertT, class TimeT>
   class directed_temporal_edge;
 
   template <class VertT, class TimeT>
+  struct is_instantaneous<directed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
+  };
+
+  template <class VertT, class TimeT>
+  struct is_undirected<directed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
+
+  template <class VertT, class TimeT>
   class directed_delayed_temporal_edge;
+
+  template <class VertT, class TimeT>
+  struct is_instantaneous<directed_delayed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
+
+  template <class VertT, class TimeT>
+  struct is_undirected<directed_delayed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
 
   template <class VertT, class TimeT>
   bool effect_lt(

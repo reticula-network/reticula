@@ -6,12 +6,34 @@
 #include <algorithm>
 #include <hyperloglog.hpp>
 
+#include "type_traits.hpp"
+
 namespace dag {
   template <typename VertT>
   class directed_edge;
 
+  template<class VertT>
+  struct is_instantaneous<directed_edge<VertT>> {
+    static constexpr bool value = true;
+  };
+
+  template<class VertT>
+  struct is_undirected<directed_edge<VertT>> {
+    static constexpr bool value = false;
+  };
+
   template <typename VertT>
   class undirected_edge;
+
+  template<class VertT>
+  struct is_instantaneous<undirected_edge<VertT>> {
+    static constexpr bool value = true;
+  };
+
+  template<class VertT>
+  struct is_undirected<undirected_edge<VertT>> {
+    static constexpr bool value = true;
+  };
 
   template <class VertT>
   bool effect_lt(
