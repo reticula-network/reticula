@@ -48,7 +48,7 @@ namespace hll {
         const dag::undirected_temporal_edge<VertT, TimeT>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::directed_temporal_edge<VertT, TimeT>>{}(e),
+          std::hash<dag::undirected_temporal_edge<VertT, TimeT>>{}(e),
           seed);
     }
   };
