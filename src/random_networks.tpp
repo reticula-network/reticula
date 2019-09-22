@@ -123,7 +123,7 @@ namespace dag {
   template <class EdgeT, class Distribution>
   std::vector<EdgeT>
   random_events(
-      const undirected_temporal_network<typename EdgeT::VertexType>& base_net,
+      const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       size_t seed,
@@ -146,14 +146,17 @@ namespace dag {
           temp.reserve(std::lround(size_part/inter_event_time_dist.mean));
     }
 
-    for (const auto& e: net.edges()) {
+    for (const auto& e: base_net.edges()) {
       size_t edge_seed = utils::combine_hash(seed,
-          std::hash<typename static_net::EdgeType>{}(e));
+          std::hash<base_net::EdgeType>{}(e));
       std::mt19937_64 generator(edge_seed);
-      typename EdgeT::TimeType t = (temp_time)dist(generator);
+      typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
+          inter_event_time_dist(generator));
       while (t < max_t) {
         temp.emplace_back({e.v1, e.v2, t});
-        t += (temp_time)dist(generator);
+        typename EdgeT::TimeType iet = static_cast<typename EdgeT::TimeType>(
+            inter_event_time_dist(generator));
+        t += iet;
       }
     }
     return temp;

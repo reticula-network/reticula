@@ -1,4 +1,5 @@
 #include <cmath>
+#include <random>
 
 namespace dag {
   namespace adjacency_prob {
