@@ -145,10 +145,16 @@ namespace dag {
 
     auto in_edges = _temp.in_edges(v);
     auto other = std::lower_bound(in_edges.begin(), in_edges.end(), e,
-        [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e1, e2); }) - 1;
+        [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e1, e2); });
+
+    if (other > in_edges.begin())
+      other--;
+
     res.reserve(std::min<size_t>(reserve_max, other - in_edges.begin()));
     double last_p = 1.0;
-    while ((other >= in_edges.begin()) && last_p > cutoff) {
+    while (other < in_edges.end() &&
+            other >= in_edges.begin() &&
+            last_p > cutoff) {
       if (adjacent(*other, e)) {
         last_p = _prob.p(*other, e);
         if (adjacency_prob::bernoulli_trial(*other, e, last_p, _seed)) {
