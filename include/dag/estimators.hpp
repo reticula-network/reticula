@@ -6,7 +6,7 @@ namespace dag {
   class hll_estimator {
   public:
     hll_estimator(size_t seed, size_t /*size_est*/) :
-      _estimator(true, seed) {}
+      _estimator(true, static_cast<uint32_t>(seed)) {}
 
     double estimate() const { return _estimator.estimate(); }
     void insert(const T& item) { _estimator.insert(item); }
