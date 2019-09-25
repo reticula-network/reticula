@@ -26,6 +26,12 @@ namespace dag {
   }
 
   template <class EdgeT, class AdjacencyProbT>
+  size_t
+  implicit_event_graph<EdgeT, AdjacencyProbT>::seed() const {
+    return _seed;
+  }
+
+  template <class EdgeT, class AdjacencyProbT>
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjacencyProbT>::events_cause() const {
     return _temp.edges_cause();

@@ -42,6 +42,8 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
       REQUIRE(t1 == 1);
       REQUIRE(t2 == 8);
 
+      REQUIRE(eg.seed() == 0ul);
+
       REQUIRE_THAT(eg.events_cause(), Equals(event_list));
       REQUIRE_THAT(eg.events_effect(), Equals(event_list));
     }

@@ -27,7 +27,9 @@ namespace dag {
 
     const std::vector<EdgeT>& events_cause() const;
     const std::vector<EdgeT>& events_effect() const;
+
     AdjacencyProbT adjacency_prob() const;
+    size_t seed() const;
 
     std::pair<TimeType, TimeType> time_window() const;
 
