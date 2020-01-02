@@ -80,6 +80,14 @@ namespace dag {
   }
 
   template <typename EdgeT>
+  const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
+  network<EdgeT>::in_edges() const {
+    if (instantaneous_undirected)
+      return _out_edges;
+    return _in_edges;
+  }
+
+  template <typename EdgeT>
   std::vector<EdgeT>
   network<EdgeT>::out_edges(
       const typename EdgeT::VertexType& v) const {
@@ -88,6 +96,12 @@ namespace dag {
       return std::vector<EdgeT>();
     else
       return p->second;
+  }
+
+  template <typename EdgeT>
+  const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
+  network<EdgeT>::out_edges() const {
+    return _out_edges;
   }
 
   template <typename EdgeT>

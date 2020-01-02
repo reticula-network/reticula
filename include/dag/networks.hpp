@@ -76,14 +76,28 @@ namespace dag {
     std::vector<EdgeType> out_edges(const VertexType& vert) const;
 
     /**
+      Map of vertices and edges in network that are incident to them, i.e. 'vert' is mutated by
+      them. Edges are sorted by `effect_lt(e1, e2)`.
+     */
+    [[nodiscard]]
+    const std::unordered_map<VertexType, std::vector<EdgeType>>&
+    in_edges() const;
+
+    /**
+      Map of vertices and edges in network which they are incident to, i.e. where 'vert' is
+      a mutator of. Edges are sorted by `operator<(e1, e2)`.
+     */
+    [[nodiscard]]
+    const std::unordered_map<VertexType, std::vector<EdgeType>>&
+    out_edges() const;
+
+    /**
       List of edges in network which `vert` is a participant, i.e. where 'vert'
       is a mutator of or is mutated by that edge. Edges are sorted by
       `operator<(e1, e2)`.
      */
     [[nodiscard]]
     std::vector<EdgeType> incident_edges(const VertexType& vert) const;
-
-
 
     /**
       Number of edges incident to `vert`. Similart to `in_edges(vert).size()`

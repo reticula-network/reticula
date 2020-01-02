@@ -117,24 +117,29 @@ namespace dag {
       reserve_max = 1;
 
     std::vector<EdgeT> res;
-    auto out_edges = _temp.out_edges(v);
-      auto other = std::lower_bound(out_edges.begin(), out_edges.end(), e,
-          [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
-      res.reserve(std::min<size_t>(reserve_max, out_edges.end() - other));
-      double last_p = 1.0;
-      while ((other < out_edges.end()) && last_p > cutoff) {
-        if (adjacent(e, *other)) {
-          last_p = _prob.p(e, *other);
-          if (adjacency_prob::bernoulli_trial(e, *other, last_p, _seed)) {
-            if (just_first && !res.empty() &&
-                res[0].cause_time() != other->cause_time())
-              return res;
-            else
-              res.push_back(*other);
-          }
+    auto out_edges_it = _temp.out_edges().find(v);
+    if (out_edges_it == _temp.out_edges().end())
+      return res;
+
+    auto other = std::lower_bound(
+        out_edges_it->second.begin(), out_edges_it->second.end(), e,
+        [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
+    res.reserve(std::min<size_t>(
+          reserve_max, out_edges_it->second.end() - other));
+    double last_p = 1.0;
+    while ((other < out_edges_it->second.end()) && last_p > cutoff) {
+      if (adjacent(e, *other)) {
+        last_p = _prob.p(e, *other);
+        if (adjacency_prob::bernoulli_trial(e, *other, last_p, _seed)) {
+          if (just_first && !res.empty() &&
+              res[0].cause_time() != other->cause_time())
+            return res;
+          else
+            res.push_back(*other);
         }
-        other++;
       }
+      other++;
+    }
     return res;
   }
 
@@ -142,24 +147,29 @@ namespace dag {
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::predecessors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
-    std::vector<EdgeT> res;
     constexpr double cutoff = 1e-20;
 
     size_t reserve_max = 32;
     if (just_first)
       reserve_max = 1;
 
-    auto in_edges = _temp.in_edges(v);
-    auto other = std::lower_bound(in_edges.begin(), in_edges.end(), e,
+    std::vector<EdgeT> res;
+    auto in_edges_it = _temp.in_edges().find(v);
+    if (in_edges_it == _temp.in_edges().end())
+      return res;
+
+    auto other = std::lower_bound(
+        in_edges_it->second.begin(), in_edges_it->second.end(), e,
         [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e1, e2); });
 
-    if (other > in_edges.begin())
+    if (other > in_edges_it->second.begin())
       other--;
 
-    res.reserve(std::min<size_t>(reserve_max, other - in_edges.begin()));
+    res.reserve(std::min<size_t>(
+          reserve_max, other - in_edges_it->second.begin()));
     double last_p = 1.0;
-    while (other < in_edges.end() &&
-            other >= in_edges.begin() &&
+    while (other < in_edges_it->second.end() &&
+            other >= in_edges_it->second.begin() &&
             last_p > cutoff) {
       if (adjacent(*other, e)) {
         last_p = _prob.p(*other, e);
