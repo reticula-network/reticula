@@ -112,12 +112,13 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <class EdgeT, class Distribution>
+  template <class EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
+      ResDistribution residual_time_dist,
       size_t seed,
       size_t size_hint) {
     std::vector<EdgeT> temp;
@@ -142,7 +143,7 @@ namespace dag {
       size_t edge_seed = utils::combine_hash(seed, e);
       std::mt19937_64 generator(edge_seed);
       typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
-          inter_event_time_dist(generator));
+          residual_time_dist(generator));
       while (t < max_t) {
         auto v = e.mutated_verts();  // e is an undirected event
         temp.emplace_back(v[0], v[1], t);

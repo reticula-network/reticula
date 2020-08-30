@@ -7,6 +7,7 @@
 #include <hyperloglog.hpp>
 
 #include "type_traits.hpp"
+#include "static_edges.hpp"
 
 namespace dag {
   template <class VertT, class TimeT>
@@ -107,17 +108,25 @@ namespace dag {
         : v1(v1), v2(v2), time(time) {}
 
     /**
+      Static edge that encompasses all the non-temporal information about this
+      edge.
+     */
+    [[nodiscard]]
+    directed_edge<VertT>
+    static_projection() { return directed_edge<VertT>(v1, v2); }
+
+    /**
       The timestamp that the effect is received by head vertex. For directed
       temporal edges this is equal to the `cause_time` of the edge.
      */
     [[nodiscard]]
-    inline TimeType effect_time() const { return time; }
+    TimeType effect_time() const { return time; }
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    inline TimeType cause_time() const { return time; }
+    TimeType cause_time() const { return time; }
 
     /**
       A directed temporal edge is out_incident to vertex `v` iff `v` is the
@@ -126,8 +135,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    inline bool
-    is_out_incident(const VertexType vert) const { return (v1 == vert); }
+    bool is_out_incident(const VertexType vert) const { return (v1 == vert); }
 
     /**
       A directed temporal edge is in_incident to vertex `v` iff `v` is the head
@@ -136,8 +144,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    inline bool
-    is_in_incident(const VertexType vert) const  { return (v2 == vert); }
+    bool is_in_incident(const VertexType vert) const  { return (v2 == vert); }
 
     /**
       A directed temporal edge is incident to vertex `v` iff `v` is the head or
@@ -146,7 +153,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const {
+    bool is_incident(const VertexType vert) const {
       return (v1 == vert || v2 == vert);
     }
 
@@ -157,7 +164,6 @@ namespace dag {
      */
     [[nodiscard]]
     std::vector<VertexType> mutator_verts() const { return {v1}; }
-
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -245,12 +251,12 @@ namespace dag {
     VertexType v1, v2;
     TimeType time;
 
-    inline std::tuple<TimeType, VertexType, VertexType>
+    std::tuple<TimeType, VertexType, VertexType>
     cause_comp_tuple() const {
       return std::make_tuple(time, v1, v2);
     }
 
-    inline std::tuple<TimeType, VertexType, VertexType>
+    std::tuple<TimeType, VertexType, VertexType>
     effect_comp_tuple() const {
       return std::make_tuple(time, v2, v1);
     }
@@ -315,18 +321,26 @@ namespace dag {
       : v1(v1), v2(v2), time(time), delay(delay) {}
 
     /**
+      Static edge that encompasses all the non-temporal information about this
+      edge.
+     */
+    [[nodiscard]]
+    directed_edge<VertT>
+    static_projection() { return directed_edge<VertT>(v1, v2); }
+
+    /**
       The timestamp that the effect is received by head vertex. For directed
       delayed temporal edges this is equal to the `cause_time` plus delay of the
       edge.
      */
     [[nodiscard]]
-    inline TimeType effect_time() const { return time+delay; }
+    TimeType effect_time() const { return time+delay; }
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    inline TimeType cause_time() const { return time; }
+    TimeType cause_time() const { return time; }
 
     /**
       A directed delayed temporal edge is out_incident to vertex `v` iff `v` is
@@ -335,8 +349,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    inline bool
-    is_out_incident(const VertexType vert) const { return (v1 == vert); }
+    bool is_out_incident(const VertexType vert) const { return (v1 == vert); }
 
     /**
       A directed delayed temporal edge is in_incident to vertex `v` iff `v` is
@@ -345,8 +358,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    inline bool
-    is_in_incident(const VertexType vert) const  { return (v2 == vert); }
+    bool is_in_incident(const VertexType vert) const  { return (v2 == vert); }
 
     /**
       A directed delayed temporal edge is incident to vertex `v` iff `v` is the
@@ -355,8 +367,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool
-    is_incident(const VertexType vert) const {
+    bool is_incident(const VertexType vert) const {
       return (v1 == vert || v2 == vert);
     }
 
@@ -442,12 +453,12 @@ namespace dag {
     VertexType v1, v2;
     TimeType time, delay;
 
-    inline std::tuple<TimeType, TimeType, VertexType, VertexType>
+    std::tuple<TimeType, TimeType, VertexType, VertexType>
     cause_comp_tuple() const {
       return std::make_tuple(time, time+delay, v1, v2);
     }
 
-    inline std::tuple<TimeType, TimeType, VertexType, VertexType>
+    std::tuple<TimeType, TimeType, VertexType, VertexType>
     effect_comp_tuple() const {
       return std::make_tuple(time+delay, time, v2, v1);
     }
@@ -487,17 +498,25 @@ namespace dag {
         : v1(v1), v2(v2), time(time) {}
 
     /**
+      Static edge that encompasses all the non-temporal information about this
+      edge.
+     */
+    [[nodiscard]]
+    undirected_edge<VertT>
+    static_projection() { return undirected_edge<VertT>(v1, v2); }
+
+    /**
       The timestamp that the effect is received by head vertex. For undirected
       temporal edges this is equal to the `cause_time` of the edge.
      */
     [[nodiscard]]
-    inline TimeType effect_time() const { return time; }
+    TimeType effect_time() const { return time; }
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    inline TimeType cause_time() const { return time; }
+    TimeType cause_time() const { return time; }
 
     /**
       An undirected temporal edge is incident to vertex `v` iff `v` is either of
@@ -506,7 +525,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const {
+    bool is_incident(const VertexType vert) const {
       return (v1 == vert || v2 == vert);
     }
 
@@ -603,7 +622,7 @@ namespace dag {
     VertexType v1, v2;
     TimeType time;
 
-    inline std::tuple<TimeType, VertexType, VertexType> comp_tuple() const {
+    std::tuple<TimeType, VertexType, VertexType> comp_tuple() const {
       return std::make_tuple(time, std::min(v1, v2), std::max(v1, v2));
     }
 

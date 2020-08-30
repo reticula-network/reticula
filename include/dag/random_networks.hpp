@@ -12,12 +12,13 @@ namespace dag {
   undirected_network<VertT> ba_random_graph(size_t n, size_t m,
       std::mt19937_64& generator);
 
-  template <class EdgeT, class Distribution>
+  template <class EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
+      ResDistribution residual_time_dist,
       size_t seed,
       size_t size_hint = 0);
 
