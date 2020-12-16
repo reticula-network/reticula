@@ -124,19 +124,6 @@ namespace dag {
     std::vector<EdgeT> temp;
     if (size_hint > 0) {
       temp.reserve(size_hint);
-    } else {
-      typename EdgeT::TimeType size_part =
-        static_cast<double>(base_net.edges().size())*max_t;
-      if constexpr (std::is_same<Distribution,
-          std::exponential_distribution<typename EdgeT::TimeType>>::value)
-          temp.reserve(std::lround(size_part*inter_event_time_dist.lambda()));
-      else if constexpr (std::is_same<Distribution,
-          truncated_power_law_distribution<
-                typename EdgeT::TimeType>>::value)
-          temp.reserve(std::lround(size_part/inter_event_time_dist.mean));
-      else if constexpr (std::is_same<Distribution,
-          std::poisson_distribution<typename EdgeT::TimeType>>::value)
-          temp.reserve(std::lround(size_part/inter_event_time_dist.mean));
     }
 
     for (const auto& e: base_net.edges()) {
