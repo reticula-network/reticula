@@ -70,7 +70,7 @@ namespace dag {
       pred.reserve(pred.size()+res.size());
       std::sort(res.begin(), res.end());
       std::copy(
-          res.rbegin(), res.rend(),
+          res.begin(), res.end(),
           std::back_inserter(pred));
       std::inplace_merge(pred.begin(), pred.begin()+middle_offset, pred.end());
     }
