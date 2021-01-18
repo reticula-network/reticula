@@ -84,7 +84,7 @@ namespace dag {
       temp_edge_iter++;
     }
 
-  if (only_roots)
+    if (only_roots)
       out_component_ests.shrink_to_fit();
 
     return out_component_ests;
@@ -101,13 +101,13 @@ namespace dag {
       size_t seed,
       bool only_roots) {
     std::unordered_map<EdgeT, temporal_component<EdgeT, EstimatorT>>
-      out_components;
+      in_components;
     std::vector<
       std::pair<EdgeT, temporal_component<EdgeT, ReadOnlyEstimatorT>>>
-        out_component_ests;
-    out_component_ests.reserve(eg.events_cause().size());
+        in_component_ests;
+    in_component_ests.reserve(eg.events_cause().size());
 
-    std::unordered_map<EdgeT, size_t> in_degrees;
+    std::unordered_map<EdgeT, size_t> out_degrees;
 
     auto temp_edge_iter = eg.events_effect().begin();
     auto end = eg.events_effect().end();
@@ -117,43 +117,43 @@ namespace dag {
       implicit_event_graph<EdgeT, AdjacencyProbT>>;
 
     while (temp_edge_iter < end) {
-      out_components.emplace(*temp_edge_iter, seed);
+      in_components.emplace(*temp_edge_iter, seed);
 
       std::vector<EdgeT> successors = eg.successors(
           *temp_edge_iter, reducable);
       std::vector<EdgeT> predecessors = eg.predecessors(
           *temp_edge_iter, reducable);
 
-      in_degrees[*temp_edge_iter] = successors.size();
+      out_degrees[*temp_edge_iter] = successors.size();
 
       for (const auto& other: predecessors) {
-        out_components.at(*temp_edge_iter).merge(out_components.at(other));
+        in_components.at(*temp_edge_iter).merge(in_components.at(other));
 
-        if (--in_degrees.at(other) == 0) {
+        if (--out_degrees.at(other) == 0) {
           if (!only_roots)
-            out_component_ests.emplace_back(other,
-                out_components.at(other));
-          out_components.erase(other);
-          in_degrees.erase(other);
+            in_component_ests.emplace_back(other,
+                in_components.at(other));
+          in_components.erase(other);
+          out_degrees.erase(other);
         }
       }
 
       auto nodes = temp_edge_iter->mutator_verts();
-      out_components.at(*temp_edge_iter).insert(*temp_edge_iter, nodes);
+      in_components.at(*temp_edge_iter).insert(*temp_edge_iter, nodes);
 
-      if (in_degrees.at(*temp_edge_iter) == 0) {
-        out_component_ests.emplace_back(*temp_edge_iter,
-          out_components.at(*temp_edge_iter));
-        out_components.erase(*temp_edge_iter);
-        in_degrees.erase(*temp_edge_iter);
+      if (out_degrees.at(*temp_edge_iter) == 0) {
+        in_component_ests.emplace_back(*temp_edge_iter,
+          in_components.at(*temp_edge_iter));
+        in_components.erase(*temp_edge_iter);
+        out_degrees.erase(*temp_edge_iter);
       }
       temp_edge_iter++;
     }
 
-  if (only_roots)
-      out_component_ests.shrink_to_fit();
+    if (only_roots)
+      in_component_ests.shrink_to_fit();
 
-    return out_component_ests;
+    return in_component_ests;
   }
 
   template <class EdgeT,
