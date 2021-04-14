@@ -12,6 +12,10 @@ namespace dag {
   undirected_network<VertT> ba_random_graph(size_t n, size_t m,
       std::mt19937_64& generator);
 
+  /**
+    Random events with the given `inter_event_time_dist` and `residual_time_dist`
+    for generating time to first event.
+    */
   template <class EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(
@@ -19,6 +23,19 @@ namespace dag {
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       ResDistribution residual_time_dist,
+      size_t seed,
+      size_t size_hint = 0);
+
+  /**
+    Random events with the given inter-event time distribution and `max_t`
+    units of time burn-in before being recorded.
+    */
+  template <class EdgeT, class Distribution>
+  std::vector<EdgeT>
+  random_events(
+      const undirected_network<typename EdgeT::VertexType>& base_net,
+      typename EdgeT::TimeType max_t,
+      Distribution inter_event_time_dist,
       size_t seed,
       size_t size_hint = 0);
 
