@@ -104,7 +104,7 @@ namespace dag {
   }
 
   template <typename VertexType>
-  bool ::dag::effect_lt(
+  bool effect_lt(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
     return (a.effect_comp_tuple() < b.effect_comp_tuple());
@@ -118,21 +118,6 @@ namespace dag {
   }
 
   template <typename VertexType>
-  std::ostream& operator<<(
-      std::ostream &os,
-      const directed_edge<VertexType>& e) {
-    return os << e.v1 << " " << e.v2;
-  }
-
-  template <typename VertexType>
-  std::istream& operator>>(
-      std::istream &is,
-      directed_edge<VertexType>& e) {
-    return is >> e.v1 >> e.v2;
-  }
-
-
-  template <typename VertexType>
   inline std::tuple<VertexType, VertexType>
   directed_edge<VertexType>::cause_comp_tuple() const {
     return std::make_tuple(v1, v2);
@@ -143,6 +128,20 @@ namespace dag {
   inline std::tuple<VertexType, VertexType>
   directed_edge<VertexType>::effect_comp_tuple() const {
       return std::make_tuple(v2, v1);
+  }
+
+  template <typename VertexType>
+  std::ostream& operator<<(
+      std::ostream &os,
+      const dag::directed_edge<VertexType>& e) {
+    return os << e.v1 << " " << e.v2;
+  }
+
+  template <typename VertexType>
+  std::istream& operator>>(
+      std::istream &is,
+      dag::directed_edge<VertexType>& e) {
+    return is >> e.v1 >> e.v2;
   }
 
 
@@ -193,7 +192,7 @@ namespace dag {
   }
 
   template <typename VertexType>
-  bool ::dag::effect_lt(
+  bool effect_lt(
       const undirected_edge<VertexType>& a,
       const undirected_edge<VertexType>& b) {
       return (a.comp_tuple() < b.comp_tuple());
@@ -210,21 +209,21 @@ namespace dag {
   }
 
   template <typename VertexType>
+  inline std::tuple<VertexType, VertexType>
+  undirected_edge<VertexType>::comp_tuple() const {
+    return std::make_tuple(std::min(v1, v2), std::max(v1, v2));
+  }
+
+  template <typename VertexType>
   std::ostream& operator<<(
       std::ostream &os,
-      const undirected_edge<VertexType>& e) {
+      const dag::undirected_edge<VertexType>& e) {
     return os << e.v1 << " " << e.v2;
   }
 
   template <typename VertexType>
   std::istream& operator>>(std::istream &is,
-      undirected_edge<VertexType>& e) {
+      dag::undirected_edge<VertexType>& e) {
     return is >> e.v1 >> e.v2;
-  }
-
-  template <typename VertexType>
-  inline std::tuple<VertexType, VertexType>
-  undirected_edge<VertexType>::comp_tuple() const {
-    return std::make_tuple(std::min(v1, v2), std::max(v1, v2));
   }
 }  // namespace dag

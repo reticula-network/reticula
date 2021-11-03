@@ -35,18 +35,6 @@ namespace dag {
     static constexpr bool value = true;
   };
 
-  template <typename VertexType>
-  [[nodiscard]]
-  bool effect_lt(
-      const directed_edge<VertexType>& a,
-      const directed_edge<VertexType>& b);
-
-  template <typename VertexType>
-  [[nodiscard]]
-  bool effect_lt(
-      const undirected_edge<VertexType>& a,
-      const undirected_edge<VertexType>& b);
-
   /**
     A directed edges (or link) indicate unsymertic relation or orientation in
     the relationship between the two nodes. Tail and head vertices allude to a
@@ -152,7 +140,7 @@ namespace dag {
      */
     template <typename VertexType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt(
+    friend bool effect_lt(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
 
@@ -277,7 +265,7 @@ namespace dag {
      */
     template <typename VertexType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt(
+    friend bool effect_lt(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
 
