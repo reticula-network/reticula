@@ -35,19 +35,17 @@ namespace dag {
     static constexpr bool value = true;
   };
 
-  template <class VertT>
+  template <typename VertexType>
+  [[nodiscard]]
   bool effect_lt(
-      const directed_edge<VertT>& a,
-      const directed_edge<VertT>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-  }
+      const directed_edge<VertexType>& a,
+      const directed_edge<VertexType>& b);
 
-  template <class VertT>
+  template <typename VertexType>
+  [[nodiscard]]
   bool effect_lt(
-      const undirected_edge<VertT>& a,
-      const undirected_edge<VertT>& b) {
-      return (a < b);
-  }
+      const undirected_edge<VertexType>& a,
+      const undirected_edge<VertexType>& b);
 
   /**
     A directed edges (or link) indicate unsymertic relation or orientation in
@@ -73,8 +71,7 @@ namespace dag {
       or the relation.
       @param v2 Head end of the edge, often the receiving end of an effect.
      */
-    directed_edge(const VertexType v1, const VertexType v2)
-      : v1(v1), v2(v2) {}
+    directed_edge(const VertexType v1, const VertexType v2);
 
 
     /**
@@ -85,7 +82,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_out_incident(const VertexType vert) const { return (v1 == vert); }
+    is_out_incident(const VertexType vert) const;
 
     /**
       A directed edge is in_incident to vertex `v` iff `v` is the head vertex
@@ -95,7 +92,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_in_incident(const VertexType vert) const  { return (v2 == vert); }
+    is_in_incident(const VertexType vert) const;
 
     /**
       A directed edge is incident to vertex `v` iff `v` is the head or tail
@@ -104,60 +101,58 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const {
-      return (is_out_incident(vert) || is_in_incident(vert));
-    }
+    inline bool is_incident(const VertexType vert) const;
 
     /**
       List of all vertices that initiate (cause) the effects of the
       relationship. For directed edges this is equal to the tail vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const { return {v1}; }
+    std::vector<VertexType> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
       relationship. For directed edges this is equal to the head vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const { return {v2}; }
+    std::vector<VertexType> mutated_verts() const;
 
     /**
       Simply defined as negation of equal operator `operator==`.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b) { return !(a == b); }
+        const directed_edge<VertexType>& b);
 
     /**
       Two directed edges are equal if their head and tail vertices are
       correspondingly equal to each others.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator==(
         const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b) {
-      return (a.cause_comp_tuple() == b.cause_comp_tuple());
-    }
+        const directed_edge<VertexType>& b);
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where tail
       vertices compared before head vertices.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator<(
         const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b) {
-      return (a.cause_comp_tuple() < b.cause_comp_tuple());
-    }
+        const directed_edge<VertexType>& b);
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where head
       vertices compared before tail vertices.
      */
+    template <typename VertexType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt<>(
+    friend bool ::dag::effect_lt(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
 
@@ -167,42 +162,37 @@ namespace dag {
       that an effect transmitted through one edge logically cannot be
       transmitted through the other.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b) {
-      return (a.v2 == b.v1);
-    }
+        const directed_edge<VertexType>& b);
 
     /**
       Inserts undirected edge formatted as `v1 v2` where `v1` and `v2` are
       tail and head vertex respectively.
      */
-    friend std::ostream& operator<<(std::ostream &os,
-        const directed_edge<VertexType>& e) {
-      return os << e.v1 << " " << e.v2;
-    }
+    template <typename VertexType>
+    friend std::ostream& operator<<(
+        std::ostream &os,
+        const directed_edge<VertexType>& e);
 
     /**
       Extracts directed edge from an input stream formatted as `v1 v2` where
       `v1` and `v2` are tail and head vertex respectively.
      */
-    friend std::istream& operator>>(std::istream &is,
-        directed_edge<VertexType>& e) {
-      return is >> e.v1 >> e.v2;
-    }
+    template <typename VertexType>
+    friend std::istream& operator>>(
+        std::istream &is,
+        directed_edge<VertexType>& e);
 
   private:
     VertexType v1, v2;
     [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> cause_comp_tuple() const {
-      return std::make_tuple(v1, v2);
-    }
+    inline std::tuple<VertexType, VertexType> cause_comp_tuple() const;
 
     [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> effect_comp_tuple() const {
-      return std::make_tuple(v2, v1);
-    }
+    inline std::tuple<VertexType, VertexType> effect_comp_tuple() const;
 
     friend struct std::hash<directed_edge<VertexType>>;
     friend struct hll::hash<directed_edge<VertexType>>;
@@ -230,8 +220,7 @@ namespace dag {
       dealing with IO functions. IO functions try to preserve the same order as
       of vertices from input string in the output string.
      */
-    undirected_edge(const VertexType v1, const VertexType v2)
-      : v1(v1), v2(v2) {}
+    undirected_edge(const VertexType v1, const VertexType v2);
 
     /**
       An undirected edge is incident to vertex `v` iff `v` is either of its
@@ -240,57 +229,55 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const {
-      return (v1 == vert || v2 == vert);
-    }
+    inline bool is_incident(const VertexType vert) const;
 
     /**
       In an undirected edge both edges might act as source or cause of an
       effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const { return {v1, v2}; }
+    std::vector<VertexType> mutator_verts() const;
 
     /**
       In an undirected edge both edges might act as target of an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const { return {v1, v2}; }
+    std::vector<VertexType> mutated_verts() const;
 
     /**
       Simply defined as negation of equal operator `operator==`.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator!=(
         const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b) { return !(a == b); }
+        const undirected_edge<VertexType>& b);
 
     /**
       Two directed edges are equal if their (unordered) set of vertices are
       equal.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator==(
         const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b) {
-      return (a.comp_tuple() == b.comp_tuple());
-    }
+        const undirected_edge<VertexType>& b);
 
     /**
       Defines an arbitrary weak ordering along with `operator==`.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool operator<(
         const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b) {
-      return (a.comp_tuple() < b.comp_tuple());
-    }
+        const undirected_edge<VertexType>& b);
 
     /**
       Exactly the same as `operator<`.
      */
+    template <typename VertexType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt<>(
+    friend bool ::dag::effect_lt(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
 
@@ -300,39 +287,31 @@ namespace dag {
       effect transmitted through one edge logically cannot be transmitted
       through the other.
      */
+    template <typename VertexType>
     [[nodiscard]]
     friend bool adjacent(
         const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b) {
-      return (a.v1 == b.v1 ||
-              a.v1 == b.v2 ||
-              a.v2 == b.v1 ||
-              a.v2 == b.v2);
-    }
+        const undirected_edge<VertexType>& b);
 
     /**
       Inserts undirected edge formatted as `v1 v2` where `v1` and `v2` are
       vertices in the same order as initialiser.
      */
+    template <typename VertexType>
     friend std::ostream& operator<<(std::ostream &os,
-        const undirected_edge<VertexType>& e) {
-      return os << e.v1 << " " << e.v2;
-    }
+        const undirected_edge<VertexType>& e);
 
     /**
       Extracts undirected edge from an input stream formatted as `v1 v2`.
      */
+    template <typename VertexType>
     friend std::istream& operator>>(std::istream &is,
-        undirected_edge<VertexType>& e) {
-      return is >> e.v1 >> e.v2;
-    }
+        undirected_edge<VertexType>& e);
 
   private:
     VertexType v1, v2;
     [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> comp_tuple() const {
-      return std::make_tuple(std::min(v1, v2), std::max(v1, v2));
-    }
+    inline std::tuple<VertexType, VertexType> comp_tuple() const;
 
     friend struct std::hash<undirected_edge<VertexType>>;
     friend struct hll::hash<undirected_edge<VertexType>>;
