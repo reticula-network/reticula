@@ -49,27 +49,6 @@ namespace dag {
     static constexpr bool value = false;
   };
 
-  template <class VertT, class TimeT>
-  bool effect_lt(
-      const undirected_temporal_edge<VertT, TimeT>& a,
-      const undirected_temporal_edge<VertT, TimeT>& b) {
-      return (a < b);
-  }
-
-  template <class VertT, class TimeT>
-  bool effect_lt(
-      const directed_temporal_edge<VertT, TimeT>& a,
-      const directed_temporal_edge<VertT, TimeT>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-  }
-
-  template <class VertT, class TimeT>
-  bool effect_lt(
-      const directed_delayed_temporal_edge<VertT, TimeT>& a,
-      const directed_delayed_temporal_edge<VertT, TimeT>& b) {
-      return (a.effect_comp_tuple() < b.effect_comp_tuple());
-  }
-
   /**
     A directed temporal edges (or event) indicate instantaneous unsymertic
     relation or orientation between the two nodes attributable to a specific
@@ -104,8 +83,7 @@ namespace dag {
       @param time Timestamp at which the event "happened".
      */
     directed_temporal_edge(
-        const VertexType v1, const VertexType v2, const TimeType time)
-        : v1(v1), v2(v2), time(time) {}
+        const VertexType v1, const VertexType v2, const TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -113,20 +91,20 @@ namespace dag {
      */
     [[nodiscard]]
     directed_edge<VertT>
-    static_projection() { return directed_edge<VertT>(v1, v2); }
+    static_projection();
 
     /**
       The timestamp that the effect is received by head vertex. For directed
       temporal edges this is equal to the `cause_time` of the edge.
      */
     [[nodiscard]]
-    TimeType effect_time() const { return time; }
+    TimeType effect_time() const;
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    TimeType cause_time() const { return time; }
+    TimeType cause_time() const;
 
     /**
       A directed temporal edge is out_incident to vertex `v` iff `v` is the
@@ -135,7 +113,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    bool is_out_incident(const VertexType vert) const { return (v1 == vert); }
+    bool is_out_incident(const VertexType vert) const;
 
     /**
       A directed temporal edge is in_incident to vertex `v` iff `v` is the head
@@ -144,7 +122,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    bool is_in_incident(const VertexType vert) const  { return (v2 == vert); }
+    bool is_in_incident(const VertexType vert) const;
 
     /**
       A directed temporal edge is incident to vertex `v` iff `v` is the head or
@@ -153,9 +131,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const {
-      return (v1 == vert || v2 == vert);
-    }
+    bool is_incident(const VertexType vert) const;
 
     /**
       List of all vertices that initiate (cause) the effects of the
@@ -163,7 +139,7 @@ namespace dag {
       vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const { return {v1}; }
+    std::vector<VertexType> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -171,7 +147,7 @@ namespace dag {
       vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const { return {v2}; }
+    std::vector<VertexType> mutated_verts() const;
 
     /**
       Two directed temporal edges are adjacent if head of the first one is the
@@ -180,51 +156,47 @@ namespace dag {
       effect transmitted through one edge logically cannot be transmitted
       through the other.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b) {
-      return ((b.time > a.time) && (a.v2 == b.v1));
-    }
+        const directed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Simply defined as negation of equal operator `operator==`.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b) {
-      return !(a == b);
-    }
+        const directed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Two directed temporal edges are equal if their casue time and head and
       tail vertices are correspondingly equal to each others.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.cause_comp_tuple() == b.cause_comp_tuple());
-    }
-
+        const directed_temporal_edge<VertexType, TimeType>& b);
     /**
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compare then tail vertices and then head vertices.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.cause_comp_tuple() < b.cause_comp_tuple());
-    }
+        const directed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compared then head vertices and then tail vertices.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt<>(
+    friend bool effect_lt(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
 
@@ -232,34 +204,27 @@ namespace dag {
       Inserts undirected edge formatted as `v1 v2 time` where `v1` and `v2` are
       tail and head vertex respectively and `time` is the cause time.
      */
-    friend std::ostream& operator<<(std::ostream& os,
-        const directed_temporal_edge<VertexType, TimeType>& e) {
-      return os << e.v1 << " " << e.v2 << " " << e.time;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const directed_temporal_edge<VertexType, TimeType>& e);
 
     /**
       Extracts directed edge from an input stream formatted as `v1 v2 time`
       where `v1` and `v2` are tail and head vertex respectively and time is the
       cause time.
      */
-    friend std::istream& operator>>(std::istream& is,
-        directed_temporal_edge<VertexType, TimeType>& e) {
-      return is >> e.v1 >> e.v2 >> e.time;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::istream& operator>>(
+        std::istream& is,
+        directed_temporal_edge<VertexType, TimeType>& e);
 
   private:
     VertexType v1, v2;
     TimeType time;
 
-    std::tuple<TimeType, VertexType, VertexType>
-    cause_comp_tuple() const {
-      return std::make_tuple(time, v1, v2);
-    }
-
-    std::tuple<TimeType, VertexType, VertexType>
-    effect_comp_tuple() const {
-      return std::make_tuple(time, v2, v1);
-    }
+    std::tuple<TimeType, VertexType, VertexType> cause_comp_tuple() const;
+    std::tuple<TimeType, VertexType, VertexType> effect_comp_tuple() const;
 
     friend struct std::hash<directed_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<directed_temporal_edge<VertexType, TimeType>>;
@@ -317,8 +282,7 @@ namespace dag {
      */
     directed_delayed_temporal_edge(
         const VertexType v1, const VertexType v2,
-        const TimeType time, const TimeType delay)
-      : v1(v1), v2(v2), time(time), delay(delay) {}
+        const TimeType time, const TimeType delay);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -326,7 +290,7 @@ namespace dag {
      */
     [[nodiscard]]
     directed_edge<VertT>
-    static_projection() { return directed_edge<VertT>(v1, v2); }
+    static_projection();
 
     /**
       The timestamp that the effect is received by head vertex. For directed
@@ -334,13 +298,13 @@ namespace dag {
       edge.
      */
     [[nodiscard]]
-    TimeType effect_time() const { return time+delay; }
+    TimeType effect_time() const;
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    TimeType cause_time() const { return time; }
+    TimeType cause_time() const;
 
     /**
       A directed delayed temporal edge is out_incident to vertex `v` iff `v` is
@@ -349,7 +313,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    bool is_out_incident(const VertexType vert) const { return (v1 == vert); }
+    bool is_out_incident(const VertexType vert) const;
 
     /**
       A directed delayed temporal edge is in_incident to vertex `v` iff `v` is
@@ -358,7 +322,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    bool is_in_incident(const VertexType vert) const  { return (v2 == vert); }
+    bool is_in_incident(const VertexType vert) const;
 
     /**
       A directed delayed temporal edge is incident to vertex `v` iff `v` is the
@@ -367,9 +331,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const {
-      return (v1 == vert || v2 == vert);
-    }
+    bool is_incident(const VertexType vert) const;
 
     /**
       List of all vertices that initiate (cause) the effects of the
@@ -377,7 +339,7 @@ namespace dag {
       tail vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const { return {v1}; }
+    std::vector<VertexType> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -385,7 +347,7 @@ namespace dag {
       head vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const { return {v2}; }
+    std::vector<VertexType> mutated_verts() const;
 
     /**
       Two directed delayed temporal edges are adjacent if head of the first one
@@ -394,74 +356,67 @@ namespace dag {
       edges ususlly mean that an effect transmitted through one edge logically
       cannot be transmitted through the other.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-      return ((b.time > a.effect_time()) && (a.v2 == b.v1));
-    }
+        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Simply defined as negation of equal operator `operator==`.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-      return !(a == b);
-    }
+        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Two directed temporal edges are equal if their cause times, effect times
       and head and tail vertices are correspondingly equal to each others.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.cause_comp_tuple() == b.cause_comp_tuple());
-    }
+        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compare then effect times then tail vertices and finally
       head vertices.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-      return (a.cause_comp_tuple() < b.cause_comp_tuple());
-    }
+        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt<>(
+    friend bool effect_lt(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
-    friend std::ostream& operator<<(std::ostream& os,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-      return os << e.v1 << " " << e.v2 << " " << e.time << " " << e.delay;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const directed_delayed_temporal_edge<VertexType, TimeType>& e);
 
-    friend std::istream& operator>>(std::istream& is,
-        directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-      return is >> e.v1 >> e.v2 >> e.time >> e.delay;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::istream& operator>>(
+        std::istream& is,
+        directed_delayed_temporal_edge<VertexType, TimeType>& e);
 
   private:
     VertexType v1, v2;
     TimeType time, delay;
 
     std::tuple<TimeType, TimeType, VertexType, VertexType>
-    cause_comp_tuple() const {
-      return std::make_tuple(time, time+delay, v1, v2);
-    }
+    cause_comp_tuple() const;
 
     std::tuple<TimeType, TimeType, VertexType, VertexType>
-    effect_comp_tuple() const {
-      return std::make_tuple(time+delay, time, v2, v1);
-    }
+    effect_comp_tuple() const;
 
     friend struct
     std::hash<directed_delayed_temporal_edge<VertexType, TimeType>>;
@@ -494,8 +449,7 @@ namespace dag {
 
     undirected_temporal_edge() = default;
     undirected_temporal_edge(
-        const VertexType v1, const VertexType v2, const TimeType time)
-        : v1(v1), v2(v2), time(time) {}
+        const VertexType v1, const VertexType v2, const TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -503,20 +457,20 @@ namespace dag {
      */
     [[nodiscard]]
     undirected_edge<VertT>
-    static_projection() { return undirected_edge<VertT>(v1, v2); }
+    static_projection();
 
     /**
       The timestamp that the effect is received by head vertex. For undirected
       temporal edges this is equal to the `cause_time` of the edge.
      */
     [[nodiscard]]
-    TimeType effect_time() const { return time; }
+    TimeType effect_time() const;
 
     /**
       The timestamp that the effect is initiated by tail vertex.
      */
     [[nodiscard]]
-    TimeType cause_time() const { return time; }
+    TimeType cause_time() const;
 
     /**
       An undirected temporal edge is incident to vertex `v` iff `v` is either of
@@ -525,22 +479,20 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const {
-      return (v1 == vert || v2 == vert);
-    }
+    bool is_incident(const VertexType vert) const;
 
     /**
       In an undirected temporal edge both edges might act as source or cause of
       an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const { return {v1, v2}; }
+    std::vector<VertexType> mutator_verts() const;
 
     /**
       In an undirected edge both edges might act as target of an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const { return {v1, v2}; }
+    std::vector<VertexType> mutated_verts() const;
 
     /**
       Two undirected temporal edges are adjacent if they share at least on node
@@ -548,20 +500,16 @@ namespace dag {
       adjacency relation between edges ususlly mean that an effect transmitted
       through one edge logically cannot be transmitted through the other.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b) {
-      return ((b.time > a.time) &&
-                (a.v1 == b.v1 ||
-                 a.v1 == b.v2 ||
-                 a.v2 == b.v1 ||
-                 a.v2 == b.v2));
-    }
+        const undirected_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Simply defined as negation of equal operator `operator==`.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
       const undirected_temporal_edge<VertexType, TimeType>& a,
@@ -573,29 +521,28 @@ namespace dag {
       Two undirected temporal edges are equal if the (unordered) set of their
       vertices and their cause times are equal.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b) {
-      return (a.comp_tuple() == b.comp_tuple());
-    }
+        const undirected_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Defines a weak ordering along with `operator==` that would rank events
       based on cause times first.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b) {
-      return (a.comp_tuple() < b.comp_tuple());
-    }
+        const undirected_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Exactly the same as `operator<`.
      */
+    template <typename VertexType, typename TimeType>
     [[nodiscard]]
-    friend bool ::dag::effect_lt<>(
+    friend bool effect_lt(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);
 
@@ -604,27 +551,25 @@ namespace dag {
       `v2` are vertex in the same order as initialiser and `time` is the cause
       time.
      */
-    friend std::ostream& operator<<(std::ostream& os,
-        const undirected_temporal_edge<VertexType, TimeType>& e) {
-      return os <<  e.v1 << " " << e.v2 << " " << e.time;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const undirected_temporal_edge<VertexType, TimeType>& e);
 
     /**
       Extracts undirected temporal edge from an input stream formatted as
       `v1 v2 time`.
      */
-    friend std::istream& operator>>(std::istream& is,
-        undirected_temporal_edge<VertexType, TimeType>& e) {
-      return is >> e.v1 >> e.v2 >> e.time;
-    }
+    template <typename VertexType, typename TimeType>
+    friend std::istream& operator>>(
+        std::istream& is,
+        undirected_temporal_edge<VertexType, TimeType>& e);
 
   private:
     VertexType v1, v2;
     TimeType time;
 
-    std::tuple<TimeType, VertexType, VertexType> comp_tuple() const {
-      return std::make_tuple(time, std::min(v1, v2), std::max(v1, v2));
-    }
+    std::tuple<TimeType, VertexType, VertexType> comp_tuple() const;
 
     friend struct std::hash<undirected_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<undirected_temporal_edge<VertexType, TimeType>>;
