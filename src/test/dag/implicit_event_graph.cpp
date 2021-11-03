@@ -95,7 +95,10 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
         dag::adjacency_prob::deterministic<EdgeType>>
           eg2(list2, prob, (size_t)0);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
-          Equals(std::vector<EdgeType>({EdgeType(2, 3, 1.0)})));
+          UnorderedEquals(
+            std::vector<EdgeType>({
+              EdgeType(2, 3, 1.0),
+              EdgeType(1, 2, 2.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
@@ -120,7 +123,10 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
         dag::adjacency_prob::deterministic<EdgeType>>
           eg2(list2, prob, (size_t)0);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
-          Equals(std::vector<EdgeType>({EdgeType(2, 3, 1.0)})));
+          UnorderedEquals(
+            std::vector<EdgeType>({
+              EdgeType(2, 3, 1.0),
+              EdgeType(1, 2, 2.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
