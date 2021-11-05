@@ -5,6 +5,7 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
+#include "../../../include/dag/edges.hpp"
 #include "../../../include/dag/static_edges.hpp"
 
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
@@ -15,6 +16,10 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
     REQUIRE(a == dag::undirected_edge<int>(1, 2));
     REQUIRE(b == dag::undirected_edge<int>(3, 4));
     REQUIRE(c == dag::undirected_edge<int>(5, 6));
+  }
+
+  SECTION("comply with static_edge concept") {
+    REQUIRE(dag::static_edges<dag::undirected_edge>);
   }
 
   SECTION("have correct properties") {

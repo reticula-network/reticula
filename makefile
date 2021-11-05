@@ -16,7 +16,7 @@ CXX = g++
 CC = $(CXX)
 CXXFLAGS = -Werror -Wall -Wextra -Wconversion \
 					 -O3 \
-					 -std=c++17 \
+					 -std=c++20 \
 					 -g \
 					 -Idep/catch2/include\
 					 -Idep/HyperLogLog/include\
