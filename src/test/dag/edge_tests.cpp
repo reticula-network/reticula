@@ -162,9 +162,12 @@ TEST_CASE("directed delayed temporal edges",
   }
 
   SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(dag::temporal_edge<dag::directed_delayed_temporal_edge<int, int>>);
-    STATIC_REQUIRE(dag::temporal_edge<dag::directed_delayed_temporal_edge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(dag::temporal_edge<dag::directed_delayed_temporal_edge<std::size_t, double>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<int, int>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<std::size_t, std::size_t>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<std::size_t, double>>);
   }
 
   SECTION("compare correctly") {
