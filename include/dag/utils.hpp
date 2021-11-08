@@ -3,6 +3,7 @@
 
 #include <string>
 #include <functional>
+#include <stdexcept>
 
 #define DAG_UTIL_GOLDEN_RATIO 0x9E3779B97F4A7C15
 
