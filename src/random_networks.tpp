@@ -1,5 +1,3 @@
-#include <random>
-
 namespace dag {
   template <class RealType>
   truncated_power_law_distribution<RealType>::truncated_power_law_distribution(
@@ -24,7 +22,7 @@ namespace dag {
               (1.0/(exponent+1.0)))/mean;
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   undirected_network<VertT>
   gnp_random_graph(size_t n, double p, std::mt19937_64& generator) {
     if (p > 1.0 || p < 0.0)
@@ -65,7 +63,7 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   undirected_network<VertT>
   ba_random_graph(size_t n, size_t m, std::mt19937_64& generator) {
     static_assert(std::is_integral<VertT>::value,
@@ -112,7 +110,7 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <class EdgeT, class Distribution, class ResDistribution>
+  template <temporal_edge EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
@@ -141,7 +139,7 @@ namespace dag {
     return temp;
   }
 
-  template <class EdgeT, class Distribution>
+  template <temporal_edge EdgeT, class Distribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,

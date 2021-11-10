@@ -18,15 +18,15 @@ namespace dag {
   is_reducable_v = is_reducable<EventGraph>::value;
 
 
-  template <class EdgeT>
+  template <temporal_edge EdgeT>
   struct is_reducable<
     dag::implicit_event_graph<EdgeT,
       dag::adjacency_prob::deterministic<EdgeT>>> {
     static constexpr bool value = dag::is_undirected_v<EdgeT>;
   };
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT,
            template<typename> class ReadOnlyEstimatorT>
   std::vector<std::pair<EdgeT,
@@ -90,8 +90,8 @@ namespace dag {
     return out_component_ests;
   }
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT,
            template<typename> class ReadOnlyEstimatorT>
   std::vector<std::pair<EdgeT,
@@ -156,8 +156,8 @@ namespace dag {
     return in_component_ests;
   }
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   _generic_out_component(
@@ -196,7 +196,7 @@ namespace dag {
   }
 
 
-  template <class EdgeT,
+  template <temporal_edge EdgeT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   _deterministic_out_component(
@@ -288,7 +288,7 @@ namespace dag {
   }
 
 
-  template <class EdgeT,
+  template <temporal_edge EdgeT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   _deterministic_in_component(
@@ -384,8 +384,8 @@ namespace dag {
   }
 
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   _out_component(
@@ -408,8 +408,8 @@ namespace dag {
           eg, root, seed, node_size_est, edge_size_est, revert_graph);
   }
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   out_component(
@@ -423,8 +423,8 @@ namespace dag {
         node_size_hint, edge_size_hint, false);
   }
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   in_component(
@@ -438,8 +438,8 @@ namespace dag {
         node_size_hint, edge_size_hint, true);
   }
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   std::vector<temporal_component<EdgeT, EstimatorT>>
   weakly_connected_components(

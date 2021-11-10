@@ -1,7 +1,7 @@
 #include <set>
 
 namespace dag {
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   network<EdgeT>::network(const std::vector<EdgeT>& edges)
   : _edges_cause{edges} {
     std::sort(_edges_cause.begin(), _edges_cause.end());
@@ -41,7 +41,7 @@ namespace dag {
     }
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   size_t network<EdgeT>::in_degree(
       const typename EdgeT::VertexType& v) const {
     if (instantaneous_undirected)
@@ -50,13 +50,13 @@ namespace dag {
     return in_edges(v).size();
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   size_t network<EdgeT>::out_degree(
       const typename EdgeT::VertexType& v) const {
     return out_edges(v).size();
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   size_t network<EdgeT>::degree(
       const typename EdgeT::VertexType& v) const {
     if (instantaneous_undirected)
@@ -65,7 +65,7 @@ namespace dag {
     return incident_edges(v).size();
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<EdgeT>
   network<EdgeT>::in_edges(
       const typename EdgeT::VertexType& v) const {
@@ -79,7 +79,7 @@ namespace dag {
       return p->second;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
   network<EdgeT>::in_edges() const {
     if (instantaneous_undirected)
@@ -87,7 +87,7 @@ namespace dag {
     return _in_edges;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<EdgeT>
   network<EdgeT>::out_edges(
       const typename EdgeT::VertexType& v) const {
@@ -98,13 +98,13 @@ namespace dag {
       return p->second;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
   network<EdgeT>::out_edges() const {
     return _out_edges;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<EdgeT>
   network<EdgeT>::incident_edges(
       const typename EdgeT::VertexType& v) const {
@@ -123,7 +123,7 @@ namespace dag {
 
 
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::predecessors(const typename EdgeT::VertexType& v) const {
     if (instantaneous_undirected)
@@ -140,7 +140,7 @@ namespace dag {
     return std::vector<typename EdgeT::VertexType>(preds.begin(), preds.end());
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::successors(const typename EdgeT::VertexType& v) const {
     std::unordered_set<typename EdgeT::VertexType> succ;
@@ -154,7 +154,7 @@ namespace dag {
     return std::vector<typename EdgeT::VertexType>(succ.begin(), succ.end());
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::neighbours(const typename EdgeT::VertexType& v) const {
     std::vector<typename EdgeT::VertexType> inc(successors(v));
@@ -169,19 +169,19 @@ namespace dag {
     return inc;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges() const {
     return _edges_cause;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges_cause() const {
     return _edges_cause;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges_effect() const {
     if (instantaneous_undirected)
@@ -190,7 +190,7 @@ namespace dag {
     return _edges_effect;
   }
 
-  template <typename EdgeT>
+  template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::vertices() const {
     std::set<network<EdgeT>::VertexType> verts;

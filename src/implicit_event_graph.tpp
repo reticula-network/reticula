@@ -4,14 +4,14 @@
 #include "../include/dag/adjacency_prob.hpp"
 
 namespace dag {
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       const std::vector<EdgeT>& events,
       const AdjacencyProbT& prob,
       size_t seed) :
     _seed(seed), _temp(events), _prob(prob) {}
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
@@ -19,32 +19,31 @@ namespace dag {
     _seed(seed), _temp(temp), _prob(prob) {}
 
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   AdjacencyProbT
   implicit_event_graph<EdgeT, AdjacencyProbT>::adjacency_prob() const {
     return _prob;
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   size_t
   implicit_event_graph<EdgeT, AdjacencyProbT>::seed() const {
     return _seed;
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjacencyProbT>::events_cause() const {
     return _temp.edges_cause();
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjacencyProbT>::events_effect() const {
     return _temp.edges_effect();
   }
 
-
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   implicit_event_graph<EdgeT, AdjacencyProbT>::time_window() const {
     if (_temp.edges().empty())
@@ -55,8 +54,7 @@ namespace dag {
           _temp.edges().back().cause_time());
   }
 
-
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::predecessors(
       const EdgeT& e, bool just_first) const {
@@ -80,7 +78,7 @@ namespace dag {
     return pred;
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::successors(
       const EdgeT& e, bool just_first) const {
@@ -106,7 +104,7 @@ namespace dag {
     return succ;
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::successors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
@@ -143,7 +141,7 @@ namespace dag {
     return res;
   }
 
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::predecessors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {

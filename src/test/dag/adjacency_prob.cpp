@@ -9,6 +9,10 @@
 TEST_CASE("deterministic adjacency probability",
     "[dag::adjacency_prob::deterministic]") {
   using EdgeType = dag::directed_temporal_edge<int, int>;
+
+  STATIC_REQUIRE(dag::adjacency_prob::adjacency_prob<
+    dag::adjacency_prob::deterministic<EdgeType>>);
+
   EdgeType a(1, 2, 3), b(2, 3, 4), c(2, 3, 5);
   dag::adjacency_prob::deterministic<EdgeType> prob1(2);
   dag::adjacency_prob::deterministic<EdgeType> prob2(3);
@@ -25,6 +29,10 @@ TEST_CASE("deterministic adjacency probability",
 TEST_CASE("exponential adjacency probability",
     "[dag::adjacency_prob::exponential]") {
   using EdgeType = dag::directed_temporal_edge<int, int>;
+
+  STATIC_REQUIRE(dag::adjacency_prob::adjacency_prob<
+    dag::adjacency_prob::exponential<EdgeType>>);
+
   EdgeType a(1, 2, 3), b(2, 3, 4), c(2, 3, 5);
   dag::adjacency_prob::exponential<EdgeType> prob1(1);
   dag::adjacency_prob::exponential<EdgeType> prob2(2);

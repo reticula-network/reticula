@@ -3,8 +3,10 @@
 
 #include <random>
 
+#include "network_concepts.hpp"
+
 namespace dag {
-  template <typename VertT>
+  template <network_vertex VertT>
   undirected_network<VertT> gnp_random_graph(size_t n, double p,
       std::mt19937_64& generator);
 
@@ -16,7 +18,7 @@ namespace dag {
     Random events with the given `inter_event_time_dist` and `residual_time_dist`
     for generating time to first event.
     */
-  template <class EdgeT, class Distribution, class ResDistribution>
+  template <temporal_edge EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
@@ -30,7 +32,7 @@ namespace dag {
     Random events with the given inter-event time distribution and `max_t`
     units of time burn-in before being recorded.
     */
-  template <class EdgeT, class Distribution>
+  template <temporal_edge EdgeT, class Distribution>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,

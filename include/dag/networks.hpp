@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "network_concepts.hpp"
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"
 
@@ -17,24 +18,25 @@ namespace dag {
     different behaviour in networks, e.g. a directed network is a network with
     directed edges.
    */
-  template <class EdgeT>
+  template <network_edge EdgeT>
   class network {
   public:
-    /**
-      Type used for labelling vertices, derived from EdgeType of network.
-     */
-    using VertexType = typename EdgeT::VertexType;
-
     /**
       Type of the edges in the network.
      */
     using EdgeType = EdgeT;
 
+    /**
+      Type used for labelling vertices, derived from EdgeType of network.
+     */
+    using VertexType = typename EdgeType::VertexType;
+
     network() = default;
+
     /**
       Create a network from a vector of edges.
      */
-    explicit network(const std::vector<EdgeT>& edges);
+    explicit network(const std::vector<EdgeType>& edges);
 
     /**
       list of unique vertices participating at least in one event in the
