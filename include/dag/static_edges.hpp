@@ -7,30 +7,31 @@
 #include <hyperloglog.hpp>
 
 #include "type_traits.hpp"
+#include "network_concepts.hpp"
 
 namespace dag {
-  template <typename VertT>
+  template <network_vertex VertT>
   class directed_edge;
 
-  template<class VertT>
+  template<network_vertex VertT>
   struct is_instantaneous<directed_edge<VertT>> {
     static constexpr bool value = true;
   };
 
-  template<class VertT>
+  template<network_vertex VertT>
   struct is_undirected<directed_edge<VertT>> {
     static constexpr bool value = false;
   };
 
-  template <typename VertT>
+  template <network_vertex VertT>
   class undirected_edge;
 
-  template<class VertT>
+  template<network_vertex VertT>
   struct is_instantaneous<undirected_edge<VertT>> {
     static constexpr bool value = true;
   };
 
-  template<class VertT>
+  template<network_vertex VertT>
   struct is_undirected<undirected_edge<VertT>> {
     static constexpr bool value = true;
   };
@@ -43,7 +44,7 @@ namespace dag {
     @tparam VertT Type used for distinguishing vertices. Recommanded to use
     integral types like `int`, `size_t` or `uint8_t`.
   */
-  template <typename VertT>
+  template <network_vertex VertT>
   class directed_edge {
   public:
     /**
@@ -108,7 +109,7 @@ namespace dag {
     /**
       Simply defined as negation of equal operator `operator==`.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_edge<VertexType>& a,
@@ -118,7 +119,7 @@ namespace dag {
       Two directed edges are equal if their head and tail vertices are
       correspondingly equal to each others.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator==(
         const directed_edge<VertexType>& a,
@@ -128,7 +129,7 @@ namespace dag {
       Defines a strong lexicographic ordering along with `operator==` where tail
       vertices compared before head vertices.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator<(
         const directed_edge<VertexType>& a,
@@ -138,7 +139,7 @@ namespace dag {
       Defines a strong lexicographic ordering along with `operator==` where head
       vertices compared before tail vertices.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool effect_lt(
         const directed_edge<VertexType>& a,
@@ -150,7 +151,7 @@ namespace dag {
       that an effect transmitted through one edge logically cannot be
       transmitted through the other.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_edge<VertexType>& a,
@@ -160,7 +161,7 @@ namespace dag {
       Inserts undirected edge formatted as `v1 v2` where `v1` and `v2` are
       tail and head vertex respectively.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     friend std::ostream& operator<<(
         std::ostream &os,
         const directed_edge<VertexType>& e);
@@ -169,7 +170,7 @@ namespace dag {
       Extracts directed edge from an input stream formatted as `v1 v2` where
       `v1` and `v2` are tail and head vertex respectively.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     friend std::istream& operator>>(
         std::istream &is,
         directed_edge<VertexType>& e);
@@ -194,7 +195,7 @@ namespace dag {
     @tparam VertT Type used for distinguishing vertices. Recommanded to use
     integral types like `int`, `size_t` or `uint8_t`.
   */
-  template <typename VertT>
+  template <network_vertex VertT>
   class undirected_edge {
   public:
     /**
@@ -219,6 +220,23 @@ namespace dag {
     [[nodiscard]]
     inline bool is_incident(const VertexType vert) const;
 
+
+    /**
+      Exactly the same as `is_incident`.
+
+      @param vert Vertex to check the incident relationship with.
+     */
+    [[nodiscard]]
+    inline bool is_in_incident(const VertexType vert) const;
+
+    /**
+      Exactly the same as `is_incident`.
+
+      @param vert Vertex to check the incident relationship with.
+     */
+    [[nodiscard]]
+    inline bool is_out_incident(const VertexType vert) const;
+
     /**
       In an undirected edge both edges might act as source or cause of an
       effect.
@@ -235,7 +253,7 @@ namespace dag {
     /**
       Simply defined as negation of equal operator `operator==`.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator!=(
         const undirected_edge<VertexType>& a,
@@ -245,7 +263,7 @@ namespace dag {
       Two directed edges are equal if their (unordered) set of vertices are
       equal.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator==(
         const undirected_edge<VertexType>& a,
@@ -254,7 +272,7 @@ namespace dag {
     /**
       Defines an arbitrary weak ordering along with `operator==`.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool operator<(
         const undirected_edge<VertexType>& a,
@@ -263,7 +281,7 @@ namespace dag {
     /**
       Exactly the same as `operator<`.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool effect_lt(
         const undirected_edge<VertexType>& a,
@@ -275,7 +293,7 @@ namespace dag {
       effect transmitted through one edge logically cannot be transmitted
       through the other.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     [[nodiscard]]
     friend bool adjacent(
         const undirected_edge<VertexType>& a,
@@ -285,14 +303,14 @@ namespace dag {
       Inserts undirected edge formatted as `v1 v2` where `v1` and `v2` are
       vertices in the same order as initialiser.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     friend std::ostream& operator<<(std::ostream &os,
         const undirected_edge<VertexType>& e);
 
     /**
       Extracts undirected edge from an input stream formatted as `v1 v2`.
      */
-    template <typename VertexType>
+    template <network_vertex VertexType>
     friend std::istream& operator>>(std::istream &is,
         undirected_edge<VertexType>& e);
 

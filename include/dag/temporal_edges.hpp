@@ -7,44 +7,45 @@
 #include <hyperloglog.hpp>
 
 #include "type_traits.hpp"
+#include "network_concepts.hpp"
 #include "static_edges.hpp"
 
 namespace dag {
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   class undirected_temporal_edge;
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_instantaneous<undirected_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = true;
   };
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_undirected<undirected_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = true;
   };
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   class directed_temporal_edge;
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_instantaneous<directed_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = true;
   };
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_undirected<directed_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = false;
   };
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   class directed_delayed_temporal_edge;
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_instantaneous<directed_delayed_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = false;
   };
 
-  template <class VertT, class TimeT>
+  template <network_vertex VertT, class TimeT>
   struct is_undirected<directed_delayed_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = false;
   };
@@ -60,7 +61,7 @@ namespace dag {
     @tparam TimeT Type used for timestamps. Highly recommanded to use a
     numerical type like `size_t`, `int` or `double`.
   */
-  template <typename VertT, typename TimeT>
+  template <network_vertex VertT, typename TimeT>
   class directed_temporal_edge {
   public:
     /**
@@ -156,7 +157,7 @@ namespace dag {
       effect transmitted through one edge logically cannot be transmitted
       through the other.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_temporal_edge<VertexType, TimeType>& a,
@@ -165,7 +166,7 @@ namespace dag {
     /**
       Simply defined as negation of equal operator `operator==`.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_temporal_edge<VertexType, TimeType>& a,
@@ -175,7 +176,7 @@ namespace dag {
       Two directed temporal edges are equal if their casue time and head and
       tail vertices are correspondingly equal to each others.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const directed_temporal_edge<VertexType, TimeType>& a,
@@ -184,7 +185,7 @@ namespace dag {
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compare then tail vertices and then head vertices.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const directed_temporal_edge<VertexType, TimeType>& a,
@@ -194,7 +195,7 @@ namespace dag {
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compared then head vertices and then tail vertices.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool effect_lt(
         const directed_temporal_edge<VertexType, TimeType>& a,
@@ -204,7 +205,7 @@ namespace dag {
       Inserts undirected edge formatted as `v1 v2 time` where `v1` and `v2` are
       tail and head vertex respectively and `time` is the cause time.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::ostream& operator<<(
         std::ostream& os,
         const directed_temporal_edge<VertexType, TimeType>& e);
@@ -214,7 +215,7 @@ namespace dag {
       where `v1` and `v2` are tail and head vertex respectively and time is the
       cause time.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::istream& operator>>(
         std::istream& is,
         directed_temporal_edge<VertexType, TimeType>& e);
@@ -243,7 +244,7 @@ namespace dag {
     @tparam TimeT Type used for timestamps. Highly recommanded to use a
     numerical type like `size_t`, `int` or `double`.
   */
-  template <typename VertT, typename TimeT>
+  template <network_vertex VertT, typename TimeT>
   class directed_delayed_temporal_edge {
   public:
     /**
@@ -356,7 +357,7 @@ namespace dag {
       edges ususlly mean that an effect transmitted through one edge logically
       cannot be transmitted through the other.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
@@ -365,7 +366,7 @@ namespace dag {
     /**
       Simply defined as negation of equal operator `operator==`.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
@@ -375,7 +376,7 @@ namespace dag {
       Two directed temporal edges are equal if their cause times, effect times
       and head and tail vertices are correspondingly equal to each others.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
@@ -386,24 +387,24 @@ namespace dag {
       cause times are compare then effect times then tail vertices and finally
       head vertices.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool effect_lt(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::ostream& operator<<(
         std::ostream& os,
         const directed_delayed_temporal_edge<VertexType, TimeType>& e);
 
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::istream& operator>>(
         std::istream& is,
         directed_delayed_temporal_edge<VertexType, TimeType>& e);
@@ -435,7 +436,7 @@ namespace dag {
     @tparam TimeT Type used for timestamps. Highly recommanded to use a
     numerical type like `size_t`, `int` or `double`.
   */
-  template <typename VertT, typename TimeT>
+  template <network_vertex VertT, typename TimeT>
   class undirected_temporal_edge {
   public:
     /**
@@ -482,6 +483,21 @@ namespace dag {
     bool is_incident(const VertexType vert) const;
 
     /**
+      Exactly the same as `is_incident`
+
+      @param vert Vertex to check the incident relationship with.
+     */
+    [[nodiscard]]
+    bool is_in_incident(const VertexType vert) const;
+
+    /**
+      Exactly the same as `is_incident`
+
+      @param vert Vertex to check the incident relationship with.
+     */
+    [[nodiscard]]
+    bool is_out_incident(const VertexType vert) const;
+    /**
       In an undirected temporal edge both edges might act as source or cause of
       an effect.
      */
@@ -500,7 +516,7 @@ namespace dag {
       adjacency relation between edges ususlly mean that an effect transmitted
       through one edge logically cannot be transmitted through the other.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool adjacent(
         const undirected_temporal_edge<VertexType, TimeType>& a,
@@ -509,19 +525,17 @@ namespace dag {
     /**
       Simply defined as negation of equal operator `operator==`.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator!=(
       const undirected_temporal_edge<VertexType, TimeType>& a,
-      const undirected_temporal_edge<VertexType, TimeType>& b) {
-      return !(a == b);
-    }
+      const undirected_temporal_edge<VertexType, TimeType>& b);
 
     /**
       Two undirected temporal edges are equal if the (unordered) set of their
       vertices and their cause times are equal.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator==(
         const undirected_temporal_edge<VertexType, TimeType>& a,
@@ -531,7 +545,7 @@ namespace dag {
       Defines a weak ordering along with `operator==` that would rank events
       based on cause times first.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool operator<(
         const undirected_temporal_edge<VertexType, TimeType>& a,
@@ -540,7 +554,7 @@ namespace dag {
     /**
       Exactly the same as `operator<`.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     [[nodiscard]]
     friend bool effect_lt(
         const undirected_temporal_edge<VertexType, TimeType>& a,
@@ -551,7 +565,7 @@ namespace dag {
       `v2` are vertex in the same order as initialiser and `time` is the cause
       time.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::ostream& operator<<(
         std::ostream& os,
         const undirected_temporal_edge<VertexType, TimeType>& e);
@@ -560,7 +574,7 @@ namespace dag {
       Extracts undirected temporal edge from an input stream formatted as
       `v1 v2 time`.
      */
-    template <typename VertexType, typename TimeType>
+    template <network_vertex VertexType, typename TimeType>
     friend std::istream& operator>>(
         std::istream& is,
         undirected_temporal_edge<VertexType, TimeType>& e);

@@ -5,10 +5,8 @@
 
 #include <disjoint_set.hpp>
 
-#include "../../../include/dag/adjacency_prob.hpp"
-
 namespace dag {
-  template <class EdgeT, class AdjacencyProbT>
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(
       const network<EdgeT>& temp,
@@ -35,8 +33,7 @@ namespace dag {
     return directed_network<EdgeT>(eg);
   }
 
-
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> topological_order(
       const directed_network<VertT>& dir) {
     auto verts = dir.vertices();
@@ -68,7 +65,7 @@ namespace dag {
     return topo;
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> _out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
@@ -81,7 +78,7 @@ namespace dag {
     if (revert_graph)
       std::reverse(topo.begin(), topo.end());
 
-    for (const VertT& vert: topo) {
+    for (auto&& vert: topo) {
       if (out_component.find(vert) != out_component.end()) {
         auto edges = (revert_graph ? dir.in_edges(vert) : dir.out_edges(vert));
         for (const auto& edge: edges) {
@@ -95,7 +92,7 @@ namespace dag {
     return std::vector<VertT>(out_component.begin(), out_component.end());
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> in_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
@@ -103,7 +100,7 @@ namespace dag {
     return _out_component(dir, vert, size_hint, true);
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
@@ -111,7 +108,7 @@ namespace dag {
     return _out_component(dir, vert, size_hint, false);
   }
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<std::vector<VertT>> weakly_connected_components(
       const directed_network<VertT>& dir,
       bool singleton) {

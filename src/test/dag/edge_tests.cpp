@@ -5,7 +5,7 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-#include "../../../include/dag/edges.hpp"
+#include "../../../include/dag/network_concepts.hpp"
 #include "../../../include/dag/static_edges.hpp"
 
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
@@ -19,7 +19,8 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
   }
 
   SECTION("comply with static_edge concept") {
-    REQUIRE(dag::static_edges<dag::undirected_edge>);
+    STATIC_REQUIRE(dag::static_edge<dag::undirected_edge<int>>);
+    STATIC_REQUIRE(dag::static_edge<dag::undirected_edge<std::size_t>>);
   }
 
   SECTION("have correct properties") {
@@ -53,6 +54,11 @@ TEST_CASE("directed edges", "[directed_edge]") {
     REQUIRE(a == dag::directed_edge<int>(1, 2));
     REQUIRE(b == dag::directed_edge<int>(3, 4));
     REQUIRE(c == dag::directed_edge<int>(5, 6));
+  }
+
+  SECTION("comply with static_edge concept") {
+    STATIC_REQUIRE(dag::static_edge<dag::directed_edge<int>>);
+    STATIC_REQUIRE(dag::static_edge<dag::directed_edge<std::size_t>>);
   }
 
   SECTION("have correct properties") {
@@ -92,6 +98,15 @@ TEST_CASE("undirected temporal edges", "[undirected_temporal_edge]") {
     REQUIRE(c == dag::undirected_temporal_edge<int, int>(7, 8, 9));
   }
 
+  SECTION("comply with temporal_edge concept") {
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::undirected_temporal_edge<int, int>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::undirected_temporal_edge<std::size_t, std::size_t>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::undirected_temporal_edge<std::size_t, double>>);
+  }
+
   SECTION("compare correctly") {
     REQUIRE(dag::undirected_temporal_edge<int, int>(1, 2, 3) ==
         dag::undirected_temporal_edge<int, int>(1, 2, 3));
@@ -112,6 +127,15 @@ TEST_CASE("directed temporal edges", "[directed_temporal_edge]") {
     REQUIRE(a == dag::directed_temporal_edge<int, int>(1, 2, 3));
     REQUIRE(b == dag::directed_temporal_edge<int, int>(4, 5, 6));
     REQUIRE(c == dag::directed_temporal_edge<int, int>(7, 8, 9));
+  }
+
+  SECTION("comply with temporal_edge concept") {
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_temporal_edge<int, int>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_temporal_edge<std::size_t, std::size_t>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_temporal_edge<std::size_t, double>>);
   }
 
   SECTION("compare correctly") {
@@ -135,6 +159,15 @@ TEST_CASE("directed delayed temporal edges",
     REQUIRE(a == dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
     REQUIRE(b == dag::directed_delayed_temporal_edge<int, int>(5, 6, 7, 8));
     REQUIRE(c == dag::directed_delayed_temporal_edge<int, int>(9, 10, 11, 12));
+  }
+
+  SECTION("comply with temporal_edge concept") {
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<int, int>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<std::size_t, std::size_t>>);
+    STATIC_REQUIRE(dag::temporal_edge<
+      dag::directed_delayed_temporal_edge<std::size_t, double>>);
   }
 
   SECTION("compare correctly") {

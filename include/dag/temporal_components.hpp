@@ -1,16 +1,18 @@
 #ifndef INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
 #define INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
 
+#include "network_concepts.hpp"
 #include "implicit_event_graph.hpp"
 
 namespace dag {
-  template <class EdgeT,
+  template <temporal_edge EdgeT,
           template<typename> class NodeEstimatorT,
           template<typename> class EdgeEstimatorT = NodeEstimatorT>
   class temporal_component {
   public:
-    using TimeType = typename EdgeT::TimeType;
-    using VertexType = typename EdgeT::VertexType;
+    using EdgeType = EdgeT;
+    using TimeType = typename EdgeType::TimeType;
+    using VertexType = typename EdgeType::VertexType;
 
     explicit temporal_component(size_t seed,
         size_t node_est = 0,
@@ -24,7 +26,7 @@ namespace dag {
 
     template <template<typename> class OtherNodeEstimatorT,
             template<typename> class OtherEdgeEstimatorT>
-    temporal_component(const temporal_component<EdgeT,
+    temporal_component(const temporal_component<EdgeType,
         OtherNodeEstimatorT,
         OtherEdgeEstimatorT>& other):
       _node_set(other.node_set()),
@@ -34,13 +36,13 @@ namespace dag {
       _min_effect_time(other.effect_lifetime().first),
       _max_effect_time(other.effect_lifetime().second) {}
 
-    void insert(const EdgeT& e, const std::vector<VertexType>& nodes);
+    void insert(const EdgeType& e, const std::vector<VertexType>& nodes);
     void merge(
-      const temporal_component<EdgeT, NodeEstimatorT, EdgeEstimatorT>& other);
-
+      const temporal_component<
+        EdgeType, NodeEstimatorT, EdgeEstimatorT>& other);
 
     const NodeEstimatorT<VertexType>& node_set() const { return _node_set; }
-    const EdgeEstimatorT<EdgeT>& edge_set() const { return _edge_set; }
+    const EdgeEstimatorT<EdgeType>& edge_set() const { return _edge_set; }
 
     std::pair<TimeType, TimeType> cause_lifetime() const {
       return std::make_pair(_min_cause_time, _max_cause_time);
@@ -51,7 +53,7 @@ namespace dag {
 
   private:
     NodeEstimatorT<VertexType> _node_set;
-    EdgeEstimatorT<EdgeT> _edge_set;
+    EdgeEstimatorT<EdgeType> _edge_set;
 
     TimeType _min_cause_time, _max_cause_time;
     TimeType _min_effect_time, _max_effect_time;
@@ -61,10 +63,9 @@ namespace dag {
 #include "../../src/temporal_components.tpp"
 
 
-
 namespace dag {
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT,
            template<typename> class ReadOnlyEstimatorT>
   std::vector<std::pair<EdgeT,
@@ -75,8 +76,8 @@ namespace dag {
       bool only_roots = false);
 
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT,
            template<typename> class ReadOnlyEstimatorT>
   std::vector<std::pair<EdgeT,
@@ -86,8 +87,8 @@ namespace dag {
       size_t seed,
       bool only_roots = false);
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   out_component(
@@ -98,8 +99,8 @@ namespace dag {
       size_t edge_size_hint = 0);
 
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   temporal_component<EdgeT, EstimatorT>
   in_component(
@@ -109,8 +110,8 @@ namespace dag {
       size_t node_size_hint = 0,
       size_t edge_size_hint = 0);
 
-  template <class EdgeT,
-           class AdjacencyProbT,
+  template <temporal_edge EdgeT,
+           adjacency_prob::adjacency_prob AdjacencyProbT,
            template<typename> class EstimatorT>
   std::vector<temporal_component<EdgeT, EstimatorT>>
   weakly_connected_components(

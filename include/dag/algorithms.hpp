@@ -4,26 +4,29 @@
 #include <vector>
 #include <unordered_set>
 
+#include "network_concepts.hpp"
+#include "adjacency_prob.hpp"
+
 namespace dag {
-  template <class EdgeT, class AdjacencyProbT>
+  template <static_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
       size_t seed);
 
-
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT>
-  topological_order(const directed_network<VertT>& dir);
+  topological_order(
+      const directed_network<VertT>& dir);
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
       size_t size_hint = 0);
 
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<VertT> in_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
@@ -37,7 +40,7 @@ namespace dag {
     @param dir Directed network in question
     @param singleton If true, does not return components with only one members.
    */
-  template <typename VertT>
+  template <network_vertex VertT>
   std::vector<std::vector<VertT>>
   weakly_connected_components(
       const directed_network<VertT>& dir,

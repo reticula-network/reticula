@@ -1,7 +1,7 @@
 #include <unordered_set>
 
 namespace dag {
-  template <class EdgeT,
+  template <temporal_edge EdgeT,
           template<typename> class NodeEstimatorT,
           template<typename> class EdgeEstimatorT>
   void
@@ -19,7 +19,7 @@ namespace dag {
     _max_effect_time = std::max(_max_effect_time, e.effect_time());
   }
 
-  template <class EdgeT,
+  template <temporal_edge EdgeT,
           template<typename> class NodeEstimatorT,
           template<typename> class EdgeEstimatorT>
   void
