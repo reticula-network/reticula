@@ -396,16 +396,17 @@ namespace dag {
       std::size_t edge_size_est,
       bool revert_graph) {
     if constexpr (std::is_same_v<AdjacencyProbT,
-                                    adjacency_prob::deterministic<EdgeT>>)
+                                    adjacency_prob::deterministic<EdgeT>>) {
       if (revert_graph)
         return _deterministic_in_component<EdgeT, EstimatorT>(
             eg, root, seed, node_size_est, edge_size_est);
       else
         return _deterministic_out_component<EdgeT, EstimatorT>(
             eg, root, seed, node_size_est, edge_size_est);
-    else
+    } else {
       return _generic_out_component<EdgeT, AdjacencyProbT, EstimatorT>(
           eg, root, seed, node_size_est, edge_size_est, revert_graph);
+    }
   }
 
   template <temporal_edge EdgeT,

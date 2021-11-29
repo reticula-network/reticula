@@ -21,6 +21,6 @@ jobs:
       run: |
         mkdir build
         cmake -Bbuild -H.
-        cmake --build build/ --target dag_tests
+        cmake --build build/ --target dag_tests -j 2
     - name: Run tests
       run: build/dag_tests

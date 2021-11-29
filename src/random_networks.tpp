@@ -114,6 +114,82 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
+  template <network_vertex VertT>
+  bool _random_regular_suitable_hanging_edge(
+      const std::unordered_set<undirected_edge<VertT>>& edges,
+      const std::unordered_map<VertT, size_t>& hanging_stubs) {
+    if (hanging_stubs.empty()) {
+      return true;
+    } else {
+      for (auto& [node1, count1]: hanging_stubs)
+        for (auto& [node2, count1]: hanging_stubs)
+          if (node1 == node2)
+            break;
+          else if (edges.find({node1, node2}) == edges.end())
+            return true;
+    }
+
+    return false;
+  }
+
+
+  template <network_vertex VertT>
+  undirected_network<VertT> random_regular_graph(
+      VertT size, VertT degree,
+      std::mt19937_64& gen) {
+    static_assert(std::is_integral<VertT>::value,
+        "vertices should be of integral type");
+
+    if (size*degree % 2 != 0)
+      throw std::domain_error("size or degree must be even");
+
+    if (degree >= size)
+      throw std::domain_error("degree must be less than size");
+
+    // There is always an answer. We Just have to look hard enough.
+    while (true) {
+      std::unordered_set<undirected_edge<VertT>> edges;
+      std::vector<VertT> stubs;
+      stubs.reserve(size*degree);
+      for (size_t i = 0; i < size; i++)
+        for (size_t d = 0; d < degree; d++)
+          stubs.emplace_back(i);
+
+      bool suitable = true;
+      while (!stubs.empty() && suitable) {
+        std::shuffle(stubs.begin(), stubs.end(), gen);
+        std::unordered_map<VertT, size_t> hanging_stubs;
+        for (auto iter = stubs.begin();
+            iter < stubs.end();
+            std::advance(iter, 2)) {
+          if (*iter != *(iter+1) &&
+              edges.find({*iter, *(iter+1)}) == edges.end()) {
+            edges.emplace(*iter, *(iter+1));
+          } else {
+            hanging_stubs[*iter]++;
+            hanging_stubs[*(iter+1)]++;
+          }
+        }
+
+        suitable = _random_regular_suitable_hanging_edge(edges, hanging_stubs);
+
+        stubs.clear();
+        for (auto& [node, count]: hanging_stubs)
+          for (size_t i = 0; i < count; i++)
+             stubs.emplace_back(node);
+      }
+
+      if (suitable)
+        return undirected_network<VertT>(
+            std::vector<dag::undirected_edge<VertT>>(
+              edges.begin(), edges.end()));
+    }
+
+    // Unreachable.
+    return undirected_network<VertT>();
+  }
+
+
   template <temporal_edge EdgeT, class Distribution, class ResDistribution>
   std::vector<EdgeT>
   random_events(

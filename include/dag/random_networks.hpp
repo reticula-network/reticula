@@ -7,11 +7,18 @@
 
 namespace dag {
   template <network_vertex VertT>
-  undirected_network<VertT> gnp_random_graph(VertT n, double p,
+  undirected_network<VertT> gnp_random_graph(
+      VertT n, double p,
       std::mt19937_64& generator);
 
   template <network_vertex VertT>
-  undirected_network<VertT> ba_random_graph(VertT n, VertT m,
+  undirected_network<VertT> ba_random_graph(
+      VertT n, VertT m,
+      std::mt19937_64& generator);
+
+  template <network_vertex VertT>
+  undirected_network<VertT> random_regular_graph(
+      VertT size, VertT degree,
       std::mt19937_64& generator);
 
   /**

@@ -17,7 +17,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
     dag::adjacency_prob::deterministic<EdgeType> prob(3);
     dag::implicit_event_graph<EdgeType,
       dag::adjacency_prob::deterministic<EdgeType>>
-        eg(event_list, prob, (size_t)0);
+        eg(event_list, prob, 0ul);
     REQUIRE_THAT(eg.events_cause(),
         Equals(std::vector<EdgeType>(
             {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
@@ -42,19 +42,19 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg1(list1, prob, (size_t)0);
+          eg1(list1, prob, 0ul);
       REQUIRE_THAT(eg1.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>()));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg2(list2, prob, (size_t)0);
+          eg2(list2, prob, 0ul);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>()));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg3(list3, prob, (size_t)0);
+          eg3(list3, prob, 0ul);
       REQUIRE_THAT(eg3.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>()));
     }
@@ -64,19 +64,19 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg1(list1, prob, (size_t)0);
+          eg1(list1, prob, 0ul);
       REQUIRE_THAT(eg1.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>({EdgeType(1, 2, 1.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg2(list2, prob, (size_t)0);
+          eg2(list2, prob, 0ul);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>({EdgeType(2, 3, 1.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg3(list3, prob, (size_t)0);
+          eg3(list3, prob, 0ul);
       REQUIRE_THAT(eg3.successors(EdgeType(1, 2, 0.0)),
           Equals(std::vector<EdgeType>({EdgeType(2, 3, 1.0)})));
     }
@@ -86,13 +86,13 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg1(list1, prob, (size_t)0);
+          eg1(list1, prob, 0ul);
       REQUIRE_THAT(eg1.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>({EdgeType(1, 2, 1.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg2(list2, prob, (size_t)0);
+          eg2(list2, prob, 0ul);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
           UnorderedEquals(
             std::vector<EdgeType>({
@@ -101,7 +101,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg3(list3, prob, (size_t)0);
+          eg3(list3, prob, 0ul);
       REQUIRE_THAT(eg3.successors(EdgeType(1, 2, 0.0), true),
           UnorderedEquals(
             std::vector<EdgeType>({
@@ -114,13 +114,13 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg1(list1, prob, (size_t)0);
+          eg1(list1, prob, 0ul);
       REQUIRE_THAT(eg1.successors(EdgeType(1, 2, 0.0), true),
           Equals(std::vector<EdgeType>({EdgeType(1, 2, 1.0)})));
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg2(list2, prob, (size_t)0);
+          eg2(list2, prob, 0ul);
       REQUIRE_THAT(eg2.successors(EdgeType(1, 2, 0.0), true),
           UnorderedEquals(
             std::vector<EdgeType>({
@@ -129,7 +129,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
 
       dag::implicit_event_graph<EdgeType,
         dag::adjacency_prob::deterministic<EdgeType>>
-          eg3(list3, prob, (size_t)0);
+          eg3(list3, prob, 0ul);
       REQUIRE_THAT(eg3.successors(EdgeType(1, 2, 0.0), true),
           UnorderedEquals(
             std::vector<EdgeType>({
@@ -145,7 +145,7 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
     dag::adjacency_prob::deterministic<EdgeType> prob(6);
     dag::implicit_event_graph<EdgeType,
       dag::adjacency_prob::deterministic<EdgeType>>
-        eg(event_list, prob, (size_t)0);
+        eg(event_list, prob, 0ul);
 
 
     SECTION("has correct properties") {
