@@ -11,12 +11,15 @@ networks][temp], [event graphs][event] and [reachability][out-component].
 
 Clone the library:
 ```bash
-$ git clone --recursive https://github.com/arashbm/dag.git
+$ git clone https://github.com/arashbm/dag.git
 ```
 
-Compile the library and run the tests:
+Compile and run the tests:
 ```
 $ cd dag
-$ make
-$ ./tests
+$ mkdir build
+$ cd dag
+$ cmake ..
+$ cmake --build . --target dag_tests
+$ ./dag_tests
 ```
