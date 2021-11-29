@@ -24,7 +24,7 @@ namespace dag {
 
   template <network_vertex VertT>
   undirected_network<VertT>
-  gnp_random_graph(size_t n, double p, std::mt19937_64& generator) {
+  gnp_random_graph(VertT n, double p, std::mt19937_64& generator) {
     if (p > 1.0 || p < 0.0)
       throw std::invalid_argument(
           "link probability p should be in [0,1] interval");
@@ -36,7 +36,8 @@ namespace dag {
       return undirected_network<VertT>();
 
     std::vector<undirected_edge<VertT>> edges;
-    edges.reserve(std::lround(std::pow(n, 2)*p));
+    edges.reserve(static_cast<std::size_t>(
+          std::lround(std::pow(n, 2)*p)));
 
     uintmax_t max_n = std::numeric_limits<VertT>::max()
                     - std::numeric_limits<VertT>::min();
@@ -47,17 +48,19 @@ namespace dag {
     std::uniform_real_distribution<> rd;
 
     double lp = std::log(1.0 - p);
-    size_t v = 0;
-    size_t w = std::lround(std::log(1.0 - rd(generator))/lp);
+    std::size_t v = 1;
+    std::size_t w = static_cast<std::size_t>(
+        std::floor(std::log(1.0 - rd(generator))/lp));
 
     while (v < n) {
       while (w >= v && v < n) {
         w = w - v;
         v = v + 1;
       }
-      if (v < n) edges.emplace_back((VertT)v, (VertT)w);
+      if (v < n)
+        edges.emplace_back(static_cast<VertT>(v), static_cast<VertT>(w));
       double lr = std::log(1.0 - rd(generator));
-      w = w + 1 + std::lround(lr/lp);
+      w = w + 1 + static_cast<std::size_t>(std::floor(lr/lp));
     }
 
     return undirected_network<VertT>(edges);
@@ -65,7 +68,7 @@ namespace dag {
 
   template <network_vertex VertT>
   undirected_network<VertT>
-  ba_random_graph(size_t n, size_t m, std::mt19937_64& generator) {
+  ba_random_graph(VertT n, VertT m, std::mt19937_64& generator) {
     static_assert(std::is_integral<VertT>::value,
         "vertices should be of integral type");
 
@@ -82,19 +85,20 @@ namespace dag {
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(m*(n-m));
 
-    std::vector<size_t> degrees(n, (size_t)0);
+    std::vector<std::size_t> degrees(n);
 
-    for (size_t i = 0; i < m; i++) {
+    for (std::size_t i = 0; i < m; i++) {
       edges.emplace_back((VertT)i, (VertT)m);
       degrees[i] += 1;
       degrees[m] += 1;
     }
 
-    for (size_t current_node = m+1; current_node < n; current_node++) {
-      std::discrete_distribution<> dist(degrees.begin(),
-          degrees.begin() + current_node);
+    for (std::size_t current_node = m+1; current_node < n; current_node++) {
+      std::discrete_distribution<std::size_t> dist(
+          degrees.begin(),
+          degrees.begin() + static_cast<std::ptrdiff_t>(current_node));
 
-      std::unordered_set<size_t> targets;
+      std::unordered_set<std::size_t> targets;
       targets.reserve(m);
 
       while (targets.size() < m)
@@ -117,14 +121,14 @@ namespace dag {
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       ResDistribution residual_time_dist,
-      size_t seed,
-      size_t size_hint) {
+      std::size_t seed,
+      std::size_t size_hint) {
     std::vector<EdgeT> temp;
     if (size_hint > 0)
       temp.reserve(size_hint);
 
     for (const auto& e: base_net.edges()) {
-      size_t edge_seed = utils::combine_hash(seed, e);
+      std::size_t edge_seed = utils::combine_hash(seed, e);
       std::mt19937_64 generator(edge_seed);
       typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
           residual_time_dist(generator));
@@ -145,14 +149,14 @@ namespace dag {
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
-      size_t seed,
-      size_t size_hint) {
+      std::size_t seed,
+      std::size_t size_hint) {
     std::vector<EdgeT> temp;
     if (size_hint > 0)
       temp.reserve(size_hint);
 
     for (const auto& e: base_net.edges()) {
-      size_t edge_seed = utils::combine_hash(seed, e);
+      std::size_t edge_seed = utils::combine_hash(seed, e);
       std::mt19937_64 generator(edge_seed);
       // we can't be sure TimeType is signed so we start at zero and warm-up
       // until max_t then record t - max_t from there up to max_t*2

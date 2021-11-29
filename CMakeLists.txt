@@ -44,6 +44,7 @@ add_executable(
   src/test/dag/estimators.cpp
   src/test/dag/implicit_event_graph.cpp
   src/test/dag/networks.cpp
+  src/test/dag/random_networks.cpp
   src/test/dag/temporal_components.cpp)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2)
