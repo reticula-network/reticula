@@ -3,7 +3,7 @@
 #include <queue>
 #include <cmath>
 
-#include <disjoint_set.hpp>
+#include <ds/disjoint_set.hpp>
 
 namespace dag {
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
@@ -11,7 +11,7 @@ namespace dag {
   event_graph(
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
-      size_t seed) {
+      std::size_t seed) {
     auto verts = temp.vertices();
     std::vector<directed_edge<EdgeT>> eg;
     for (const auto &v: verts) {
@@ -38,7 +38,7 @@ namespace dag {
       const directed_network<VertT>& dir) {
     auto verts = dir.vertices();
 
-    std::unordered_map<VertT, size_t> in_degrees;
+    std::unordered_map<VertT, std::size_t> in_degrees;
     in_degrees.reserve(verts.size());
     for (auto&& v: verts)
       in_degrees[v] = dir.in_degree(v);
@@ -69,7 +69,7 @@ namespace dag {
   std::vector<VertT> _out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
-      size_t size_hint,
+      std::size_t size_hint,
       bool revert_graph) {
     std::unordered_set<VertT> out_component;
     if (size_hint > 0) out_component.reserve(size_hint);
@@ -96,7 +96,7 @@ namespace dag {
   std::vector<VertT> in_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
-      size_t size_hint) {
+      std::size_t size_hint) {
     return _out_component(dir, vert, size_hint, true);
   }
 
@@ -104,7 +104,7 @@ namespace dag {
   std::vector<VertT> out_component(
       const directed_network<VertT>& dir,
       const  VertT& vert,
-      size_t size_hint) {
+      std::size_t size_hint) {
     return _out_component(dir, vert, size_hint, false);
   }
 
@@ -113,15 +113,17 @@ namespace dag {
       const directed_network<VertT>& dir,
       bool singleton) {
     std::vector<VertT> verts = dir.vertices();
-    auto disj_set = ds::disjoint_set<size_t>(verts.size());
+    auto disj_set = ds::disjoint_set<std::size_t>(verts.size());
 
     auto vert_iter = verts.begin();
     while (vert_iter < verts.end()) {
-      size_t vert_idx = std::distance(verts.begin(), vert_iter);
+      std::size_t vert_idx = static_cast<std::size_t>(
+          std::distance(verts.begin(), vert_iter));
 
       for (auto&& other: dir.successors(*vert_iter)) {
         auto other_it = std::lower_bound(vert_iter+1, verts.end(), other);
-        size_t other_idx = std::distance(verts.begin(), other_it);
+        std::size_t other_idx = static_cast<std::size_t>(
+            std::distance(verts.begin(), other_it));
         disj_set.merge(vert_idx, other_idx);
       }
 

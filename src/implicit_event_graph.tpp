@@ -8,14 +8,14 @@ namespace dag {
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       const std::vector<EdgeT>& events,
       const AdjacencyProbT& prob,
-      size_t seed) :
+      std::size_t seed) :
     _seed(seed), _temp(events), _prob(prob) {}
 
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
-      size_t seed) :
+      std::size_t seed) :
     _seed(seed), _temp(temp), _prob(prob) {}
 
 
@@ -26,7 +26,7 @@ namespace dag {
   }
 
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  size_t
+  std::size_t
   implicit_event_graph<EdgeT, AdjacencyProbT>::seed() const {
     return _seed;
   }
@@ -63,14 +63,16 @@ namespace dag {
     pred.reserve(e.mutator_verts().size());
 
     for (auto&& v : e.mutator_verts()) {
-      size_t middle_offset = pred.size();
+      std::size_t middle_offset = pred.size();
       auto res = predecessors_vert(e, v, just_first);
-      pred.reserve(pred.size()+res.size());
+      pred.reserve(pred.size() + res.size());
       std::sort(res.begin(), res.end());
       std::copy(
           res.begin(), res.end(),
           std::back_inserter(pred));
-      std::inplace_merge(pred.begin(), pred.begin()+middle_offset, pred.end());
+      std::inplace_merge(pred.begin(),
+          pred.begin() + static_cast<std::ptrdiff_t>(middle_offset),
+          pred.end());
     }
 
     pred.erase(std::unique(pred.begin(), pred.end()), pred.end());
@@ -87,15 +89,15 @@ namespace dag {
     succ.reserve(e.mutated_verts().size());
 
     for (auto&& v : e.mutated_verts()) {
-      size_t middle_offset = succ.size();
+      std::size_t middle_offset = succ.size();
       auto res = successors_vert(e, v, just_first);
-      succ.reserve(succ.size()+res.size());
+      succ.reserve(succ.size() + res.size());
       std::sort(res.begin(), res.end());
       std::copy(
           res.begin(), res.end(),
           std::back_inserter(succ));
       std::inplace_merge(succ.begin(),
-          succ.begin()+middle_offset,
+          succ.begin() + static_cast<std::ptrdiff_t>(middle_offset),
           succ.end());
     }
 
@@ -110,7 +112,7 @@ namespace dag {
       const EdgeT& e, VertexType v, bool just_first) const {
     constexpr double cutoff = 1e-20;
 
-    size_t reserve_max = 32;
+    std::size_t reserve_max = 32;
     if (just_first)
       reserve_max = 1;
 
@@ -122,8 +124,9 @@ namespace dag {
     auto other = std::lower_bound(
         out_edges_it->second.begin(), out_edges_it->second.end(), e,
         [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
-    res.reserve(std::min<size_t>(
-          reserve_max, out_edges_it->second.end() - other));
+    res.reserve(std::min<std::size_t>(
+          reserve_max, static_cast<std::size_t>(
+            out_edges_it->second.end() - other)));
     double last_p = 1.0;
     while ((other < out_edges_it->second.end()) && last_p > cutoff) {
       if (adjacent(e, *other)) {
@@ -147,7 +150,7 @@ namespace dag {
       const EdgeT& e, VertexType v, bool just_first) const {
     constexpr double cutoff = 1e-20;
 
-    size_t reserve_max = 32;
+    std::size_t reserve_max = 32;
     if (just_first)
       reserve_max = 1;
 
@@ -163,8 +166,9 @@ namespace dag {
     if (other > in_edges_it->second.begin())
       other--;
 
-    res.reserve(std::min<size_t>(
-          reserve_max, other - in_edges_it->second.begin()));
+    res.reserve(std::min<std::size_t>(
+          reserve_max, static_cast<std::size_t>(
+            other - in_edges_it->second.begin())));
     double last_p = 1.0;
     while (other < in_edges_it->second.end() &&
             other >= in_edges_it->second.begin() &&

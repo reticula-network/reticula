@@ -1,5 +1,5 @@
 #include <unordered_map>
-#include <disjoint_set.hpp>
+#include <ds/disjoint_set.hpp>
 
 #include "../include/dag/type_traits.hpp"
 
@@ -33,7 +33,7 @@ namespace dag {
     temporal_component<EdgeT, ReadOnlyEstimatorT>>>
   out_components(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
-      size_t seed,
+      std::size_t seed,
       bool only_roots) {
     std::unordered_map<EdgeT, temporal_component<EdgeT, EstimatorT>>
       out_components;
@@ -42,7 +42,7 @@ namespace dag {
         out_component_ests;
     out_component_ests.reserve(eg.events_cause().size());
 
-    std::unordered_map<EdgeT, size_t> in_degrees;
+    std::unordered_map<EdgeT, std::size_t> in_degrees;
 
     auto temp_edge_iter = eg.events_cause().rbegin();
     auto end = eg.events_cause().rend();
@@ -98,7 +98,7 @@ namespace dag {
     temporal_component<EdgeT, ReadOnlyEstimatorT>>>
   in_components(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
-      size_t seed,
+      std::size_t seed,
       bool only_roots) {
     std::unordered_map<EdgeT, temporal_component<EdgeT, EstimatorT>>
       in_components;
@@ -107,7 +107,7 @@ namespace dag {
         in_component_ests;
     in_component_ests.reserve(eg.events_cause().size());
 
-    std::unordered_map<EdgeT, size_t> out_degrees;
+    std::unordered_map<EdgeT, std::size_t> out_degrees;
 
     auto temp_edge_iter = eg.events_effect().begin();
     auto end = eg.events_effect().end();
@@ -163,9 +163,9 @@ namespace dag {
   _generic_out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_est,
-      size_t edge_size_est,
+      std::size_t seed,
+      std::size_t node_size_est,
+      std::size_t edge_size_est,
       bool revert_graph) {
     std::queue<EdgeT> search({root});
     temporal_component<EdgeT, EstimatorT>
@@ -203,9 +203,9 @@ namespace dag {
       const implicit_event_graph<EdgeT,
         adjacency_prob::deterministic<EdgeT>>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_est,
-      size_t edge_size_est) {
+      std::size_t seed,
+      std::size_t node_size_est,
+      std::size_t edge_size_est) {
     auto comp_function = [](const EdgeT& e1, const EdgeT& e2) {
       return (e1.effect_time()) > (e2.effect_time());
     };
@@ -295,9 +295,9 @@ namespace dag {
       const implicit_event_graph<EdgeT,
           adjacency_prob::deterministic<EdgeT>>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_est,
-      size_t edge_size_est) {
+      std::size_t seed,
+      std::size_t node_size_est,
+      std::size_t edge_size_est) {
     auto comp_function = [](const EdgeT& e1, const EdgeT& e2) {
       return (e1.cause_time()) < (e2.cause_time());
     };
@@ -391,9 +391,9 @@ namespace dag {
   _out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_est,
-      size_t edge_size_est,
+      std::size_t seed,
+      std::size_t node_size_est,
+      std::size_t edge_size_est,
       bool revert_graph) {
     if constexpr (std::is_same_v<AdjacencyProbT,
                                     adjacency_prob::deterministic<EdgeT>>)
@@ -415,9 +415,9 @@ namespace dag {
   out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_hint,
-      size_t edge_size_hint) {
+      std::size_t seed,
+      std::size_t node_size_hint,
+      std::size_t edge_size_hint) {
     return _out_component<EdgeT, AdjacencyProbT, EstimatorT>(
         eg, root, seed,
         node_size_hint, edge_size_hint, false);
@@ -430,9 +430,9 @@ namespace dag {
   in_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
-      size_t seed,
-      size_t node_size_hint,
-      size_t edge_size_hint) {
+      std::size_t seed,
+      std::size_t node_size_hint,
+      std::size_t edge_size_hint) {
     return _out_component<EdgeT, AdjacencyProbT, EstimatorT>(
         eg, root, seed,
         node_size_hint, edge_size_hint, true);
@@ -444,9 +444,9 @@ namespace dag {
   std::vector<temporal_component<EdgeT, EstimatorT>>
   weakly_connected_components(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
-      size_t seed,
+      std::size_t seed,
       bool singletons) {
-    auto disj_set = ds::disjoint_set<size_t>(eg.events_cause().size());
+    auto disj_set = ds::disjoint_set<std::size_t>(eg.events_cause().size());
 
     auto temp_edge_iter = eg.events_cause().begin();
 
@@ -454,8 +454,8 @@ namespace dag {
       implicit_event_graph<EdgeT, AdjacencyProbT>>;
 
     while (temp_edge_iter < eg.events_cause().end()) {
-      size_t temp_edge_idx = std::distance(eg.events_cause().begin(),
-          temp_edge_iter);
+      std::size_t temp_edge_idx = static_cast<std::size_t>(
+          std::distance(eg.events_cause().begin(), temp_edge_iter));
 
       for (auto&& other:
             eg.successors(*temp_edge_iter, reducable)) {
@@ -464,7 +464,8 @@ namespace dag {
             eg.events_cause().end(),
             other);
 
-        size_t other_idx = std::distance(eg.events_cause().begin(), other_it);
+        std::size_t other_idx = static_cast<std::size_t>(
+            std::distance(eg.events_cause().begin(), other_it));
         disj_set.merge(temp_edge_idx, other_idx);
       }
 

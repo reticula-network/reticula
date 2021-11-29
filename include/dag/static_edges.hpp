@@ -4,7 +4,8 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
-#include <hyperloglog.hpp>
+
+#include <hll/hyperloglog.hpp>
 
 #include "type_traits.hpp"
 #include "network_concepts.hpp"
