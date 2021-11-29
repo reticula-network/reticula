@@ -1,12 +1,11 @@
 #include <vector>
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-#include "../../../include/dag/implicit_event_graph.hpp"
-#include "../../../include/dag/adjacency_prob.hpp"
-
+#include <dag/implicit_event_graph.hpp>
+#include <dag/adjacency_prob.hpp>
 
 TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
   SECTION("handle duplicate and unordered event list") {

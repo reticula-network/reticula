@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         submodules: true
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
         architecture: 'x64'
@@ -18,5 +18,5 @@ jobs:
       run: pip install --upgrade pip
     - name: install cpplint
       run: pip install cpplint==1.4.4
-    - name: make lint
-      run: make lint
+    - name: run cpplint
+      run: cpplint --extensions=tpp,cpp,hpp --quiet --recursive .

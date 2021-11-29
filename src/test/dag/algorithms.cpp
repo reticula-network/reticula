@@ -1,14 +1,14 @@
 #include <vector>
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 using Catch::Matchers::UnorderedEquals;
 using Catch::Matchers::Equals;
 
-#include "../../../include/dag/utils.hpp"
-#include "../../../include/dag/temporal_edges.hpp"
-#include "../../../include/dag/networks.hpp"
-#include "../../../include/dag/algorithms.hpp"
-#include "../../../include/dag/adjacency_prob.hpp"
+#include <dag/utils.hpp>
+#include <dag/temporal_edges.hpp>
+#include <dag/networks.hpp>
+#include <dag/algorithms.hpp>
+#include <dag/adjacency_prob.hpp>
 
 TEST_CASE("event graph", "[dag::event_graph]") {
   SECTION("undirected temporal network") {

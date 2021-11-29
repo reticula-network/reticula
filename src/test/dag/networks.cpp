@@ -1,14 +1,14 @@
 #include <sstream>
 #include <string>
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-#include "../../../include/dag/static_edges.hpp"
-#include "../../../include/dag/temporal_edges.hpp"
+#include <dag/static_edges.hpp>
+#include <dag/temporal_edges.hpp>
 
-#include "../../../include/dag/networks.hpp"
+#include <dag/networks.hpp>
 
 TEST_CASE("undirected networks", "[dag::undirected_network]") {
   SECTION("when given one") {

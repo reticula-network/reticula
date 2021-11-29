@@ -1,10 +1,10 @@
 #include <cmath>
 #include <iostream>
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 
-#include "../../../include/dag/temporal_edges.hpp"
-#include "../../../include/dag/adjacency_prob.hpp"
+#include <dag/temporal_edges.hpp>
+#include <dag/adjacency_prob.hpp>
 
 TEST_CASE("deterministic adjacency probability",
     "[dag::adjacency_prob::deterministic]") {

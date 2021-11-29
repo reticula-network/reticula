@@ -2,13 +2,13 @@
 #include <set>
 #include <unordered_set>
 
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 using Catch::Matchers::UnorderedEquals;
 using Catch::Matchers::Equals;
 
-#include "../../../include/dag/temporal_components.hpp"
-#include "../../../include/dag/temporal_edges.hpp"
-#include "../../../include/dag/estimators.hpp"
+#include <dag/temporal_components.hpp>
+#include <dag/temporal_edges.hpp>
+#include <dag/estimators.hpp>
 
 TEST_CASE("temporal components", "[dag::temporal_component]") {
   using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
