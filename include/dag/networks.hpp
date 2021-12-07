@@ -82,7 +82,9 @@ namespace dag {
       them. Edges are sorted by `effect_lt(e1, e2)`.
      */
     [[nodiscard]]
-    const std::unordered_map<VertexType, std::vector<EdgeType>>&
+    const std::unordered_map<
+      VertexType, std::vector<EdgeType>,
+      hash<VertexType>>&
     in_edges() const;
 
     /**
@@ -90,7 +92,9 @@ namespace dag {
       a mutator of. Edges are sorted by `operator<(e1, e2)`.
      */
     [[nodiscard]]
-    const std::unordered_map<VertexType, std::vector<EdgeType>>&
+    const std::unordered_map<
+      VertexType, std::vector<EdgeType>,
+      hash<VertexType>>&
     out_edges() const;
 
     /**
@@ -146,8 +150,12 @@ namespace dag {
   private:
     std::vector<EdgeType> _edges_cause;
     std::vector<EdgeType> _edges_effect;
-    std::unordered_map<VertexType, std::vector<EdgeType>> _in_edges;
-    std::unordered_map<VertexType, std::vector<EdgeType>> _out_edges;
+    std::unordered_map<
+      VertexType, std::vector<EdgeType>,
+      hash<VertexType>> _in_edges;
+    std::unordered_map<
+      VertexType, std::vector<EdgeType>,
+      hash<VertexType>> _out_edges;
 
     static constexpr bool instantaneous_undirected =
       is_instantaneous_v<EdgeType> && is_undirected_v<EdgeType>;

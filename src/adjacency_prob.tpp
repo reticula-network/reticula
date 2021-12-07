@@ -56,7 +56,8 @@ namespace dag {
         return false;
       } else {
         size_t dag_edge_seed =
-          utils::combine_hash(utils::combine_hash(seed, a), b);
+          utils::combine_hash<std::pair<EdgeT, EdgeT>, hash>(
+              seed, std::make_pair(a, b));
         std::mt19937_64 gen(dag_edge_seed);
         std::bernoulli_distribution dist(prob);
         return dist(gen);

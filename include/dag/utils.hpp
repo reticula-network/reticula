@@ -5,6 +5,8 @@
 #include <functional>
 #include <stdexcept>
 
+#include "network_concepts.hpp"
+
 #define DAG_UTIL_GOLDEN_RATIO 0x9E3779B97F4A7C15
 
 namespace dag {
@@ -24,9 +26,9 @@ namespace dag {
       @param seed Seed or hash or another 
       @param other Value that would be hashed and mixed with `seed` 
      */
-    template <class T>
+    template <class T, template<typename> class HashStruct>
     inline size_t combine_hash(const size_t seed, const T& other) {
-      return seed ^ (std::hash<T>{}(other) +
+      return seed ^ (HashStruct<T>{}(other) +
           DAG_UTIL_GOLDEN_RATIO + (seed << 6) + (seed >> 2));
     }
 
@@ -39,11 +41,11 @@ namespace dag {
               dag::utils::unordered_hash(13, 12));
       @endcode
      */
-    template <class T1, class T2>
+    template <class T1, class T2, template<typename> class HashStruct>
     inline size_t unordered_hash(const T1& t1, const T2& t2) {
       size_t h1, h2;
       std::tie(h1, h2) = std::minmax(
-          std::hash<T1>{}(t1), std::hash<T2>{}(t2));
+          HashStruct<T1>{}(t1), HashStruct<T2>{}(t2));
       return h1 ^ (h2 + DAG_UTIL_GOLDEN_RATIO + (h1 << 6) + (h1 >> 2));
     }
 
@@ -71,6 +73,27 @@ namespace dag {
         : std::invalid_argument(what_arg) {}
     };
   }  // namespace utils
+
+  template <typename Key>
+  struct hash {
+    std::size_t operator()(const Key& k) const noexcept;
+  };
+
+  // If std::hash has an implementation, defer to that
+  template <hashable_with<std::hash> Key>
+  struct hash<Key> {
+    std::size_t operator()(const Key& k) const noexcept {
+      return std::hash<Key>{}(k);
+    }
+  };
+
+  template <typename T1, typename T2>
+  struct hash<std::pair<T1, T2>> {
+    std::size_t operator()(const std::pair<T1, T2>& p) const noexcept {
+      return utils::combine_hash<T2, dag::hash>(
+          dag::hash<T1>{}(p.first), p.second);
+    }
+  };
 }  // namespace dag
 
 #endif  // INCLUDE_DAG_UTILS_HPP_

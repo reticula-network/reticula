@@ -18,5 +18,6 @@ namespace dag {}
 #include "implicit_event_graph.hpp"
 #include "estimators.hpp"
 #include "temporal_components.hpp"
+#include "generators.hpp"
 
 #endif  // INCLUDE_DAG_DAG_HPP_

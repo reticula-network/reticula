@@ -23,7 +23,7 @@ TEST_CASE("G(n, p) random graph", "[dag::gnp_random_graph]") {
 
 TEST_CASE("Barabasi-Albert random graph", "[dag::ba_random_graph]") {
   std::mt19937_64 gen(42);
-  std::size_t n = 100, m = 3;
+  std::size_t n = 1000, m = 3;
   dag::undirected_network<std::size_t> r =
     dag::ba_random_graph<std::size_t>(n, m, gen);
   REQUIRE(r.vertices().size() == n);
@@ -32,7 +32,7 @@ TEST_CASE("Barabasi-Albert random graph", "[dag::ba_random_graph]") {
 
 TEST_CASE("random k-regular graph", "[dag::random_regular_graph]") {
   std::mt19937_64 gen(42);
-  std::size_t n = 10, k = 4;
+  std::size_t n = 1000, k = 4;
   dag::undirected_network<std::size_t> r =
     dag::random_regular_graph<std::size_t>(n, k, gen);
   REQUIRE(r.vertices().size() == n);

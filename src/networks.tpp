@@ -80,7 +80,9 @@ namespace dag {
   }
 
   template <network_edge EdgeT>
-  const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
+  const std::unordered_map<
+    typename EdgeT::VertexType, std::vector<EdgeT>,
+    hash<typename EdgeT::VertexType>>&
   network<EdgeT>::in_edges() const {
     if (instantaneous_undirected)
       return _out_edges;
@@ -99,7 +101,9 @@ namespace dag {
   }
 
   template <network_edge EdgeT>
-  const std::unordered_map<typename EdgeT::VertexType, std::vector<EdgeT>>&
+  const std::unordered_map<
+    typename EdgeT::VertexType, std::vector<EdgeT>,
+    hash<typename EdgeT::VertexType>>&
   network<EdgeT>::out_edges() const {
     return _out_edges;
   }
@@ -121,15 +125,15 @@ namespace dag {
     return inc;
   }
 
-
-
   template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::predecessors(const typename EdgeT::VertexType& v) const {
     if (instantaneous_undirected)
       return successors(v);
 
-    std::unordered_set<typename EdgeT::VertexType> preds;
+    std::unordered_set<
+      typename EdgeT::VertexType,
+      hash<typename EdgeT::VertexType>> preds;
     auto p = _in_edges.find(v);
     if (p != _in_edges.end()) {
       preds.reserve(p->second.size());
@@ -143,7 +147,9 @@ namespace dag {
   template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::successors(const typename EdgeT::VertexType& v) const {
-    std::unordered_set<typename EdgeT::VertexType> succ;
+    std::unordered_set<
+      typename EdgeT::VertexType,
+      hash<typename EdgeT::VertexType>> succ;
     auto p = _out_edges.find(v);
     if (p != _out_edges.end()) {
       succ.reserve(p->second.size());

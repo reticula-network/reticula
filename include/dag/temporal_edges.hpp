@@ -567,6 +567,7 @@ namespace dag {
       time.
      */
     template <network_vertex VertexType, typename TimeType>
+    requires output_streamable<VertexType> && output_streamable<TimeType>
     friend std::ostream& operator<<(
         std::ostream& os,
         const undirected_temporal_edge<VertexType, TimeType>& e);
@@ -576,6 +577,7 @@ namespace dag {
       `v1 v2 time`.
      */
     template <network_vertex VertexType, typename TimeType>
+    requires input_streamable<VertexType> && input_streamable<TimeType>
     friend std::istream& operator>>(
         std::istream& is,
         undirected_temporal_edge<VertexType, TimeType>& e);

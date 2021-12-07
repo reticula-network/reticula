@@ -304,14 +304,14 @@ namespace dag {
       Inserts undirected edge formatted as `v1 v2` where `v1` and `v2` are
       vertices in the same order as initialiser.
      */
-    template <network_vertex VertexType>
+    template <network_vertex VertexType> requires output_streamable<VertexType>
     friend std::ostream& operator<<(std::ostream &os,
         const undirected_edge<VertexType>& e);
 
     /**
       Extracts undirected edge from an input stream formatted as `v1 v2`.
      */
-    template <network_vertex VertexType>
+    template <network_vertex VertexType> requires input_streamable<VertexType>
     friend std::istream& operator>>(std::istream &is,
         undirected_edge<VertexType>& e);
 

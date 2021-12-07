@@ -10,8 +10,9 @@ namespace std {
     size_t
     operator()(
         const dag::undirected_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash(
-          dag::utils::unordered_hash(e.v1, e.v2), e.time);
+      return dag::utils::combine_hash<TimeType, hash>(
+          dag::utils::unordered_hash<VertexType, VertexType, hash>(
+            e.v1, e.v2), e.time);
     }
   };
 
@@ -20,8 +21,9 @@ namespace std {
     size_t
     operator()(
         const dag::directed_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash(
-        dag::utils::combine_hash(std::hash<VertexType>{}(e.v1), e.v2), e.time);
+      return dag::utils::combine_hash<TimeType, hash>(
+          dag::utils::combine_hash<VertexType, hash>(
+            std::hash<VertexType>{}(e.v1), e.v2), e.time);
     }
   };
 
@@ -31,9 +33,10 @@ namespace std {
     operator()(
         const
         dag::directed_delayed_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash(
-              dag::utils::combine_hash(
-                dag::utils::combine_hash(std::hash<VertexType>{}(e.v1), e.v2),
+      return dag::utils::combine_hash<TimeType, hash>(
+              dag::utils::combine_hash<TimeType, hash>(
+                dag::utils::combine_hash<VertexType, hash>(
+                  std::hash<VertexType>{}(e.v1), e.v2),
                 e.time),
               e.delay);
     }
@@ -415,6 +418,7 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  requires output_streamable<VertexType> && output_streamable<TimeType>
   std::ostream& operator<<(
       std::ostream& os,
       const dag::undirected_temporal_edge<VertexType, TimeType>& e) {
@@ -422,6 +426,7 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  requires input_streamable<VertexType> && input_streamable<TimeType>
   std::istream& operator>>(
       std::istream& is,
       dag::undirected_temporal_edge<VertexType, TimeType>& e) {

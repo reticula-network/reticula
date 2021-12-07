@@ -32,6 +32,7 @@ namespace dag {
       const  VertT& vert,
       size_t size_hint = 0);
 
+
   /**
     returns list of all weakly connected components of `dir`. Currently
     `singleton` does nothing as there is no way to specify a node not as part of
@@ -45,6 +46,17 @@ namespace dag {
   weakly_connected_components(
       const directed_network<VertT>& dir,
       bool singleton = true);
+
+
+  template <network_vertex VertT1, network_vertex VertT2>
+  undirected_network<std::pair<VertT1, VertT2>>
+  cartesian_product(
+      const undirected_network<VertT1>& g1,
+      const undirected_network<VertT2>& g2);
+
+  template <network_vertex OutVertT, network_vertex InVertT>
+  undirected_network<OutVertT>
+  relabel_nodes(const undirected_network<InVertT>& g);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

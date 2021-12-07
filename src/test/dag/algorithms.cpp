@@ -169,3 +169,43 @@ TEST_CASE("weakly connected components", "[dag::weakly_connected_components]") {
   REQUIRE_THAT(comps[1], UnorderedEquals(weak1) || UnorderedEquals(weak2));
   REQUIRE_THAT(comps[0], !UnorderedEquals(comps[1]));
 }
+
+#include <iostream>
+TEST_CASE("cartesian product", "[dag::cartesian_product]") {
+    dag::undirected_network<int> graph1({{1, 2}, {1, 3}});
+    dag::undirected_network<int> graph2({{1, 2}, {2, 3}});
+
+    dag::undirected_network<std::pair<int, int>> prod =
+      dag::cartesian_product(graph1, graph2);
+
+    REQUIRE(prod.vertices().size() ==
+        graph1.vertices().size()*graph2.vertices().size());
+    REQUIRE(prod.edges().size() ==
+        graph1.vertices().size()*graph2.edges().size() +
+        graph2.vertices().size()*graph1.edges().size());
+
+    REQUIRE_THAT(prod.edges(),
+        UnorderedEquals(
+          std::vector<dag::undirected_edge<std::pair<int, int>>>{
+            {{1, 1}, {2, 1}}, {{1, 1}, {3, 1}}, {{1, 1}, {1, 2}},
+            {{1, 2}, {2, 2}}, {{1, 2}, {3, 2}}, {{1, 2}, {1, 3}},
+            {{1, 3}, {2, 3}}, {{1, 3}, {3, 3}},
+            {{2, 1}, {2, 2}},
+            {{2, 2}, {2, 3}},
+            {{3, 1}, {3, 2}},
+            {{3, 2}, {3, 3}}}));
+}
+
+TEST_CASE("relabel nodes", "[dag::relabel_nodes]") {
+  // let's make a graph with more to it than integral vertices
+  dag::undirected_network<int> graph1({{1, 2}, {1, 3}});
+  dag::undirected_network<int> graph2({{1, 2}, {1, 3}});
+  dag::undirected_network<std::pair<int, int>> orig =
+    dag::cartesian_product(graph1, graph2);
+
+  dag::undirected_network<std::size_t> relabeled =
+    dag::relabel_nodes<std::size_t>(orig);
+
+  REQUIRE(orig.vertices().size() == relabeled.vertices().size());
+  REQUIRE(orig.edges().size() == relabeled.edges().size());
+}

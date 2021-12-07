@@ -4,22 +4,29 @@
 #include <concepts>
 
 namespace dag {
-  template <typename T>
-  concept hashable = requires(T a) {
-    { std::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
+  template <typename T, template<typename> class HashStruct>
+  concept hashable_with = requires(T a) {
+    { HashStruct<T>{}(a) } -> std::convertible_to<std::size_t>;
   };  // NOLINT(readability/braces)
 
-  // template <typename T>
-  // concept hll_hashable = requires(T a) {
-  //   { hll::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
-  // };  // NOLINT(readability/braces)
+  template <typename Key> struct hash;
 
   template <typename T>
-  concept network_vertex = hashable<T>;
+  concept network_vertex = hashable_with<T, hash>;
+
+  template <typename T>
+  concept output_streamable = requires(std::ostream os, T value) {
+    { os << value };  // NOLINT(readability/braces)
+  };  // NOLINT(readability/braces)
+
+  template <typename T>
+  concept input_streamable = requires(std::istream is, T value) {
+    { is >> value };  // NOLINT(readability/braces)
+  };  // NOLINT(readability/braces)
 
   template <typename T>
   concept static_edge =
-    hashable<T> &&
+    hashable_with<T, hash> &&
     network_vertex<typename T::VertexType> &&
     requires(T a, T b) {
       { a == b } -> std::convertible_to<bool>;

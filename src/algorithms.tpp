@@ -144,4 +144,59 @@ namespace dag {
 
     return sets_vector;
   }
+
+  template <network_vertex VertT1, network_vertex VertT2>
+  undirected_network<std::pair<VertT1, VertT2>>
+  cartesian_product(
+      const undirected_network<VertT1>& g1,
+      const undirected_network<VertT2>& g2) {
+    std::vector<undirected_edge<std::pair<VertT1, VertT2>>> edges;
+    edges.reserve(
+        g1.vertices().size()*g2.edges().size() +
+        g1.edges().size()*g2.vertices().size());
+
+    for (auto&& e: g1.edges()) {
+      auto verts = e.mutator_verts();
+      if (verts.size() > 1)
+        for (auto&& n: g2.vertices())
+          edges.emplace_back(std::make_pair(verts[0], n),
+              std::make_pair(verts[1], n));
+    }
+
+    for (auto&& n: g1.vertices()) {
+      for (auto&& e: g2.edges()) {
+        auto verts = e.mutator_verts();
+        if (verts.size() > 1)
+          edges.emplace_back(
+              std::make_pair(n, verts[0]),
+              std::make_pair(n, verts[1]));
+      }
+    }
+
+    return undirected_network<std::pair<VertT1, VertT2>>(edges);
+  }
+
+
+  template <network_vertex OutVertT, network_vertex InVertT>
+  undirected_network<OutVertT>
+  relabel_nodes(const undirected_network<InVertT>& g) {
+    static_assert(std::is_integral<OutVertT>::value,
+        "output vertices should be of integral type");
+
+    std::unordered_map<InVertT, OutVertT, hash<InVertT>> new_labels;
+    new_labels.reserve(g.vertices().size());
+
+    OutVertT i = {};
+    for (auto&& n: g.vertices())
+      new_labels.emplace(n, i++);
+
+    std::vector<undirected_edge<OutVertT>> edges;
+    for (auto&& e: g.edges()) {
+      auto verts = e.mutator_verts();
+      if (verts.size() > 1)
+        edges.emplace_back(new_labels.at(verts[0]), new_labels.at(verts[1]));
+    }
+
+    return undirected_network<OutVertT>(edges);
+  }
 }  // namespace dag

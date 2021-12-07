@@ -10,14 +10,16 @@ namespace std {
   struct hash<dag::directed_edge<VertexType>> {
     size_t
     operator()(const dag::directed_edge<VertexType>& e) const {
-      return dag::utils::combine_hash(std::hash<VertexType>{}(e.v1), e.v2);
+      return dag::utils::combine_hash<VertexType, hash>(
+          std::hash<VertexType>{}(e.v1), e.v2);
     }
   };
 
   template<dag::network_vertex VertexType>
   struct hash<dag::undirected_edge<VertexType>> {
     size_t operator()(const dag::undirected_edge<VertexType>& e) const {
-      return dag::utils::unordered_hash(e.v1, e.v2);
+      return dag::utils::unordered_hash<VertexType, VertexType, hash>(
+          e.v1, e.v2);
     }
   };
 }  // namespace std
@@ -227,6 +229,7 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
+  requires output_streamable<VertexType>
   std::ostream& operator<<(
       std::ostream &os,
       const dag::undirected_edge<VertexType>& e) {
@@ -234,6 +237,7 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
+  requires input_streamable<VertexType>
   std::istream& operator>>(std::istream &is,
       dag::undirected_edge<VertexType>& e) {
     return is >> e.v1 >> e.v2;
