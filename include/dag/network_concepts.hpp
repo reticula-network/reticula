@@ -12,7 +12,13 @@ namespace dag {
   template <typename Key> struct hash;
 
   template <typename T>
-  concept network_vertex = hashable_with<T, hash>;
+  concept network_vertex =
+    hashable_with<T, hash> &&
+    requires(T a, T b) {
+      { a == b } -> std::convertible_to<bool>;
+      { a != b } -> std::convertible_to<bool>;
+      { a < b } -> std::convertible_to<bool>;
+    };  // NOLINT(readability/braces)
 
   template <typename T>
   concept output_streamable = requires(std::ostream os, T value) {
