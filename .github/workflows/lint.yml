@@ -17,6 +17,6 @@ jobs:
     - name: upgrade pip
       run: pip install --upgrade pip
     - name: install cpplint
-      run: pip install cpplint==1.4.4
+      run: pip install cpplint==1.5.5
     - name: run cpplint
       run: cpplint --extensions=tpp,cpp,hpp --quiet --recursive .
