@@ -94,7 +94,7 @@ namespace dag {
     inline bool is_incident(const VertexType vert) const;
 
     /**
-      List of all vertices that initiate (cause) the effects of the
+      List of all vertices that can initiate (cause) the effects of the
       relationship. For directed edges this is equal to the tail vertex.
      */
     [[nodiscard]]
