@@ -11,6 +11,7 @@ namespace dag {}
 #include "network_concepts.hpp"
 #include "adjacency_prob.hpp"
 #include "static_edges.hpp"
+#include "static_hyperedges.hpp"
 #include "temporal_edges.hpp"
 #include "networks.hpp"
 #include "random_networks.hpp"

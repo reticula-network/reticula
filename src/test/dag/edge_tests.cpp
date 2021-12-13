@@ -7,6 +7,7 @@ using Catch::Matchers::UnorderedEquals;
 
 #include <dag/network_concepts.hpp>
 #include <dag/static_edges.hpp>
+#include <dag/static_hyperedges.hpp>
 
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
   SECTION("are read correctly") {
@@ -36,12 +37,52 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
     REQUIRE(edge.is_incident(2));
 
     REQUIRE_FALSE(edge.is_incident(3));
+
+    REQUIRE(dag::adjacent(edge, dag::undirected_edge<int>(2, 3)));
+    REQUIRE(dag::adjacent(edge, dag::undirected_edge<int>(3, 2)));
+    REQUIRE_FALSE(dag::adjacent(edge, dag::undirected_edge<int>(3, 4)));
   }
 
   SECTION("compare correctly") {
     REQUIRE(dag::undirected_edge<int>(1, 2) == dag::undirected_edge<int>(1, 2));
     REQUIRE(dag::undirected_edge<int>(1, 2) == dag::undirected_edge<int>(2, 1));
     REQUIRE(dag::undirected_edge<int>(1, 2) != dag::undirected_edge<int>(2, 3));
+  }
+}
+
+TEST_CASE("undirected hyperedges", "[dag::undirected_hyperedge]") {
+  SECTION("comply with static_edge concept") {
+    STATIC_REQUIRE(dag::static_edge<dag::undirected_hyperedge<int>>);
+    STATIC_REQUIRE(dag::static_edge<dag::undirected_hyperedge<std::size_t>>);
+  }
+
+  SECTION("have correct properties") {
+    dag::undirected_hyperedge<int> edge({1, 2, 3});
+
+    REQUIRE_THAT(edge.mutated_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3})));
+    REQUIRE_THAT(edge.mutator_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3})));
+
+    REQUIRE(edge.is_incident(1));
+    REQUIRE(edge.is_incident(2));
+    REQUIRE(edge.is_incident(3));
+
+    REQUIRE_FALSE(edge.is_incident(4));
+
+    REQUIRE(dag::adjacent(edge, edge));
+    REQUIRE(dag::adjacent(edge, dag::undirected_hyperedge<int>({2, 3, 4})));
+    REQUIRE(dag::adjacent(edge, dag::undirected_hyperedge<int>({3, 4, 5})));
+    REQUIRE_FALSE(dag::adjacent(edge, dag::undirected_hyperedge<int>({4, 5})));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::undirected_hyperedge<int>({1, 2, 3}) ==
+        dag::undirected_hyperedge<int>({1, 2, 3}));
+    REQUIRE(dag::undirected_hyperedge<int>({1, 2, 3}) ==
+        dag::undirected_hyperedge<int>({3, 1, 2, 3}));
+    REQUIRE(dag::undirected_hyperedge<int>({1, 2, 3}) !=
+        dag::undirected_hyperedge<int>({2, 3}));
   }
 }
 
@@ -77,12 +118,67 @@ TEST_CASE("directed edges", "[directed_edge]") {
 
     REQUIRE_FALSE(edge.is_in_incident(3));
     REQUIRE_FALSE(edge.is_out_incident(3));
+
+    REQUIRE(dag::adjacent(edge, dag::directed_edge<int>(2, 3)));
+    REQUIRE_FALSE(dag::adjacent(edge, dag::directed_edge<int>(3, 2)));
+    REQUIRE_FALSE(dag::adjacent(edge, dag::directed_edge<int>(3, 4)));
   }
 
   SECTION("compare correctly") {
     REQUIRE(dag::directed_edge<int>(1, 2) == dag::directed_edge<int>(1, 2));
     REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 1));
     REQUIRE(dag::directed_edge<int>(1, 2) != dag::directed_edge<int>(2, 3));
+  }
+}
+
+TEST_CASE("directed hyperedges", "[directed_hyperedge]") {
+  SECTION("comply with static_edge concept") {
+    STATIC_REQUIRE(dag::static_edge<dag::directed_hyperedge<int>>);
+    STATIC_REQUIRE(dag::static_edge<dag::directed_hyperedge<std::size_t>>);
+  }
+
+  SECTION("have correct properties") {
+    dag::directed_hyperedge<int> edge({1, 2}, {2, 3, 4});
+
+    REQUIRE_THAT(edge.mutated_verts(),
+        UnorderedEquals(std::vector<int>({2, 3, 4})));
+    REQUIRE_THAT(edge.mutator_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+
+    REQUIRE(edge.is_out_incident(1));
+    REQUIRE(edge.is_out_incident(2));
+    REQUIRE_FALSE(edge.is_out_incident(3));
+
+    REQUIRE(edge.is_in_incident(2));
+    REQUIRE(edge.is_in_incident(3));
+    REQUIRE(edge.is_in_incident(4));
+    REQUIRE_FALSE(edge.is_in_incident(1));
+
+    REQUIRE_FALSE(edge.is_in_incident(5));
+    REQUIRE_FALSE(edge.is_out_incident(5));
+
+    REQUIRE(dag::adjacent(edge,
+          dag::directed_hyperedge<int>({2, 3, 4}, {5, 6})));
+    REQUIRE(dag::adjacent(edge,
+          dag::directed_hyperedge<int>({4, 5}, {5, 6})));
+    REQUIRE_FALSE(dag::adjacent(edge,
+          dag::directed_hyperedge<int>({5}, {5, 6})));
+  }
+
+  SECTION("compare correctly") {
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) ==
+        dag::directed_hyperedge<int>({1, 2}, {2, 3}));
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) ==
+        dag::directed_hyperedge<int>({1, 2}, {3, 2}));
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) ==
+        dag::directed_hyperedge<int>({2, 1}, {2, 3}));
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) ==
+        dag::directed_hyperedge<int>({2, 1}, {3, 2}));
+
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) !=
+        dag::directed_hyperedge<int>({2, 3}, {1, 2}));
+    REQUIRE(dag::directed_hyperedge<int>({1, 2}, {2, 3}) !=
+        dag::directed_hyperedge<int>({2, 3}, {4, 5}));
   }
 }
 
