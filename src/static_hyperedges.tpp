@@ -86,20 +86,20 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
-  inline bool
-  directed_hyperedge<VertexType>::is_out_incident(const VertexType& vert) const {
+  inline bool directed_hyperedge<VertexType>::is_out_incident(
+      const VertexType& vert) const {
     return std::ranges::binary_search(_tails, vert);
   }
 
   template <network_vertex VertexType>
-  inline bool
-  directed_hyperedge<VertexType>::is_in_incident(const VertexType& vert) const  {
+  inline bool directed_hyperedge<VertexType>::is_in_incident(
+      const VertexType& vert) const  {
     return std::ranges::binary_search(_heads, vert);
   }
 
   template <network_vertex VertexType>
-  inline bool
-  directed_hyperedge<VertexType>::is_incident(const VertexType& vert) const {
+  inline bool directed_hyperedge<VertexType>::is_incident(
+      const VertexType& vert) const {
     return (is_out_incident(vert) || is_in_incident(vert));
   }
 
