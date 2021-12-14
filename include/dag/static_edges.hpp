@@ -61,7 +61,7 @@ namespace dag {
       or the relation.
       @param v2 Head end of the edge, often the receiving end of an effect.
      */
-    directed_edge(const VertexType v1, const VertexType v2);
+    directed_edge(VertexType v1, VertexType v2);
 
 
     /**
@@ -72,7 +72,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_out_incident(const VertexType vert) const;
+    is_out_incident(const VertexType& vert) const;
 
     /**
       A directed edge is in_incident to vertex `v` iff `v` is the head vertex
@@ -82,7 +82,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_in_incident(const VertexType vert) const;
+    is_in_incident(const VertexType& vert) const;
 
     /**
       A directed edge is incident to vertex `v` iff `v` is the head or tail
@@ -91,7 +91,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const;
+    inline bool is_incident(const VertexType& vert) const;
 
     /**
       List of all vertices that can initiate (cause) the effects of the
@@ -210,7 +210,7 @@ namespace dag {
       dealing with IO functions. IO functions try to preserve the same order as
       of vertices from input string in the output string.
      */
-    undirected_edge(const VertexType v1, const VertexType v2);
+    undirected_edge(VertexType v1, VertexType v2);
 
     /**
       An undirected edge is incident to vertex `v` iff `v` is either of its
@@ -219,7 +219,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const;
+    inline bool is_incident(const VertexType& vert) const;
 
 
     /**
@@ -228,7 +228,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_in_incident(const VertexType vert) const;
+    inline bool is_in_incident(const VertexType& vert) const;
 
     /**
       Exactly the same as `is_incident`.
@@ -236,7 +236,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_out_incident(const VertexType vert) const;
+    inline bool is_out_incident(const VertexType& vert) const;
 
     /**
       In an undirected edge both edges might act as source or cause of an

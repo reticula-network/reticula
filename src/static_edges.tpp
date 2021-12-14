@@ -49,26 +49,24 @@ namespace dag {
   // properties of directed edge:
 
   template <network_vertex VertexType>
-  directed_edge<VertexType>::directed_edge(
-      const VertexType v1,
-      const VertexType v2)
+  directed_edge<VertexType>::directed_edge(VertexType v1, VertexType v2)
       : v1(v1), v2(v2) {}
 
   template <network_vertex VertexType>
   inline bool
-  directed_edge<VertexType>::is_out_incident(const VertexType vert) const {
+  directed_edge<VertexType>::is_out_incident(const VertexType& vert) const {
     return (v1 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool
-  directed_edge<VertexType>::is_in_incident(const VertexType vert) const  {
+  directed_edge<VertexType>::is_in_incident(const VertexType& vert) const  {
     return (v2 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool
-  directed_edge<VertexType>::is_incident(const VertexType vert) const {
+  directed_edge<VertexType>::is_incident(const VertexType& vert) const {
     return (is_out_incident(vert) || is_in_incident(vert));
   }
 
@@ -150,25 +148,24 @@ namespace dag {
   // properties of undirected edge:
 
   template <network_vertex VertexType>
-  undirected_edge<VertexType>::undirected_edge(
-      const VertexType v1, const VertexType v2)
+  undirected_edge<VertexType>::undirected_edge(VertexType v1, VertexType v2)
     : v1(v1), v2(v2) {}
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_in_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_out_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 

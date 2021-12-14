@@ -88,12 +88,12 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
-    const VertexType v1, const VertexType v2, const TimeType time)
+    VertexType v1, VertexType v2, TimeType time)
     : v1(v1), v2(v2), time(time) {}
 
   template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
-  directed_temporal_edge<VertexType, TimeType>::static_projection() {
+  directed_temporal_edge<VertexType, TimeType>::static_projection() const {
     return directed_edge<VertexType>(v1, v2);
   }
 
@@ -111,19 +111,19 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_out_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_in_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
@@ -204,13 +204,14 @@ namespace dag {
   template <network_vertex VertexType, typename TimeType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
     directed_delayed_temporal_edge(
-      const VertexType v1, const VertexType v2,
-      const TimeType time, const TimeType delay)
+      VertexType v1, VertexType v2,
+      TimeType time, TimeType delay)
     : v1(v1), v2(v2), time(time), delay(delay) {}
 
   template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
-  directed_delayed_temporal_edge<VertexType, TimeType>::static_projection() {
+  directed_delayed_temporal_edge<VertexType, TimeType>::
+      static_projection() const {
     return directed_edge<VertexType>(v1, v2);
   }
 
@@ -228,19 +229,19 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_out_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_in_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
@@ -323,12 +324,12 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
-    const VertexType v1, const VertexType v2, const TimeType time)
+    VertexType v1, VertexType v2, TimeType time)
     : v1(v1), v2(v2), time(time) {}
 
   template <network_vertex VertexType, typename TimeType>
   undirected_edge<VertexType>
-  undirected_temporal_edge<VertexType, TimeType>::static_projection() {
+  undirected_temporal_edge<VertexType, TimeType>::static_projection() const {
     return undirected_edge<VertexType>(v1, v2);
   }
 
@@ -344,19 +345,19 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_in_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_out_incident(
-      const VertexType vert) const {
+      const VertexType& vert) const {
     return (v1 == vert || v2 == vert);
   }
 

@@ -77,27 +77,29 @@ namespace dag {
     std::ranges::sort(_heads);
     auto [hfirst, hlast] = std::ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
+    _heads.shrink_to_fit();
 
     std::ranges::sort(_tails);
     auto [tfirst, tlast] = std::ranges::unique(_tails);
     _tails.erase(tfirst, tlast);
+    _tails.shrink_to_fit();
   }
 
   template <network_vertex VertexType>
   inline bool
-  directed_hyperedge<VertexType>::is_out_incident(const VertexType vert) const {
-    return std::binary_search(_tails.begin(), _tails.end(), vert);
+  directed_hyperedge<VertexType>::is_out_incident(const VertexType& vert) const {
+    return std::ranges::binary_search(_tails, vert);
   }
 
   template <network_vertex VertexType>
   inline bool
-  directed_hyperedge<VertexType>::is_in_incident(const VertexType vert) const  {
-    return std::binary_search(_heads.begin(), _heads.end(), vert);
+  directed_hyperedge<VertexType>::is_in_incident(const VertexType& vert) const  {
+    return std::ranges::binary_search(_heads, vert);
   }
 
   template <network_vertex VertexType>
   inline bool
-  directed_hyperedge<VertexType>::is_incident(const VertexType vert) const {
+  directed_hyperedge<VertexType>::is_incident(const VertexType& vert) const {
     return (is_out_incident(vert) || is_in_incident(vert));
   }
 
@@ -178,25 +180,26 @@ namespace dag {
     std::ranges::sort(_verts);
     auto [first, last] = std::ranges::unique(_verts);
     _verts.erase(first, last);
+    _verts.shrink_to_fit();
   }
 
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_incident(
-      const VertexType vert) const {
-    return std::binary_search(_verts.begin(), _verts.end(), vert);
+      const VertexType& vert) const {
+    return std::ranges::binary_search(_verts, vert);
   }
 
 
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_in_incident(
-      const VertexType vert) const {
-    return std::binary_search(_verts.begin(), _verts.end(), vert);
+      const VertexType& vert) const {
+    return std::ranges::binary_search(_verts, vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_out_incident(
-      const VertexType vert) const {
-    return std::binary_search(_verts.begin(), _verts.end(), vert);
+      const VertexType& vert) const {
+    return std::ranges::binary_search(_verts, vert);
   }
 
   template <network_vertex VertexType>

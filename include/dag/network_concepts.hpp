@@ -34,18 +34,18 @@ namespace dag {
   concept static_edge =
     hashable_with<T, hash> &&
     network_vertex<typename T::VertexType> &&
-    requires(T a, T b) {
+    requires(const T& a, const T& b) {
       { a == b } -> std::convertible_to<bool>;
       { a != b } -> std::convertible_to<bool>;
       { a < b } -> std::convertible_to<bool>;
       { effect_lt(a, b) } -> std::convertible_to<bool>;
       { adjacent(a, b) } -> std::convertible_to<bool>;
-    } && requires(T a) {
+    } && requires(const T& a) {
       { a.mutated_verts() } ->
         std::convertible_to<std::vector<typename T::VertexType>>;
       { a.mutator_verts() } ->
         std::convertible_to<std::vector<typename T::VertexType>>;
-    } && requires(T a, typename T::VertexType v) {
+    } && requires(const T& a, typename T::VertexType v) {
       { a.is_incident(v) } -> std::convertible_to<bool>;
       { a.is_in_incident(v) } -> std::convertible_to<bool>;
       { a.is_out_incident(v) } -> std::convertible_to<bool>;
@@ -55,7 +55,7 @@ namespace dag {
   concept temporal_edge =
     static_edge<T> &&
     std::is_arithmetic_v<typename T::TimeType> &&
-    requires(T a) {
+    requires(const T& a) {
       { a.cause_time() } -> std::convertible_to<typename T::TimeType>;
       { a.effect_time() } -> std::convertible_to<typename T::TimeType>;
       { a.static_projection() } -> static_edge;

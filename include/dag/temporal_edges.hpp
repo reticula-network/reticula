@@ -85,7 +85,7 @@ namespace dag {
       @param time Timestamp at which the event "happened".
      */
     directed_temporal_edge(
-        const VertexType v1, const VertexType v2, const TimeType time);
+        VertexType v1, VertexType v2, TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -93,7 +93,7 @@ namespace dag {
      */
     [[nodiscard]]
     directed_edge<VertT>
-    static_projection();
+    static_projection() const;
 
     /**
       The timestamp that the effect is received by head vertex. For directed
@@ -115,7 +115,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    bool is_out_incident(const VertexType vert) const;
+    bool is_out_incident(const VertexType& vert) const;
 
     /**
       A directed temporal edge is in_incident to vertex `v` iff `v` is the head
@@ -124,7 +124,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    bool is_in_incident(const VertexType vert) const;
+    bool is_in_incident(const VertexType& vert) const;
 
     /**
       A directed temporal edge is incident to vertex `v` iff `v` is the head or
@@ -133,7 +133,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const;
+    bool is_incident(const VertexType& vert) const;
 
     /**
       List of all vertices that initiate (cause) the effects of the
@@ -283,8 +283,7 @@ namespace dag {
       @param delay Timestamp at which the event was "received".
      */
     directed_delayed_temporal_edge(
-        const VertexType v1, const VertexType v2,
-        const TimeType time, const TimeType delay);
+        VertexType v1, VertexType v2, TimeType time, TimeType delay);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -292,7 +291,7 @@ namespace dag {
      */
     [[nodiscard]]
     directed_edge<VertT>
-    static_projection();
+    static_projection() const;
 
     /**
       The timestamp that the effect is received by head vertex. For directed
@@ -315,7 +314,7 @@ namespace dag {
       @param vert Vertex to check the out_incident relationship with.
      */
     [[nodiscard]]
-    bool is_out_incident(const VertexType vert) const;
+    bool is_out_incident(const VertexType& vert) const;
 
     /**
       A directed delayed temporal edge is in_incident to vertex `v` iff `v` is
@@ -324,7 +323,7 @@ namespace dag {
       @param vert Vertex to check the in_incident relationship with.
      */
     [[nodiscard]]
-    bool is_in_incident(const VertexType vert) const;
+    bool is_in_incident(const VertexType& vert) const;
 
     /**
       A directed delayed temporal edge is incident to vertex `v` iff `v` is the
@@ -333,7 +332,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const;
+    bool is_incident(const VertexType& vert) const;
 
     /**
       List of all vertices that initiate (cause) the effects of the
@@ -451,7 +450,7 @@ namespace dag {
 
     undirected_temporal_edge() = default;
     undirected_temporal_edge(
-        const VertexType v1, const VertexType v2, const TimeType time);
+        VertexType v1, VertexType v2, TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -459,7 +458,7 @@ namespace dag {
      */
     [[nodiscard]]
     undirected_edge<VertT>
-    static_projection();
+    static_projection() const;
 
     /**
       The timestamp that the effect is received by head vertex. For undirected
@@ -481,7 +480,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_incident(const VertexType vert) const;
+    bool is_incident(const VertexType& vert) const;
 
     /**
       Exactly the same as `is_incident`
@@ -489,7 +488,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_in_incident(const VertexType vert) const;
+    bool is_in_incident(const VertexType& vert) const;
 
     /**
       Exactly the same as `is_incident`
@@ -497,7 +496,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    bool is_out_incident(const VertexType vert) const;
+    bool is_out_incident(const VertexType& vert) const;
     /**
       In an undirected temporal edge both edges might act as source or cause of
       an effect.

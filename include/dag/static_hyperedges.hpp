@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <ranges>
+#include <initializer_list>
 
 #include <hll/hyperloglog.hpp>
 
@@ -59,7 +60,7 @@ namespace dag {
     directed_hyperedge() = default;
 
     /**
-      Create an undirected hyperedge. This variation is specifically created so
+      Create an directed hyperedge. This variation is specifically created so
       that a brace-enclosed initializer list can be used to initialize this
       class.
 
@@ -92,7 +93,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_out_incident(const VertexType vert) const;
+    is_out_incident(const VertexType& vert) const;
 
     /**
       A directed hyperedge is in_incident to vertex `v` iff `v` is in the head
@@ -102,7 +103,7 @@ namespace dag {
      */
     [[nodiscard]]
     inline bool
-    is_in_incident(const VertexType vert) const;
+    is_in_incident(const VertexType& vert) const;
 
     /**
       A directed hyperedge is incident to vertex `v` iff `v` is in the head or
@@ -111,7 +112,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const;
+    inline bool is_incident(const VertexType& vert) const;
 
     /**
       List of all vertices that can initiate (cause) the effects of the
@@ -233,7 +234,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_incident(const VertexType vert) const;
+    inline bool is_incident(const VertexType& vert) const;
 
 
     /**
@@ -242,7 +243,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_in_incident(const VertexType vert) const;
+    inline bool is_in_incident(const VertexType& vert) const;
 
     /**
       Exactly the same as `is_incident`.
@@ -250,7 +251,7 @@ namespace dag {
       @param vert Vertex to check the incident relationship with.
      */
     [[nodiscard]]
-    inline bool is_out_incident(const VertexType vert) const;
+    inline bool is_out_incident(const VertexType& vert) const;
 
     /**
       In an undirected hyoeredge all vertices might act as source or cause of an
