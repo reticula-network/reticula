@@ -42,3 +42,21 @@ TEST_CASE("random k-regular graph", "[dag::random_regular_graph]") {
   REQUIRE(std::all_of(verts.cbegin(), verts.cend(),
         [&r, k](std::size_t v) { return r.degree(v) == k; }));
 }
+
+TEST_CASE("power-law with secified mean",
+    "[dag::power_law_with_specified_mean]") {
+  REQUIRE(dag::random_number_distribution<
+      dag::power_law_with_specified_mean<>>);
+}
+
+TEST_CASE("residual power-law with specified mean",
+    "[dag::residual_power_law_with_specified_mean]") {
+  REQUIRE(dag::random_number_distribution<
+      dag::residual_power_law_with_specified_mean<>>);
+}
+
+TEST_CASE("hawkes univariate exponential",
+    "[dag::hawkes_univariate_exponential]") {
+  REQUIRE(dag::random_number_distribution<
+      dag::hawkes_univariate_exponential<>>);
+}
