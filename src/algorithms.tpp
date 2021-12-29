@@ -3,6 +3,8 @@
 #include <queue>
 #include <cmath>
 
+#include <iostream>
+
 #include <ds/disjoint_set.hpp>
 
 namespace dag {
@@ -178,11 +180,9 @@ namespace dag {
 
 
   template <network_vertex OutVertT, network_vertex InVertT>
+  requires std::numeric_limits<OutVertT>::is_integer
   undirected_network<OutVertT>
   relabel_nodes(const undirected_network<InVertT>& g) {
-    static_assert(std::is_integral<OutVertT>::value,
-        "output vertices should be of integral type");
-
     std::unordered_map<InVertT, OutVertT, hash<InVertT>> new_labels;
     new_labels.reserve(g.vertices().size());
 
@@ -198,5 +198,67 @@ namespace dag {
     }
 
     return undirected_network<OutVertT>(edges);
+  }
+
+  template <std::ranges::forward_range Range>
+  requires std::numeric_limits<std::ranges::range_value_t<Range>>::is_integer
+  bool is_graphic(const Range& sequence) {
+    std::size_t num_degrees = 0;
+    std::size_t max_deg = std::numeric_limits<std::size_t>::min();
+    std::size_t min_deg = std::numeric_limits<std::size_t>::max();
+    std::size_t total_degrees = 0;
+
+    for (auto deg: sequence) {
+      if (deg < 0)
+        return false;
+      total_degrees += static_cast<std::size_t>(deg);
+      min_deg = std::min(min_deg, static_cast<std::size_t>(deg));
+      max_deg = std::max(max_deg, static_cast<std::size_t>(deg));
+      num_degrees++;
+    }
+
+    // an empty sequence is graphic
+    if (num_degrees == 0)
+      return true;
+
+    if (max_deg >= num_degrees ||
+        total_degrees % 2 != 0 ||
+        total_degrees > num_degrees*(num_degrees - 1))
+      return false;
+
+    if (4 * num_degrees * min_deg <
+        (max_deg + min_deg + 1)*(max_deg + min_deg + 1))
+      return true;
+
+    std::vector<size_t> degree_dist(max_deg + 1, 0);
+    for (auto deg: sequence)
+      degree_dist[static_cast<std::size_t>(deg)]++;
+
+    std::size_t k = 0, partial_deg_sum = 0;
+    std::size_t partial_n_j_sum = 0, partial_jn_j_sum = 0;
+    for (std::size_t d_k = max_deg; d_k >= min_deg; d_k--) {
+      if (d_k < k + 1)
+        return true;
+
+      if (degree_dist[d_k] > 0) {
+        std::size_t run = degree_dist[d_k];
+        if (d_k < k + run)
+          run = d_k - k;
+
+        partial_deg_sum += run*d_k;
+        for (std::size_t i = 0; i < run; i++) {
+          partial_n_j_sum += degree_dist[k + i];
+          partial_jn_j_sum += (k + i)*degree_dist[k + i];
+        }
+
+        k += run;
+        if (partial_deg_sum >
+            k*(num_degrees - 1) -
+            k*partial_n_j_sum + partial_jn_j_sum)
+          return false;
+      }
+    }
+
+    return true;
   }
 }  // namespace dag

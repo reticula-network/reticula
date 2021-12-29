@@ -34,7 +34,7 @@ namespace dag {
 
 
   /**
-    returns list of all weakly connected components of `dir`. Currently
+    Returns list of all weakly connected components of `dir`. Currently
     `singleton` does nothing as there is no way to specify a node not as part of
     a link.
 
@@ -55,8 +55,19 @@ namespace dag {
       const undirected_network<VertT2>& g2);
 
   template <network_vertex OutVertT, network_vertex InVertT>
+  requires std::numeric_limits<OutVertT>::is_integer
   undirected_network<OutVertT>
   relabel_nodes(const undirected_network<InVertT>& g);
+
+  /**
+    Checks if the sequence can be degree sequence of a valid undirected graph,
+    containing no multi-edges or loops, based on the Erdős--Gallai algorithm.
+
+    @param sequence The sequence in question, a forward range of VertT values.
+  */
+  template <network_vertex VertT, std::ranges::forward_range Range>
+  requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+  bool is_graphic(const Range& sequence);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

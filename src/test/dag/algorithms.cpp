@@ -209,3 +209,15 @@ TEST_CASE("relabel nodes", "[dag::relabel_nodes]") {
   REQUIRE(orig.vertices().size() == relabeled.vertices().size());
   REQUIRE(orig.edges().size() == relabeled.edges().size());
 }
+
+TEST_CASE("is_graphic", "[dag::is_graphic]") {
+  REQUIRE(dag::is_graphic(std::vector<int>({})));
+  REQUIRE(dag::is_graphic(std::vector<int>({5, 3, 3, 3, 2, 2})));
+  REQUIRE(dag::is_graphic(std::vector<int>({3, 3, 2, 1, 1, 0})));
+  REQUIRE(dag::is_graphic(std::vector<int>({5, 1, 1, 1, 1, 1})));
+  REQUIRE(dag::is_graphic(std::vector<int>(5, 2)));
+  REQUIRE(dag::is_graphic(std::vector<int>(5, 4)));
+
+  REQUIRE_FALSE(dag::is_graphic(std::vector<int>({4, 3, 3, 2, 2, 1})));
+  REQUIRE_FALSE(dag::is_graphic(std::vector<int>({4, 3, 2, 1})));
+}
