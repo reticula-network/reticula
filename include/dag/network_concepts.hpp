@@ -45,6 +45,8 @@ namespace dag {
         std::convertible_to<std::vector<typename T::VertexType>>;
       { a.mutator_verts() } ->
         std::convertible_to<std::vector<typename T::VertexType>>;
+      { a.incident_verts() } ->
+        std::convertible_to<std::vector<typename T::VertexType>>;
     } && requires(const T& a, typename T::VertexType v) {
       { a.is_incident(v) } -> std::convertible_to<bool>;
       { a.is_in_incident(v) } -> std::convertible_to<bool>;

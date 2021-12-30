@@ -83,6 +83,25 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
+  std::vector<VertexType>
+  directed_edge<VertexType>::incident_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
+  }
+
+  template <network_vertex VertexType>
+  VertexType directed_edge<VertexType>::tail() const {
+    return v1;
+  }
+
+  template <network_vertex VertexType>
+  VertexType directed_edge<VertexType>::head() const {
+    return v2;
+  }
+
+  template <network_vertex VertexType>
   bool operator!=(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
@@ -172,13 +191,28 @@ namespace dag {
   template <network_vertex VertexType>
   std::vector<VertexType>
   undirected_edge<VertexType>::mutator_verts() const {
-    return {v1, v2};
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
   }
 
-  template <network_vertex VertexType>
-  std::vector<VertexType>
-  undirected_edge<VertexType>::mutated_verts() const {
-    return {v1, v2};
+  template <network_vertex vertextype>
+  std::vector<vertextype>
+  undirected_edge<vertextype>::mutated_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
+  }
+
+  template <network_vertex vertextype>
+  std::vector<vertextype>
+  undirected_edge<vertextype>::incident_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
   }
 
   template <network_vertex VertexType>

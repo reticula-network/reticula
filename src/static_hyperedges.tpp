@@ -116,6 +116,27 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
+  std::vector<VertexType>
+  directed_hyperedge<VertexType>::tails() const {
+    return _tails;
+  }
+
+  template <network_vertex VertexType>
+  std::vector<VertexType>
+  directed_hyperedge<VertexType>::heads() const {
+    return _heads;
+  }
+
+  template <network_vertex VertexType>
+  std::vector<VertexType>
+  directed_hyperedge<VertexType>::incident_verts() const {
+    std::vector<VertexType> res;
+    res.reserve(_heads.size() + _tails.size());
+    std::ranges::set_union(_tails, _heads, std::back_inserter(res));
+    return res;
+  }
+
+  template <network_vertex VertexType>
   bool operator!=(
       const directed_hyperedge<VertexType>& a,
       const directed_hyperedge<VertexType>& b) {
@@ -211,6 +232,12 @@ namespace dag {
   template <network_vertex VertexType>
   std::vector<VertexType>
   undirected_hyperedge<VertexType>::mutated_verts() const {
+    return _verts;
+  }
+
+  template <network_vertex VertexType>
+  std::vector<VertexType>
+  undirected_hyperedge<VertexType>::incident_verts() const {
     return _verts;
   }
 

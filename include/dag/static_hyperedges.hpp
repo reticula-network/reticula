@@ -131,6 +131,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that can initiate (cause) or receive (be affected by)
+      the effects of the relationship. For directed hyperedges this is equal to
+      the union of tail and head sets of vertices.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      The same as `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> tails() const;
+
+    /**
+      The same as `mutator_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> heads() const;
+
+    /**
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType>
@@ -265,6 +285,12 @@ namespace dag {
      */
     [[nodiscard]]
     std::vector<VertexType> mutated_verts() const;
+
+    /**
+      In an undirected hyperedge all vertices are incident to the edge.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
 
     /**
       Simply defined as negation of equal operator `operator==`.

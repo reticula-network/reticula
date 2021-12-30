@@ -172,6 +172,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that can initiate (cause) or receive (be affected by)
+      the effects of the relationship. For directed hyperedges this is equal to
+      the union of tail and head sets of vertices.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      The same as `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> tails() const;
+
+    /**
+      The same as `mutator_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> heads() const;
+
+    /**
       Two directed temporal hyperedges are adjacent if head of the first one has
       at least one element in common with the tail set of the second one and the
       cause time of the second one is after the first. Lack of an adjacency
@@ -377,6 +397,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that can initiate (cause) or receive (be affected by)
+      the effects of the relationship. For directed hyperedges this is equal to
+      the union of tail and head sets of vertices.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      The same as `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> tails() const;
+
+    /**
+      The same as `mutator_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> heads() const;
+
+    /**
       Two directed delayed temporal hyperedges are adjacent if head of the first one
       is the tail of the second one and the cause time of the second one is
       after the effect time of the first. Lack of an adjacency relation between
@@ -550,6 +590,14 @@ namespace dag {
      */
     [[nodiscard]]
     std::vector<VertexType> mutated_verts() const;
+
+    /**
+      List of all vertices that can initiate (cause) or receive (be affected by)
+      the effects of the relationship. For and undirected hyperedges this is
+      the same as `mutator_verts()` or `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
 
     /**
       Two undirected temporal hyperedges are adjacent if they share at least one

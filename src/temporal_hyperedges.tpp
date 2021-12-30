@@ -186,6 +186,27 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_temporal_hyperedge<VertexType, TimeType>::incident_verts() const {
+    std::vector<VertexType> res;
+    res.reserve(_heads.size() + _tails.size());
+    std::ranges::set_union(_tails, _heads, std::back_inserter(res));
+    return res;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_temporal_hyperedge<VertexType, TimeType>::tails() const {
+    return _tails;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_temporal_hyperedge<VertexType, TimeType>::heads() const {
+    return _heads;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   bool operator!=(
         const directed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_temporal_hyperedge<VertexType, TimeType>& b) {
@@ -325,6 +346,30 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_delayed_temporal_hyperedge<VertexType, TimeType>::
+      tails() const {
+    return _tails;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_delayed_temporal_hyperedge<VertexType, TimeType>::
+      heads() const {
+    return _heads;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_delayed_temporal_hyperedge<VertexType, TimeType>::
+      incident_verts() const {
+    std::vector<VertexType> res;
+    res.reserve(_heads.size() + _tails.size());
+    std::ranges::set_union(_tails, _heads, std::back_inserter(res));
+    return res;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   bool operator!=(
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
@@ -448,6 +493,12 @@ namespace dag {
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_hyperedge<VertexType, TimeType>::mutated_verts() const {
+    return _verts;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  undirected_temporal_hyperedge<VertexType, TimeType>::incident_verts() const {
     return _verts;
   }
 

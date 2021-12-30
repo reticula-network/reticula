@@ -140,6 +140,25 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_temporal_edge<VertexType, TimeType>::incident_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  VertexType directed_temporal_edge<VertexType, TimeType>::tail() const {
+    return v1;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  VertexType directed_temporal_edge<VertexType, TimeType>::head() const {
+    return v2;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_temporal_edge<VertexType, TimeType>& a,
       const directed_temporal_edge<VertexType, TimeType>& b) {
@@ -258,6 +277,27 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  directed_delayed_temporal_edge<VertexType, TimeType>::incident_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  VertexType
+  directed_delayed_temporal_edge<VertexType, TimeType>::tail() const {
+    return v1;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  VertexType
+  directed_delayed_temporal_edge<VertexType, TimeType>::head() const {
+    return v2;
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
@@ -364,13 +404,28 @@ namespace dag {
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    return {v1, v2};
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    return {v1, v2};
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::vector<VertexType>
+  undirected_temporal_edge<VertexType, TimeType>::incident_verts() const {
+    if (v1 == v2)
+      return {v1};
+    else
+      return {v1, v2};
   }
 
   template <network_vertex VertexType, typename TimeType>

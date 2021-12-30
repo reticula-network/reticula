@@ -152,6 +152,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that initiate (cause) or receive (affected by) the
+      effects of the relationship. For directed edges this is equal to the union
+      of results of `mutator_verts()` and `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      Returns the single vertex at the tail of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType tail() const;
+
+    /**
+      Returns the single vertex at the head of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType head() const;
+
+    /**
       Two directed temporal edges are adjacent if head of the first one is the
       tail of the second one and the cause time of the second one is after the
       first. Lack of an adjacency relation between edges ususlly mean that an
@@ -351,6 +371,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that initiate (cause) or receive (affected by) the
+      effects of the relationship. For directed edges this is equal to the union
+      of results of `mutator_verts()` and `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      Returns the single vertex at the tail of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType tail() const;
+
+    /**
+      Returns the single vertex at the head of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType head() const;
+
+    /**
       Two directed delayed temporal edges are adjacent if head of the first one
       is the tail of the second one and the cause time of the second one is
       after the effect time of the first. Lack of an adjacency relation between
@@ -498,17 +538,24 @@ namespace dag {
     [[nodiscard]]
     bool is_out_incident(const VertexType& vert) const;
     /**
-      In an undirected temporal edge both edges might act as source or cause of
-      an effect.
+      In an undirected temporal edge both vertices might act as source or cause
+      of an effect.
      */
     [[nodiscard]]
     std::vector<VertexType> mutator_verts() const;
 
     /**
-      In an undirected edge both edges might act as target of an effect.
+      In an undirected temporal edge both vertices might act as target of an
+      effect.
      */
     [[nodiscard]]
     std::vector<VertexType> mutated_verts() const;
+
+    /**
+      In an undirected temporal edge both vertices are incident to the edge.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
 
     /**
       Two undirected temporal edges are adjacent if they share at least on node

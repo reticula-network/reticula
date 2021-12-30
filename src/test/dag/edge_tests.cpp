@@ -31,6 +31,8 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
         UnorderedEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.mutator_verts(),
         UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_incident(1));
 
@@ -62,6 +64,8 @@ TEST_CASE("undirected hyperedges", "[dag::undirected_hyperedge]") {
     REQUIRE_THAT(edge.mutated_verts(),
         UnorderedEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3})));
+    REQUIRE_THAT(edge.incident_verts(),
         UnorderedEquals(std::vector<int>({1, 2, 3})));
 
     REQUIRE(edge.is_incident(1));
@@ -107,8 +111,12 @@ TEST_CASE("directed edges", "[dag::directed_edge]") {
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2})));
+    REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
         Equals(std::vector<int>({1})));
+    REQUIRE(edge.tail() == 1);
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE_FALSE(edge.is_out_incident(2));
@@ -142,8 +150,14 @@ TEST_CASE("directed hyperedges", "[dag::directed_hyperedge]") {
 
     REQUIRE_THAT(edge.mutated_verts(),
         UnorderedEquals(std::vector<int>({2, 3, 4})));
+    REQUIRE_THAT(edge.heads(),
+        UnorderedEquals(std::vector<int>({2, 3, 4})));
     REQUIRE_THAT(edge.mutator_verts(),
         UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.tails(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3, 4})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE(edge.is_out_incident(2));
@@ -212,6 +226,8 @@ TEST_CASE("undirected temporal edges",
         UnorderedEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.mutator_verts(),
         UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 1);
 
@@ -262,6 +278,8 @@ TEST_CASE("undirected temporal hyperedges",
     REQUIRE_THAT(edge.mutated_verts(),
         UnorderedEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3})));
+    REQUIRE_THAT(edge.incident_verts(),
         UnorderedEquals(std::vector<int>({1, 2, 3})));
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 1);
@@ -323,8 +341,12 @@ TEST_CASE("directed temporal edges", "[dag::directed_temporal_edge]") {
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2})));
+    REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
         Equals(std::vector<int>({1})));
+    REQUIRE(edge.tail() == 1);
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE_FALSE(edge.is_out_incident(2));
@@ -375,8 +397,14 @@ TEST_CASE("directed temporal hyperedges",
 
     REQUIRE_THAT(edge.mutated_verts(),
         UnorderedEquals(std::vector<int>({2, 3})));
+    REQUIRE_THAT(edge.heads(),
+        UnorderedEquals(std::vector<int>({2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
         UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.tails(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2, 3})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE(edge.is_out_incident(2));
@@ -437,8 +465,13 @@ TEST_CASE("directed delayed temporal edges",
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2})));
+    REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
         Equals(std::vector<int>({1})));
+    REQUIRE(edge.tail() == 1);
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 2})));
+
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 2);
 
@@ -502,8 +535,15 @@ TEST_CASE("directed delayed temporal hyperedges",
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2, 6})));
+    REQUIRE_THAT(edge.heads(),
+        Equals(std::vector<int>({2, 6})));
     REQUIRE_THAT(edge.mutator_verts(),
         Equals(std::vector<int>({1, 5})));
+    REQUIRE_THAT(edge.tails(),
+        Equals(std::vector<int>({1, 5})));
+    REQUIRE_THAT(edge.incident_verts(),
+        UnorderedEquals(std::vector<int>({1, 5, 2, 6})));
+
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 2);
 

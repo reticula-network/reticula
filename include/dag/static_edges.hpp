@@ -108,6 +108,26 @@ namespace dag {
     std::vector<VertexType> mutated_verts() const;
 
     /**
+      List of all vertices that initiate (cause) or receive (affected by) the
+      effects of the relationship. For directed edges this is equal to the union
+      of results of `mutator_verts()` and `mutated_verts()`.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
+
+    /**
+      Returns the single vertex at the tail of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType tail() const;
+
+    /**
+      Returns the single vertex at the head of the directed link arrow.
+     */
+    [[nodiscard]]
+    VertexType head() const;
+
+    /**
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType>
@@ -239,17 +259,23 @@ namespace dag {
     inline bool is_out_incident(const VertexType& vert) const;
 
     /**
-      In an undirected edge both edges might act as source or cause of an
+      In an undirected edge both vertices might act as source or cause of an
       effect.
      */
     [[nodiscard]]
     std::vector<VertexType> mutator_verts() const;
 
     /**
-      In an undirected edge both edges might act as target of an effect.
+      In an undirected edge both vertices might act as target of an effect.
      */
     [[nodiscard]]
     std::vector<VertexType> mutated_verts() const;
+
+    /**
+      In an undirected edge both vertices might act are considered incident.
+     */
+    [[nodiscard]]
+    std::vector<VertexType> incident_verts() const;
 
     /**
       Simply defined as negation of equal operator `operator==`.
