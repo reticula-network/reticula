@@ -2,8 +2,37 @@
 
 namespace dag {
   template <network_edge EdgeT>
-  network<EdgeT>::network(const std::vector<EdgeT>& edges)
-  : _edges_cause{edges} {
+  network<EdgeT>::network(std::initializer_list<EdgeT> edges)
+  : network(
+      std::vector<EdgeT>(edges),
+      std::vector<typename EdgeT::VertexType>()) {}
+
+  template <network_edge EdgeT>
+  network<EdgeT>::network(
+      std::initializer_list<EdgeT> edges,
+      std::initializer_list<typename EdgeT::VertexType> verts)
+  : network(
+      std::vector<EdgeT>(edges),
+      std::vector<typename EdgeT::VertexType>(verts)) {}
+
+  template <network_edge EdgeT>
+  template <std::ranges::input_range EdgeRange>
+  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  network<EdgeT>::network(const EdgeRange& edges)
+  : network(edges, std::vector<typename EdgeT::VertexType>()) {}
+
+  template <network_edge EdgeT>
+  template <
+    std::ranges::input_range EdgeRange,
+    std::ranges::input_range VertRange>
+  requires
+    std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+    std::convertible_to<
+      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+  network<EdgeT>::network(const EdgeRange& edges, const VertRange& verts) {
+    if constexpr (std::ranges::sized_range<EdgeRange>)
+      _edges_cause.reserve(std::ranges::size(edges));
+    std::ranges::copy(edges, std::back_inserter(_edges_cause));
     std::sort(_edges_cause.begin(), _edges_cause.end());
     _edges_cause.erase(std::unique(_edges_cause.begin(), _edges_cause.end()),
         _edges_cause.end());
@@ -21,6 +50,13 @@ namespace dag {
       if (!instantaneous_undirected)
         for (auto&& v: e.mutated_verts())
           _in_edges[v].push_back(e);
+    }
+
+    // adding the supplemental set of verts
+    for (const auto& v: verts) {
+      _out_edges.try_emplace(v);
+      if (!instantaneous_undirected)
+        _in_edges.try_emplace(v);
     }
 
     if (!instantaneous_undirected) {

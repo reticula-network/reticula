@@ -34,9 +34,49 @@ namespace dag {
     network() = default;
 
     /**
-      Create a network from a vector of edges.
+      Create a network from a range of edges. This variation is specifically
+      created so that a brace-enclosed initializer list can be used to
+      initialize the class.
      */
-    explicit network(const std::vector<EdgeType>& edges);
+    explicit network(std::initializer_list<EdgeType> edges);
+
+    /**
+      Create a network from a range of edges and a supplementary set of
+      vertices. This variation is specifically created so that a brace-enclosed
+      initializer list can be used to initialize the class.
+
+      @param edges A range consisting of all edges present in the network.
+      @param verts The range of vertices. It is used to supplement the vertices
+      present in the provided set of edges, i.e. it only needs to contain
+      vertices that have no incident edges.
+     */
+    network(
+        std::initializer_list<EdgeType> edges,
+        std::initializer_list<VertexType> verts);
+
+    /**
+      Create a network from a range of edges.
+     */
+    template <std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeType>
+    explicit network(const Range& edges);
+
+    /**
+      Create a network from a range of edges and a supplementary range of
+      vertices.
+
+      @param edges A range consisting of all edges present in the network.
+      @param verts The range of vertices. It is used to supplement the vertices
+      present in the provided set of edges, i.e. it only needs to contain
+      vertices that have no incident edges.
+     */
+    template <
+      std::ranges::input_range EdgeRange,
+      std::ranges::input_range VertRange>
+    requires
+      std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeType> &&
+      std::convertible_to<std::ranges::range_value_t<VertRange>, VertexType>
+    explicit network(const EdgeRange& edges, const VertRange& verts);
 
     /**
       list of unique vertices participating at least in one event in the
