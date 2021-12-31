@@ -103,7 +103,10 @@ namespace dag {
       the receiving end of an effect.
       @param time Timestamp at which the event "happened".
      */
-    template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    requires
+      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
     directed_temporal_hyperedge(
         const R1& tails, const R2& heads, TimeType time);
 
@@ -326,7 +329,10 @@ namespace dag {
       @param time Timestamp at which the event "happened".
       @param delay Timestamp at which the event was "received".
      */
-    template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    requires
+      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
     directed_delayed_temporal_hyperedge(
         const R1& tails, const R2& heads,
         TimeType time, TimeType delay);
@@ -527,7 +533,8 @@ namespace dag {
       @param verts The set of vertices involved in the hyperedge.
       @param time Timestamp at which the event "happened".
      */
-    template <std::ranges::forward_range R>
+    template <std::ranges::input_range R>
+    requires std::convertible_to<std::ranges::range_value_t<R>, VertT>
     undirected_temporal_hyperedge(const R& verts, TimeType time);
 
 

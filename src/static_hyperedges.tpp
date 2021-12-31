@@ -71,9 +71,20 @@ namespace dag {
         std::vector<VertexType>(heads)) {}
 
   template <network_vertex VertexType>
-  template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+  template <std::ranges::input_range R1, std::ranges::input_range R2>
+  requires
+    std::convertible_to<std::ranges::range_value_t<R1>, VertexType> &&
+    std::convertible_to<std::ranges::range_value_t<R2>, VertexType>
   directed_hyperedge<VertexType>::directed_hyperedge(
-      const R1& tails, const R2& heads) : _tails(tails), _heads(heads) {
+      const R1& tails, const R2& heads) {
+    if constexpr (std::ranges::sized_range<R1>)
+      _heads.reserve(std::ranges::size(heads));
+    std::ranges::copy(heads, std::back_inserter(_heads));
+
+    if constexpr (std::ranges::sized_range<R2>)
+      _tails.reserve(std::ranges::size(tails));
+    std::ranges::copy(tails, std::back_inserter(_tails));
+
     std::ranges::sort(_heads);
     auto [hfirst, hlast] = std::ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
@@ -195,9 +206,14 @@ namespace dag {
     undirected_hyperedge(std::vector<VertexType>(verts)) {}
 
   template <network_vertex VertexType>
-  template <std::ranges::forward_range R>
+  template <std::ranges::input_range R>
+  requires std::convertible_to<std::ranges::range_value_t<R>, VertexType>
   undirected_hyperedge<VertexType>::undirected_hyperedge(
       const R& verts) : _verts(verts) {
+    if constexpr (std::ranges::sized_range<R>)
+      _verts.reserve(std::ranges::size(verts));
+    std::ranges::copy(verts, std::back_inserter(_verts));
+
     std::ranges::sort(_verts);
     auto [first, last] = std::ranges::unique(_verts);
     _verts.erase(first, last);

@@ -81,7 +81,10 @@ namespace dag {
       @param heads The set of vertices at the head end of the hyperedge, often
       the receiving end of an effect.
      */
-    template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    requires
+      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
     directed_hyperedge(const R1& tails, const R2& heads);
 
 
@@ -244,7 +247,8 @@ namespace dag {
     /**
       Create an undirected hyperedge. Order of the vertices is arbitrary.
      */
-    template <std::ranges::forward_range R>
+    template <std::ranges::input_range R>
+    requires std::convertible_to<std::ranges::range_value_t<R>, VertT>
     explicit undirected_hyperedge(const R& verts);
 
     /**

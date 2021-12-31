@@ -121,11 +121,21 @@ namespace dag {
         std::vector<VertexType>(heads), time) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+  template <std::ranges::input_range R1, std::ranges::input_range R2>
+  requires
+    std::convertible_to<std::ranges::range_value_t<R1>, VertexType> &&
+    std::convertible_to<std::ranges::range_value_t<R2>, VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::
     directed_temporal_hyperedge(
-      const R1& tails, const R2& heads, TimeType time) :
-      _tails(tails), _heads(heads), _time(time) {
+      const R1& tails, const R2& heads, TimeType time) : _time(time) {
+    if constexpr (std::ranges::sized_range<R1>)
+      _heads.reserve(std::ranges::size(heads));
+    std::ranges::copy(heads, std::back_inserter(_heads));
+
+    if constexpr (std::ranges::sized_range<R2>)
+      _tails.reserve(std::ranges::size(tails));
+    std::ranges::copy(tails, std::back_inserter(_tails));
+
     std::ranges::sort(_heads);
     auto [hfirst, hlast] = std::ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
@@ -275,12 +285,22 @@ namespace dag {
         time, delay) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::forward_range R1, std::ranges::forward_range R2>
+  template <std::ranges::input_range R1, std::ranges::input_range R2>
+  requires
+    std::convertible_to<std::ranges::range_value_t<R1>, VertexType> &&
+    std::convertible_to<std::ranges::range_value_t<R2>, VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
     directed_delayed_temporal_hyperedge(
       const R1& tails, const R2& heads,
-      TimeType time, TimeType delay) :
-    _tails(tails), _heads(heads), _time(time), _delay(delay) {
+      TimeType time, TimeType delay) : _time(time), _delay(delay) {
+    if constexpr (std::ranges::sized_range<R1>)
+      _heads.reserve(std::ranges::size(heads));
+    std::ranges::copy(heads, std::back_inserter(_heads));
+
+    if constexpr (std::ranges::sized_range<R2>)
+      _tails.reserve(std::ranges::size(tails));
+    std::ranges::copy(tails, std::back_inserter(_tails));
+
     std::ranges::sort(_heads);
     auto [hfirst, hlast] = std::ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
@@ -437,10 +457,14 @@ namespace dag {
     undirected_temporal_hyperedge(std::vector<VertexType>(verts), time) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::forward_range R>
+  template <std::ranges::input_range R>
+  requires std::convertible_to<std::ranges::range_value_t<R>, VertexType>
   undirected_temporal_hyperedge<VertexType, TimeType>::
     undirected_temporal_hyperedge(
-      const R& verts, const TimeType time) : _verts(verts), _time(time) {
+      const R& verts, const TimeType time) : _time(time) {
+    if constexpr (std::ranges::sized_range<R>)
+      _verts.reserve(std::ranges::size(verts));
+    std::ranges::copy(verts, std::back_inserter(_verts));
     std::ranges::sort(_verts);
     auto [first, last] = std::ranges::unique(_verts);
     _verts.erase(first, last);
