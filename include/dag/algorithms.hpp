@@ -34,12 +34,10 @@ namespace dag {
 
 
   /**
-    Returns list of all weakly connected components of `dir`. Currently
-    `singleton` does nothing as there is no way to specify a node not as part of
-    a link.
+    Returns list of all weakly connected components of `dir`.
 
     @param dir Directed network in question
-    @param singleton If true, does not return components with only one members.
+    @param singleton If true, return components with only one members.
    */
   template <network_vertex VertT>
   std::vector<std::vector<VertT>>
