@@ -40,7 +40,7 @@ namespace dag {
       const directed_network<VertT>& dir) {
     auto verts = dir.vertices();
 
-    std::unordered_map<VertT, std::size_t> in_degrees;
+    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
     in_degrees.reserve(verts.size());
     for (auto&& v: verts)
       in_degrees[v] = dir.in_degree(v);

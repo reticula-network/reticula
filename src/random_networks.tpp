@@ -93,8 +93,11 @@ namespace dag {
 
   template <network_vertex VertT>
   bool _random_regular_suitable_hanging_edge(
-      const std::unordered_set<undirected_edge<VertT>>& edges,
-      const std::unordered_map<VertT, std::size_t>& hanging_stubs) {
+      const std::unordered_set<
+        undirected_edge<VertT>,
+        hash<undirected_edge<VertT>>>& edges,
+      const std::unordered_map<
+        VertT, std::size_t, hash<VertT>>& hanging_stubs) {
     if (hanging_stubs.empty()) {
       return true;
     } else {
@@ -135,7 +138,7 @@ namespace dag {
       bool suitable = true;
       while (!stubs.empty() && suitable) {
         std::shuffle(stubs.begin(), stubs.end(), gen);
-        std::unordered_map<VertT, std::size_t> hanging_stubs;
+        std::unordered_map<VertT, std::size_t, hash<VertT>> hanging_stubs;
         for (auto iter = stubs.begin();
             iter < stubs.end();
             std::advance(iter, 2)) {

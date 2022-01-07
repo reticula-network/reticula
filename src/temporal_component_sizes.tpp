@@ -35,14 +35,15 @@ namespace dag {
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       std::size_t seed,
       bool only_roots) {
-    std::unordered_map<EdgeT, temporal_component<EdgeT, EstimatorT>>
-      out_components;
+    std::unordered_map<
+      EdgeT, temporal_component<EdgeT, EstimatorT>,
+      hash<EdgeT>> out_components;
     std::vector<
       std::pair<EdgeT, temporal_component<EdgeT, ReadOnlyEstimatorT>>>
         out_component_ests;
     out_component_ests.reserve(eg.events_cause().size());
 
-    std::unordered_map<EdgeT, std::size_t> in_degrees;
+    std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> in_degrees;
 
     auto temp_edge_iter = eg.events_cause().rbegin();
     auto end = eg.events_cause().rend();
@@ -100,14 +101,15 @@ namespace dag {
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       std::size_t seed,
       bool only_roots) {
-    std::unordered_map<EdgeT, temporal_component<EdgeT, EstimatorT>>
-      in_components;
+    std::unordered_map<
+      EdgeT, temporal_component<EdgeT, EstimatorT>,
+      hash<EdgeT>> in_components;
     std::vector<
       std::pair<EdgeT, temporal_component<EdgeT, ReadOnlyEstimatorT>>>
         in_component_ests;
     in_component_ests.reserve(eg.events_cause().size());
 
-    std::unordered_map<EdgeT, std::size_t> out_degrees;
+    std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> out_degrees;
 
     auto temp_edge_iter = eg.events_effect().begin();
     auto end = eg.events_effect().end();
@@ -225,7 +227,7 @@ namespace dag {
       out_component(seed, edge_size_est, node_size_est);
     out_component.insert(root, root.mutated_verts());
 
-    std::unordered_map<VertexType, TimeType> last_infected;
+    std::unordered_map<VertexType, TimeType, hash<VertexType>> last_infected;
     last_infected.reserve(eg.events_cause().size());
 
     for (auto && v: root.mutated_verts())
@@ -317,7 +319,7 @@ namespace dag {
       in_component(seed, edge_size_est, node_size_est);
     in_component.insert(root, root.mutator_verts());
 
-    std::unordered_map<VertexType, TimeType> last_infected;
+    std::unordered_map<VertexType, TimeType, hash<VertexType>> last_infected;
     last_infected.reserve(eg.events_effect().size());
 
     for (auto && v: root.mutator_verts())
@@ -482,7 +484,9 @@ namespace dag {
       auto& current_set = sets_vector.back();
       for (const auto& event_idx: set) {
         auto event = eg.events_cause().at(event_idx);
-        std::unordered_set<typename EdgeT::VertexType> nodes;
+        std::unordered_set<
+          typename EdgeT::VertexType,
+          hash<typename EdgeT::VertexType>> nodes;
 
         for (auto&& v: event.mutator_verts())
           nodes.insert(v);
