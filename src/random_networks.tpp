@@ -1,13 +1,11 @@
 namespace dag {
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
   gnp_random_graph(VertT n, double p, std::mt19937_64& generator) {
     if (p > 1.0 || p < 0.0)
       throw std::invalid_argument(
           "link probability p should be in [0,1] interval");
-
-    static_assert(std::is_integral<VertT>::value,
-        "vertices should be of integral type");
 
     if (n == 0 || p == 0)
       return undirected_network<VertT>();
@@ -44,11 +42,9 @@ namespace dag {
   }
 
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
   ba_random_graph(VertT n, VertT m, std::mt19937_64& generator) {
-    static_assert(std::is_integral<VertT>::value,
-        "vertices should be of integral type");
-
     uintmax_t max_n = std::numeric_limits<VertT>::max()
                     - std::numeric_limits<VertT>::min();
     if (max_n <= n)

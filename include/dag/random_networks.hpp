@@ -3,6 +3,7 @@
 
 #include <random>
 #include <concepts>
+#include <numeric>
 
 #include "network_concepts.hpp"
 
@@ -15,16 +16,19 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> gnp_random_graph(
       VertT n, double p,
       std::mt19937_64& generator);
 
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> ba_random_graph(
       VertT n, VertT m,
       std::mt19937_64& generator);
 
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
       std::mt19937_64& generator);
