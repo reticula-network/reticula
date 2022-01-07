@@ -5,7 +5,7 @@ namespace dag {
   gnp_random_graph(VertT n, double p, std::mt19937_64& generator) {
     if (p > 1.0 || p < 0.0)
       throw std::invalid_argument(
-          "link probability p should be in [0,1] interval");
+          "edge probability p should be in [0,1] interval");
 
     if (n == 0 || p == 0)
       return undirected_network<VertT>();
@@ -13,12 +13,6 @@ namespace dag {
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(static_cast<std::size_t>(
           std::lround(std::pow(n, 2)*p)));
-
-    uintmax_t max_n = std::numeric_limits<VertT>::max()
-                    - std::numeric_limits<VertT>::min();
-    if (max_n <= n)
-      throw utils::vertex_type_too_small_error(
-          "n is too large for selected vertex type");
 
     std::uniform_real_distribution<> rd;
 
@@ -45,12 +39,6 @@ namespace dag {
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
   ba_random_graph(VertT n, VertT m, std::mt19937_64& generator) {
-    uintmax_t max_n = std::numeric_limits<VertT>::max()
-                    - std::numeric_limits<VertT>::min();
-    if (max_n <= n)
-      throw utils::vertex_type_too_small_error(
-          "n is too large for selected vertex type");
-
     if (n <= m || m < 1)
       throw std::invalid_argument(
           "BA network must have m >= 1 and n > m");
