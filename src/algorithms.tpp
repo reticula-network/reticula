@@ -73,7 +73,7 @@ namespace dag {
       const  VertT& vert,
       std::size_t size_hint,
       bool revert_graph) {
-    std::unordered_set<VertT> out_component;
+    std::unordered_set<VertT, hash<VertT>> out_component;
     if (size_hint > 0) out_component.reserve(size_hint);
     out_component.insert(vert);
     auto topo = topological_order(dir);
