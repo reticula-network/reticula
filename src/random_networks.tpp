@@ -114,21 +114,21 @@ namespace dag {
 
 
   template <network_vertex VertT>
+  requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
       std::mt19937_64& gen) {
-    static_assert(std::is_integral<VertT>::value,
-        "vertices should be of integral type");
-
     if (size*degree % 2 != 0)
       throw std::domain_error("size or degree must be even");
 
     if (degree >= size)
       throw std::domain_error("degree must be less than size");
 
-    // There is always an answer. We Just have to look hard enough.
+       // There is always an answer. We Just have to look hard enough.
     while (true) {
-      std::unordered_set<undirected_edge<VertT>> edges;
+      std::unordered_set<
+        undirected_edge<VertT>,
+        hash<undirected_edge<VertT>>> edges;
       std::vector<VertT> stubs;
       stubs.reserve(size*degree);
       for (std::size_t i = 0; i < size; i++)
