@@ -10,15 +10,15 @@ namespace std {
   struct hash<dag::directed_edge<VertexType>> {
     size_t
     operator()(const dag::directed_edge<VertexType>& e) const {
-      return dag::utils::combine_hash<VertexType, hash>(
-          std::hash<VertexType>{}(e.v1), e.v2);
+      return dag::utils::combine_hash<VertexType, dag::hash>(
+          dag::hash<VertexType>{}(e.v1), e.v2);
     }
   };
 
   template<dag::network_vertex VertexType>
   struct hash<dag::undirected_edge<VertexType>> {
     size_t operator()(const dag::undirected_edge<VertexType>& e) const {
-      return dag::utils::unordered_hash<VertexType, VertexType, hash>(
+      return dag::utils::unordered_hash<VertexType, VertexType, dag::hash>(
           e.v1, e.v2);
     }
   };

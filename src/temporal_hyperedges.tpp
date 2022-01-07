@@ -14,8 +14,8 @@ namespace std {
       std::size_t verts_hash = std::reduce(
           e._verts.begin(), e._verts.end(), 0ul,
           [](std::size_t h, VertexType v) {
-          return dag::utils::combine_hash<VertexType, hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, hash>(verts_hash, e._time);
+          return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+      return dag::utils::combine_hash<TimeType, dag::hash>(verts_hash, e._time);
     }
   };
 
@@ -28,13 +28,13 @@ namespace std {
       std::size_t heads_hash = std::reduce(
           e._heads.begin(), e._heads.end(), 0ul,
           [](std::size_t h, VertexType v) {
-            return dag::utils::combine_hash<VertexType, hash>(h, v);});
+            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       std::size_t tails_hash = std::reduce(
           e._tails.begin(), e._tails.end(), 0ul,
           [](std::size_t h, VertexType v) {
-            return dag::utils::combine_hash<VertexType, hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, hash>(
-          dag::utils::combine_hash<std::size_t, hash>(
+            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+      return dag::utils::combine_hash<TimeType, dag::hash>(
+          dag::utils::combine_hash<std::size_t, dag::hash>(
             heads_hash, tails_hash), e._time);
     }
   };
@@ -49,14 +49,14 @@ namespace std {
       std::size_t heads_hash = std::reduce(
           e._heads.begin(), e._heads.end(), 0ul,
           [](std::size_t h, VertexType v) {
-            return dag::utils::combine_hash<VertexType, hash>(h, v);});
+            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       std::size_t tails_hash = std::reduce(
           e._tails.begin(), e._tails.end(), 0ul,
           [](std::size_t h, VertexType v) {
-            return dag::utils::combine_hash<VertexType, hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, hash>(
-              dag::utils::combine_hash<TimeType, hash>(
-                dag::utils::combine_hash<std::size_t, hash>(
+            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+      return dag::utils::combine_hash<TimeType, dag::hash>(
+              dag::utils::combine_hash<TimeType, dag::hash>(
+                dag::utils::combine_hash<std::size_t, dag::hash>(
                   heads_hash, tails_hash),
                 e._time),
               e._delay);

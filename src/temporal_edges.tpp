@@ -10,8 +10,8 @@ namespace std {
     size_t
     operator()(
         const dag::undirected_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash<TimeType, hash>(
-          dag::utils::unordered_hash<VertexType, VertexType, hash>(
+      return dag::utils::combine_hash<TimeType, dag::hash>(
+          dag::utils::unordered_hash<VertexType, VertexType, dag::hash>(
             e.v1, e.v2), e.time);
     }
   };
@@ -21,9 +21,9 @@ namespace std {
     size_t
     operator()(
         const dag::directed_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash<TimeType, hash>(
-          dag::utils::combine_hash<VertexType, hash>(
-            std::hash<VertexType>{}(e.v1), e.v2), e.time);
+      return dag::utils::combine_hash<TimeType, dag::hash>(
+          dag::utils::combine_hash<VertexType, dag::hash>(
+            dag::hash<VertexType>{}(e.v1), e.v2), e.time);
     }
   };
 
@@ -33,10 +33,10 @@ namespace std {
     operator()(
         const
         dag::directed_delayed_temporal_edge<VertexType, TimeType>& e) const {
-      return dag::utils::combine_hash<TimeType, hash>(
-              dag::utils::combine_hash<TimeType, hash>(
-                dag::utils::combine_hash<VertexType, hash>(
-                  std::hash<VertexType>{}(e.v1), e.v2),
+      return dag::utils::combine_hash<TimeType, dag::hash>(
+              dag::utils::combine_hash<TimeType, dag::hash>(
+                dag::utils::combine_hash<VertexType, dag::hash>(
+                  dag::hash<VertexType>{}(e.v1), e.v2),
                 e.time),
               e.delay);
     }
