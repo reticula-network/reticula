@@ -3,6 +3,9 @@ namespace dag {
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
   gnp_random_graph(VertT n, double p, std::mt19937_64& generator) {
+    if (n <= 0)
+      throw std::domain_error("n must be positive");
+
     if (p > 1.0 || p < 0.0)
       throw std::invalid_argument(
           "edge probability p should be in [0,1] interval");
@@ -17,8 +20,8 @@ namespace dag {
     std::uniform_real_distribution<> rd;
 
     double lp = std::log(1.0 - p);
-    std::size_t v = 1;
-    std::size_t w = static_cast<std::size_t>(
+    VertT v = 1;
+    VertT w = static_cast<VertT>(
         std::floor(std::log(1.0 - rd(generator))/lp));
 
     while (v < n) {
@@ -29,7 +32,7 @@ namespace dag {
       if (v < n)
         edges.emplace_back(static_cast<VertT>(v), static_cast<VertT>(w));
       double lr = std::log(1.0 - rd(generator));
-      w = w + 1 + static_cast<std::size_t>(std::floor(lr/lp));
+      w = w + 1 + static_cast<VertT>(std::floor(lr/lp));
     }
 
     return undirected_network<VertT>(edges);
@@ -44,31 +47,31 @@ namespace dag {
           "BA network must have m >= 1 and n > m");
 
     std::vector<undirected_edge<VertT>> edges;
-    edges.reserve(m*(n-m));
+    edges.reserve(static_cast<std::size_t>(m*(n-m)));
 
-    std::vector<std::size_t> degrees(n);
+    std::vector<VertT> degrees(static_cast<std::size_t>(n));
 
-    for (std::size_t i = 0; i < m; i++) {
-      edges.emplace_back((VertT)i, (VertT)m);
-      degrees[i] += 1;
-      degrees[m] += 1;
+    for (VertT i = 0; i < m; i++) {
+      edges.emplace_back(i, m);
+      degrees[static_cast<std::size_t>(i)] += 1;
+      degrees[static_cast<std::size_t>(m)] += 1;
     }
 
-    for (std::size_t current_node = m+1; current_node < n; current_node++) {
-      std::discrete_distribution<std::size_t> dist(
+    for (VertT current_node = m+1; current_node < n; current_node++) {
+      std::discrete_distribution<VertT> dist(
           degrees.begin(),
           degrees.begin() + static_cast<std::ptrdiff_t>(current_node));
 
-      std::unordered_set<std::size_t> targets;
-      targets.reserve(m);
+      std::unordered_set<VertT> targets;
+      targets.reserve(static_cast<std::size_t>(m));
 
-      while (targets.size() < m)
+      while (targets.size() < static_cast<std::size_t>(m))
         targets.insert(dist(generator));
 
       for (const auto& i: targets) {
-        edges.emplace_back((VertT)current_node, (VertT)i);
-        degrees[i] += 1;
-        degrees[current_node] += 1;
+        edges.emplace_back(current_node, i);
+        degrees[static_cast<std::size_t>(i)] += 1;
+        degrees[static_cast<std::size_t>(current_node)] += 1;
       }
     }
 
@@ -105,18 +108,21 @@ namespace dag {
     if (size*degree % 2 != 0)
       throw std::domain_error("size or degree must be even");
 
+    if (size <= 0)
+      throw std::domain_error("size must be positive");
+
     if (degree >= size)
       throw std::domain_error("degree must be less than size");
 
-       // There is always an answer. We Just have to look hard enough.
+    // There is always an answer. We Just have to look hard enough.
     while (true) {
       std::unordered_set<
         undirected_edge<VertT>,
         hash<undirected_edge<VertT>>> edges;
       std::vector<VertT> stubs;
-      stubs.reserve(size*degree);
-      for (std::size_t i = 0; i < size; i++)
-        for (std::size_t d = 0; d < degree; d++)
+      stubs.reserve(static_cast<std::size_t>(size*degree));
+      for (VertT i = 0; i < size; i++)
+        for (VertT d = 0; d < degree; d++)
           stubs.emplace_back(i);
 
       bool suitable = true;
