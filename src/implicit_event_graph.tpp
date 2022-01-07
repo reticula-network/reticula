@@ -6,10 +6,42 @@
 namespace dag {
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
-      const std::vector<EdgeT>& events,
+      const std::initializer_list<EdgeT>& events,
       const AdjacencyProbT& prob,
       std::size_t seed) :
     _seed(seed), _temp(events), _prob(prob) {}
+
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+      const std::initializer_list<EdgeT>& events,
+      const std::initializer_list<typename EdgeT::VertexType>& verts,
+      const AdjacencyProbT& prob,
+      std::size_t seed) :
+    _seed(seed), _temp(events, verts), _prob(prob) {}
+
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <std::ranges::input_range Range>
+  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+      const Range& events,
+      const AdjacencyProbT& prob,
+      size_t seed) :
+    _seed(seed), _temp(events), _prob(prob) {}
+
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <
+    std::ranges::input_range EdgeRange,
+    std::ranges::input_range VertRange>
+  requires
+    std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+    std::convertible_to<std::ranges::range_value_t<VertRange>,
+      typename EdgeT::VertexType>
+  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+      const EdgeRange& events,
+      const VertRange& verts,
+      const AdjacencyProbT& prob,
+      size_t seed) :
+    _seed(seed), _temp(events, verts), _prob(prob) {}
 
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
@@ -41,6 +73,12 @@ namespace dag {
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjacencyProbT>::events_effect() const {
     return _temp.edges_effect();
+  }
+
+  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  std::vector<typename EdgeT::VertexType>
+  implicit_event_graph<EdgeT, AdjacencyProbT>::temporal_net_vertices() const {
+    return _temp.vertices();
   }
 
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>

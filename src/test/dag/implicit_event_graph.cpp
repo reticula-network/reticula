@@ -26,6 +26,27 @@ TEST_CASE("implicit event graphs", "[dag::implicit_event_graph]") {
             {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
   }
 
+  SECTION("handle supplemental vert list") {
+    using EdgeType = dag::directed_temporal_edge<int, int>;
+    std::vector<EdgeType> event_list{
+      {2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
+        {2, 1, 2}, {2, 1, 2}, {1, 2, 5}};
+
+    dag::adjacency_prob::deterministic<EdgeType> prob(3);
+    dag::implicit_event_graph<EdgeType,
+      dag::adjacency_prob::deterministic<EdgeType>>
+        eg({{2, 3, 6}, {3, 4, 8}, {1, 2, 1}, {2, 1, 2}, {1, 2, 5}},
+            {0}, prob, 0ul);
+    REQUIRE_THAT(eg.events_cause(),
+        Equals(std::vector<EdgeType>(
+            {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+    REQUIRE_THAT(eg.events_cause(),
+        Equals(std::vector<EdgeType>(
+            {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
+    REQUIRE_THAT(eg.temporal_net_vertices(),
+        Equals(std::vector<typename EdgeType::VertexType>({0, 1, 2, 3, 4})));
+  }
+
   SECTION("when given direct successors test cases") {
     using EdgeType = dag::undirected_temporal_edge<int, double>;
     std::vector<EdgeType> list1{
