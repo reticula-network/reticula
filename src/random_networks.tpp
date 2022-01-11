@@ -1,8 +1,8 @@
 namespace dag {
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
-  gnp_random_graph(VertT n, double p, std::mt19937_64& generator) {
+  gnp_random_graph(VertT n, double p, Gen& generator) {
     if (n <= 0)
       throw std::domain_error("n must be positive");
 
@@ -38,10 +38,10 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT>
-  ba_random_graph(VertT n, VertT m, std::mt19937_64& generator) {
+  ba_random_graph(VertT n, VertT m, Gen& generator) {
     if (n <= m || m < 1)
       throw std::invalid_argument(
           "BA network must have m >= 1 and n > m");
@@ -100,11 +100,11 @@ namespace dag {
   }
 
 
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
-      std::mt19937_64& gen) {
+      Gen& gen) {
     if (size*degree % 2 != 0)
       throw std::domain_error("size or degree must be even");
 
@@ -160,22 +160,25 @@ namespace dag {
   }
 
 
-  template <temporal_edge EdgeT, class Distribution, class ResDistribution>
+  template <
+    temporal_edge EdgeT,
+    random_number_distribution Distribution,
+    random_number_distribution ResDistribution,
+    std::uniform_random_bit_generator Gen>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       ResDistribution residual_time_dist,
-      std::size_t seed,
+      Gen& generator,
       std::size_t size_hint) {
     std::vector<EdgeT> temp;
     if (size_hint > 0)
       temp.reserve(size_hint);
 
+    // reproducable since base_net.edges() is always sorted
     for (const auto& e: base_net.edges()) {
-      std::size_t edge_seed = utils::combine_hash(seed, e);
-      std::mt19937_64 generator(edge_seed);
       typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
           residual_time_dist(generator));
       while (t < max_t) {
@@ -189,21 +192,23 @@ namespace dag {
     return temp;
   }
 
-  template <temporal_edge EdgeT, class Distribution>
+  template <
+    temporal_edge EdgeT,
+    random_number_distribution Distribution,
+    std::uniform_random_bit_generator Gen>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
-      std::size_t seed,
+      Gen& generator,
       std::size_t size_hint) {
     std::vector<EdgeT> temp;
     if (size_hint > 0)
       temp.reserve(size_hint);
 
+    // reproducable since base_net.edges() is always sorted
     for (const auto& e: base_net.edges()) {
-      std::size_t edge_seed = utils::combine_hash(seed, e);
-      std::mt19937_64 generator(edge_seed);
       // we can't be sure TimeType is signed so we start at zero and warm-up
       // until max_t then record t - max_t from there up to max_t*2
       typename EdgeT::TimeType t {};

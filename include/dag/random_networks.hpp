@@ -11,56 +11,61 @@ namespace dag {
   template <typename T>
   concept random_number_distribution =
     std::is_arithmetic_v<typename T::result_type> &&
-    requires(T dist, std::mt19937 gen) {
+    requires(T dist, std::mt19937_64& gen) {
       { dist(gen) } -> std::convertible_to<typename T::result_type>;
     };  // NOLINT(readability/braces)
 
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> gnp_random_graph(
       VertT n, double p,
-      std::mt19937_64& generator);
+      Gen& generator);
 
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> ba_random_graph(
       VertT n, VertT m,
-      std::mt19937_64& generator);
+      Gen& generator);
 
-  template <network_vertex VertT>
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
-      std::mt19937_64& generator);
+      Gen& generator);
+
 
   /**
-    Random events with the given `inter_event_time_dist` and `residual_time_dist`
-    for generating time to first event.
+    Random events with the given `inter_event_time_dist` and
+    `residual_time_dist` for generating time to first event.
     */
   template <
     temporal_edge EdgeT,
     random_number_distribution Distribution,
-    random_number_distribution ResDistribution>
+    random_number_distribution ResDistribution,
+    std::uniform_random_bit_generator Gen>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
       ResDistribution residual_time_dist,
-      std::size_t seed,
+      Gen& generator,
       std::size_t size_hint = 0);
 
   /**
     Random events with the given inter-event time distribution and `max_t`
     units of time burn-in before being recorded.
     */
-  template <temporal_edge EdgeT, random_number_distribution Distribution>
+  template <
+    temporal_edge EdgeT,
+    random_number_distribution Distribution,
+    std::uniform_random_bit_generator Gen>
   std::vector<EdgeT>
   random_events(
       const undirected_network<typename EdgeT::VertexType>& base_net,
       typename EdgeT::TimeType max_t,
       Distribution inter_event_time_dist,
-      std::size_t seed,
+      Gen& generator,
       std::size_t size_hint = 0);
 
 
