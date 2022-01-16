@@ -48,6 +48,212 @@ TEMPLATE_TEST_CASE("random k-regular graph", "[dag::random_regular_graph]",
         }));
 }
 
+TEST_CASE("random expected degree sequence graph",
+    "[dag::random_expected_degree_sequence_graph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = dag::random_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(n, 0.0), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = dag::random_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("doesn't have a loop if we don't want it") {
+    std::size_t n = 20;
+    double w = 3.0;
+
+    auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(n, w), gen, false);
+    REQUIRE(std::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.incident_verts().size() == 1;
+          }));
+  }
+
+  SECTION("edge existance probability") {
+    std::size_t ens = 20'000;
+    std::size_t n = 20;
+
+    std::unordered_map<
+      std::pair<std::size_t, std::size_t>,
+      std::size_t,
+      dag::hash<std::pair<std::size_t, std::size_t>>> p;
+
+    SECTION("with self-loops") {
+      for (std::size_t i = 0; i < ens; i++) {
+        auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
+            std::ranges::iota_view{std::size_t{}, n}, gen, true);
+        for (std::size_t v: g.vertices())
+          for (std::size_t u: g.neighbours(v))
+            p[std::make_pair(u, v)]++;
+      }
+
+      // Three-sigma test with normal approximation of binomial distribution
+      REQUIRE(std::ranges::all_of(p,
+            [n, ens](const std::pair<
+              std::pair<std::size_t, std::size_t>,
+              std::size_t>& kv) {
+              auto& [u, v] = kv.first;
+              double wu = static_cast<double>(u);
+              double wv = static_cast<double>(v);
+              double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
+              double puv = std::min(wu*wv/s, 1.0);
+              if (u == v) puv *= 2.0;
+              double mean = static_cast<double>(ens)*puv;
+              double sigma = std::sqrt(puv*(1-puv)*static_cast<double>(ens));
+
+              return static_cast<double>(kv.second) >= mean - 3*sigma &&
+                      static_cast<double>(kv.second) <= mean + 3*sigma;
+            }));
+    }
+
+    SECTION("without self-loop") {
+      for (std::size_t i = 0; i < ens; i++) {
+        auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
+            std::ranges::iota_view{std::size_t{}, n}, gen, false);
+        for (std::size_t v: g.vertices())
+          for (std::size_t u: g.neighbours(v))
+            p[std::make_pair(u, v)]++;
+      }
+
+      // Three-sigma test with normal approximation of binomial distribution
+      REQUIRE(std::ranges::all_of(p,
+            [n, ens](const std::pair<
+              std::pair<std::size_t, std::size_t>,
+              std::size_t>& kv) {
+              auto& [u, v] = kv.first;
+              double wu = static_cast<double>(u);
+              double wv = static_cast<double>(v);
+              double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
+              double puv = std::min(wu*wv/s, 1.0);
+              if (u == v) puv = 0;
+              double mean = static_cast<double>(ens)*puv;
+              double sigma = std::sqrt(puv*(1-puv)*static_cast<double>(ens));
+
+              return static_cast<double>(kv.second) >= mean - 3*sigma &&
+                      static_cast<double>(kv.second) <= mean + 3*sigma;
+            }));
+    }
+  }
+
+}
+
+TEST_CASE("random directed expected degree sequence graph",
+    "[dag::random_directed_expected_degree_sequence_graph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(n, 0.0), std::vector<double>(n, 0.0), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(), std::vector<double>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("doesn't have a loop if we don't want it") {
+    std::size_t n = 20;
+    double w = 3.0;
+
+    auto g = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+        std::vector<double>(n, w), std::vector<double>(n, w), gen, false);
+    REQUIRE(std::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.head() == e.tail();
+          }));
+  }
+
+  SECTION("edge existance probability") {
+    std::size_t ens = 20'000;
+    std::size_t n = 20;
+
+    std::unordered_map<
+      std::pair<std::size_t, std::size_t>,
+      std::size_t,
+      dag::hash<std::pair<std::size_t, std::size_t>>> p;
+
+    SECTION("with self-loops") {
+      for (std::size_t i = 0; i < ens; i++) {
+        auto g = dag::random_directed_expected_degree_sequence_graph<
+          std::size_t>(
+              std::ranges::iota_view{std::size_t{}, n},
+              std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
+              gen, true);
+        for (std::size_t v: g.vertices())
+          for (std::size_t u: g.successors(v))
+            p[std::make_pair(u, v)]++;
+      }
+
+      // Three-sigma test with normal approximation of binomial distribution
+      REQUIRE(std::ranges::all_of(p,
+            [n, ens](const std::pair<
+              std::pair<std::size_t, std::size_t>,
+              std::size_t>& kv) {
+              auto& [u, v] = kv.first;
+              double wu = static_cast<double>(u);
+              double wv = 19 - static_cast<double>(v);
+              double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
+              double puv = std::min(wu*wv/s, 1.0);
+              if (u == v) puv *= 2.0;
+              double mean = static_cast<double>(ens)*puv;
+              double sigma = std::sqrt(puv*(1-puv)*static_cast<double>(ens));
+
+              return static_cast<double>(kv.second) >= mean - 3*sigma &&
+                      static_cast<double>(kv.second) <= mean + 3*sigma;
+            }));
+    }
+
+    SECTION("without self-loop") {
+      for (std::size_t i = 0; i < ens; i++) {
+        auto g = dag::random_directed_expected_degree_sequence_graph<
+          std::size_t>(
+              std::ranges::iota_view{std::size_t{}, n},
+              std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
+              gen, false);
+        for (std::size_t v: g.vertices())
+          for (std::size_t u: g.successors(v))
+            p[std::make_pair(u, v)]++;
+      }
+
+      // Three-sigma test with normal approximation of binomial distribution
+      REQUIRE(std::ranges::all_of(p,
+            [n, ens](const std::pair<
+              std::pair<std::size_t, std::size_t>,
+              std::size_t>& kv) {
+              auto& [u, v] = kv.first;
+              double wu = static_cast<double>(u);
+              double wv = 19 - static_cast<double>(v);
+              double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
+              double puv = std::min(wu*wv/s, 1.0);
+              if (u == v) puv = 0;
+              double mean = static_cast<double>(ens)*puv;
+              double sigma = std::sqrt(puv*(1-puv)*static_cast<double>(ens));
+
+              return static_cast<double>(kv.second) >= mean - 3*sigma &&
+                      static_cast<double>(kv.second) <= mean + 3*sigma;
+            }));
+    }
+  }
+
+}
+
 TEST_CASE("power-law with secified mean",
     "[dag::power_law_with_specified_mean]") {
   REQUIRE(dag::random_number_distribution<
