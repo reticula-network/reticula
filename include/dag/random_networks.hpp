@@ -88,7 +88,7 @@ namespace dag {
   undirected_network<VertT> random_expected_degree_sequence_graph(
       const Range& degree_sequence,
       Gen& generator,
-      bool self_loops=false);
+      bool self_loops = false);
 
   /**
     Random directed graph generated with the two given degree (weight)
@@ -130,7 +130,7 @@ namespace dag {
       const Range1& in_degree_sequence,
       const Range2& out_degree_sequence,
       Gen& generator,
-      bool self_loops=false);
+      bool self_loops = false);
 
   /**
     Random events with the given `inter_event_time_dist` and

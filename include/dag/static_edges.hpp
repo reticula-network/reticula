@@ -131,7 +131,6 @@ namespace dag {
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator!=(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
@@ -141,7 +140,6 @@ namespace dag {
       correspondingly equal to each others.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator==(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
@@ -151,7 +149,6 @@ namespace dag {
       vertices compared before head vertices.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator<(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
@@ -161,7 +158,6 @@ namespace dag {
       vertices compared before tail vertices.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool effect_lt(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
@@ -173,7 +169,6 @@ namespace dag {
       transmitted through the other.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool adjacent(
         const directed_edge<VertexType>& a,
         const directed_edge<VertexType>& b);
@@ -281,7 +276,6 @@ namespace dag {
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator!=(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
@@ -291,7 +285,6 @@ namespace dag {
       equal.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator==(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
@@ -300,7 +293,6 @@ namespace dag {
       Defines an arbitrary weak ordering along with `operator==`.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool operator<(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
@@ -309,7 +301,6 @@ namespace dag {
       Exactly the same as `operator<`.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool effect_lt(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);
@@ -321,7 +312,6 @@ namespace dag {
       through the other.
      */
     template <network_vertex VertexType>
-    [[nodiscard]]
     friend bool adjacent(
         const undirected_edge<VertexType>& a,
         const undirected_edge<VertexType>& b);

@@ -179,7 +179,6 @@ namespace dag {
       through the other.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool adjacent(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
@@ -188,7 +187,6 @@ namespace dag {
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator!=(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
@@ -198,7 +196,6 @@ namespace dag {
       tail vertices are correspondingly equal to each others.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator==(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
@@ -207,7 +204,6 @@ namespace dag {
       cause times are compare then tail vertices and then head vertices.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator<(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
@@ -217,7 +213,6 @@ namespace dag {
       cause times are compared then head vertices and then tail vertices.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool effect_lt(
         const directed_temporal_edge<VertexType, TimeType>& a,
         const directed_temporal_edge<VertexType, TimeType>& b);
@@ -398,7 +393,6 @@ namespace dag {
       cannot be transmitted through the other.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool adjacent(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
@@ -407,7 +401,6 @@ namespace dag {
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator!=(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
@@ -417,7 +410,6 @@ namespace dag {
       and head and tail vertices are correspondingly equal to each others.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator==(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
@@ -428,13 +420,11 @@ namespace dag {
       head vertices.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator<(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool effect_lt(
         const directed_delayed_temporal_edge<VertexType, TimeType>& a,
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
@@ -564,7 +554,6 @@ namespace dag {
       through one edge logically cannot be transmitted through the other.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool adjacent(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);
@@ -573,7 +562,6 @@ namespace dag {
       Simply defined as negation of equal operator `operator==`.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator!=(
       const undirected_temporal_edge<VertexType, TimeType>& a,
       const undirected_temporal_edge<VertexType, TimeType>& b);
@@ -583,7 +571,6 @@ namespace dag {
       vertices and their cause times are equal.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator==(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);
@@ -593,7 +580,6 @@ namespace dag {
       based on cause times first.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool operator<(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);
@@ -602,7 +588,6 @@ namespace dag {
       Exactly the same as `operator<`.
      */
     template <network_vertex VertexType, typename TimeType>
-    [[nodiscard]]
     friend bool effect_lt(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);

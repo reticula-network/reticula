@@ -34,10 +34,10 @@ namespace dag {
     }
 
     double estimate() const { return _est; }
-    void insert(const T& item) {
+    void insert(const T& /* item */) {
       throw std::logic_error("cannot insert into read-only hll estimator");
     }
-    void merge(const hll_estimator_readonly<T, HyperLogLogT>& other) {
+    void merge(const hll_estimator_readonly<T, HyperLogLogT>& /* other */) {
       throw std::logic_error("cannot merge read-only hll estimator");
     }
 

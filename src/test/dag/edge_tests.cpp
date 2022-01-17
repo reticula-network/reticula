@@ -12,7 +12,7 @@ using Catch::Matchers::UnorderedEquals;
 TEST_CASE("undirected edges", "[dag::undirected_edge]") {
   SECTION("are read correctly") {
     std::istringstream s("1 2\n3 4\n5 6\n");
-    dag::undirected_edge<int> a, b, c;
+    dag::undirected_edge<int> a{}, b{}, c{};
     s >> a >> b >> c;
     REQUIRE(a == dag::undirected_edge<int>(1, 2));
     REQUIRE(b == dag::undirected_edge<int>(3, 4));
@@ -94,7 +94,7 @@ TEST_CASE("undirected hyperedges", "[dag::undirected_hyperedge]") {
 TEST_CASE("directed edges", "[dag::directed_edge]") {
   SECTION("are read correctly") {
     std::istringstream s("1 2\n3 4\n5 6\n");
-    dag::directed_edge<int> a, b, c;
+    dag::directed_edge<int> a{}, b{}, c{};
     s >> a >> b >> c;
     REQUIRE(a == dag::directed_edge<int>(1, 2));
     REQUIRE(b == dag::directed_edge<int>(3, 4));
@@ -203,7 +203,7 @@ TEST_CASE("undirected temporal edges",
     "[dag::undirected_temporal_edge]") {
   SECTION("are read correctly") {
     std::istringstream s("1 2 3\n4 5 6\n7 8 9\n");
-    dag::undirected_temporal_edge<int, int> a, b, c;
+    dag::undirected_temporal_edge<int, int> a{}, b{}, c{};
     s >> a >> b >> c;
     REQUIRE(a == dag::undirected_temporal_edge<int, int>(1, 2, 3));
     REQUIRE(b == dag::undirected_temporal_edge<int, int>(4, 5, 6));
@@ -320,7 +320,7 @@ TEST_CASE("undirected temporal hyperedges",
 TEST_CASE("directed temporal edges", "[dag::directed_temporal_edge]") {
   SECTION("are read correctly") {
     std::istringstream s("1 2 3\n4 5 6\n7 8 9\n");
-    dag::directed_temporal_edge<int, int> a, b, c;
+    dag::directed_temporal_edge<int, int> a{}, b{}, c{};
     s >> a >> b >> c;
     REQUIRE(a == dag::directed_temporal_edge<int, int>(1, 2, 3));
     REQUIRE(b == dag::directed_temporal_edge<int, int>(4, 5, 6));
@@ -444,7 +444,7 @@ TEST_CASE("directed delayed temporal edges",
     "[dag::directed_delayed_temporal_edge]") {
   SECTION("are read correctly") {
     std::istringstream s("1 2 3 4\n5 6 7 8\n9 10 11 12\n");
-    dag::directed_delayed_temporal_edge<int, int> a, b, c;
+    dag::directed_delayed_temporal_edge<int, int> a{}, b{}, c{};
     s >> a >> b >> c;
     REQUIRE(a == dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
     REQUIRE(b == dag::directed_delayed_temporal_edge<int, int>(5, 6, 7, 8));

@@ -145,7 +145,6 @@ TEST_CASE("random expected degree sequence graph",
             }));
     }
   }
-
 }
 
 TEST_CASE("random directed expected degree sequence graph",
@@ -251,7 +250,6 @@ TEST_CASE("random directed expected degree sequence graph",
             }));
     }
   }
-
 }
 
 TEST_CASE("power-law with secified mean",

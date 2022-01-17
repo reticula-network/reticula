@@ -497,7 +497,7 @@ namespace dag {
       RealType e = -std::log(dist(g))/m;
       iet += e;
 
-      ed = std::exp(-theta * (e + d));
+      ed = std::exp(-_theta * (e + d));
       lda = _mu + _alpha * _theta * ed * (static_cast<RealType>(1.0) + _phi);
 
       r2 = dist(g);
