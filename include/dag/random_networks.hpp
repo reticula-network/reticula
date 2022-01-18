@@ -3,6 +3,7 @@
 
 #include <random>
 #include <concepts>
+#include <optional>
 #include <numeric>
 
 #include "network_concepts.hpp"
@@ -21,17 +22,28 @@ namespace dag {
       VertT n, double p,
       Gen& generator);
 
+
   template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> ba_random_graph(
       VertT n, VertT m,
       Gen& generator);
 
+
   template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
-  undirected_network<VertT> random_regular_graph(
+  undirected_network<VertT>
+  random_regular_graph(
       VertT size, VertT degree,
       Gen& generator);
+
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
+  requires std::numeric_limits<VertT>::is_integer
+  std::optional<undirected_network<VertT>>
+  try_random_regular_graph(
+      VertT size, VertT degree,
+      Gen& generator,
+      std::size_t max_tries);
 
 
   template <
@@ -41,9 +53,24 @@ namespace dag {
   requires
     std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
     std::numeric_limits<VertT>::is_integer
-  undirected_network<VertT> random_degree_sequence_graph(
+  undirected_network<VertT>
+  random_degree_sequence_graph(
       const Range& degree_sequence,
       Gen& generator);
+
+  template <
+    network_vertex VertT,
+    std::ranges::forward_range Range,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
+    std::numeric_limits<VertT>::is_integer
+  std::optional<undirected_network<VertT>>
+  try_random_degree_sequence_graph(
+      const Range& degree_sequence,
+      Gen& generator,
+      std::size_t max_tries);
+
 
   template <
     network_vertex VertT,
@@ -85,7 +112,8 @@ namespace dag {
   requires
     std::is_arithmetic_v<std::ranges::range_value_t<Range>> &&
     std::numeric_limits<VertT>::is_integer
-  undirected_network<VertT> random_expected_degree_sequence_graph(
+  undirected_network<VertT>
+  random_expected_degree_sequence_graph(
       const Range& degree_sequence,
       Gen& generator,
       bool self_loops = false);
@@ -126,7 +154,8 @@ namespace dag {
     std::is_arithmetic_v<std::ranges::range_value_t<Range1>> &&
     std::is_arithmetic_v<std::ranges::range_value_t<Range2>> &&
     std::numeric_limits<VertT>::is_integer
-  directed_network<VertT> random_directed_expected_degree_sequence_graph(
+  directed_network<VertT>
+  random_directed_expected_degree_sequence_graph(
       const Range1& in_degree_sequence,
       const Range2& out_degree_sequence,
       Gen& generator,

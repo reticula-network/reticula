@@ -1,3 +1,5 @@
+#include "../include/dag/algorithms.hpp"
+
 namespace dag {
   template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
@@ -86,7 +88,7 @@ namespace dag {
       const std::unordered_map<
         VertT, std::size_t, hash<VertT>>& hanging_stubs) {
     if (hanging_stubs.empty()) {
-      return true;
+      return false;
     } else {
       for (auto& [node1, count1]: hanging_stubs)
         for (auto& [node2, count1]: hanging_stubs)
@@ -99,12 +101,24 @@ namespace dag {
     return false;
   }
 
-
   template <network_vertex VertT, std::uniform_random_bit_generator Gen>
   requires std::numeric_limits<VertT>::is_integer
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
       Gen& gen) {
+    std::optional<undirected_network<VertT>> maybe_g = std::nullopt;
+    while (!maybe_g) maybe_g = try_random_regular_graph(
+        size, degree, gen, 1000);
+    return *maybe_g;
+  }
+
+  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
+  requires std::numeric_limits<VertT>::is_integer
+  std::optional<undirected_network<VertT>>
+  try_random_regular_graph(
+      VertT size, VertT degree,
+      Gen& gen,
+      std::size_t max_tries) {
     if (size*degree % 2 != 0)
       throw std::domain_error("size or degree must be even");
 
@@ -114,8 +128,7 @@ namespace dag {
     if (degree >= size)
       throw std::domain_error("degree must be less than size");
 
-    // There is always an answer. We Just have to look hard enough.
-    while (true) {
+    for (std::size_t t = 0; t < max_tries; t++) {
       std::unordered_set<
         undirected_edge<VertT>,
         hash<undirected_edge<VertT>>> edges;
@@ -126,7 +139,7 @@ namespace dag {
           stubs.emplace_back(i);
 
       bool suitable = true;
-      while (!stubs.empty() && suitable) {
+      while (suitable) {
         std::shuffle(stubs.begin(), stubs.end(), gen);
         std::unordered_map<VertT, std::size_t, hash<VertT>> hanging_stubs;
         for (auto iter = stubs.begin();
@@ -141,22 +154,176 @@ namespace dag {
           }
         }
 
-        suitable = _random_regular_suitable_hanging_edge(edges, hanging_stubs);
-
         stubs.clear();
         for (auto& [node, count]: hanging_stubs)
           for (std::size_t i = 0; i < count; i++)
              stubs.emplace_back(node);
+
+        suitable = _random_regular_suitable_hanging_edge(edges, hanging_stubs);
       }
 
-      if (suitable)
+      if (edges.size() == static_cast<std::size_t>(size*degree)/2)
         return undirected_network<VertT>(
             std::vector<dag::undirected_edge<VertT>>(
               edges.begin(), edges.end()));
     }
 
-    // Unreachable.
-    return undirected_network<VertT>();
+    return std::nullopt;
+  }
+
+  // checks if there is at least one suitable new edge possible with current
+  // stubs
+  template <network_vertex VertT, typename It>
+  bool _random_degree_sequence_suitable_hanging_edge(
+      const std::unordered_set<
+        undirected_edge<VertT>,
+        hash<undirected_edge<VertT>>>& edges,
+      It nodes_begin, It nodes_end) {
+    std::size_t size = static_cast<std::size_t>(
+        std::distance(nodes_begin, nodes_end));
+    if (size == 0) {
+      return false;
+    } else {
+      for (std::size_t i = 0; i < size; i++)
+        for (std::size_t j = 0; j < i; j++)
+          if (!edges.contains({*(nodes_begin+i), *(nodes_begin+j)}))
+            return true;
+    }
+
+    return false;
+  }
+
+  template <
+    network_vertex VertT,
+    std::ranges::forward_range Range,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
+    std::numeric_limits<VertT>::is_integer
+  undirected_network<VertT>
+  random_degree_sequence_graph(
+      const Range& degree_sequence,
+      Gen& gen) {
+    std::optional<undirected_network<VertT>> maybe_g = std::nullopt;
+    while (!maybe_g) maybe_g = try_random_degree_sequence_graph<VertT>(
+        degree_sequence, gen, 1000);
+    return *maybe_g;
+  }
+
+  template <
+    network_vertex VertT,
+    std::ranges::forward_range Range,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
+    std::numeric_limits<VertT>::is_integer
+  std::optional<undirected_network<VertT>>
+  try_random_degree_sequence_graph(
+      const Range& degree_sequence,
+      Gen& gen,
+      std::size_t max_tries) {
+    if (!is_graphic(degree_sequence))
+      throw std::invalid_argument("degree_sequence is not graphical");
+
+    std::vector<VertT> degrees;
+    if constexpr (std::ranges::sized_range<Range>)
+      degrees.reserve(std::size(degree_sequence));
+
+    for (auto d: degree_sequence)
+      degrees.push_back(d);
+
+    if (degrees.empty())
+      return undirected_network<VertT>();
+
+    VertT degree_sum = std::accumulate(degrees.begin(), degrees.end(), VertT{});
+
+    for (std::size_t t = 0; t < max_tries; t++) {
+      std::unordered_set<
+        undirected_edge<VertT>,
+        hash<undirected_edge<VertT>>> edges;
+      edges.reserve(static_cast<std::size_t>(degree_sum)/2);
+
+      VertT stubs_sum = degree_sum;
+
+      std::vector<std::size_t> nodes;
+      nodes.reserve(degrees.size());
+      std::vector<std::size_t> stubs;
+      stubs.reserve(degrees.size());
+
+      for (std::size_t i = 0; i < degrees.size(); i++) {
+        if (degrees[i] > 0) {
+          nodes.push_back(i);
+          stubs.push_back(degrees[i]);
+        }
+      }
+
+      auto stubs_end = stubs.end();
+      auto nodes_end = nodes.end();
+
+      std::discrete_distribution<std::size_t> d(stubs.begin(), stubs_end);
+      bool suitable_edges_remaining =
+        _random_degree_sequence_suitable_hanging_edge(edges,
+            nodes.begin(), nodes_end);
+      while (suitable_edges_remaining) {
+        std::size_t i = d(gen), j = d(gen);
+        while (i == j) j = d(gen);
+
+        std::size_t u = nodes[i], v = nodes[j];
+
+        double puv =
+          static_cast<double>(degrees[u]*degrees[v])/
+            (2.0*static_cast<double>(degree_sum));
+        if (undirected_edge<VertT> new_edge(
+              static_cast<VertT>(u), static_cast<VertT>(v));
+            !edges.contains(new_edge) &&
+              std::uniform_real_distribution{}(gen) > puv) {
+          edges.insert(std::move(new_edge));
+
+          bool node_deleted = false;
+
+          stubs[i]--;
+          if (stubs[i] == 0) {
+            node_deleted = true;
+
+            stubs[i] = *(stubs_end-1);
+            stubs_end--;
+            nodes[i] = *(nodes_end-1);
+            nodes_end--;
+
+            std::ptrdiff_t previous_last_index = std::distance(
+                nodes.begin(), nodes_end);
+            if (j == static_cast<std::size_t>(previous_last_index))
+              j = i;
+          }
+
+          stubs[j]--;
+          if (stubs[j] == 0) {
+            node_deleted = true;
+
+            stubs[j] = *(stubs_end-1);
+            stubs_end--;
+            nodes[j] = *(nodes_end-1);
+            nodes_end--;
+          }
+          stubs_sum -= 2;
+
+          if (node_deleted)
+            suitable_edges_remaining =
+              _random_degree_sequence_suitable_hanging_edge(
+                  edges, nodes.begin(), nodes_end);
+
+          d = std::discrete_distribution<std::size_t>(stubs.begin(), stubs_end);
+        }
+      }
+
+      if (stubs_sum == 0)
+        return undirected_network<VertT>(edges,
+            std::ranges::iota_view{
+              VertT{},
+              static_cast<VertT>(degrees.size())
+            });
+    }
+    return std::nullopt;
   }
 
   template <
@@ -295,8 +462,6 @@ namespace dag {
         0.0, [](double total, std::pair<double, VertT> p){
           return total+p.first;
         });
-
-    // maybe throw if sums are different?
 
     if (s_out != s_in)
       throw std::invalid_argument(

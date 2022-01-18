@@ -6,6 +6,9 @@
 #include <dag/networks.hpp>
 #include <dag/random_networks.hpp>
 
+using Catch::Matchers::Equals;
+using Catch::Matchers::UnorderedEquals;
+
 TEMPLATE_TEST_CASE("G(n, p) random graph", "[dag::gnp_random_graph]",
     std::size_t, int) {
   std::mt19937_64 gen(42);
@@ -46,6 +49,51 @@ TEMPLATE_TEST_CASE("random k-regular graph", "[dag::random_regular_graph]",
         [&r, k](TestType v) {
           return r.degree(v) == static_cast<std::size_t>(k);
         }));
+
+  // TODO add uniformity test
+}
+
+TEST_CASE("random degree sequence graph",
+    "[dag::random_degree_sequence_graph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = dag::random_degree_sequence_graph<std::size_t>(
+        std::vector<std::size_t>(n, 0), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = dag::random_degree_sequence_graph<std::size_t>(
+        std::vector<std::size_t>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("produces the degree sequence we wanted with no self-loop") {
+    std::size_t n = 20, w = 3;
+
+    std::vector<std::size_t> degree_sequence(n, w);
+
+    auto g = dag::random_degree_sequence_graph<std::size_t>(
+        degree_sequence, gen);
+
+    std::vector<std::size_t> degrees;
+    for (auto v: g.vertices())
+      degrees.push_back(g.degree(v));
+
+    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+
+    REQUIRE(std::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.incident_verts().size() == 1;
+          }));
+  }
+
+  //TODO: test uniformity
 }
 
 TEST_CASE("random expected degree sequence graph",
