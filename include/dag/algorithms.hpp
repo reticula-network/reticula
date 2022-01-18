@@ -58,8 +58,12 @@ namespace dag {
   relabel_nodes(const undirected_network<InVertT>& g);
 
   /**
-    Checks if the sequence can be degree sequence of a valid undirected graph,
-    containing no multi-edges or loops, based on the Erdős--Gallai algorithm.
+    Checks if the sequence can be the degree sequence of a valid undirected
+    graph, containing no multi-edges or loops, based on the Erdős--Gallai
+    algorithm.
+
+    Erdős, Paul, and Tibor Gallai. "Graphs with prescribed degrees of vertices."
+    Mat. Lapok 11.264-274 (1960): 15.
 
     @param sequence The sequence in question, a forward range of VertT values.
   */
