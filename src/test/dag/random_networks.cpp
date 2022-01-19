@@ -93,7 +93,7 @@ TEST_CASE("random degree sequence graph",
           }));
   }
 
-  //TODO: test uniformity
+  // TODO: test uniformity
 }
 
 TEST_CASE("random expected degree sequence graph",
