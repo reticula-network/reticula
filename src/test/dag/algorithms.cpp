@@ -210,7 +210,7 @@ TEST_CASE("relabel nodes", "[dag::relabel_nodes]") {
   REQUIRE(orig.edges().size() == relabeled.edges().size());
 }
 
-TEST_CASE("is_graphic", "[dag::is_graphic]") {
+TEST_CASE("is graphic", "[dag::is_graphic]") {
   REQUIRE(dag::is_graphic(std::vector<int>({})));
   REQUIRE(dag::is_graphic(std::vector<int>({5, 3, 3, 3, 2, 2})));
   REQUIRE(dag::is_graphic(std::vector<int>({3, 3, 2, 1, 1, 0})));
@@ -218,6 +218,32 @@ TEST_CASE("is_graphic", "[dag::is_graphic]") {
   REQUIRE(dag::is_graphic(std::vector<int>(5, 2)));
   REQUIRE(dag::is_graphic(std::vector<int>(5, 4)));
 
+  REQUIRE_FALSE(dag::is_graphic(std::vector<int>({-1, 3, 3, 3, 2, 2})));
   REQUIRE_FALSE(dag::is_graphic(std::vector<int>({4, 3, 3, 2, 2, 1})));
   REQUIRE_FALSE(dag::is_graphic(std::vector<int>({4, 3, 2, 1})));
+}
+
+TEST_CASE("is digraphic", "[dag::is_digraphic]") {
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>({})));
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{1, 0}, {2, 1}, {0, 1}, {1, 1}, {0, 1}})));
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{4, 0}, {0, 1}, {0, 1}, {0, 1}, {0, 1}})));
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{2, 0}, {2, 1}, {0, 1}, {0, 1}, {0, 1}})));
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{0, 1}, {1, 0}})));
+  REQUIRE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{1, 1}, {1, 1}})));
+
+  REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{1, -1}, {2, 1}, {1, 1}, {1, 1}, {0, 1}})));
+  REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{-1, 0}, {2, 1}, {1, 1}, {1, 1}, {0, 1}})));
+  REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{1, 0}, {2, 1}, {1, 1}, {1, 1}, {0, 1}})));
+  REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{4, 3}, {2, 1}, {1, 1}, {1, 1}, {0, 1}})));
+  REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
+          {{4, 0}, {0, 1}, {1, 1}, {3, 1}, {0, 1}})));
 }

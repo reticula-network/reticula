@@ -16,29 +16,25 @@ namespace dag {
       { dist(gen) } -> std::convertible_to<typename T::result_type>;
     };  // NOLINT(readability/braces)
 
-  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> gnp_random_graph(
       VertT n, double p,
       Gen& generator);
 
 
-  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
-  requires std::numeric_limits<VertT>::is_integer
-  undirected_network<VertT> ba_random_graph(
+  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  undirected_network<VertT> random_barabasi_albert_graph(
       VertT n, VertT m,
       Gen& generator);
 
 
-  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
   random_regular_graph(
       VertT size, VertT degree,
       Gen& generator);
 
-  template <network_vertex VertT, std::uniform_random_bit_generator Gen>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   std::optional<undirected_network<VertT>>
   try_random_regular_graph(
       VertT size, VertT degree,
@@ -47,24 +43,24 @@ namespace dag {
 
 
   template <
-    network_vertex VertT,
+    integer_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
-    std::numeric_limits<VertT>::is_integer
+    degree_range<Range> &&
+    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   undirected_network<VertT>
   random_degree_sequence_graph(
       const Range& degree_sequence,
       Gen& generator);
 
   template <
-    network_vertex VertT,
+    integer_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT> &&
-    std::numeric_limits<VertT>::is_integer
+    degree_range<Range> &&
+    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   std::optional<undirected_network<VertT>>
   try_random_degree_sequence_graph(
       const Range& degree_sequence,
@@ -73,18 +69,29 @@ namespace dag {
 
 
   template <
-    network_vertex VertT,
-    std::ranges::forward_range Range1,
-    std::ranges::forward_range Range2,
+    integer_vertex VertT,
+    std::ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
-    std::convertible_to<std::ranges::range_value_t<Range1>, VertT> &&
-    std::convertible_to<std::ranges::range_value_t<Range2>, VertT> &&
-    std::numeric_limits<VertT>::is_integer
-  directed_network<VertT> directed_random_degree_sequence_graph(
-      const Range1& in_degree_sequence,
-      const Range2& out_degree_sequence,
+    degree_pair_range<PairRange> &&
+    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+  directed_network<VertT>
+  random_directed_degree_sequence_graph(
+      const PairRange& in_out_degree_sequence,
       Gen& generator);
+
+  template <
+    integer_vertex VertT,
+    std::ranges::forward_range PairRange,
+    std::uniform_random_bit_generator Gen>
+  requires
+    degree_pair_range<PairRange> &&
+    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+  std::optional<directed_network<VertT>>
+  try_random_directed_degree_sequence_graph(
+      const PairRange& in_out_degree_sequence,
+      Gen& generator,
+      std::size_t max_tries);
 
 
   /**
@@ -106,12 +113,10 @@ namespace dag {
     the Web-Graph. Springer, Berlin, Heidelberg, 2011.
   */
   template <
-    network_vertex VertT,
-    std::ranges::forward_range Range,
+    integer_vertex VertT,
+    std::ranges::input_range Range,
     std::uniform_random_bit_generator Gen>
-  requires
-    std::is_arithmetic_v<std::ranges::range_value_t<Range>> &&
-    std::numeric_limits<VertT>::is_integer
+  requires weight_range<Range>
   undirected_network<VertT>
   random_expected_degree_sequence_graph(
       const Range& degree_sequence,
@@ -146,18 +151,13 @@ namespace dag {
     the Web-Graph. Springer, Berlin, Heidelberg, 2011.
   */
   template <
-    network_vertex VertT,
-    std::ranges::forward_range Range1,
-    std::ranges::forward_range Range2,
+    integer_vertex VertT,
+    std::ranges::input_range PairRange,
     std::uniform_random_bit_generator Gen>
-  requires
-    std::is_arithmetic_v<std::ranges::range_value_t<Range1>> &&
-    std::is_arithmetic_v<std::ranges::range_value_t<Range2>> &&
-    std::numeric_limits<VertT>::is_integer
+  requires weight_pair_range<PairRange>
   directed_network<VertT>
   random_directed_expected_degree_sequence_graph(
-      const Range1& in_degree_sequence,
-      const Range2& out_degree_sequence,
+      const PairRange& in_out_degree_sequence,
       Gen& generator,
       bool self_loops = false);
 

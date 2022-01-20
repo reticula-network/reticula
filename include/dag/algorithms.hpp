@@ -52,8 +52,7 @@ namespace dag {
       const undirected_network<VertT1>& g1,
       const undirected_network<VertT2>& g2);
 
-  template <network_vertex OutVertT, network_vertex InVertT>
-  requires std::numeric_limits<OutVertT>::is_integer
+  template <integer_vertex OutVertT, network_vertex InVertT>
   undirected_network<OutVertT>
   relabel_nodes(const undirected_network<InVertT>& g);
 
@@ -67,9 +66,24 @@ namespace dag {
 
     @param sequence The sequence in question, a forward range of VertT values.
   */
-  template <network_vertex VertT, std::ranges::forward_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-  bool is_graphic(const Range& sequence);
+  template <std::ranges::forward_range Range>
+  requires degree_range<Range>
+  bool is_graphic(const Range& degree_sequence);
+
+  /**
+    Checks if the sequence can be the degree sequence of a valid directed graph,
+    containing no multi-edges or loops, based on the algorithm by Kleitman and
+    Wang.
+
+    Kleitman, Daniel J., and Da-Lun Wang. "Algorithms for constructing graphs
+    and digraphs with given valences and factors." Discrete Mathematics 6.1
+    (1973): 79-88.
+
+    @param sequence The sequence in question, a forward range of VertT values.
+  */
+  template <std::ranges::input_range PairRange>
+  requires degree_pair_range<PairRange>
+  bool is_digraphic(const PairRange& in_out_degree_sequence);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

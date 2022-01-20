@@ -9,13 +9,14 @@
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
-TEMPLATE_TEST_CASE("G(n, p) random graph", "[dag::gnp_random_graph]",
+TEMPLATE_TEST_CASE("Random G(n, p) graph",
+    "[dag::random_gnp_graph]",
     std::size_t, int) {
   std::mt19937_64 gen(42);
   TestType n = 1000;
   double p = 0.1;
   dag::undirected_network<TestType> r =
-    dag::gnp_random_graph<TestType>(n, p, gen);
+    dag::random_gnp_graph<TestType>(n, p, gen);
 
   REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
 
@@ -23,14 +24,17 @@ TEMPLATE_TEST_CASE("G(n, p) random graph", "[dag::gnp_random_graph]",
   double sigma = std::sqrt(mean);
   REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
   REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+
+  // TODO add uniformity test
 }
 
-TEMPLATE_TEST_CASE("Barabasi-Albert random graph", "[dag::ba_random_graph]",
+TEMPLATE_TEST_CASE("Barabasi-Albert random graph",
+    "[dag::random_barabasi_albert_graph]",
     std::size_t, int) {
   std::mt19937_64 gen(42);
   TestType n = 1000, m = 3;
   dag::undirected_network<TestType> r =
-    dag::ba_random_graph<TestType>(n, m, gen);
+    dag::random_barabasi_albert_graph<TestType>(n, m, gen);
   REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
   REQUIRE(r.edges().size() == static_cast<std::size_t>((n-m)*m));
 }
@@ -51,6 +55,50 @@ TEMPLATE_TEST_CASE("random k-regular graph", "[dag::random_regular_graph]",
         }));
 
   // TODO add uniformity test
+}
+
+TEST_CASE("random directed degree sequence graph",
+    "[dag::random_directed_degree_sequence_graph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = dag::random_directed_degree_sequence_graph<std::size_t>(
+        std::vector<std::pair<std::size_t, std::size_t>>(n, {0, 0}), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = dag::random_directed_degree_sequence_graph<std::size_t>(
+        std::vector<std::pair<std::size_t, std::size_t>>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("produces the degree sequence we wanted with no self-loop") {
+    std::size_t n = 20, w = 3;
+
+    std::vector<std::pair<std::size_t, std::size_t>>
+      degree_sequence(n, {w, w});
+
+    auto g = dag::random_directed_degree_sequence_graph<std::size_t>(
+        degree_sequence, gen);
+
+    std::vector<std::pair<std::size_t, std::size_t>> degrees;
+    for (auto v: g.vertices())
+      degrees.emplace_back(g.in_degree(v), g.out_degree(v));
+
+    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+
+    REQUIRE(std::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.head() == e.tail();
+          }));
+  }
+
+  // TODO: test uniformity
 }
 
 TEST_CASE("random degree sequence graph",
@@ -203,13 +251,13 @@ TEST_CASE("random directed expected degree sequence graph",
     std::size_t n = 20;
 
     auto g1 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
-        std::vector<double>(n, 0.0), std::vector<double>(n, 0.0), gen);
+        std::vector<std::pair<double, double>>(n, {0.0, 0.0}), gen);
 
     REQUIRE(g1.edges().size() == 0);
     REQUIRE(g1.vertices().size() == n);
 
     auto g2 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
-        std::vector<double>(), std::vector<double>(), gen);
+        std::vector<std::pair<double, double>>(), gen);
 
     REQUIRE(g2.edges().size() == 0);
     REQUIRE(g2.vertices().size() == 0);
@@ -220,7 +268,7 @@ TEST_CASE("random directed expected degree sequence graph",
     double w = 3.0;
 
     auto g = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
-        std::vector<double>(n, w), std::vector<double>(n, w), gen, false);
+        std::vector<std::pair<double, double>>(n, {w, w}), gen, false);
     REQUIRE(std::ranges::none_of(g.edges(),
           [](const auto& e) {
             return e.head() == e.tail();
@@ -236,13 +284,18 @@ TEST_CASE("random directed expected degree sequence graph",
       std::size_t,
       dag::hash<std::pair<std::size_t, std::size_t>>> p;
 
+    std::vector<std::pair<double, double>> weights;
+    weights.reserve(n);
+    std::ranges::transform(
+        std::ranges::iota_view{std::size_t{}, n},
+        std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
+        std::back_inserter(weights),
+        [](std::size_t i, std::size_t j) { return std::make_pair(i, j);});
+
     SECTION("with self-loops") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = dag::random_directed_expected_degree_sequence_graph<
-          std::size_t>(
-              std::ranges::iota_view{std::size_t{}, n},
-              std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
-              gen, true);
+          std::size_t>(weights, gen, true);
         for (std::size_t v: g.vertices())
           for (std::size_t u: g.successors(v))
             p[std::make_pair(u, v)]++;
@@ -270,10 +323,7 @@ TEST_CASE("random directed expected degree sequence graph",
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = dag::random_directed_expected_degree_sequence_graph<
-          std::size_t>(
-              std::ranges::iota_view{std::size_t{}, n},
-              std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
-              gen, false);
+          std::size_t>(weights, gen, false);
         for (std::size_t v: g.vertices())
           for (std::size_t u: g.successors(v))
             p[std::make_pair(u, v)]++;

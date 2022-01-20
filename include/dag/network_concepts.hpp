@@ -21,6 +21,10 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <typename T>
+  concept integer_vertex =
+    network_vertex<T> && std::numeric_limits<T>::is_integer;
+
+  template <typename T>
   concept output_streamable = requires(std::ostream os, T value) {
     { os << value };  // NOLINT(readability/braces)
   };  // NOLINT(readability/braces)
@@ -65,6 +69,61 @@ namespace dag {
 
   template <typename T>
   concept network_edge = static_edge<T> || temporal_edge<T>;
+
+
+  /**
+    Degree ranges are sequences of integer numbers
+  */
+  template <typename Range>
+  concept degree_range =
+    std::ranges::range<Range> &&
+    std::numeric_limits<
+      std::ranges::range_value_t<Range>>::is_integer;
+
+  template <typename T, typename V1, typename V2>
+  concept is_pairlike_of =
+    std::convertible_to<std::tuple_element_t<0, T>, V1> &&
+    std::convertible_to<std::tuple_element_t<1, T>, V2> &&
+    requires(T a) {
+      requires std::tuple_size<T>::value == 2;
+      std::get<0>(a);
+      std::get<1>(a);
+    };  // NOLINT(readability/braces)
+
+  /**
+    Degree pair ranges are sequences of pairs of integer numbers of same type
+  */
+  template <typename Range>
+  concept degree_pair_range =
+    std::ranges::range<Range> &&
+    is_pairlike_of<std::ranges::range_value_t<Range>,
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>,
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>> &&
+    std::numeric_limits<
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>>::is_integer;
+
+
+  /**
+    Weight ranges are sequences of integer or floating point numbers
+  */
+  template <typename Range>
+  concept weight_range =
+    std::ranges::range<Range> &&
+    std::is_arithmetic_v<
+      std::ranges::range_value_t<Range>>;
+
+  /**
+    Weight pair ranges are sequences of integer or floating point numbers of the
+    same type
+  */
+  template <typename Range>
+  concept weight_pair_range =
+    std::ranges::range<Range> &&
+    is_pairlike_of<std::ranges::range_value_t<Range>,
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>,
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>> &&
+    std::is_arithmetic_v<
+      std::tuple_element_t<0, std::ranges::range_value_t<Range>>>;
 }  // namespace dag
 
 #endif  // INCLUDE_DAG_NETWORK_CONCEPTS_HPP_

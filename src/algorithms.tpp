@@ -179,8 +179,7 @@ namespace dag {
   }
 
 
-  template <network_vertex OutVertT, network_vertex InVertT>
-  requires std::numeric_limits<OutVertT>::is_integer
+  template <integer_vertex OutVertT, network_vertex InVertT>
   undirected_network<OutVertT>
   relabel_nodes(const undirected_network<InVertT>& g) {
     std::unordered_map<InVertT, OutVertT, hash<InVertT>> new_labels;
@@ -201,7 +200,7 @@ namespace dag {
   }
 
   template <std::ranges::forward_range Range>
-  requires std::numeric_limits<std::ranges::range_value_t<Range>>::is_integer
+  requires degree_range<Range>
   bool is_graphic(const Range& sequence) {
     std::size_t num_degrees = 0;
     std::size_t max_deg = std::numeric_limits<std::size_t>::min();
@@ -256,6 +255,93 @@ namespace dag {
             k*(num_degrees - 1) -
             k*partial_n_j_sum + partial_jn_j_sum)
           return false;
+      }
+    }
+
+    return true;
+  }
+
+  template <std::ranges::input_range PairRange>
+  requires degree_pair_range<PairRange>
+  bool is_digraphic(
+      const PairRange& in_out_sequence) {
+    using InType = std::tuple_element_t<0,
+          std::ranges::range_value_t<PairRange>>;
+    using OutType = std::tuple_element_t<1,
+          std::ranges::range_value_t<PairRange>>;
+
+    InType sum_in{}, max_in{};
+    OutType sum_out{};
+
+    std::vector<std::pair<OutType, InType>> zero_heap, nonzero_heap;
+    for (auto& [in, out]: in_out_sequence) {
+      if (in < 0 || out < 0)
+        return false;
+
+      max_in = std::max(in, max_in);
+      sum_in += in;
+      sum_out += out;
+
+      if (in == 0)
+        zero_heap.emplace_back(out, in);
+      else
+        nonzero_heap.emplace_back(out, in);
+    }
+
+    if (sum_in != sum_out)
+      return false;
+
+    std::ranges::make_heap(zero_heap);
+    std::ranges::make_heap(nonzero_heap);
+
+    std::vector<std::pair<OutType, InType>> modified_stubs;
+    modified_stubs.reserve(static_cast<std::size_t>(max_in));
+
+    while (!nonzero_heap.empty()) {
+      std::ranges::pop_heap(nonzero_heap);
+      auto [out, in] = nonzero_heap.back();
+      nonzero_heap.pop_back();
+
+      if (static_cast<std::size_t>(in) > nonzero_heap.size() + zero_heap.size())
+        return false;
+
+      for (InType i{}; i < in; i++) {
+        OutType stub_out;
+        InType stub_in;
+        if (!zero_heap.empty() &&
+            (nonzero_heap.empty() ||
+             nonzero_heap.front() < zero_heap.front())) {
+          std::ranges::pop_heap(zero_heap);
+          std::tie(stub_out, stub_in) = zero_heap.back();
+          zero_heap.pop_back();
+        } else {
+          std::ranges::pop_heap(nonzero_heap);
+          std::tie(stub_out, stub_in) = nonzero_heap.back();
+          nonzero_heap.pop_back();
+        }
+
+        if (stub_out == 0)
+          return false;
+        else if (stub_out > 1 || stub_in > 0)
+          modified_stubs.emplace_back(stub_out - 1, stub_in);
+      }
+
+      while (!modified_stubs.empty()) {
+        auto [mout, min] = modified_stubs.back();
+        if (min > 0) {
+          nonzero_heap.emplace_back(mout, min);
+          std::ranges::push_heap(nonzero_heap);
+        } else {
+          zero_heap.emplace_back(mout, min);
+          std::ranges::push_heap(zero_heap);
+        }
+
+        modified_stubs.pop_back();
+      }
+
+      if (out > 0) {
+        zero_heap.emplace_back(out, 0);
+        std::ranges::push_heap(zero_heap);
       }
     }
 
