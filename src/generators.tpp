@@ -1,8 +1,7 @@
 #include "../include/dag/algorithms.hpp"
 
 namespace dag {
-  template <network_vertex VertT>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT>
   undirected_network<VertT> square_grid_graph(
       VertT side, std::size_t dims, bool periodic) {
     auto g = path_graph<VertT>(side, periodic);
@@ -13,8 +12,7 @@ namespace dag {
     return g;
   }
 
-  template <network_vertex VertT>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT>
   undirected_network<VertT> path_graph(VertT size, bool periodic) {
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(size);
@@ -28,14 +26,12 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <network_vertex VertT>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT>
   undirected_network<VertT> cycle_graph(VertT size) {
     return path_graph(size, true);
   }
 
-  template <network_vertex VertT>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT>
   undirected_network<VertT> complete_graph(VertT size) {
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve((size*(size-1))/2);
@@ -47,8 +43,7 @@ namespace dag {
     return undirected_network<VertT>(edges);
   }
 
-  template <network_vertex VertT>
-  requires std::numeric_limits<VertT>::is_integer
+  template <integer_vertex VertT>
   undirected_network<VertT> regular_ring_lattice(VertT size, VertT degree) {
     if (degree >= size)
       throw std::invalid_argument("degree should be smaller than size");
