@@ -57,7 +57,9 @@ namespace dag {
         } else {
           for (std::size_t i = 0; i < size; i++)
             for (std::size_t j = 0; j < i; j++)
-              if (!edges.contains({*(nodes_begin+i), *(nodes_begin+j)}))
+              if (!edges.contains({
+                    static_cast<VertT>(*(nodes_begin+i)),
+                    static_cast<VertT>(*(nodes_begin+j))}))
                 return true;
         }
 
@@ -223,7 +225,9 @@ namespace dag {
       } else {
         for (auto out_it = out_nodes_begin; out_it < out_nodes_end; out_it++)
           for (auto in_it = in_nodes_begin; in_it < in_nodes_end; in_it++)
-            if (*out_it != *in_it && !edges.contains({*out_it, *in_it}))
+            if (*out_it != *in_it && !edges.contains({
+                  static_cast<VertT>(*out_it),
+                  static_cast<VertT>(*in_it)}))
               return true;
       }
       return false;

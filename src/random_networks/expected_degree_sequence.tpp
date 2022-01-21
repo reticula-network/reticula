@@ -68,7 +68,7 @@ namespace dag {
 
     return undirected_network<VertT>(edges,
         std::ranges::iota_view{
-          std::size_t{}, weight_node_pairs.size()});
+          VertT{}, static_cast<VertT>(weight_node_pairs.size())});
   }
 
   template <
@@ -166,6 +166,6 @@ namespace dag {
 
     return directed_network<VertT>(edges,
         std::ranges::iota_view{
-          std::size_t{}, in_weight_node_pairs.size()});
+          VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
   }
 }  // namespace dag

@@ -64,31 +64,34 @@ TEST_CASE("random directed degree sequence graph",
   SECTION("deals well with empty or zero weights") {
     std::size_t n = 20;
 
-    auto g1 = dag::random_directed_degree_sequence_graph<std::size_t>(
-        std::vector<std::pair<std::size_t, std::size_t>>(n, {0, 0}), gen);
+    auto g1 = dag::random_directed_degree_sequence_graph<int>(
+        std::vector<std::pair<int, int>>(n, {0, 0}), gen);
 
     REQUIRE(g1.edges().size() == 0);
     REQUIRE(g1.vertices().size() == n);
 
-    auto g2 = dag::random_directed_degree_sequence_graph<std::size_t>(
-        std::vector<std::pair<std::size_t, std::size_t>>(), gen);
+    auto g2 = dag::random_directed_degree_sequence_graph<int>(
+        std::vector<std::pair<int, int>>(), gen);
 
     REQUIRE(g2.edges().size() == 0);
     REQUIRE(g2.vertices().size() == 0);
   }
 
   SECTION("produces the degree sequence we wanted with no self-loop") {
-    std::size_t n = 20, w = 3;
+    std::size_t n = 20;
+    int w = 3;
 
-    std::vector<std::pair<std::size_t, std::size_t>>
+    std::vector<std::pair<int, int>>
       degree_sequence(n, {w, w});
 
-    auto g = dag::random_directed_degree_sequence_graph<std::size_t>(
+    auto g = dag::random_directed_degree_sequence_graph<int>(
         degree_sequence, gen);
 
-    std::vector<std::pair<std::size_t, std::size_t>> degrees;
+    std::vector<std::pair<int, int>> degrees;
     for (auto v: g.vertices())
-      degrees.emplace_back(g.in_degree(v), g.out_degree(v));
+      degrees.emplace_back(
+          static_cast<int>(g.in_degree(v)),
+          static_cast<int>(g.out_degree(v)));
 
     REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
 
@@ -108,30 +111,31 @@ TEST_CASE("random degree sequence graph",
   SECTION("deals well with empty or zero weights") {
     std::size_t n = 20;
 
-    auto g1 = dag::random_degree_sequence_graph<std::size_t>(
-        std::vector<std::size_t>(n, 0), gen);
+    auto g1 = dag::random_degree_sequence_graph<int>(
+        std::vector<int>(n, 0), gen);
 
     REQUIRE(g1.edges().size() == 0);
     REQUIRE(g1.vertices().size() == n);
 
-    auto g2 = dag::random_degree_sequence_graph<std::size_t>(
-        std::vector<std::size_t>(), gen);
+    auto g2 = dag::random_degree_sequence_graph<int>(
+        std::vector<int>(), gen);
 
     REQUIRE(g2.edges().size() == 0);
     REQUIRE(g2.vertices().size() == 0);
   }
 
   SECTION("produces the degree sequence we wanted with no self-loop") {
-    std::size_t n = 20, w = 3;
+    std::size_t n = 20;
+    int w = 3;
 
-    std::vector<std::size_t> degree_sequence(n, w);
+    std::vector<int> degree_sequence(n, w);
 
-    auto g = dag::random_degree_sequence_graph<std::size_t>(
+    auto g = dag::random_degree_sequence_graph<int>(
         degree_sequence, gen);
 
-    std::vector<std::size_t> degrees;
+    std::vector<int> degrees;
     for (auto v: g.vertices())
-      degrees.push_back(g.degree(v));
+      degrees.push_back(static_cast<int>(g.degree(v)));
 
     REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
 
@@ -151,13 +155,13 @@ TEST_CASE("random expected degree sequence graph",
   SECTION("deals well with empty or zero weights") {
     std::size_t n = 20;
 
-    auto g1 = dag::random_expected_degree_sequence_graph<std::size_t>(
+    auto g1 = dag::random_expected_degree_sequence_graph<int>(
         std::vector<double>(n, 0.0), gen);
 
     REQUIRE(g1.edges().size() == 0);
     REQUIRE(g1.vertices().size() == n);
 
-    auto g2 = dag::random_expected_degree_sequence_graph<std::size_t>(
+    auto g2 = dag::random_expected_degree_sequence_graph<int>(
         std::vector<double>(), gen);
 
     REQUIRE(g2.edges().size() == 0);
@@ -168,7 +172,7 @@ TEST_CASE("random expected degree sequence graph",
     std::size_t n = 20;
     double w = 3.0;
 
-    auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
+    auto g = dag::random_expected_degree_sequence_graph<int>(
         std::vector<double>(n, w), gen, false);
     REQUIRE(std::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -181,23 +185,23 @@ TEST_CASE("random expected degree sequence graph",
     std::size_t n = 20;
 
     std::unordered_map<
-      std::pair<std::size_t, std::size_t>,
+      std::pair<int, int>,
       std::size_t,
-      dag::hash<std::pair<std::size_t, std::size_t>>> p;
+      dag::hash<std::pair<int, int>>> p;
 
     SECTION("with self-loops") {
       for (std::size_t i = 0; i < ens; i++) {
-        auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
-            std::ranges::iota_view{std::size_t{}, n}, gen, true);
-        for (std::size_t v: g.vertices())
-          for (std::size_t u: g.neighbours(v))
+        auto g = dag::random_expected_degree_sequence_graph<int>(
+            std::ranges::iota_view{int{}, static_cast<int>(n)}, gen, true);
+        for (auto v: g.vertices())
+          for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
       REQUIRE(std::ranges::all_of(p,
             [n, ens](const std::pair<
-              std::pair<std::size_t, std::size_t>,
+              std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
               double wu = static_cast<double>(u);
@@ -215,17 +219,17 @@ TEST_CASE("random expected degree sequence graph",
 
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
-        auto g = dag::random_expected_degree_sequence_graph<std::size_t>(
-            std::ranges::iota_view{std::size_t{}, n}, gen, false);
-        for (std::size_t v: g.vertices())
-          for (std::size_t u: g.neighbours(v))
+        auto g = dag::random_expected_degree_sequence_graph<int>(
+            std::ranges::iota_view{int{}, static_cast<int>(n)}, gen, false);
+        for (auto v: g.vertices())
+          for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
       REQUIRE(std::ranges::all_of(p,
             [n, ens](const std::pair<
-              std::pair<std::size_t, std::size_t>,
+              std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
               double wu = static_cast<double>(u);
@@ -250,13 +254,13 @@ TEST_CASE("random directed expected degree sequence graph",
   SECTION("deals well with empty or zero weights") {
     std::size_t n = 20;
 
-    auto g1 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+    auto g1 = dag::random_directed_expected_degree_sequence_graph<int>(
         std::vector<std::pair<double, double>>(n, {0.0, 0.0}), gen);
 
     REQUIRE(g1.edges().size() == 0);
     REQUIRE(g1.vertices().size() == n);
 
-    auto g2 = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+    auto g2 = dag::random_directed_expected_degree_sequence_graph<int>(
         std::vector<std::pair<double, double>>(), gen);
 
     REQUIRE(g2.edges().size() == 0);
@@ -267,7 +271,7 @@ TEST_CASE("random directed expected degree sequence graph",
     std::size_t n = 20;
     double w = 3.0;
 
-    auto g = dag::random_directed_expected_degree_sequence_graph<std::size_t>(
+    auto g = dag::random_directed_expected_degree_sequence_graph<int>(
         std::vector<std::pair<double, double>>(n, {w, w}), gen, false);
     REQUIRE(std::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -280,31 +284,32 @@ TEST_CASE("random directed expected degree sequence graph",
     std::size_t n = 20;
 
     std::unordered_map<
-      std::pair<std::size_t, std::size_t>,
+      std::pair<int, int>,
       std::size_t,
-      dag::hash<std::pair<std::size_t, std::size_t>>> p;
+      dag::hash<std::pair<int, int>>> p;
 
     std::vector<std::pair<double, double>> weights;
     weights.reserve(n);
     std::ranges::transform(
-        std::ranges::iota_view{std::size_t{}, n},
-        std::ranges::iota_view{std::size_t{}, n} | std::views::reverse,
+        std::ranges::iota_view{int{}, static_cast<int>(n)},
+        std::ranges::iota_view{
+          int{}, static_cast<int>(n)} | std::views::reverse,
         std::back_inserter(weights),
-        [](std::size_t i, std::size_t j) { return std::make_pair(i, j);});
+        [](int i, int j) { return std::make_pair(i, j);});
 
     SECTION("with self-loops") {
       for (std::size_t i = 0; i < ens; i++) {
-        auto g = dag::random_directed_expected_degree_sequence_graph<
-          std::size_t>(weights, gen, true);
-        for (std::size_t v: g.vertices())
-          for (std::size_t u: g.successors(v))
+        auto g = dag::random_directed_expected_degree_sequence_graph<int>(
+            weights, gen, true);
+        for (auto v: g.vertices())
+          for (auto u: g.successors(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
       REQUIRE(std::ranges::all_of(p,
             [n, ens](const std::pair<
-              std::pair<std::size_t, std::size_t>,
+              std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
               double wu = static_cast<double>(u);
@@ -322,17 +327,17 @@ TEST_CASE("random directed expected degree sequence graph",
 
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
-        auto g = dag::random_directed_expected_degree_sequence_graph<
-          std::size_t>(weights, gen, false);
-        for (std::size_t v: g.vertices())
-          for (std::size_t u: g.successors(v))
+        auto g = dag::random_directed_expected_degree_sequence_graph<int>(
+            weights, gen, false);
+        for (auto v: g.vertices())
+          for (auto u: g.successors(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
       REQUIRE(std::ranges::all_of(p,
             [n, ens](const std::pair<
-              std::pair<std::size_t, std::size_t>,
+              std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
               double wu = static_cast<double>(u);
