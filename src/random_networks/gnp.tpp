@@ -31,7 +31,7 @@ namespace dag {
       if (v < n)
         edges.emplace_back(static_cast<VertT>(v), static_cast<VertT>(w));
       double lr = std::log(1.0 - rd(generator));
-      w = w + 1 + static_cast<VertT>(std::floor(lr/lp));
+      w = w + static_cast<VertT>(1 + std::floor(lr/lp));
     }
 
     return undirected_network<VertT>(edges);
