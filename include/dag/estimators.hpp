@@ -16,7 +16,7 @@ namespace dag {
       a.insert(i);
     } && requires(T a, const T& b) {
       a.merge(b);
-    };
+    };  // NOLINT(readability/braces)
 
 
   template <class T, class HyperLogLogT>
