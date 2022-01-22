@@ -1,74 +1,74 @@
 #ifndef INCLUDE_DAG_ESTIMATORS_HPP_
 #define INCLUDE_DAG_ESTIMATORS_HPP_
 
+#include "utils.hpp"
+
 namespace dag {
-  template <class T, class HyperLogLogT>
-  class hll_estimator {
-  public:
-    hll_estimator(size_t seed, size_t /*size_est*/) :
-      _estimator(true, static_cast<uint32_t>(seed)) {}
+  template <typename T>
+  concept cardinality_estimator =
+    requires(std::size_t seed, std::size_t size_est) {
+      { T(seed, size_est) } -> std::convertible_to<T>;
+    } && requires(const T& a) {
+      { a.estimate() } -> std::convertible_to<double>;
+      { a.underlying_estimator() } ->
+        std::convertible_to<typename T::EstimatorType>;
+    } && requires(T a, const T::ItemType& i) {
+      a.insert(i);
+    } && requires(T a, const T& b) {
+      a.merge(b);
+    };
 
-    double estimate() const { return _estimator.estimate(); }
-    void insert(const T& item) { _estimator.insert(item); }
-    void merge(const hll_estimator<T, HyperLogLogT>& other) {
-      _estimator.merge(other.estimator());
-    }
-
-    const HyperLogLogT& estimator() const { return _estimator; }
-
-    static double p_larger(double estimate, size_t limit,
-        size_t max_size = std::numeric_limits<std::size_t>::max());
-  private:
-    HyperLogLogT _estimator;
-  };
 
   template <class T, class HyperLogLogT>
-  class hll_estimator_readonly {
+  class hll_cardinality_estimator {
   public:
-    hll_estimator_readonly(size_t /*seed*/, size_t size_est)
-      : _est(static_cast<double>(size_est)) {}
+    using ItemType =  T;
+    using EstimatorType = HyperLogLogT;
 
-   explicit hll_estimator_readonly(
-       const hll_estimator<T, HyperLogLogT>& hll_est) {
-      _est = hll_est.estimate();
-    }
+    hll_cardinality_estimator(std::size_t seed, std::size_t size_est);
 
-    double estimate() const { return _est; }
-    void insert(const T& /* item */) {
-      throw std::logic_error("cannot insert into read-only hll estimator");
-    }
-    void merge(const hll_estimator_readonly<T, HyperLogLogT>& /* other */) {
-      throw std::logic_error("cannot merge read-only hll estimator");
-    }
+    double estimate() const;
+    void insert(const T& item);
+    void merge(const hll_cardinality_estimator<T, HyperLogLogT>& other);
 
-    static double p_larger(double estimate, size_t limit,
-        size_t max_size = std::numeric_limits<std::size_t>::max()) {
-      return hll_estimator<T, HyperLogLogT>::p_larger(
-          estimate, limit, max_size);
-    }
+    const EstimatorType& underlying_estimator() const;
 
+    static double p_larger(double estimate, std::size_t limit,
+        std::size_t max_size = std::numeric_limits<std::size_t>::max());
   private:
-    double _est;
+    EstimatorType _hll;
   };
 
   template <class T>
-  class exact_estimator {
+  class unordered_set_cardinality_estimator {
   public:
-    exact_estimator(size_t /*seed*/, size_t size_est) {
-      if (size_est > 0)
-        _set.reserve(size_est);
-    }
+    using ItemType =  T;
+    using EstimatorType = std::unordered_set<T, hash<T>>;
 
-    size_t size() const { return _set.size(); }
-    void insert(const T& item) { _set.insert(item); }
-    void merge(const exact_estimator<T>& other) {
-      _set.insert(other.set().begin(), other.set().end());
-    }
-    bool contains(const T& item) const { return _set.find(item) != _set.end(); }
-    const std::unordered_set<T>& set() const { return _set; }
+    unordered_set_cardinality_estimator(
+        std::size_t seed, std::size_t size_est);
+
+    double estimate() const;
+    std::size_t size() const;
+
+    void insert(const T& item);
+    void merge(const unordered_set_cardinality_estimator<T>& other);
+
+    bool contains(const T& item) const;
+    const EstimatorType& underlying_estimator() const;
 
   private:
-    std::unordered_set<T> _set;
+    EstimatorType _set;
+  };
+
+  class cardinality_estimate {
+  public:
+    template <cardinality_estimator EstimatorT>
+    explicit cardinality_estimate(const EstimatorT& estimator);
+
+    double estimate() const;
+  private:
+    double _est;
   };
 }  // namespace dag
 
