@@ -115,9 +115,12 @@ TEST_CASE("out component", "[dag::out_component]") {
   SECTION("gives correct answer on acyclic graphs") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
-    REQUIRE_THAT(dag::out_component(graph, 2),
+    auto c2 = dag::out_component(graph, 2);
+    REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
       UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
-    REQUIRE_THAT(dag::out_component(graph, 5),
+
+    auto c5 = dag::out_component(graph, 5);
+    REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
       UnorderedEquals(std::vector<int>({5, 4, 6})));
   }
 }
@@ -133,9 +136,12 @@ TEST_CASE("in component", "[dag::in_component]") {
   SECTION("gives correct answer on acyclic graphs") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
-    REQUIRE_THAT(dag::in_component(graph, 2),
+    auto c2 = dag::in_component(graph, 2);
+    REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
       UnorderedEquals(std::vector<int>({2, 1})));
-    REQUIRE_THAT(dag::in_component(graph, 5),
+
+    auto c5 = dag::in_component(graph, 5);
+    REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
       UnorderedEquals(std::vector<int>({1, 2, 3, 5})));
   }
 }
@@ -165,10 +171,38 @@ TEST_CASE("weakly connected components", "[dag::weakly_connected_components]") {
 
   auto comps = dag::weakly_connected_components(graph);
   REQUIRE(comps.size() == 2);
-  REQUIRE_THAT(comps[0], UnorderedEquals(weak1) || UnorderedEquals(weak2));
-  REQUIRE_THAT(comps[1], UnorderedEquals(weak1) || UnorderedEquals(weak2));
-  REQUIRE_THAT(comps[0], !UnorderedEquals(comps[1]));
+  REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
+      UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
+      UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE(comps[0] != comps[2]);
 }
+
+TEST_CASE("connected components", "[dag::connected_components]") {
+  dag::undirected_network<int> graph({
+      {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+
+  std::vector<int> weak1({1, 2, 3, 4, 5, 6}), weak2({7, 8, 9});
+
+  auto comps = dag::connected_components(graph);
+  REQUIRE(comps.size() == 2);
+  REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
+      UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
+      UnorderedEquals(weak1) || UnorderedEquals(weak2));
+  REQUIRE(comps[0] != comps[2]);
+}
+
+TEST_CASE("connected component", "[dag::connected_component]") {
+  dag::undirected_network<int> graph({
+      {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+
+
+  auto comp = dag::connected_component(graph, 4);
+  REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
+      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+}
+
 
 #include <iostream>
 TEST_CASE("cartesian product", "[dag::cartesian_product]") {

@@ -1,6 +1,7 @@
 #include <random>
 #include <algorithm>
 #include <queue>
+#include <stack>
 #include <cmath>
 
 #include <iostream>
@@ -8,6 +9,33 @@
 #include <ds/disjoint_set.hpp>
 
 namespace dag {
+  template <static_edge EdgeT, typename DiscoveryF>
+  component<EdgeT>
+  breadth_first_search(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert,
+      DiscoveryF discovered,
+      std::size_t size_hint) {
+    component<EdgeT> discovered_comp(size_hint);
+    discovered_comp.insert(vert);
+    std::queue<typename EdgeT::VertexType> queue;
+    queue.push(vert);
+    while (!queue.empty()) {
+      auto v = queue.front();
+      queue.pop();
+      for (auto& w: net.successors(v)) {
+        if (!discovered_comp.contains(w)) {
+          discovered_comp.insert(w);
+          if (!discovered(w, v))
+            return discovered_comp;
+          queue.push(w);
+        }
+      }
+    }
+
+    return discovered_comp;
+  }
+
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(
@@ -32,6 +60,7 @@ namespace dag {
         }
       }
     }
+
     return directed_network<EdgeT>(eg);
   }
 
@@ -68,83 +97,102 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  std::vector<VertT> _out_component(
+  component<directed_edge<VertT>> _out_component(
       const directed_network<VertT>& dir,
-      const  VertT& vert,
+      const VertT& root,
       std::size_t size_hint,
       bool revert_graph) {
-    std::unordered_set<VertT, hash<VertT>> out_component;
-    if (size_hint > 0) out_component.reserve(size_hint);
-    out_component.insert(vert);
+    component<directed_edge<VertT>> out_component(size_hint);
+    out_component.insert(root);
     auto topo = topological_order(dir);
+
     if (revert_graph)
-      std::reverse(topo.begin(), topo.end());
+      std::ranges::reverse(topo);
 
     for (auto&& vert: topo) {
-      if (out_component.find(vert) != out_component.end()) {
+      if (out_component.contains(vert)) {
         auto edges = (revert_graph ? dir.in_edges(vert) : dir.out_edges(vert));
-        for (const auto& edge: edges) {
-          auto verts = (revert_graph ?
-                          edge.mutator_verts() : edge.mutated_verts());
-          for (auto&& v: verts)
-            out_component.insert(v);
-        }
+        for (const auto& edge: edges)
+          out_component.insert(edge);
       }
     }
-    return std::vector<VertT>(out_component.begin(), out_component.end());
+
+    return out_component;
   }
 
   template <network_vertex VertT>
-  std::vector<VertT> in_component(
+  component<directed_edge<VertT>> in_component(
       const directed_network<VertT>& dir,
-      const  VertT& vert,
+      const VertT& root,
       std::size_t size_hint) {
-    return _out_component(dir, vert, size_hint, true);
+    return _out_component(dir, root, size_hint, true);
   }
 
   template <network_vertex VertT>
-  std::vector<VertT> out_component(
+  component<directed_edge<VertT>> out_component(
       const directed_network<VertT>& dir,
-      const  VertT& vert,
+      const VertT& root,
       std::size_t size_hint) {
-    return _out_component(dir, vert, size_hint, false);
+    return _out_component(dir, root, size_hint, false);
   }
 
-  template <network_vertex VertT>
-  std::vector<std::vector<VertT>> weakly_connected_components(
-      const directed_network<VertT>& dir,
-      bool singleton) {
-    std::vector<VertT> verts = dir.vertices();
+  template <network_edge EdgeT>
+  std::vector<component<EdgeT>>
+  _generic_weakly_connected_components(
+      const network<EdgeT>& net,
+      bool singletons) {
+    auto verts = net.vertices();
     auto disj_set = ds::disjoint_set<std::size_t>(verts.size());
 
-    auto vert_iter = verts.begin();
-    while (vert_iter < verts.end()) {
-      std::size_t vert_idx = static_cast<std::size_t>(
-          std::distance(verts.begin(), vert_iter));
+    std::unordered_map<
+      typename EdgeT::VertexType,
+      std::size_t,
+      hash<typename EdgeT::VertexType>> vert_idx;
+    for (std::size_t i = 0; auto& v: verts)
+      vert_idx.emplace(v, i++);
 
-      for (auto&& other: dir.successors(*vert_iter)) {
-        auto other_it = std::lower_bound(vert_iter+1, verts.end(), other);
-        std::size_t other_idx = static_cast<std::size_t>(
-            std::distance(verts.begin(), other_it));
-        disj_set.merge(vert_idx, other_idx);
-      }
+    for (auto e: net.edges())
+      for (auto v1: e.mutator_verts())
+        for (auto v2: e.mutated_verts())
+          if (!is_undirected_v<EdgeT> || v1 < v2)
+            disj_set.merge(vert_idx[v1], vert_idx[v2]);
 
-      vert_iter++;
-    }
-
-    auto sets = disj_set.sets(singleton);
-    std::vector<std::vector<VertT>> sets_vector;
-    sets_vector.reserve(sets.size());
+    auto sets = disj_set.sets(singletons);
+    std::vector<component<EdgeT>> comp_vector;
+    comp_vector.reserve(sets.size());
 
     for (const auto& [idx, set]: sets) {
-      sets_vector.emplace_back();
-      auto& current_set = sets_vector.back();
-      current_set.reserve(set.size());
+      auto& current_set = comp_vector.emplace_back(set.size());
       for (const auto& event_idx: set)
-        current_set.push_back(verts.at(event_idx));
+        current_set.insert(verts.at(event_idx));
     }
 
-    return sets_vector;
+    return comp_vector;
+  }
+
+  template <network_vertex VertT>
+  std::vector<component<directed_edge<VertT>>>
+  weakly_connected_components(
+      const directed_network<VertT>& dir,
+      bool singletons) {
+    return _generic_weakly_connected_components(dir, singletons);
+  }
+
+  template <network_vertex VertT>
+  std::vector<component<undirected_edge<VertT>>>
+  connected_components(
+      const undirected_network<VertT>& net,
+      bool singletons) {
+    return _generic_weakly_connected_components(net, singletons);
+  }
+
+  template <network_vertex VertT>
+  component<undirected_edge<VertT>>
+  connected_component(
+      const undirected_network<VertT>& net,
+      const VertT& vert) {
+    return breadth_first_search(net, vert,
+        [](const VertT&, const VertT&){ return true; }, 0);
   }
 
   template <network_vertex VertT1, network_vertex VertT2>
@@ -177,7 +225,6 @@ namespace dag {
 
     return undirected_network<std::pair<VertT1, VertT2>>(edges);
   }
-
 
   template <integer_vertex OutVertT, network_vertex InVertT>
   undirected_network<OutVertT>

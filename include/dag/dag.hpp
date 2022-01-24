@@ -15,11 +15,10 @@ namespace dag {}
 #include "temporal_edges.hpp"
 #include "temporal_hyperedges.hpp"
 #include "networks.hpp"
+#include "components.hpp"
 #include "random_networks.hpp"
 #include "algorithms.hpp"
 #include "implicit_event_graph.hpp"
-#include "estimators.hpp"
-#include "temporal_components.hpp"
 #include "generators.hpp"
 
 #endif  // INCLUDE_DAG_DAG_HPP_

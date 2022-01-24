@@ -25,22 +25,19 @@ namespace dag {
     static constexpr bool value = dag::is_undirected_v<EdgeT>;
   };
 
-  template <temporal_edge EdgeT,
-           adjacency_prob::adjacency_prob AdjacencyProbT,
-           template<typename> class EstimatorT,
-           template<typename> class ReadOnlyEstimatorT>
-  std::vector<std::pair<EdgeT,
-    temporal_component<EdgeT, ReadOnlyEstimatorT>>>
-  out_components(
+  template <
+    temporal_edge EdgeT,
+    adjacency_prob::adjacency_prob AdjacencyProbT,
+    typename IntermComponent,
+    typename OutputComponent>
+  std::vector<std::pair<EdgeT, OutputComponent>>
+  _generic_out_components(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
-      std::size_t seed,
-      bool only_roots) {
-    std::unordered_map<
-      EdgeT, temporal_component<EdgeT, EstimatorT>,
-      hash<EdgeT>> out_components;
-    std::vector<
-      std::pair<EdgeT, temporal_component<EdgeT, ReadOnlyEstimatorT>>>
-        out_component_ests;
+      std::size_t seed) {
+    std::unordered_map<EdgeT, IntermComponent, hash<EdgeT>>
+      out_components;
+    std::vector<std::pair<EdgeT, OutputComponent<EdgeT>>
+      out_component_ests;
     out_component_ests.reserve(eg.events_cause().size());
 
     std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> in_degrees;
@@ -52,7 +49,7 @@ namespace dag {
       implicit_event_graph<EdgeT, AdjacencyProbT>>;
 
     while (temp_edge_iter < end) {
-      out_components.emplace(*temp_edge_iter, seed);
+      out_components.emplace(*temp_edge_iter, seed, 0, 0);
 
       std::vector<EdgeT> successors = eg.successors(
           *temp_edge_iter, reducable);
@@ -65,16 +62,13 @@ namespace dag {
         out_components.at(*temp_edge_iter).merge(out_components.at(other));
 
         if (--in_degrees.at(other) == 0) {
-          if (!only_roots)
-            out_component_ests.emplace_back(other,
-                out_components.at(other));
+          out_component_ests.emplace_back(other, out_components.at(other));
           out_components.erase(other);
           in_degrees.erase(other);
         }
       }
 
-      auto nodes = temp_edge_iter->mutated_verts();
-      out_components.at(*temp_edge_iter).insert(*temp_edge_iter, nodes);
+      out_components.at(*temp_edge_iter).insert(*temp_edge_iter);
 
       if (in_degrees.at(*temp_edge_iter) == 0) {
         out_component_ests.emplace_back(*temp_edge_iter,
@@ -91,22 +85,19 @@ namespace dag {
     return out_component_ests;
   }
 
-  template <temporal_edge EdgeT,
-           adjacency_prob::adjacency_prob AdjacencyProbT,
-           template<typename> class EstimatorT,
-           template<typename> class ReadOnlyEstimatorT>
-  std::vector<std::pair<EdgeT,
-    temporal_component<EdgeT, ReadOnlyEstimatorT>>>
-  in_components(
+  template <
+    temporal_edge EdgeT,
+    adjacency_prob::adjacency_prob AdjacencyProbT,
+    typename IntermComponent,
+    typename OutputComponent>
+  std::vector<std::pair<EdgeT, OutputComponent>>
+  _generic_in_components(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
-      std::size_t seed,
-      bool only_roots) {
-    std::unordered_map<
-      EdgeT, temporal_component<EdgeT, EstimatorT>,
-      hash<EdgeT>> in_components;
-    std::vector<
-      std::pair<EdgeT, temporal_component<EdgeT, ReadOnlyEstimatorT>>>
-        in_component_ests;
+      std::size_t seed) {
+    std::unordered_map<EdgeT, OutputComponent, hash<EdgeT>>
+      in_components;
+    std::vector<std::pair<EdgeT, IntermComponent<EdgeT>>>
+      in_component_ests;
     in_component_ests.reserve(eg.events_cause().size());
 
     std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> out_degrees;
@@ -114,12 +105,11 @@ namespace dag {
     auto temp_edge_iter = eg.events_effect().begin();
     auto end = eg.events_effect().end();
 
-
     constexpr bool reducable = is_reducable_v<
       implicit_event_graph<EdgeT, AdjacencyProbT>>;
 
     while (temp_edge_iter < end) {
-      in_components.emplace(*temp_edge_iter, seed);
+      in_components.emplace(*temp_edge_iter, seed, 0, 0);
 
       std::vector<EdgeT> successors = eg.successors(
           *temp_edge_iter, reducable);
@@ -132,16 +122,14 @@ namespace dag {
         in_components.at(*temp_edge_iter).merge(in_components.at(other));
 
         if (--out_degrees.at(other) == 0) {
-          if (!only_roots)
-            in_component_ests.emplace_back(other,
-                in_components.at(other));
+          in_component_ests.emplace_back(other, in_components.at(other));
           in_components.erase(other);
           out_degrees.erase(other);
         }
       }
 
       auto nodes = temp_edge_iter->mutator_verts();
-      in_components.at(*temp_edge_iter).insert(*temp_edge_iter, nodes);
+      in_components.at(*temp_edge_iter).insert(*temp_edge_iter);
 
       if (out_degrees.at(*temp_edge_iter) == 0) {
         in_component_ests.emplace_back(*temp_edge_iter,
@@ -158,10 +146,11 @@ namespace dag {
     return in_component_ests;
   }
 
-  template <temporal_edge EdgeT,
-           adjacency_prob::adjacency_prob AdjacencyProbT,
-           template<typename> class EstimatorT>
-  temporal_component<EdgeT, EstimatorT>
+  template <
+    temporal_edge EdgeT,
+    adjacency_prob::adjacency_prob AdjacencyProbT,
+    typename ComponentT>
+  ComponentT
   _generic_out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
@@ -170,11 +159,10 @@ namespace dag {
       std::size_t edge_size_est,
       bool revert_graph) {
     std::queue<EdgeT> search({root});
-    temporal_component<EdgeT, EstimatorT>
-      out_component(seed, edge_size_est, node_size_est);
+    ComponentT out_component(seed, node_size_est, edge_size_est);
     auto nodes = (revert_graph ?
       root.mutator_verts() : root.mutated_verts());
-    out_component.insert(root, nodes);
+    out_component.insert(root);
 
     constexpr bool reducable = is_reducable_v<
       implicit_event_graph<EdgeT, AdjacencyProbT>>;
@@ -188,9 +176,7 @@ namespace dag {
       for (auto&& s: next_events)
         if (!out_component.edge_set().contains(s)) {
           search.push(s);
-          auto nodes = (revert_graph ?
-              s.mutator_verts() : s.mutated_verts());
-          out_component.insert(s, nodes);
+          out_component.insert(s);
         }
     }
 
@@ -198,9 +184,10 @@ namespace dag {
   }
 
 
-  template <temporal_edge EdgeT,
-           template<typename> class EstimatorT>
-  temporal_component<EdgeT, EstimatorT>
+  template <
+    temporal_edge EdgeT,
+    class ComponentT>
+  ComponentT
   _deterministic_out_component(
       const implicit_event_graph<EdgeT,
         adjacency_prob::deterministic<EdgeT>>& eg,
@@ -223,9 +210,9 @@ namespace dag {
 
     adjacency_prob::deterministic<EdgeT> prob = eg.adjacency_prob();
 
-    temporal_component<EdgeT, EstimatorT>
+    ComponentT
       out_component(seed, edge_size_est, node_size_est);
-    out_component.insert(root, root.mutated_verts());
+    out_component.insert(root);
 
     std::unordered_map<VertexType, TimeType, hash<VertexType>> last_infected;
     last_infected.reserve(eg.events_cause().size());
@@ -250,7 +237,7 @@ namespace dag {
         }
 
         auto event = in_transition.top();
-        out_component.insert(event, event.mutated_verts());
+        out_component.insert(event);
         in_transition.pop();
       }
 
@@ -386,10 +373,11 @@ namespace dag {
   }
 
 
-  template <temporal_edge EdgeT,
-           adjacency_prob::adjacency_prob AdjacencyProbT,
-           template<typename> class EstimatorT>
-  temporal_component<EdgeT, EstimatorT>
+  template <
+    temporal_edge EdgeT,
+    adjacency_prob::adjacency_prob AdjacencyProbT,
+    typename ComponentT>
+  ComponentT
   _out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
@@ -400,28 +388,28 @@ namespace dag {
     if constexpr (std::is_same_v<AdjacencyProbT,
                                     adjacency_prob::deterministic<EdgeT>>) {
       if (revert_graph)
-        return _deterministic_in_component<EdgeT, EstimatorT>(
+        return _deterministic_in_component<EdgeT, ComponentT>(
             eg, root, seed, node_size_est, edge_size_est);
       else
-        return _deterministic_out_component<EdgeT, EstimatorT>(
+        return _deterministic_out_component<EdgeT, ComponentT>(
             eg, root, seed, node_size_est, edge_size_est);
     } else {
-      return _generic_out_component<EdgeT, AdjacencyProbT, EstimatorT>(
+      return _generic_out_component<EdgeT, AdjacencyProbT, ComponentT>(
           eg, root, seed, node_size_est, edge_size_est, revert_graph);
     }
   }
 
-  template <temporal_edge EdgeT,
-           adjacency_prob::adjacency_prob AdjacencyProbT,
-           template<typename> class EstimatorT>
-  temporal_component<EdgeT, EstimatorT>
+  template <
+    temporal_edge EdgeT,
+    adjacency_prob::adjacency_prob AdjacencyProbT>
+  component<EdgeT>
   out_component(
       const implicit_event_graph<EdgeT, AdjacencyProbT>& eg,
       const EdgeT& root,
       std::size_t seed,
       std::size_t node_size_hint,
       std::size_t edge_size_hint) {
-    return _out_component<EdgeT, AdjacencyProbT, EstimatorT>(
+    return _out_component<EdgeT, AdjacencyProbT, ComponentT>(
         eg, root, seed,
         node_size_hint, edge_size_hint, false);
   }
@@ -440,6 +428,7 @@ namespace dag {
         eg, root, seed,
         node_size_hint, edge_size_hint, true);
   }
+
 
   template <temporal_edge EdgeT,
            adjacency_prob::adjacency_prob AdjacencyProbT,

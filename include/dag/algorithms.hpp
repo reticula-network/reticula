@@ -5,45 +5,98 @@
 #include <unordered_set>
 
 #include "network_concepts.hpp"
+#include "components.hpp"
 #include "adjacency_prob.hpp"
 
 namespace dag {
+  template <static_edge EdgeT, typename DiscoveryF>
+  component<EdgeT>
+  breadth_first_search(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert,
+      DiscoveryF discovered,
+      std::size_t size_hint = 0);
+
   template <static_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(
       const network<EdgeT>& temp,
       const AdjacencyProbT& prob,
-      size_t seed);
+      std::size_t seed);
 
+  /**
+    Sorts the vertices of `dir` in a way that for every directed edge in that
+    graph, the head node appears after the tail node in the result.
+
+    @param dir Directed network in question
+  */
   template <network_vertex VertT>
   std::vector<VertT>
   topological_order(
       const directed_network<VertT>& dir);
 
-  template <network_vertex VertT>
-  std::vector<VertT> out_component(
-      const directed_network<VertT>& dir,
-      const  VertT& vert,
-      size_t size_hint = 0);
+  /**
+    Returns component of the graph `dir` that can be reached frin  `root` by
+    traversing through a sequence of adjacent vertices.
 
+    @param dir Directed network in question
+    @param root The destination vert
+  */
   template <network_vertex VertT>
-  std::vector<VertT> in_component(
+  component<directed_edge<VertT>> out_component(
       const directed_network<VertT>& dir,
-      const  VertT& vert,
-      size_t size_hint = 0);
+      const VertT& root,
+      std::size_t size_hint = 0);
 
+  /**
+    Returns component of the graph `dir` that can reach `root` by traversing
+    through a sequence of adjacent vertices.
+
+    @param dir Directed network in question
+    @param root The destination vert
+  */
+  template <network_vertex VertT>
+  component<directed_edge<VertT>> in_component(
+      const directed_network<VertT>& dir,
+      const VertT& root,
+      std::size_t size_hint = 0);
 
   /**
     Returns list of all weakly connected components of `dir`.
 
     @param dir Directed network in question
-    @param singleton If true, return components with only one members.
-   */
+    @param singletons If true, also returns components with only one members.
+  */
   template <network_vertex VertT>
-  std::vector<std::vector<VertT>>
+  std::vector<component<directed_edge<VertT>>>
   weakly_connected_components(
       const directed_network<VertT>& dir,
-      bool singleton = true);
+      bool singletons = true);
+
+
+  /**
+    Returns the connected component of `net` that includes node `vert`.
+
+    @param net An undirected Network
+    @param vert A vertex that will belong to the final component
+  */
+  template <network_vertex VertT>
+  component<undirected_edge<VertT>>
+  connected_component(
+      const undirected_network<VertT>& net,
+      const VertT& vert);
+
+  /**
+    Returns list of all connected components of `net`.
+
+    @param net Directed network in question
+    @param singletons If true, also returns components with only one members.
+  */
+  template <network_vertex VertT>
+  std::vector<component<undirected_edge<VertT>>>
+  connected_components(
+      const undirected_network<VertT>& net,
+      bool singletons = true);
 
 
   template <network_vertex VertT1, network_vertex VertT2>
