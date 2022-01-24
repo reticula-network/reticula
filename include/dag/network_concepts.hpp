@@ -35,7 +35,7 @@ namespace dag {
   };  // NOLINT(readability/braces)
 
   template <typename T>
-  concept static_edge =
+  concept network_edge =
     hashable_with<T, hash> &&
     network_vertex<typename T::VertexType> &&
     requires(const T& a, const T& b) {
@@ -58,17 +58,20 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <typename T>
+  concept static_edge = network_edge<T> &&
+    !requires(const T& a) {  // it has to be more specialized than network_edge
+      a.effect_time();
+    };  // NOLINT(readability/braces)
+
+  template <typename T>
   concept temporal_edge =
-    static_edge<T> &&
+    network_edge<T> &&
     std::is_arithmetic_v<typename T::TimeType> &&
     requires(const T& a) {
       { a.cause_time() } -> std::convertible_to<typename T::TimeType>;
       { a.effect_time() } -> std::convertible_to<typename T::TimeType>;
       { a.static_projection() } -> static_edge;
     };  // NOLINT(readability/braces)
-
-  template <typename T>
-  concept network_edge = static_edge<T> || temporal_edge<T>;
 
 
   /**
