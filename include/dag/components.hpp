@@ -11,11 +11,9 @@
 namespace dag {
   template <typename T>
   concept network_component =
-    network_edge<typename T::EdgeType> &&
+    network_vertex<typename T::VertexType> &&
     std::constructible_from<T, std::size_t, std::size_t> &&
-    requires(T a, const T::EdgeType& e) {
-      a.insert(e);
-    } && requires(T a, const T::EdgeType::VertexType& v) {
+    requires(T a, const T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
       a.merge(b);
@@ -28,24 +26,29 @@ namespace dag {
     std::ranges::viewable_range<T> &&
     std::ranges::sized_range<T> &&
     std::equality_comparable<T> &&
-    requires(const T& a, const T::EdgeType::VertexType& v) {
+    requires(const T& a, const T::VertexType& v) {
       { a.contains(v) } -> std::convertible_to<bool>;
     };  // NOLINT(readability/braces)
 
-  template <network_edge EdgeT>
-  class component : public std::ranges::view_interface<component<EdgeT>> {
+  template <network_vertex VertT>
+  class component : public std::ranges::view_interface<component<VertT>> {
   public:
-    using EdgeType = EdgeT;
-    using VertexType = typename EdgeType::VertexType;
+    using VertexType = VertT;
     using IteratorType =
       typename std::unordered_set<VertexType>::const_iterator;
 
     component(std::size_t size_hint = 0, std::size_t seed = 0);
-    void insert(const EdgeType& e);
-    void insert(const VertexType& v);
-    void merge(const component<EdgeT>& other);
+    component(std::initializer_list<VertexType> verts);
 
-    bool operator==(const component<EdgeT> &other) const;
+    template<std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
+    component(const Range& verts);
+
+
+    void insert(const VertexType& v);
+    void merge(const component<VertT>& other);
+
+    bool operator==(const component<VertT> &other) const;
     std::size_t size() const;
     bool contains(const VertexType& v) const;
 
@@ -55,23 +58,53 @@ namespace dag {
     std::unordered_set<VertexType> _verts;
   };
 
-  template <network_edge EdgeT>
+  template <network_vertex VertT>
+  class component_size {
+  public:
+    using VertexType = VertT;
+
+    component_size(const component<VertT>& c);
+
+    std::size_t size() const;
+  private:
+    std::size_t _verts;
+  };
+
+
+
+  template <network_vertex VertT>
   class component_sketch {
   public:
-    using EdgeType = EdgeT;
-    using VertexType = typename EdgeType::VertexType;
+    using VertexType = VertT;
     using SketchType = hll::hyperloglog<VertexType, 13, 14>;
 
     component_sketch(std::size_t size_hint = 0, std::size_t seed = 0);
-    void insert(const EdgeType& e);
+    component_sketch(std::initializer_list<VertexType> verts);
+
+    template<std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
+    component_sketch(const Range& verts);
+
     void insert(const VertexType& v);
-    void merge(const component_sketch<EdgeT>& other);
+    void merge(const component_sketch<VertT>& other);
+
+    double size_estimate() const;
+  private:
+    SketchType _verts;
+  };
+
+  template <network_vertex VertT>
+  class component_size_estimate {
+  public:
+    using VertexType = VertT;
+
+    component_size_estimate(const component_sketch<VertT>& c);
 
     double size_estimate() const;
     double edge_count_estimate() const;
   private:
-    SketchType _verts;
-    SketchType _edges;
+    double _verts;
+    double _edges;
   };
 }  // namespace dag
 

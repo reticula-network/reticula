@@ -4,19 +4,17 @@
 #include <stack>
 #include <cmath>
 
-#include <iostream>
-
 #include <ds/disjoint_set.hpp>
 
 namespace dag {
   template <static_edge EdgeT, typename DiscoveryF>
-  component<EdgeT>
+  component<typename EdgeT::VertexType>
   breadth_first_search(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert,
       DiscoveryF discovered,
       std::size_t size_hint) {
-    component<EdgeT> discovered_comp(size_hint);
+    component<typename EdgeT::VertexType> discovered_comp(size_hint);
     discovered_comp.insert(vert);
     std::queue<typename EdgeT::VertexType> queue;
     queue.push(vert);
@@ -96,13 +94,14 @@ namespace dag {
     return topo;
   }
 
+
   template <network_vertex VertT>
-  component<directed_edge<VertT>> _out_component(
+  component<VertT> _out_component(
       const directed_network<VertT>& dir,
       const VertT& root,
       std::size_t size_hint,
       bool revert_graph) {
-    component<directed_edge<VertT>> out_component(size_hint);
+    component<VertT> out_component(size_hint);
     out_component.insert(root);
     auto topo = topological_order(dir);
 
@@ -112,32 +111,146 @@ namespace dag {
     for (auto&& vert: topo) {
       if (out_component.contains(vert)) {
         auto edges = (revert_graph ? dir.in_edges(vert) : dir.out_edges(vert));
-        for (const auto& edge: edges)
-          out_component.insert(edge);
+        for (auto& edge: edges)
+          for (auto& v: edge.incident_verts())
+            out_component.insert(v);
       }
     }
 
     return out_component;
   }
 
-  template <network_vertex VertT>
-  component<directed_edge<VertT>> in_component(
+
+  template <
+    network_vertex VertT,
+    network_component Comp,
+    typename Res>
+  requires
+    std::constructible_from<Res, Comp> &&
+    std::same_as<typename Comp::VertexType, VertT>
+  std::vector<std::pair<VertT, Res>>
+  _out_components(
       const directed_network<VertT>& dir,
-      const VertT& root,
-      std::size_t size_hint) {
-    return _out_component(dir, root, size_hint, true);
+      std::size_t seed,
+      bool revert_graph) {
+    std::vector<std::pair<VertT, Res>> res;
+    res.reserve(dir.vertices().size());
+    std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
+    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
+
+    auto topo = topological_order(dir);
+
+    if (!revert_graph)
+      std::ranges::reverse(topo);
+
+    for (auto& vert: topo) {
+      Comp comp(0, seed);
+      comp.insert(vert);
+      ongoing_components[vert] = comp;
+
+      std::size_t in_degree =
+        revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
+      std::vector<VertT> successors =
+        revert_graph ? dir.predecessors(vert) : dir.successors(vert);
+
+      in_degrees[vert] = in_degree;
+
+      for (auto& other: successors) {
+        ongoing_components.at(vert).merge(ongoing_components.at(other));
+        in_degrees.at(other)--;
+        if (in_degrees.at(other) == 0) {
+          res.emplace_back(other, ongoing_components.at(other));
+          in_degrees.erase(other);
+          ongoing_components.erase(other);
+        }
+      }
+
+      if (in_degrees.at(vert) == 0) {
+        res.emplace_back(vert, ongoing_components.at(vert));
+        in_degrees.erase(vert);
+        ongoing_components.erase(vert);
+      }
+    }
+
+    return res;
   }
 
+
   template <network_vertex VertT>
-  component<directed_edge<VertT>> out_component(
+  component<VertT> out_component(
       const directed_network<VertT>& dir,
       const VertT& root,
       std::size_t size_hint) {
     return _out_component(dir, root, size_hint, false);
   }
 
+  template <network_vertex VertT>
+  std::vector<std::pair<VertT, component<VertT>>>
+  out_components(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component<VertT>,
+      component<VertT>>(dir, 0, false);
+  }
+
+  template <network_vertex VertT>
+  std::vector<std::pair<VertT, component_size<VertT>>>
+  out_component_sizes(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component<VertT>,
+      component_size<VertT>>(dir, 0, false);
+  }
+
+  template <network_vertex VertT>
+  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
+  out_component_size_estimates(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component_sketch<VertT>,
+      component_size_estimate<VertT>>(dir, 0, false);
+  }
+
+  template <network_vertex VertT>
+  component<VertT> in_component(
+      const directed_network<VertT>& dir,
+      const VertT& root,
+      std::size_t size_hint) {
+    return _out_component(dir, root, size_hint, true);
+  }
+
+
+  template <network_vertex VertT>
+  std::vector<
+    std::pair<VertT, component<VertT>>>
+  in_components(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component<VertT>,
+      component<VertT>>(dir, 0, true);
+  }
+
+  template <network_vertex VertT>
+  std::vector<
+    std::pair<VertT, component_size<VertT>>>
+  in_component_sizes(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component<VertT>,
+      component_size<VertT>>(dir, 0, true);
+  }
+
+  template <network_vertex VertT>
+  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
+  in_component_size_estimates(const directed_network<VertT>& dir) {
+    return _out_components<
+      VertT,
+      component_sketch<VertT>,
+      component_size_estimate<VertT>>(dir, 0, true);
+  }
+
   template <network_edge EdgeT>
-  std::vector<component<EdgeT>>
+  std::vector<component<typename EdgeT::VertexType>>
   _generic_weakly_connected_components(
       const network<EdgeT>& net,
       bool singletons) {
@@ -158,7 +271,7 @@ namespace dag {
             disj_set.merge(vert_idx[v1], vert_idx[v2]);
 
     auto sets = disj_set.sets(singletons);
-    std::vector<component<EdgeT>> comp_vector;
+    std::vector<component<typename EdgeT::VertexType>> comp_vector;
     comp_vector.reserve(sets.size());
 
     for (const auto& [idx, set]: sets) {
@@ -171,7 +284,7 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  std::vector<component<directed_edge<VertT>>>
+  std::vector<component<VertT>>
   weakly_connected_components(
       const directed_network<VertT>& dir,
       bool singletons) {
@@ -179,7 +292,7 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  std::vector<component<undirected_edge<VertT>>>
+  std::vector<component<VertT>>
   connected_components(
       const undirected_network<VertT>& net,
       bool singletons) {
@@ -187,7 +300,7 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  component<undirected_edge<VertT>>
+  component<VertT>
   connected_component(
       const undirected_network<VertT>& net,
       const VertT& vert) {

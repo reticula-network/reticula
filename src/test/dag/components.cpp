@@ -13,39 +13,28 @@ using Catch::Matchers::Equals;
 #include <dag/static_hyperedges.hpp>
 #include <dag/temporal_hyperedges.hpp>
 
-TEMPLATE_TEST_CASE("component complies with the concept", "[dag::component]",
-    dag::directed_edge<int>, dag::directed_hyperedge<int>,
-    dag::undirected_edge<int>, dag::undirected_hyperedge<int>,
-    (dag::directed_temporal_edge<int, int>),
-    (dag::directed_temporal_hyperedge<int, int>),
-    (dag::directed_delayed_temporal_edge<int, int>),
-    (dag::directed_delayed_temporal_hyperedge<int, int>)) {
-  STATIC_REQUIRE(dag::exact_component<dag::component<TestType>>);
+TEST_CASE("component complies with the concept", "[dag::component]") {
+  STATIC_REQUIRE(dag::exact_component<dag::component<int>>);
+  STATIC_REQUIRE(dag::network_component<dag::component<int>>);
 }
 
-TEMPLATE_TEST_CASE("component sketch complies with the concept",
-    "[dag::component_sketch]",
-    dag::directed_edge<int>, dag::directed_hyperedge<int>,
-    dag::undirected_edge<int>, dag::undirected_hyperedge<int>,
-    (dag::directed_temporal_edge<int, int>),
-    (dag::directed_temporal_hyperedge<int, int>),
-    (dag::directed_delayed_temporal_edge<int, int>),
-    (dag::directed_delayed_temporal_hyperedge<int, int>)) {
-  STATIC_REQUIRE(dag::network_component<dag::component_sketch<TestType>>);
+TEST_CASE("component sketch complies with the concept",
+    "[dag::component_sketch]") {
+  STATIC_REQUIRE(dag::network_component<dag::component_sketch<int>>);
 }
 
 TEST_CASE("component properties", "[dag::component]") {
-  using EdgeType = dag::directed_edge<int>;
-  using CompType = dag::component<EdgeType>;
-
-  STATIC_REQUIRE(dag::network_component<CompType>);
+  using CompType = dag::component<int>;
 
   CompType comp(0, 0);
 
-  EdgeType a(1, 2), b(2, 0), c(2, 3);
+  comp.insert(0);
+  comp.insert(1);
+  comp.insert(2);
 
-  comp.insert(a);
-  comp.insert(b);
+  SECTION("equality operator") {
+    REQUIRE(comp == CompType({0, 1, 2}));
+  }
 
   SECTION("correct basic properties") {
     REQUIRE(std::unordered_set<int>(comp.begin(), comp.end()) ==
@@ -57,7 +46,7 @@ TEST_CASE("component properties", "[dag::component]") {
   }
 
   SECTION("insertion") {
-    comp.insert(c);
+    comp.insert(3);
 
     REQUIRE(std::unordered_set<int>(comp.begin(), comp.end()) ==
         std::unordered_set<int>({0, 1, 2, 3}));
@@ -67,7 +56,7 @@ TEST_CASE("component properties", "[dag::component]") {
   SECTION("merging") {
     CompType comp2(0, 0);
 
-    comp2.insert(c);
+    comp2.insert(3);
     comp.merge(comp2);
 
     REQUIRE(std::unordered_set<int>(comp.begin(), comp.end()) ==
