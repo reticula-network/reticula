@@ -1,5 +1,5 @@
-#ifndef INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
-#define INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
+#ifndef INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_COMPONENTS_HPP_
+#define INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_COMPONENTS_HPP_
 
 #include "network_concepts.hpp"
 #include "implicit_event_graph.hpp"
@@ -113,4 +113,4 @@ namespace dag {
 
 #include "../../src/implicit_event_graph_components.tpp"
 
-#endif  // INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
+#endif  // INCLUDE_DAG_IMPLICIT_EVENT_GRAPH_COMPONENTS_HPP_

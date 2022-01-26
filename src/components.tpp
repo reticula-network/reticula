@@ -8,7 +8,7 @@ namespace dag {
 
   template <network_vertex VertT>
   component<VertT>::component(std::initializer_list<VertT> verts) :
-    component(std::vector(verts)) {};
+    component(std::vector(verts)) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
@@ -66,7 +66,7 @@ namespace dag {
   template <network_vertex VertT>
   component_sketch<VertT>::component_sketch(
       std::initializer_list<VertT> verts) :
-    component_sketch(std::vector(verts)) {};
+    component_sketch(std::vector(verts)) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
@@ -99,7 +99,7 @@ namespace dag {
   template <network_vertex VertT>
   std::size_t component_size<VertT>::size() const {
     return _verts;
-  };
+  }
 
   template <network_vertex VertT>
   component_size_estimate<VertT>::component_size_estimate(
