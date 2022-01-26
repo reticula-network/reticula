@@ -105,11 +105,20 @@ TEST_CASE("event graph", "[dag::event_graph]") {
 }
 
 TEST_CASE("out component", "[dag::out_component]") {
-  SECTION("throws on a cyclic graph") {
+  SECTION("gives correct answer on a cyclic graph") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE_THROWS_AS(dag::out_component(graph, 1),
-        dag::utils::not_acyclic_error);
+    auto c2 = dag::out_component(graph, 2);
+    REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
+      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+
+    auto c5 = dag::out_component(graph, 5);
+    REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
+      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+
+    auto c6 = dag::out_component(graph, 6);
+    REQUIRE_THAT(std::vector<int>(c6.begin(), c6.end()),
+      UnorderedEquals(std::vector<int>({6})));
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -126,15 +135,33 @@ TEST_CASE("out component", "[dag::out_component]") {
 }
 
 TEST_CASE("out components", "[dag::out_components]") {
-  SECTION("throws on a cyclic graph") {
+  SECTION("gives correct answer on a cyclic graph") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE_THROWS_AS(dag::out_components(graph),
-        dag::utils::not_acyclic_error);
-    REQUIRE_THROWS_AS(dag::out_component_sizes(graph),
-        dag::utils::not_acyclic_error);
-    REQUIRE_THROWS_AS(dag::out_component_size_estimates(graph),
-        dag::utils::not_acyclic_error);
+
+    for (auto& [v, c]: dag::out_components(graph))
+      if (v == 1)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+      else if (v == 2)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+      else if (v == 3)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({3, 4, 5, 6, 2})));
+      else if (v == 4)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({4, 2, 3, 5, 6})));
+
+    auto comp_sizes = dag::out_component_sizes(graph);
+    std::unordered_map<int, std::size_t> comp_map;
+    for (auto [v, c]: comp_sizes)
+      comp_map[v] = c.size();
+
+    std::unordered_map<int, std::size_t> res(
+          {{1, 6}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 1}});
+
+    REQUIRE(comp_map == res);
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -167,11 +194,20 @@ TEST_CASE("out components", "[dag::out_components]") {
 }
 
 TEST_CASE("in component", "[dag::in_component]") {
-  SECTION("throws on a cyclic graph") {
+  SECTION("gives correct answer on a cyclic graph") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE_THROWS_AS(dag::in_component(graph, 1),
-        dag::utils::not_acyclic_error);
+    auto c2 = dag::in_component(graph, 2);
+    REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
+      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+
+    auto c5 = dag::in_component(graph, 5);
+    REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
+      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+
+    auto c1 = dag::in_component(graph, 1);
+    REQUIRE_THAT(std::vector<int>(c1.begin(), c1.end()),
+      UnorderedEquals(std::vector<int>({1})));
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -188,15 +224,34 @@ TEST_CASE("in component", "[dag::in_component]") {
 }
 
 TEST_CASE("in components", "[dag::in_components]") {
-  SECTION("throws on a cyclic graph") {
+  SECTION("gives correct answer on a cyclic graph") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE_THROWS_AS(dag::in_components(graph),
-        dag::utils::not_acyclic_error);
-    REQUIRE_THROWS_AS(dag::in_component_sizes(graph),
-        dag::utils::not_acyclic_error);
-    REQUIRE_THROWS_AS(dag::in_component_size_estimates(graph),
-        dag::utils::not_acyclic_error);
+
+    for (auto& [v, c]: dag::in_components(graph))
+      if (v == 1)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1})));
+      else if (v == 2)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      else if (v == 3)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      else if (v == 4)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+
+    auto comp_sizes = dag::in_component_sizes(graph);
+
+    std::unordered_map<int, std::size_t> comp_map;
+    for (auto [v, c]: comp_sizes)
+      comp_map[v] = c.size();
+
+    std::unordered_map<int, std::size_t> res(
+          {{1, 1}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 6}});
+
+    REQUIRE(comp_map == res);
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -229,11 +284,29 @@ TEST_CASE("in components", "[dag::in_components]") {
   }
 }
 
+TEST_CASE("try topological ordering", "[dag::try_topological_order]") {
+  SECTION("returns nullopt on a cyclic graph") {
+    REQUIRE_FALSE(dag::try_topological_order(
+          dag::directed_network<int>(
+            {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+  }
+
+  SECTION("returns a correct answer on an acyclic graph") {
+    auto maybe_topo = dag::try_topological_order(
+          dag::directed_network<int>(
+            {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}}));
+    REQUIRE(maybe_topo);
+    REQUIRE_THAT(maybe_topo.value(),
+        Equals(std::vector<int>({1, 2, 3, 5, 4, 6})) ||
+        Equals(std::vector<int>({1, 2, 3, 5, 6, 4})));
+  }
+}
+
 TEST_CASE("topological ordering", "[dag::topological_order]") {
   SECTION("throws on a cyclic graph") {
     dag::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE_THROWS_AS(dag::in_component(graph, 1),
+    REQUIRE_THROWS_AS(dag::topological_order(graph),
         dag::utils::not_acyclic_error);
   }
 
@@ -259,6 +332,25 @@ TEST_CASE("weakly connected components", "[dag::weakly_connected_components]") {
   REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
       UnorderedEquals(weak1) || UnorderedEquals(weak2));
   REQUIRE(comps[0] != comps[2]);
+}
+
+TEST_CASE("weakly connected component", "[dag::weakly_connected_component]") {
+  dag::directed_network<int> graph({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+
+  std::vector<int> weak1({1, 2, 3, 4, 5, 6}), weak2({7, 8, 9});
+
+  for (auto i: weak1) {
+    auto comp = dag::weakly_connected_component(graph, i);
+    REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
+        UnorderedEquals(weak1));
+  }
+
+  for (auto i: weak2) {
+    auto comp = dag::weakly_connected_component(graph, i);
+    REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
+        UnorderedEquals(weak2));
+  }
 }
 
 TEST_CASE("connected components", "[dag::connected_components]") {

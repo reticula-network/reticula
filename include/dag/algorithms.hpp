@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <optional>
 
 #include "network_concepts.hpp"
 #include "components.hpp"
@@ -25,8 +26,34 @@ namespace dag {
       std::size_t seed);
 
   /**
+    Returns true if the directed graph contains no cycles. This is detemined by
+    trying to find a topologial ordering or the edges. If you intend to get a
+    topological ordering of the nodes anyway, use `dag::try_topological_order`
+
+    @param dir Directed network in question
+  */
+  template <network_vertex VertT>
+  bool is_acyclic(
+      const directed_network<VertT>& dir);
+
+  /**
+    Tries to sorts the vertices of `dir` in a way that for every directed edge
+    in that graph, the head node appears after the tail node in the result.
+
+    Returns std::nullopt in if the graph has cycles.
+
+    @param dir Directed network in question
+  */
+  template <network_vertex VertT>
+  std::optional<std::vector<VertT>>
+  try_topological_order(
+      const directed_network<VertT>& dir);
+
+  /**
     Sorts the vertices of `dir` in a way that for every directed edge in that
     graph, the head node appears after the tail node in the result.
+
+    Throws utils::not_acyclic_error if the graph has cycles.
 
     @param dir Directed network in question
   */
@@ -140,6 +167,18 @@ namespace dag {
   in_component_size_estimates(
       const directed_network<VertT>& dir);
 
+  /**
+    Returns the weakly connected components of `dir` containing vertex `vert`.
+
+    @param dir Directed network in question
+    @param `vert` A vertex that belongs to the returned component.
+  */
+  template <network_vertex VertT>
+  component<VertT>
+  weakly_connected_component(
+      const directed_network<VertT>& dir,
+      const VertT& vert,
+      std::size_t size_hint = 0);
 
   /**
     Returns list of all weakly connected components of `dir`.
@@ -153,7 +192,6 @@ namespace dag {
       const directed_network<VertT>& dir,
       bool singletons = true);
 
-
   /**
     Returns the connected component of `net` that includes node `vert`.
 
@@ -164,7 +202,8 @@ namespace dag {
   component<VertT>
   connected_component(
       const undirected_network<VertT>& net,
-      const VertT& vert);
+      const VertT& vert,
+      std::size_t size_hint = 0);
 
   /**
     Returns list of all connected components of `net`.

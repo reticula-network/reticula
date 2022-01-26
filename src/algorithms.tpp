@@ -13,7 +13,9 @@ namespace dag {
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert,
       DiscoveryF discovered,
-      std::size_t size_hint) {
+      bool revert_graph = false,
+      bool ignore_direction = false,
+      std::size_t size_hint = 0) {
     component<typename EdgeT::VertexType> discovered_comp(size_hint);
     discovered_comp.insert(vert);
     std::queue<typename EdgeT::VertexType> queue;
@@ -21,7 +23,14 @@ namespace dag {
     while (!queue.empty()) {
       auto v = queue.front();
       queue.pop();
-      for (auto& w: net.successors(v)) {
+      std::vector<typename EdgeT::VertexType> next;
+      if (ignore_direction)
+        next = net.neighbours(v);
+      else if (revert_graph)
+        next = net.predecessors(v);
+      else
+        next = net.successors(v);
+      for (auto& w: next) {
         if (!discovered_comp.contains(w)) {
           discovered_comp.insert(w);
           if (!discovered(w, v))
@@ -63,7 +72,8 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  std::vector<VertT> topological_order(
+  std::optional<std::vector<VertT>>
+  try_topological_order(
       const directed_network<VertT>& dir) {
     auto verts = dir.vertices();
 
@@ -89,37 +99,28 @@ namespace dag {
     }
 
     if (topo.size() < in_degrees.size())
-      throw utils::not_acyclic_error("argument dir most be acyclic");
+      return std::nullopt;
 
     return topo;
   }
 
-
   template <network_vertex VertT>
-  component<VertT> _out_component(
-      const directed_network<VertT>& dir,
-      const VertT& root,
-      std::size_t size_hint,
-      bool revert_graph) {
-    component<VertT> out_component(size_hint);
-    out_component.insert(root);
-    auto topo = topological_order(dir);
-
-    if (revert_graph)
-      std::ranges::reverse(topo);
-
-    for (auto&& vert: topo) {
-      if (out_component.contains(vert)) {
-        auto edges = (revert_graph ? dir.in_edges(vert) : dir.out_edges(vert));
-        for (auto& edge: edges)
-          for (auto& v: edge.incident_verts())
-            out_component.insert(v);
-      }
-    }
-
-    return out_component;
+  std::vector<VertT>
+  topological_order(
+      const directed_network<VertT>& dir) {
+    auto o = try_topological_order(dir);
+    if (o)
+      return *o;
+    else
+      throw utils::not_acyclic_error("argument dir most be acyclic");
   }
 
+
+  template <network_vertex VertT>
+  bool is_acyclic(
+      const directed_network<VertT>& dir) {
+    return try_topological_order(dir);
+  }
 
   template <
     network_vertex VertT,
@@ -135,40 +136,52 @@ namespace dag {
       bool revert_graph) {
     std::vector<std::pair<VertT, Res>> res;
     res.reserve(dir.vertices().size());
-    std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
-    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
 
-    auto topo = topological_order(dir);
+    auto maybe_topo = try_topological_order(dir);
+    if (maybe_topo) {
+      // DAG in-/out-component algorithm
+      std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
+      std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
 
-    if (!revert_graph)
-      std::ranges::reverse(topo);
+      if (!revert_graph)
+        std::ranges::reverse(*maybe_topo);
 
-    for (auto& vert: topo) {
-      Comp comp(0, seed);
-      comp.insert(vert);
-      ongoing_components[vert] = comp;
+      for (auto& vert: *maybe_topo) {
+        Comp comp(0, seed);
+        comp.insert(vert);
+        ongoing_components[vert] = comp;
 
-      std::size_t in_degree =
-        revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
-      std::vector<VertT> successors =
-        revert_graph ? dir.predecessors(vert) : dir.successors(vert);
+        std::size_t in_degree =
+          revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
+        std::vector<VertT> successors =
+          revert_graph ? dir.predecessors(vert) : dir.successors(vert);
 
-      in_degrees[vert] = in_degree;
+        in_degrees[vert] = in_degree;
 
-      for (auto& other: successors) {
-        ongoing_components.at(vert).merge(ongoing_components.at(other));
-        in_degrees.at(other)--;
-        if (in_degrees.at(other) == 0) {
-          res.emplace_back(other, ongoing_components.at(other));
-          in_degrees.erase(other);
-          ongoing_components.erase(other);
+        for (auto& other: successors) {
+          ongoing_components.at(vert).merge(ongoing_components.at(other));
+          in_degrees.at(other)--;
+          if (in_degrees.at(other) == 0) {
+            res.emplace_back(other, ongoing_components.at(other));
+            in_degrees.erase(other);
+            ongoing_components.erase(other);
+          }
+        }
+
+        if (in_degrees.at(vert) == 0) {
+          res.emplace_back(vert, ongoing_components.at(vert));
+          in_degrees.erase(vert);
+          ongoing_components.erase(vert);
         }
       }
-
-      if (in_degrees.at(vert) == 0) {
-        res.emplace_back(vert, ongoing_components.at(vert));
-        in_degrees.erase(vert);
-        ongoing_components.erase(vert);
+    } else {
+      // TODO: Not optimal... Look at the transitive closure litrature for
+      // better alternatives
+      for (auto& v: dir.vertices()) {
+        auto comp = breadth_first_search(dir, v,
+            [](const VertT&, const VertT&){ return true; },
+            revert_graph, false, 0);
+        res.emplace_back(v, comp);
       }
     }
 
@@ -181,7 +194,9 @@ namespace dag {
       const directed_network<VertT>& dir,
       const VertT& root,
       std::size_t size_hint) {
-    return _out_component(dir, root, size_hint, false);
+    return breadth_first_search(dir, root,
+        [](const VertT&, const VertT&){ return true; },
+        false, false, size_hint);
   }
 
   template <network_vertex VertT>
@@ -216,7 +231,9 @@ namespace dag {
       const directed_network<VertT>& dir,
       const VertT& root,
       std::size_t size_hint) {
-    return _out_component(dir, root, size_hint, true);
+    return breadth_first_search(dir, root,
+        [](const VertT&, const VertT&){ return true; },
+        true, false, size_hint);
   }
 
 
@@ -292,6 +309,17 @@ namespace dag {
   }
 
   template <network_vertex VertT>
+  component<VertT>
+  weakly_connected_component(
+      const directed_network<VertT>& dir,
+      const VertT& vert,
+      std::size_t size_hint) {
+    return breadth_first_search(dir, vert,
+        [](const VertT&, const VertT&){ return true; },
+        false, true, size_hint);
+  }
+
+  template <network_vertex VertT>
   std::vector<component<VertT>>
   connected_components(
       const undirected_network<VertT>& net,
@@ -303,9 +331,11 @@ namespace dag {
   component<VertT>
   connected_component(
       const undirected_network<VertT>& net,
-      const VertT& vert) {
+      const VertT& vert,
+      std::size_t size_hint) {
     return breadth_first_search(net, vert,
-        [](const VertT&, const VertT&){ return true; }, 0);
+        [](const VertT&, const VertT&){ return true; },
+        false, false, size_hint);
   }
 
   template <network_vertex VertT1, network_vertex VertT2>
