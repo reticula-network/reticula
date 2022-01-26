@@ -284,6 +284,16 @@ TEST_CASE("in components", "[dag::in_components]") {
   }
 }
 
+TEST_CASE("is acyclic", "[dag::is_acyclic]") {
+  REQUIRE(dag::is_acyclic(
+          dag::directed_network<int>(
+            {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}})));
+
+  REQUIRE_FALSE(dag::is_acyclic(
+        dag::directed_network<int>(
+          {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}})));
+}
+
 TEST_CASE("try topological ordering", "[dag::try_topological_order]") {
   SECTION("returns nullopt on a cyclic graph") {
     REQUIRE_FALSE(dag::try_topological_order(

@@ -119,7 +119,7 @@ namespace dag {
   template <network_vertex VertT>
   bool is_acyclic(
       const directed_network<VertT>& dir) {
-    return try_topological_order(dir);
+    return try_topological_order(dir).has_value();
   }
 
   template <

@@ -28,7 +28,7 @@ namespace dag {
   /**
     Returns true if the directed graph contains no cycles. This is detemined by
     trying to find a topologial ordering or the edges. If you intend to get a
-    topological ordering of the nodes anyway, use `dag::try_topological_order`
+    topological ordering of the nodes anyway, use `dag::try_topological_order`.
 
     @param dir Directed network in question
   */
