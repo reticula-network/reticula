@@ -55,7 +55,7 @@ namespace dag {
     IteratorType begin() const;
     IteratorType end() const;
   private:
-    std::unordered_set<VertexType> _verts;
+    std::unordered_set<VertexType, hash<VertexType>> _verts;
   };
 
   template <network_vertex VertT>
