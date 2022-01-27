@@ -47,13 +47,13 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  std::unordered_set<VertT>::const_iterator
+  component<VertT>::IteratorType
   component<VertT>::begin() const {
     return _verts.begin();
   }
 
   template <network_vertex VertT>
-  std::unordered_set<VertT>::const_iterator
+  component<VertT>::IteratorType
   component<VertT>::end() const {
     return _verts.end();
   }

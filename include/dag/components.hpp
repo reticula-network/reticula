@@ -35,7 +35,7 @@ namespace dag {
   public:
     using VertexType = VertT;
     using IteratorType =
-      typename std::unordered_set<VertexType>::const_iterator;
+      typename std::unordered_set<VertexType, hash<VertexType>>::const_iterator;
 
     component(std::size_t size_hint = 0, std::size_t seed = 0);
     component(std::initializer_list<VertexType> verts);
