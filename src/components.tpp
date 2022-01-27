@@ -72,9 +72,8 @@ namespace dag {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component_sketch<VertT>::component_sketch(const Range& verts) {
-    if constexpr (std::ranges::sized_range<Range>)
-      _verts.reserve(std::ranges::size(verts));
-    std::ranges::copy(verts, std::inserter(_verts));
+    for (auto& v: verts)
+      _verts.insert(v);
   }
 
   template <network_vertex VertT>
