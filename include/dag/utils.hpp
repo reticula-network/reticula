@@ -5,6 +5,8 @@
 #include <functional>
 #include <stdexcept>
 
+#include <hll/hyperloglog.hpp>
+
 #include "network_concepts.hpp"
 
 #define DAG_UTIL_GOLDEN_RATIO 0x9E3779B97F4A7C15
@@ -95,5 +97,15 @@ namespace dag {
     }
   };
 }  // namespace dag
+
+namespace hll {
+  template <typename T1, typename T2>
+  struct hash<std::pair<T1, T2>> {
+    std::size_t operator()(const std::pair<T1, T2>& p) const noexcept {
+      return dag::utils::combine_hash<T2, hll::hash>(
+          hll::hash<T1>{}(p.first), p.second);
+    }
+  };
+}  // namespace hll
 
 #endif  // INCLUDE_DAG_UTILS_HPP_
