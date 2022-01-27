@@ -20,7 +20,13 @@ TEST_CASE("component complies with the concept", "[dag::component]") {
 
 TEST_CASE("component sketch complies with the concept",
     "[dag::component_sketch]") {
-  STATIC_REQUIRE(dag::network_component<dag::component_sketch<int>>);
+  STATIC_REQUIRE(dag::network_component<
+      dag::component_sketch<int>>);
+  STATIC_REQUIRE(dag::network_component<
+      dag::component_sketch<std::pair<int, int>>>);
+  STATIC_REQUIRE(dag::network_component<
+      dag::component_sketch<
+        dag::directed_temporal_hyperedge<std::pair<int, int>, double>>>);
 }
 
 TEST_CASE("component properties", "[dag::component]") {

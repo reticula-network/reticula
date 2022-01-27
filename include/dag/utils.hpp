@@ -101,9 +101,10 @@ namespace dag {
 namespace hll {
   template <typename T1, typename T2>
   struct hash<std::pair<T1, T2>> {
-    std::size_t operator()(const std::pair<T1, T2>& p) const noexcept {
-      return dag::utils::combine_hash<T2, hll::hash>(
-          hll::hash<T1>{}(p.first), p.second);
+    std::size_t operator()(
+        const std::pair<T1, T2>& p, uint32_t seed) const noexcept {
+      return hll::hash<size_t>{}(
+          dag::hash<std::pair<T1, T2>>{}(p), seed);
     }
   };
 }  // namespace hll
