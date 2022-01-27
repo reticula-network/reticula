@@ -101,10 +101,8 @@ namespace dag {
     component_size_estimate(const component_sketch<VertT>& c);
 
     double size_estimate() const;
-    double edge_count_estimate() const;
   private:
     double _verts;
-    double _edges;
   };
 }  // namespace dag
 

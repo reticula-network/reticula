@@ -104,4 +104,9 @@ namespace dag {
   component_size_estimate<VertT>::component_size_estimate(
       const component_sketch<VertT>& c) :
     _verts(c.size_estimate()) {}
+
+  template <network_vertex VertT>
+  double component_size_estimate<VertT>::size_estimate() const {
+    return _verts;
+  }
 }  // namespace dag
