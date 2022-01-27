@@ -21,5 +21,4 @@ jobs:
     - name: run cpplint
       run: cpplint
         --extensions=tpp,cpp,hpp
-        --filter=-whitespace/braces
         --quiet --recursive .
