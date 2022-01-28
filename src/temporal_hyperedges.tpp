@@ -12,7 +12,7 @@ namespace std {
         const dag::undirected_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t verts_hash = std::reduce(
-          e._verts.begin(), e._verts.end(), 0ul,
+          e._verts.begin(), e._verts.end(), std::size_t{},
           [](std::size_t h, VertexType v) {
           return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       return dag::utils::combine_hash<TimeType, dag::hash>(verts_hash, e._time);
@@ -26,11 +26,11 @@ namespace std {
         const dag::directed_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t heads_hash = std::reduce(
-          e._heads.begin(), e._heads.end(), 0ul,
+          e._heads.begin(), e._heads.end(), std::size_t{},
           [](std::size_t h, VertexType v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       std::size_t tails_hash = std::reduce(
-          e._tails.begin(), e._tails.end(), 0ul,
+          e._tails.begin(), e._tails.end(), std::size_t{},
           [](std::size_t h, VertexType v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       return dag::utils::combine_hash<TimeType, dag::hash>(
@@ -47,11 +47,11 @@ namespace std {
         dag::directed_delayed_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t heads_hash = std::reduce(
-          e._heads.begin(), e._heads.end(), 0ul,
+          e._heads.begin(), e._heads.end(), std::size_t{},
           [](std::size_t h, VertexType v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       std::size_t tails_hash = std::reduce(
-          e._tails.begin(), e._tails.end(), 0ul,
+          e._tails.begin(), e._tails.end(), std::size_t{},
           [](std::size_t h, VertexType v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       return dag::utils::combine_hash<TimeType, dag::hash>(

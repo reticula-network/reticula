@@ -418,6 +418,7 @@ namespace dag {
     friend bool adjacent(
         const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
         const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
+
   private:
     TimeType _cause_time, _effect_time;
     std::vector<VertexType> _tails, _heads;

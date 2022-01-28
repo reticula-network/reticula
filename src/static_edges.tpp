@@ -40,7 +40,7 @@ namespace hll {
     uint64_t
     operator()(const dag::undirected_edge<VertexType>& e, uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::directed_edge<VertexType>>{}(e), seed);
+          std::hash<dag::undirected_edge<VertexType>>{}(e), seed);
     }
   };
 }  // namespace hll

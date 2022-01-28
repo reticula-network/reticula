@@ -196,8 +196,8 @@ namespace dag {
       _cause_time(cause_time), _effect_time(effect_time),
       _tail(tail), _head(head) {
     if (_effect_time < _cause_time)
-      throw std::invalid_argument("directed_delayed_temporal_edge cannot have a "
-          "cause_time larger than effect_time");
+      throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
+          " cause_time larger than effect_time");
   }
 
   template <network_vertex VertexType, typename TimeType>

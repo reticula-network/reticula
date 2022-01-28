@@ -34,11 +34,9 @@ namespace dag {
   concept network_edge =
     std::totally_ordered<T> &&
     hashable_with<T, hash> &&
+    hashable_with<T, std::hash> &&
     network_vertex<typename T::VertexType> &&
     requires(const T& a, const T& b) {
-      { a == b } -> std::convertible_to<bool>;
-      { a != b } -> std::convertible_to<bool>;
-      { a < b } -> std::convertible_to<bool>;
       { effect_lt(a, b) } -> std::convertible_to<bool>;
       { adjacent(a, b) } -> std::convertible_to<bool>;
     } && requires(const T& a) {

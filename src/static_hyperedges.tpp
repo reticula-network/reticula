@@ -53,7 +53,7 @@ namespace hll {
         const dag::undirected_hyperedge<VertexType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::directed_hyperedge<VertexType>>{}(e), seed);
+          std::hash<dag::undirected_hyperedge<VertexType>>{}(e), seed);
     }
   };
 }  // namespace hll

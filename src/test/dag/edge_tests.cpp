@@ -43,6 +43,10 @@ TEST_CASE("undirected edges", "[dag::undirected_edge]") {
     REQUIRE(dag::adjacent(edge, dag::undirected_edge<int>(2, 3)));
     REQUIRE(dag::adjacent(edge, dag::undirected_edge<int>(3, 2)));
     REQUIRE_FALSE(dag::adjacent(edge, dag::undirected_edge<int>(3, 4)));
+
+    REQUIRE_NOTHROW(dag::hash<dag::undirected_edge<int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<dag::undirected_edge<int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<dag::undirected_edge<int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -78,6 +82,13 @@ TEST_CASE("undirected hyperedges", "[dag::undirected_hyperedge]") {
     REQUIRE(dag::adjacent(edge, dag::undirected_hyperedge<int>({2, 3, 4})));
     REQUIRE(dag::adjacent(edge, dag::undirected_hyperedge<int>({3, 4, 5})));
     REQUIRE_FALSE(dag::adjacent(edge, dag::undirected_hyperedge<int>({4, 5})));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::undirected_hyperedge<int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::undirected_hyperedge<int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::undirected_hyperedge<int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -130,6 +141,13 @@ TEST_CASE("directed edges", "[dag::directed_edge]") {
     REQUIRE(dag::adjacent(edge, dag::directed_edge<int>(2, 3)));
     REQUIRE_FALSE(dag::adjacent(edge, dag::directed_edge<int>(3, 2)));
     REQUIRE_FALSE(dag::adjacent(edge, dag::directed_edge<int>(3, 4)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_edge<int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_edge<int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_edge<int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -177,6 +195,13 @@ TEST_CASE("directed hyperedges", "[dag::directed_hyperedge]") {
           dag::directed_hyperedge<int>({4, 5}, {5, 6})));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_hyperedge<int>({5}, {5, 6})));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_hyperedge<int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_hyperedge<int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_hyperedge<int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -247,6 +272,13 @@ TEST_CASE("undirected temporal edges",
           dag::undirected_temporal_edge<int, int>(1, 2, 1)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::undirected_temporal_edge<int, int>(1, 2, 0)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::undirected_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::undirected_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::undirected_temporal_edge<int, int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -299,6 +331,13 @@ TEST_CASE("undirected temporal hyperedges",
           dag::undirected_temporal_hyperedge<int, int>({1, 2, 3}, 1)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::undirected_temporal_hyperedge<int, int>({1, 2, 3}, 0)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::undirected_temporal_hyperedge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::undirected_temporal_hyperedge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::undirected_temporal_hyperedge<int, int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -367,6 +406,13 @@ TEST_CASE("directed temporal edges", "[dag::directed_temporal_edge]") {
           dag::directed_temporal_edge<int, int>(3, 2, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_temporal_edge<int, int>(3, 4, 2)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_temporal_edge<int, int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -426,6 +472,13 @@ TEST_CASE("directed temporal hyperedges",
           dag::directed_temporal_hyperedge<int, int>({4, 5}, {6, 7}, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_temporal_hyperedge<int, int>({4, 5}, {1, 2}, 2)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_temporal_hyperedge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_temporal_hyperedge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_temporal_hyperedge<int, int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -500,6 +553,13 @@ TEST_CASE("directed delayed temporal edges",
           dag::directed_delayed_temporal_edge<int, int>(3, 2, 3, 4)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_delayed_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_delayed_temporal_edge<int, int>>{}(edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_delayed_temporal_edge<int, int>>{}(edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -578,6 +638,16 @@ TEST_CASE("directed delayed temporal hyperedges",
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
             {3, 7}, {4, 8}, 3, 4)));
+
+    REQUIRE_NOTHROW(dag::hash<
+        dag::directed_delayed_temporal_hyperedge<int, int>>{}(
+          edge));
+    REQUIRE_NOTHROW(std::hash<
+        dag::directed_delayed_temporal_hyperedge<int, int>>{}(
+          edge));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::directed_delayed_temporal_hyperedge<int, int>>{}(
+          edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {
@@ -606,4 +676,17 @@ TEST_CASE("directed delayed temporal hyperedges",
         dag::directed_delayed_temporal_hyperedge<int, int>(
           {1, 4}, {2, 7}, 3, 7));
   }
+}
+
+TEST_CASE("higher-order edges", "[]") {
+  using HyperEventGraphEdge =
+    dag::directed_edge<
+      dag::directed_temporal_hyperedge<int, float>>;
+  REQUIRE_NOTHROW(HyperEventGraphEdge({{}, {}}));
+  REQUIRE_NOTHROW(dag::hash<HyperEventGraphEdge>{}(
+        HyperEventGraphEdge({{}, {}})));
+  REQUIRE_NOTHROW(std::hash<HyperEventGraphEdge>{}(
+        HyperEventGraphEdge({{}, {}})));
+  REQUIRE_NOTHROW(hll::hash<HyperEventGraphEdge>{}(
+        HyperEventGraphEdge({{}, {}}), uint32_t{}));
 }
