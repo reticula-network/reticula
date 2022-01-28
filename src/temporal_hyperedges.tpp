@@ -220,7 +220,7 @@ namespace dag {
   bool effect_lt(
       const directed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
+    return a < b;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -365,7 +365,7 @@ namespace dag {
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
     return std::make_tuple(a._effect_time, a._cause_time, a._heads, a._tails) <
-      std::make_tuple(a._effect_time, a._cause_time, a._heads, a._tails);
+      std::make_tuple(b._effect_time, b._cause_time, b._heads, b._tails);
   }
 
   template <network_vertex VertexType, typename TimeType>
