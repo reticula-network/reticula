@@ -40,6 +40,7 @@ TEST_CASE("component properties", "[dag::component]") {
 
   SECTION("equality operator") {
     REQUIRE(comp == CompType({0, 1, 2}));
+    REQUIRE(comp == CompType({1, 0, 2}));
   }
 
   SECTION("correct basic properties") {
