@@ -11,15 +11,15 @@ namespace std {
     size_t
     operator()(const dag::directed_edge<VertexType>& e) const {
       return dag::utils::combine_hash<VertexType, dag::hash>(
-          dag::hash<VertexType>{}(e.v1), e.v2);
+          dag::hash<VertexType>{}(e._tail), e._head);
     }
   };
 
   template<dag::network_vertex VertexType>
   struct hash<dag::undirected_edge<VertexType>> {
     size_t operator()(const dag::undirected_edge<VertexType>& e) const {
-      return dag::utils::unordered_hash<VertexType, VertexType, dag::hash>(
-          e.v1, e.v2);
+      return dag::utils::combine_hash<VertexType, dag::hash>(
+          dag::hash<VertexType>{}(e._v1), e._v2);
     }
   };
 }  // namespace std
@@ -49,19 +49,19 @@ namespace dag {
   // properties of directed edge:
 
   template <network_vertex VertexType>
-  directed_edge<VertexType>::directed_edge(VertexType v1, VertexType v2)
-      : v1(v1), v2(v2) {}
+  directed_edge<VertexType>::directed_edge(VertexType tail, VertexType head)
+      : _tail(tail), _head(head) {}
 
   template <network_vertex VertexType>
   inline bool
   directed_edge<VertexType>::is_out_incident(const VertexType& vert) const {
-    return (v1 == vert);
+    return (_tail == vert);
   }
 
   template <network_vertex VertexType>
   inline bool
   directed_edge<VertexType>::is_in_incident(const VertexType& vert) const  {
-    return (v2 == vert);
+    return (_head == vert);
   }
 
   template <network_vertex VertexType>
@@ -73,190 +73,131 @@ namespace dag {
   template <network_vertex VertexType>
   std::vector<VertexType>
   directed_edge<VertexType>::mutator_verts() const {
-    return {v1};
+    return {_tail};
   }
 
   template <network_vertex VertexType>
   std::vector<VertexType>
   directed_edge<VertexType>::mutated_verts() const {
-    return {v2};
+    return {_head};
   }
 
   template <network_vertex VertexType>
   std::vector<VertexType>
   directed_edge<VertexType>::incident_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_tail == _head)
+      return {_tail};
     else
-      return {v1, v2};
+      return {_tail, _head};
   }
 
   template <network_vertex VertexType>
   VertexType directed_edge<VertexType>::tail() const {
-    return v1;
+    return _tail;
   }
 
   template <network_vertex VertexType>
   VertexType directed_edge<VertexType>::head() const {
-    return v2;
-  }
-
-  template <network_vertex VertexType>
-  bool operator!=(
-      const directed_edge<VertexType>& a,
-      const directed_edge<VertexType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType>
-  bool operator==(
-      const directed_edge<VertexType>& a,
-      const directed_edge<VertexType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType>
-  bool operator<(
-      const directed_edge<VertexType>& a,
-      const directed_edge<VertexType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
+    return _head;
   }
 
   template <network_vertex VertexType>
   bool effect_lt(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
+    return std::make_tuple(a._head, a._tail) <
+      std::make_tuple(b._head, b._tail);
   }
 
   template <network_vertex VertexType>
   bool adjacent(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
-    return (a.v2 == b.v1);
-  }
-
-  template <network_vertex VertexType>
-  inline std::tuple<VertexType, VertexType>
-  directed_edge<VertexType>::cause_comp_tuple() const {
-    return std::make_tuple(v1, v2);
-  }
-
-
-  template <network_vertex VertexType>
-  inline std::tuple<VertexType, VertexType>
-  directed_edge<VertexType>::effect_comp_tuple() const {
-      return std::make_tuple(v2, v1);
+    return (a._head == b._tail);
   }
 
   template <network_vertex VertexType>
   std::ostream& operator<<(
       std::ostream &os,
       const dag::directed_edge<VertexType>& e) {
-    return os << e.v1 << " " << e.v2;
+    return os << e._tail << " " << e._head;
   }
 
   template <network_vertex VertexType>
   std::istream& operator>>(
       std::istream &is,
       dag::directed_edge<VertexType>& e) {
-    return is >> e.v1 >> e.v2;
+    return is >> e._tail >> e._head;
   }
 
 
   // properties of undirected edge:
 
   template <network_vertex VertexType>
-  undirected_edge<VertexType>::undirected_edge(VertexType v1, VertexType v2)
-    : v1(v1), v2(v2) {}
+  undirected_edge<VertexType>::undirected_edge(VertexType v1, VertexType v2) {
+    std::tie(_v1, _v2) = std::minmax(v1, v2);
+  }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_in_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_out_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType>
   std::vector<VertexType>
   undirected_edge<VertexType>::mutator_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
+      return {_v1, _v2};
   }
 
   template <network_vertex vertextype>
   std::vector<vertextype>
   undirected_edge<vertextype>::mutated_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
+      return {_v1, _v2};
   }
 
   template <network_vertex vertextype>
   std::vector<vertextype>
   undirected_edge<vertextype>::incident_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
-  }
-
-  template <network_vertex VertexType>
-  bool operator!=(
-      const undirected_edge<VertexType>& a,
-      const undirected_edge<VertexType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType>
-  bool operator==(
-      const undirected_edge<VertexType>& a,
-      const undirected_edge<VertexType>& b) {
-    return (a.comp_tuple() == b.comp_tuple());
-  }
-
-  template <network_vertex VertexType>
-  bool operator<(
-      const undirected_edge<VertexType>& a,
-      const undirected_edge<VertexType>& b) {
-      return (a.comp_tuple() < b.comp_tuple());
+      return {_v1, _v2};
   }
 
   template <network_vertex VertexType>
   bool effect_lt(
       const undirected_edge<VertexType>& a,
       const undirected_edge<VertexType>& b) {
-      return (a.comp_tuple() < b.comp_tuple());
+      return a < b;
   }
 
   template <network_vertex VertexType>
   bool adjacent(
       const undirected_edge<VertexType>& a,
       const undirected_edge<VertexType>& b) {
-    return (a.v1 == b.v1 ||
-            a.v1 == b.v2 ||
-            a.v2 == b.v1 ||
-            a.v2 == b.v2);
-  }
-
-  template <network_vertex VertexType>
-  inline std::tuple<VertexType, VertexType>
-  undirected_edge<VertexType>::comp_tuple() const {
-    return std::make_tuple(std::min(v1, v2), std::max(v1, v2));
+    return (a._v1 == b._v1 ||
+            a._v1 == b._v2 ||
+            a._v2 == b._v1 ||
+            a._v2 == b._v2);
   }
 
   template <network_vertex VertexType>
@@ -264,13 +205,13 @@ namespace dag {
   std::ostream& operator<<(
       std::ostream &os,
       const dag::undirected_edge<VertexType>& e) {
-    return os << e.v1 << " " << e.v2;
+    return os << e._v1 << " " << e._v2;
   }
 
   template <network_vertex VertexType>
   requires input_streamable<VertexType>
   std::istream& operator>>(std::istream &is,
       dag::undirected_edge<VertexType>& e) {
-    return is >> e.v1 >> e.v2;
+    return is >> e._v1 >> e._v2;
   }
 }  // namespace dag

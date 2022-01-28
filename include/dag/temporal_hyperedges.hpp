@@ -195,6 +195,23 @@ namespace dag {
     std::vector<VertexType> heads() const;
 
     /**
+      Defines a strong lexicographic ordering where cause times are compare then
+      tail set and then head set.
+     */
+    auto operator<=>(
+        const directed_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
+
+    /**
+      Defines a strong lexicographic ordering along with `operator==` where
+      cause times are compared then head vertices and then tail vertices.
+     */
+    template <network_vertex VertexType, typename TimeType>
+    friend bool effect_lt(
+        const directed_temporal_hyperedge<VertexType, TimeType>& a,
+        const directed_temporal_hyperedge<VertexType, TimeType>& b);
+
+    /**
       Two directed temporal hyperedges are adjacent if head of the first one has
       at least one element in common with the tail set of the second one and the
       cause time of the second one is after the first. Lack of an adjacency
@@ -206,49 +223,9 @@ namespace dag {
         const directed_temporal_hyperedge<VertexType, TimeType>& a,
         const directed_temporal_hyperedge<VertexType, TimeType>& b);
 
-    /**
-      Simply defined as negation of equal operator `operator==`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-        const directed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Two directed temporal hyperedges are equal if their casue time and head
-      and tail set of vertices are correspondingly equal to each others.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const directed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_temporal_hyperedge<VertexType, TimeType>& b);
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where
-      cause times are compare then tail set and then head set.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const directed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where
-      cause times are compared then head vertices and then tail vertices.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool effect_lt(
-        const directed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_temporal_hyperedge<VertexType, TimeType>& b);
-
   private:
-    std::vector<VertexType> _tails, _heads;
     TimeType _time;
-
-    std::tuple<TimeType, std::vector<VertexType>, std::vector<VertexType>>
-    cause_comp_tuple() const;
-
-    std::tuple<TimeType, std::vector<VertexType>, std::vector<VertexType>>
-    effect_comp_tuple() const;
+    std::vector<VertexType> _tails, _heads;
 
     friend struct std::hash<directed_temporal_hyperedge<VertexType, TimeType>>;
     friend struct hll::hash<directed_temporal_hyperedge<VertexType, TimeType>>;
@@ -298,7 +275,7 @@ namespace dag {
     directed_delayed_temporal_hyperedge(
         std::initializer_list<VertexType> tails,
         std::initializer_list<VertexType> heads,
-        TimeType time, TimeType delay);
+        TimeType cause_time, TimeType effect_time);
 
     /**
       Create a directed delayed temporal hyperedge.
@@ -321,8 +298,8 @@ namespace dag {
       the initiator or cause of the action or the relation.
       @param heads The set of nodes at the head end of the hyperedge, often in
       the receiving end of an effect.
-      @param time Timestamp at which the event "happened".
-      @param delay Timestamp at which the event was "received".
+      @param cause_time Timestamp at which the event "happened".
+      @param effect_time Timestamp at which the event was "received".
      */
     template <std::ranges::input_range R1, std::ranges::input_range R2>
     requires
@@ -330,7 +307,7 @@ namespace dag {
       std::convertible_to<std::ranges::range_value_t<R2>, VertT>
     directed_delayed_temporal_hyperedge(
         const R1& tails, const R2& heads,
-        TimeType time, TimeType delay);
+        TimeType cause_time, TimeType effect_time);
 
     /**
       Static hyperedge that encompasses all the non-temporal information about
@@ -418,6 +395,19 @@ namespace dag {
     std::vector<VertexType> heads() const;
 
     /**
+      Defines a strong lexicographic ordering where cause times are compare then
+      effect times then tail vertices and finally head vertices.
+     */
+    auto operator<=>(
+        const directed_delayed_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
+
+    template <network_vertex VertexType, typename TimeType>
+    friend bool effect_lt(
+        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
+        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
+
+    /**
       Two directed delayed temporal hyperedges are adjacent if head of the first one
       is the tail of the second one and the cause time of the second one is
       after the effect time of the first. Lack of an adjacency relation between
@@ -428,51 +418,9 @@ namespace dag {
     friend bool adjacent(
         const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
         const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Simply defined as negation of equal operator `operator==`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Two directed temporal hyperedges are equal if their cause times, effect times
-      and head and tail vertices are correspondingly equal to each others.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where
-      cause times are compare then effect times then tail vertices and finally
-      head vertices.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
-
-    template <network_vertex VertexType, typename TimeType>
-    friend bool effect_lt(
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b);
-
-
   private:
+    TimeType _cause_time, _effect_time;
     std::vector<VertexType> _tails, _heads;
-    TimeType _time, _delay;
-
-    std::tuple<TimeType, TimeType,
-      std::vector<VertexType>, std::vector<VertexType>>
-    cause_comp_tuple() const;
-
-    std::tuple<TimeType, TimeType,
-      std::vector<VertexType>, std::vector<VertexType>>
-    effect_comp_tuple() const;
 
     friend struct
     std::hash<directed_delayed_temporal_hyperedge<VertexType, TimeType>>;
@@ -597,6 +545,22 @@ namespace dag {
     std::vector<VertexType> incident_verts() const;
 
     /**
+      Defines a strong ordering that would order events based on cause times
+      first, then lexographically by the sorted set of verticess.
+     */
+    auto operator<=>(
+        const undirected_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
+
+    /**
+      Exactly the same as `operator<`.
+     */
+    template <network_vertex VertexType, typename TimeType>
+    friend bool effect_lt(
+        const undirected_temporal_hyperedge<VertexType, TimeType>& a,
+        const undirected_temporal_hyperedge<VertexType, TimeType>& b);
+
+    /**
       Two undirected temporal hyperedges are adjacent if they share at least one
       node and the cause time of the second one is after the first. Lack of an
       adjacency relation between hyperedges ususlly mean that an effect
@@ -608,43 +572,9 @@ namespace dag {
         const undirected_temporal_hyperedge<VertexType, TimeType>& a,
         const undirected_temporal_hyperedge<VertexType, TimeType>& b);
 
-    /**
-      Simply defined as negation of equal operator `operator==`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-      const undirected_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Two undirected temporal hyperedges are equal if the (unordered) set of
-      their vertices and their cause times are equal.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-        const undirected_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Defines a weak ordering along with `operator==` that would rank events
-      based on cause times first.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-        const undirected_temporal_hyperedge<VertexType, TimeType>& b);
-
-    /**
-      Exactly the same as `operator<`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool effect_lt(
-        const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-        const undirected_temporal_hyperedge<VertexType, TimeType>& b);
-
   private:
-    std::vector<VertexType> _verts;
     TimeType _time;
+    std::vector<VertexType> _verts;
 
     std::tuple<TimeType, std::vector<VertexType>> comp_tuple() const;
 

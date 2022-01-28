@@ -13,12 +13,8 @@ namespace dag {
 
   template <typename T>
   concept network_vertex =
-    hashable_with<T, hash> &&
-    requires(T a, T b) {
-      { a == b } -> std::convertible_to<bool>;
-      { a != b } -> std::convertible_to<bool>;
-      { a < b } -> std::convertible_to<bool>;
-    };  // NOLINT(readability/braces)
+    std::totally_ordered<T> &&
+    hashable_with<T, hash>;
 
   template <typename T>
   concept integer_vertex =
@@ -36,6 +32,7 @@ namespace dag {
 
   template <typename T>
   concept network_edge =
+    std::totally_ordered<T> &&
     hashable_with<T, hash> &&
     network_vertex<typename T::VertexType> &&
     requires(const T& a, const T& b) {

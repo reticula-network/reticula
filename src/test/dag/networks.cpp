@@ -217,7 +217,7 @@ TEST_CASE("directed delayed temporal networks",
     "[dag::directed_delayed_temporal_network]") {
   SECTION("when given one") {
     dag::directed_delayed_temporal_network<int, int> graph(
-        {{2, 3, 6, 1}, {3, 4, 8, 1}, {1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}},
+        {{2, 3, 6, 7}, {3, 4, 8, 9}, {1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}},
         {0});
 
     SECTION("basic properties are correct") {
@@ -230,21 +230,21 @@ TEST_CASE("directed delayed temporal networks",
 
       REQUIRE_THAT(graph.out_edges(2),
           Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{2, 1, 2, 1}, {2, 3, 6, 1}})));
+              {{2, 1, 2, 3}, {2, 3, 6, 7}})));
       REQUIRE_THAT(graph.in_edges(2),
           Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 5, 3}, {1, 2, 1, 8}})));
+              {{1, 2, 5, 8}, {1, 2, 1, 9}})));
       REQUIRE_THAT(graph.incident_edges(2),
           Equals(std::vector<dag::directed_delayed_temporal_edge<int, int>>(
-              {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1}})));
+              {{1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}, {2, 3, 6, 7}})));
 
       REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
       std::vector<dag::directed_delayed_temporal_edge<int, int>> edges(
-          {{1, 2, 1, 8}, {2, 1, 2, 1}, {1, 2, 5, 3}, {2, 3, 6, 1},
-               {3, 4, 8, 1}});
+          {{1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}, {2, 3, 6, 7},
+               {3, 4, 8, 9}});
       std::sort(edges.begin(), edges.end());
 
       REQUIRE_THAT(graph.edges(), Equals(edges));

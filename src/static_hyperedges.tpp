@@ -148,31 +148,11 @@ namespace dag {
   }
 
   template <network_vertex VertexType>
-  bool operator!=(
-      const directed_hyperedge<VertexType>& a,
-      const directed_hyperedge<VertexType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType>
-  bool operator==(
-      const directed_hyperedge<VertexType>& a,
-      const directed_hyperedge<VertexType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType>
-  bool operator<(
-      const directed_hyperedge<VertexType>& a,
-      const directed_hyperedge<VertexType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType>
   bool effect_lt(
       const directed_hyperedge<VertexType>& a,
       const directed_hyperedge<VertexType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
+    return std::make_tuple(a._heads, a._tails) <
+      std::make_tuple(b._heads, b._tails);
   }
 
   template <network_vertex VertexType>
@@ -184,19 +164,6 @@ namespace dag {
         std::back_inserter(common));
     return common.size() > 0;
   }
-
-  template <network_vertex VertexType>
-  inline std::tuple<std::vector<VertexType>, std::vector<VertexType>>
-  directed_hyperedge<VertexType>::cause_comp_tuple() const {
-    return std::make_tuple(_tails, _heads);
-  }
-
-  template <network_vertex VertexType>
-  inline std::tuple<std::vector<VertexType>, std::vector<VertexType>>
-  directed_hyperedge<VertexType>::effect_comp_tuple() const {
-      return std::make_tuple(_heads, _tails);
-  }
-
 
   // properties of undirected hyperedge:
 
@@ -226,7 +193,6 @@ namespace dag {
     return std::ranges::binary_search(_verts, vert);
   }
 
-
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_in_incident(
       const VertexType& vert) const {
@@ -255,27 +221,6 @@ namespace dag {
   std::vector<VertexType>
   undirected_hyperedge<VertexType>::incident_verts() const {
     return _verts;
-  }
-
-  template <network_vertex VertexType>
-  bool operator!=(
-      const undirected_hyperedge<VertexType>& a,
-      const undirected_hyperedge<VertexType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType>
-  bool operator==(
-      const undirected_hyperedge<VertexType>& a,
-      const undirected_hyperedge<VertexType>& b) {
-    return (a._verts == b._verts);
-  }
-
-  template <network_vertex VertexType>
-  bool operator<(
-      const undirected_hyperedge<VertexType>& a,
-      const undirected_hyperedge<VertexType>& b) {
-      return (a._verts < b._verts);
   }
 
   template <network_vertex VertexType>

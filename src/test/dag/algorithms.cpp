@@ -76,17 +76,17 @@ TEST_CASE("event graph", "[dag::event_graph]") {
   SECTION("directed delayed temporal network") {
     using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
     dag::network<EdgeType> network(
-        {{1, 2, 1, 4}, {2, 1, 2, 1}, {1, 2, 5, 0}, {2, 3, 6, 1}, {3, 4, 8, 1}});
+        {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}});
     SECTION("small delta-t") {
       dag::adjacency_prob::deterministic<EdgeType> prob(3);
       dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
       REQUIRE_THAT(eg.edges(),
           UnorderedEquals(
             std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1, 4}, {2, 3, 6, 1}},
-              {{2, 1, 2, 1}, {1, 2, 5, 0}},
-              {{1, 2, 5, 0}, {2, 3, 6, 1}},
-              {{2, 3, 6, 1}, {3, 4, 8, 1}}
+              {{1, 2, 1, 5}, {2, 3, 6, 7}},
+              {{2, 1, 2, 3}, {1, 2, 5, 5}},
+              {{1, 2, 5, 5}, {2, 3, 6, 7}},
+              {{2, 3, 6, 7}, {3, 4, 8, 9}}
             })));
     }
     SECTION("large delta-t") {
@@ -95,10 +95,10 @@ TEST_CASE("event graph", "[dag::event_graph]") {
       REQUIRE_THAT(eg.edges(),
           UnorderedEquals(
             std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1, 4}, {2, 3, 6, 1}},
-              {{2, 1, 2, 1}, {1, 2, 5, 0}},
-              {{1, 2, 5, 0}, {2, 3, 6, 1}},
-              {{2, 3, 6, 1}, {3, 4, 8, 1}}
+              {{1, 2, 1, 5}, {2, 3, 6, 7}},
+              {{2, 1, 2, 3}, {1, 2, 5, 5}},
+              {{1, 2, 5, 5}, {2, 3, 6, 7}},
+              {{2, 3, 6, 7}, {3, 4, 8, 9}}
             })));
     }
   }

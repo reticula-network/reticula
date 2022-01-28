@@ -154,30 +154,10 @@ namespace dag {
     std::vector<VertexType> heads() const;
 
     /**
-      Simply defined as negation of equal operator `operator==`.
+      Defines a strong lexicographic ordering where tail vertices compared
+      before head vertices.
      */
-    template <network_vertex VertexType>
-    friend bool operator!=(
-        const directed_hyperedge<VertexType>& a,
-        const directed_hyperedge<VertexType>& b);
-
-    /**
-      Two directed hyperedges are equal if their head and tail vertices are
-      correspondingly equal to each others.
-     */
-    template <network_vertex VertexType>
-    friend bool operator==(
-        const directed_hyperedge<VertexType>& a,
-        const directed_hyperedge<VertexType>& b);
-
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where tail
-      vertices compared before head vertices.
-     */
-    template <network_vertex VertexType>
-    friend bool operator<(
-        const directed_hyperedge<VertexType>& a,
-        const directed_hyperedge<VertexType>& b);
+    auto operator<=>(const directed_hyperedge<VertexType>&) const = default;
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where
@@ -201,15 +181,6 @@ namespace dag {
 
   private:
     std::vector<VertexType> _tails, _heads;
-    [[nodiscard]]
-    inline std::tuple<
-      std::vector<VertexType>,
-      std::vector<VertexType>> cause_comp_tuple() const;
-
-    [[nodiscard]]
-    inline std::tuple<
-      std::vector<VertexType>,
-      std::vector<VertexType>> effect_comp_tuple() const;
 
     friend struct std::hash<directed_hyperedge<VertexType>>;
     friend struct hll::hash<directed_hyperedge<VertexType>>;
@@ -292,29 +263,9 @@ namespace dag {
     std::vector<VertexType> incident_verts() const;
 
     /**
-      Simply defined as negation of equal operator `operator==`.
+      Defines an arbitrary strong ordering.
      */
-    template <network_vertex VertexType>
-    friend bool operator!=(
-        const undirected_hyperedge<VertexType>& a,
-        const undirected_hyperedge<VertexType>& b);
-
-    /**
-      Two directed hyperedges are equal if their (unordered) set of vertices are
-      equal.
-     */
-    template <network_vertex VertexType>
-    friend bool operator==(
-        const undirected_hyperedge<VertexType>& a,
-        const undirected_hyperedge<VertexType>& b);
-
-    /**
-      Defines an arbitrary weak ordering along with `operator==`.
-     */
-    template <network_vertex VertexType>
-    friend bool operator<(
-        const undirected_hyperedge<VertexType>& a,
-        const undirected_hyperedge<VertexType>& b);
+    auto operator<=>(const undirected_hyperedge<VertexType>&) const = default;
 
     /**
       Exactly the same as `operator<`.

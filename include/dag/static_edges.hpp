@@ -128,30 +128,10 @@ namespace dag {
     VertexType head() const;
 
     /**
-      Simply defined as negation of equal operator `operator==`.
+      Defines a strong lexicographic ordering where tail vertices compared
+      before head vertices.
      */
-    template <network_vertex VertexType>
-    friend bool operator!=(
-        const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b);
-
-    /**
-      Two directed edges are equal if their head and tail vertices are
-      correspondingly equal to each others.
-     */
-    template <network_vertex VertexType>
-    friend bool operator==(
-        const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b);
-
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where tail
-      vertices compared before head vertices.
-     */
-    template <network_vertex VertexType>
-    friend bool operator<(
-        const directed_edge<VertexType>& a,
-        const directed_edge<VertexType>& b);
+    auto operator<=>(const directed_edge<VertexType>& other) const = default;
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where head
@@ -192,12 +172,7 @@ namespace dag {
         directed_edge<VertexType>& e);
 
   private:
-    VertexType v1, v2;
-    [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> cause_comp_tuple() const;
-
-    [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> effect_comp_tuple() const;
+    VertexType _tail, _head;
 
     friend struct std::hash<directed_edge<VertexType>>;
     friend struct hll::hash<directed_edge<VertexType>>;
@@ -273,29 +248,9 @@ namespace dag {
     std::vector<VertexType> incident_verts() const;
 
     /**
-      Simply defined as negation of equal operator `operator==`.
+      Defines a arbitrary strong ordering.
      */
-    template <network_vertex VertexType>
-    friend bool operator!=(
-        const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b);
-
-    /**
-      Two directed edges are equal if their (unordered) set of vertices are
-      equal.
-     */
-    template <network_vertex VertexType>
-    friend bool operator==(
-        const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b);
-
-    /**
-      Defines an arbitrary weak ordering along with `operator==`.
-     */
-    template <network_vertex VertexType>
-    friend bool operator<(
-        const undirected_edge<VertexType>& a,
-        const undirected_edge<VertexType>& b);
+    auto operator<=>(const undirected_edge<VertexType>&) const = default;
 
     /**
       Exactly the same as `operator<`.
@@ -332,9 +287,7 @@ namespace dag {
         undirected_edge<VertexType>& e);
 
   private:
-    VertexType v1, v2;
-    [[nodiscard]]
-    inline std::tuple<VertexType, VertexType> comp_tuple() const;
+    VertexType _v1, _v2;
 
     friend struct std::hash<undirected_edge<VertexType>>;
     friend struct hll::hash<undirected_edge<VertexType>>;

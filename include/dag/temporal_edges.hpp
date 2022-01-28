@@ -79,13 +79,14 @@ namespace dag {
     /**
       Create a directed temporal edge.
 
-      @param v1 Tail end of the edge, often the initiator or cause of the action
-      or the relation.
-      @param v2 Head end of the edge, often the receiving end of an effect.
+      @param tail The tail end of the edge, often the initiator or cause of the
+      action or the relation.
+      @param head The head end of the edge, often the receiving end of an
+      effect.
       @param time Timestamp at which the event "happened".
      */
     directed_temporal_edge(
-        VertexType v1, VertexType v2, TimeType time);
+        VertexType tail, VertexType head, TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -184,29 +185,11 @@ namespace dag {
         const directed_temporal_edge<VertexType, TimeType>& b);
 
     /**
-      Simply defined as negation of equal operator `operator==`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-        const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Two directed temporal edges are equal if their casue time and head and
-      tail vertices are correspondingly equal to each others.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b);
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where
+      Defines a strong lexicographic ordering where
       cause times are compare then tail vertices and then head vertices.
      */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const directed_temporal_edge<VertexType, TimeType>& a,
-        const directed_temporal_edge<VertexType, TimeType>& b);
+    auto operator<=>(
+        const directed_temporal_edge<VertexType, TimeType>&) const = default;
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where
@@ -237,11 +220,8 @@ namespace dag {
         directed_temporal_edge<VertexType, TimeType>& e);
 
   private:
-    VertexType v1, v2;
-    TimeType time;
-
-    std::tuple<TimeType, VertexType, VertexType> cause_comp_tuple() const;
-    std::tuple<TimeType, VertexType, VertexType> effect_comp_tuple() const;
+    TimeType _time;
+    VertexType _tail, _head;
 
     friend struct std::hash<directed_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<directed_temporal_edge<VertexType, TimeType>>;
@@ -291,14 +271,16 @@ namespace dag {
       in form of a temporal edge. In case of the latter the "cause" for that
       mutation would be the node that is at the tail end of the event.
 
-      @param v1 Tail end of the edge, often the initiator or cause of the action
-      or the relation.
-      @param v2 Head end of the edge, often the receiving end of an effect.
-      @param time Timestamp at which the event "happened".
-      @param delay Timestamp at which the event was "received".
+      @param tail The tail end of the edge, often the initiator or cause of the
+      action or the relation.
+      @param head The head end of the edge, often the receiving end of an
+      effect.
+      @param cause_time The timestamp at which the event "happened".
+      @param effect_time The timestamp at which the event was "received".
      */
     directed_delayed_temporal_edge(
-        VertexType v1, VertexType v2, TimeType time, TimeType delay);
+        VertexType tail, VertexType head,
+        TimeType cause_time, TimeType effect_time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -398,31 +380,12 @@ namespace dag {
         const directed_delayed_temporal_edge<VertexType, TimeType>& b);
 
     /**
-      Simply defined as negation of equal operator `operator==`.
+      Defines a strong lexicographic ordering where cause times are compare
+      then effect times then tail vertices and finally head vertices.
      */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-        const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Two directed temporal edges are equal if their cause times, effect times
-      and head and tail vertices are correspondingly equal to each others.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Defines a strong lexicographic ordering along with `operator==` where
-      cause times are compare then effect times then tail vertices and finally
-      head vertices.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-        const directed_delayed_temporal_edge<VertexType, TimeType>& b);
+    auto operator<=>(
+        const directed_delayed_temporal_edge<
+          VertexType, TimeType>&) const = default;
 
     template <network_vertex VertexType, typename TimeType>
     friend bool effect_lt(
@@ -440,14 +403,8 @@ namespace dag {
         directed_delayed_temporal_edge<VertexType, TimeType>& e);
 
   private:
-    VertexType v1, v2;
-    TimeType time, delay;
-
-    std::tuple<TimeType, TimeType, VertexType, VertexType>
-    cause_comp_tuple() const;
-
-    std::tuple<TimeType, TimeType, VertexType, VertexType>
-    effect_comp_tuple() const;
+    TimeType _cause_time, _effect_time;
+    VertexType _tail, _head;
 
     friend struct
     std::hash<directed_delayed_temporal_edge<VertexType, TimeType>>;
@@ -548,6 +505,22 @@ namespace dag {
     std::vector<VertexType> incident_verts() const;
 
     /**
+      Defines a strong ordering along with that would rank events
+      based on cause times first.
+     */
+    auto operator<=>(
+        const undirected_temporal_edge<VertexType, TimeType>&) const = default;
+
+    /**
+      Exactly the same as `operator<`.
+     */
+    template <network_vertex VertexType, typename TimeType>
+    friend bool effect_lt(
+        const undirected_temporal_edge<VertexType, TimeType>& a,
+        const undirected_temporal_edge<VertexType, TimeType>& b);
+
+
+    /**
       Two undirected temporal edges are adjacent if they share at least on node
       and the cause time of the second one is after the first. Lack of an
       adjacency relation between edges ususlly mean that an effect transmitted
@@ -555,40 +528,6 @@ namespace dag {
      */
     template <network_vertex VertexType, typename TimeType>
     friend bool adjacent(
-        const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Simply defined as negation of equal operator `operator==`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator!=(
-      const undirected_temporal_edge<VertexType, TimeType>& a,
-      const undirected_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Two undirected temporal edges are equal if the (unordered) set of their
-      vertices and their cause times are equal.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator==(
-        const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Defines a weak ordering along with `operator==` that would rank events
-      based on cause times first.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool operator<(
-        const undirected_temporal_edge<VertexType, TimeType>& a,
-        const undirected_temporal_edge<VertexType, TimeType>& b);
-
-    /**
-      Exactly the same as `operator<`.
-     */
-    template <network_vertex VertexType, typename TimeType>
-    friend bool effect_lt(
         const undirected_temporal_edge<VertexType, TimeType>& a,
         const undirected_temporal_edge<VertexType, TimeType>& b);
 
@@ -614,10 +553,8 @@ namespace dag {
         undirected_temporal_edge<VertexType, TimeType>& e);
 
   private:
-    VertexType v1, v2;
-    TimeType time;
-
-    std::tuple<TimeType, VertexType, VertexType> comp_tuple() const;
+    TimeType _time;
+    VertexType _v1, _v2;
 
     friend struct std::hash<undirected_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<undirected_temporal_edge<VertexType, TimeType>>;

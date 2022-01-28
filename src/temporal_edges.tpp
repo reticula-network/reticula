@@ -11,8 +11,8 @@ namespace std {
     operator()(
         const dag::undirected_temporal_edge<VertexType, TimeType>& e) const {
       return dag::utils::combine_hash<TimeType, dag::hash>(
-          dag::utils::unordered_hash<VertexType, VertexType, dag::hash>(
-            e.v1, e.v2), e.time);
+          dag::utils::combine_hash<VertexType, dag::hash>(
+            dag::hash<VertexType>{}(e._v1), e._v2), e._time);
     }
   };
 
@@ -23,7 +23,7 @@ namespace std {
         const dag::directed_temporal_edge<VertexType, TimeType>& e) const {
       return dag::utils::combine_hash<TimeType, dag::hash>(
           dag::utils::combine_hash<VertexType, dag::hash>(
-            dag::hash<VertexType>{}(e.v1), e.v2), e.time);
+            dag::hash<VertexType>{}(e._tail), e._head), e._time);
     }
   };
 
@@ -36,9 +36,9 @@ namespace std {
       return dag::utils::combine_hash<TimeType, dag::hash>(
               dag::utils::combine_hash<TimeType, dag::hash>(
                 dag::utils::combine_hash<VertexType, dag::hash>(
-                  dag::hash<VertexType>{}(e.v1), e.v2),
-                e.time),
-              e.delay);
+                  dag::hash<VertexType>{}(e._tail), e._head),
+                e._cause_time),
+              e._effect_time);
     }
   };
 }  // namespace std
@@ -88,134 +88,102 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
-    VertexType v1, VertexType v2, TimeType time)
-    : v1(v1), v2(v2), time(time) {}
+    VertexType tail, VertexType head, TimeType time)
+    : _time(time), _tail(tail), _head(head) {}
 
   template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_temporal_edge<VertexType, TimeType>::static_projection() const {
-    return directed_edge<VertexType>(v1, v2);
+    return directed_edge<VertexType>(_tail, _head);
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType
   directed_temporal_edge<VertexType, TimeType>::effect_time() const {
-    return time;
+    return _time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType
   directed_temporal_edge<VertexType, TimeType>::cause_time() const {
-    return time;
+    return _time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (v1 == vert);
+    return (_tail == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (v2 == vert);
+    return (_head == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_tail == vert || _head == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    return {v1};
+    return {_tail};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    return {v2};
+    return {_head};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_tail == _head)
+      return {_tail};
     else
-      return {v1, v2};
+      return {_tail, _head};
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType directed_temporal_edge<VertexType, TimeType>::tail() const {
-    return v1;
+    return _tail;
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType directed_temporal_edge<VertexType, TimeType>::head() const {
-    return v2;
+    return _head;
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_temporal_edge<VertexType, TimeType>& a,
       const directed_temporal_edge<VertexType, TimeType>& b) {
-    return ((b.time > a.time) && (a.v2 == b.v1));
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-        const directed_temporal_edge<VertexType, TimeType>& a,
-      const directed_temporal_edge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const directed_temporal_edge<VertexType, TimeType>& a,
-      const directed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const directed_temporal_edge<VertexType, TimeType>& a,
-      const directed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
+    return ((b._time > a._time) && (a._head == b._tail));
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_temporal_edge<VertexType, TimeType>& a,
       const directed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, VertexType, VertexType>
-  directed_temporal_edge<VertexType, TimeType>::cause_comp_tuple() const {
-    return std::make_tuple(time, v1, v2);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, VertexType, VertexType>
-  directed_temporal_edge<VertexType, TimeType>::effect_comp_tuple() const {
-    return std::make_tuple(time, v2, v1);
+    return std::make_tuple(a._time, a._head, a._tail) <
+      std::make_tuple(b._time, b._head, b._tail);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::ostream& operator<<(std::ostream& os,
       const dag::directed_temporal_edge<VertexType, TimeType>& e) {
-    return os << e.v1 << " " << e.v2 << " " << e.time;
+    return os << e._tail << " " << e._head << " " << e._time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::istream& operator>>(
       std::istream& is,
       dag::directed_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e.v1 >> e.v2 >> e.time;
+    return is >> e._tail >> e._head >> e._time;
   }
 
   // properties of directed delayed temporal edges:
@@ -223,140 +191,112 @@ namespace dag {
   template <network_vertex VertexType, typename TimeType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
     directed_delayed_temporal_edge(
-      VertexType v1, VertexType v2,
-      TimeType time, TimeType delay)
-    : v1(v1), v2(v2), time(time), delay(delay) {}
+      VertexType tail, VertexType head,
+      TimeType cause_time, TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time),
+      _tail(tail), _head(head) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument("directed_delayed_temporal_edge cannot have a "
+          "cause_time larger than effect_time");
+  }
 
   template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
       static_projection() const {
-    return directed_edge<VertexType>(v1, v2);
+    return directed_edge<VertexType>(_tail, _head);
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType
   directed_delayed_temporal_edge<VertexType, TimeType>::effect_time() const {
-    return time+delay;
+    return _effect_time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType
   directed_delayed_temporal_edge<VertexType, TimeType>::cause_time() const {
-    return time;
+    return _cause_time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (v1 == vert);
+    return (_tail == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (v2 == vert);
+    return (_head == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_tail == vert || _head == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    return {v1};
+    return {_tail};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    return {v2};
+    return {_head};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_tail == _head)
+      return {_tail};
     else
-      return {v1, v2};
+      return {_tail, _head};
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType
   directed_delayed_temporal_edge<VertexType, TimeType>::tail() const {
-    return v1;
+    return _tail;
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType
   directed_delayed_temporal_edge<VertexType, TimeType>::head() const {
-    return v2;
+    return _head;
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return ((b.time > a.effect_time()) && (a.v2 == b.v1));
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-      const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const directed_delayed_temporal_edge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
+    return (b._cause_time > a._effect_time) && (a._head == b._tail);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, TimeType, VertexType, VertexType>
-  directed_delayed_temporal_edge<VertexType, TimeType>::
-  cause_comp_tuple() const {
-    return std::make_tuple(time, time+delay, v1, v2);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, TimeType, VertexType, VertexType>
-  directed_delayed_temporal_edge<VertexType, TimeType>::
-  effect_comp_tuple() const {
-    return std::make_tuple(time+delay, time, v2, v1);
+    return std::make_tuple(a._effect_time, a._cause_time, a._head, a._tail) <
+      std::make_tuple(b._effect_time, b._cause_time, b._head, b._tail);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::ostream& operator<<(std::ostream& os,
       const dag::directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-    return os << e.v1 << " " << e.v2 << " " << e.time << " " << e.delay;
+    return os << e._tail << " " << e._head << " "
+      << e._cause_time << " " << e._effect_time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::istream& operator>>(
       std::istream& is,
       dag::directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e.v1 >> e.v2 >> e.time >> e.delay;
+    return is >> e._tail >> e._head >> e._cause_time >> e._effect_time;
   }
 
 
@@ -364,113 +304,87 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
-    VertexType v1, VertexType v2, TimeType time)
-    : v1(v1), v2(v2), time(time) {}
+    VertexType v1, VertexType v2, TimeType time) : _time(time) {
+    std::tie(_v1, _v2) = std::minmax(v1, v2);
+  }
 
   template <network_vertex VertexType, typename TimeType>
   undirected_edge<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::static_projection() const {
-    return undirected_edge<VertexType>(v1, v2);
+    return undirected_edge<VertexType>(_v1, _v2);
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType undirected_temporal_edge<VertexType, TimeType>::effect_time() const {
-    return time;
+    return _time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType undirected_temporal_edge<VertexType, TimeType>::cause_time() const {
-    return time;
+    return _time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (v1 == vert || v2 == vert);
+    return (_v1 == vert || _v2 == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
+      return {_v1, _v2};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
+      return {_v1, _v2};
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::vector<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (v1 == v2)
-      return {v1};
+    if (_v1 == _v2)
+      return {_v1};
     else
-      return {v1, v2};
+      return {_v1, _v2};
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const undirected_temporal_edge<VertexType, TimeType>& a,
       const undirected_temporal_edge<VertexType, TimeType>& b) {
-    return ((b.time > a.time) &&
-              (a.v1 == b.v1 ||
-                a.v1 == b.v2 ||
-                a.v2 == b.v1 ||
-                a.v2 == b.v2));
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-      const undirected_temporal_edge<VertexType, TimeType>& a,
-      const undirected_temporal_edge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const undirected_temporal_edge<VertexType, TimeType>& a,
-      const undirected_temporal_edge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() == b.comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const undirected_temporal_edge<VertexType, TimeType>& a,
-      const undirected_temporal_edge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() < b.comp_tuple());
+    return ((b._time > a._time) &&
+              (a._v1 == b._v1 ||
+                a._v1 == b._v2 ||
+                a._v2 == b._v1 ||
+                a._v2 == b._v2));
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const undirected_temporal_edge<VertexType, TimeType>& a,
       const undirected_temporal_edge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() < b.comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, VertexType, VertexType>
-  undirected_temporal_edge<VertexType, TimeType>::comp_tuple() const {
-    return std::make_tuple(time, std::min(v1, v2), std::max(v1, v2));
+    return a < b;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -478,7 +392,7 @@ namespace dag {
   std::ostream& operator<<(
       std::ostream& os,
       const dag::undirected_temporal_edge<VertexType, TimeType>& e) {
-    return os <<  e.v1 << " " << e.v2 << " " << e.time;
+    return os << e._v1 << " " << e._v2 << " " << e._time;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -486,8 +400,6 @@ namespace dag {
   std::istream& operator>>(
       std::istream& is,
       dag::undirected_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e.v1 >> e.v2 >> e.time;
+    return is >> e._v1 >> e._v2 >> e._time;
   }
 }  // namespace dag
-
-

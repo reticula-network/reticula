@@ -461,7 +461,7 @@ TEST_CASE("directed delayed temporal edges",
   }
 
   SECTION("have correct properties") {
-    dag::directed_delayed_temporal_edge<int, int> edge(1, 2, 1, 1);
+    dag::directed_delayed_temporal_edge<int, int> edge(1, 2, 1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2})));
@@ -485,21 +485,21 @@ TEST_CASE("directed delayed temporal edges",
     REQUIRE_FALSE(edge.is_out_incident(3));
 
     REQUIRE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(2, 3, 3, 1)));
+          dag::directed_delayed_temporal_edge<int, int>(2, 3, 3, 4)));
     REQUIRE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(2, 3, 3, 12)));
+          dag::directed_delayed_temporal_edge<int, int>(2, 3, 3, 15)));
     REQUIRE_FALSE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(2, 3, 1, 1)));
+          dag::directed_delayed_temporal_edge<int, int>(2, 3, 1, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(2, 3, 2, 0)));
+          dag::directed_delayed_temporal_edge<int, int>(2, 3, 2, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(2, 3, 2, 5)));
+          dag::directed_delayed_temporal_edge<int, int>(2, 3, 2, 7)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_edge<int, int>(2, 3, 0, 1)));
     REQUIRE_FALSE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(3, 2, 3, 1)));
+          dag::directed_delayed_temporal_edge<int, int>(3, 2, 3, 4)));
     REQUIRE_FALSE(dag::adjacent(edge,
-          dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 1)));
+          dag::directed_delayed_temporal_edge<int, int>(3, 4, 3, 4)));
   }
 
   SECTION("compare correctly") {
@@ -511,9 +511,9 @@ TEST_CASE("directed delayed temporal edges",
         dag::directed_delayed_temporal_edge<int, int>(1, 1, 3, 3));
     REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4) !=
         dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4));
-    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 4) <
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 2, 3) <
         dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
-    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 2) <
+    REQUIRE(dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 3) <
         dag::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
   }
 }
@@ -531,7 +531,7 @@ TEST_CASE("directed delayed temporal hyperedges",
 
   SECTION("have correct properties") {
     dag::directed_delayed_temporal_hyperedge<int, int>
-      edge({1, 5}, {2, 6}, 1, 1);
+      edge({1, 5}, {2, 6}, 1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
         Equals(std::vector<int>({2, 6})));
@@ -559,25 +559,25 @@ TEST_CASE("directed delayed temporal hyperedges",
 
     REQUIRE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {2, 7}, {3, 7}, 3, 1)));
+            {2, 7}, {3, 7}, 3, 4)));
     REQUIRE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {2, 7}, {3, 7}, 3, 12)));
+            {2, 7}, {3, 7}, 3, 15)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {2, 7}, {3, 7}, 1, 1)));
+            {2, 7}, {3, 7}, 1, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {2, 7}, {3, 7}, 2, 0)));
+            {2, 7}, {3, 7}, 2, 2)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
             {2, 7}, {3, 7}, 0, 1)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {3, 7}, {2, 7}, 3, 1)));
+            {3, 7}, {2, 7}, 3, 4)));
     REQUIRE_FALSE(dag::adjacent(edge,
           dag::directed_delayed_temporal_hyperedge<int, int>(
-            {3, 7}, {4, 8}, 3, 1)));
+            {3, 7}, {4, 8}, 3, 4)));
   }
 
   SECTION("compare correctly") {
@@ -598,12 +598,12 @@ TEST_CASE("directed delayed temporal hyperedges",
         dag::directed_delayed_temporal_hyperedge<int, int>(
           {1, 4}, {2, 7}, 2, 4));
     REQUIRE(dag::directed_delayed_temporal_hyperedge<int, int>(
-          {1, 4}, {2, 7}, 2, 4) <
+          {1, 4}, {2, 7}, 2, 6) <
         dag::directed_delayed_temporal_hyperedge<int, int>(
-          {1, 4}, {2, 7}, 3, 4));
+          {1, 4}, {2, 7}, 3, 7));
     REQUIRE(dag::directed_delayed_temporal_hyperedge<int, int>(
-          {1, 4}, {2, 7}, 3, 2) <
+          {1, 4}, {2, 7}, 3, 5) <
         dag::directed_delayed_temporal_hyperedge<int, int>(
-          {1, 4}, {2, 7}, 3, 4));
+          {1, 4}, {2, 7}, 3, 7));
   }
 }

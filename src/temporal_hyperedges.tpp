@@ -58,8 +58,8 @@ namespace std {
               dag::utils::combine_hash<TimeType, dag::hash>(
                 dag::utils::combine_hash<std::size_t, dag::hash>(
                   heads_hash, tails_hash),
-                e._time),
-              e._delay);
+                e._cause_time),
+              e._effect_time);
     }
   };
 }  // namespace std
@@ -217,27 +217,6 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-        const directed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const directed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const directed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_temporal_hyperedge<VertexType, TimeType>& b) {
@@ -258,19 +237,6 @@ namespace dag {
     }
   }
 
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, std::vector<VertexType>, std::vector<VertexType>>
-  directed_temporal_hyperedge<VertexType, TimeType>::cause_comp_tuple() const {
-    return std::make_tuple(_time, _tails, _heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, std::vector<VertexType>, std::vector<VertexType>>
-  directed_temporal_hyperedge<VertexType, TimeType>::effect_comp_tuple() const {
-    return std::make_tuple(_time, _heads, _tails);
-  }
-
-
   // properties of directed delayed temporal edges:
 
   template <network_vertex VertexType, typename TimeType>
@@ -278,11 +244,11 @@ namespace dag {
     directed_delayed_temporal_hyperedge(
       std::initializer_list<VertexType> tails,
       std::initializer_list<VertexType> heads,
-      TimeType time, TimeType delay) :
+      TimeType cause_time, TimeType effect_time) :
     directed_delayed_temporal_hyperedge(
         std::vector<VertexType>(tails),
         std::vector<VertexType>(heads),
-        time, delay) {}
+        cause_time, effect_time) {}
 
   template <network_vertex VertexType, typename TimeType>
   template <std::ranges::input_range R1, std::ranges::input_range R2>
@@ -292,7 +258,12 @@ namespace dag {
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
     directed_delayed_temporal_hyperedge(
       const R1& tails, const R2& heads,
-      TimeType time, TimeType delay) : _time(time), _delay(delay) {
+      TimeType cause_time, TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument("directed_delayed_temporal_hyperedge cannot"
+          "have a cause_time larger than effect_time");
+
     if constexpr (std::ranges::sized_range<R1>)
       _heads.reserve(std::ranges::size(heads));
     std::ranges::copy(heads, std::back_inserter(_heads));
@@ -323,14 +294,14 @@ namespace dag {
   TimeType
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       effect_time() const {
-    return _time + _delay;
+    return _effect_time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   TimeType
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       cause_time() const {
-    return _time;
+    return _cause_time;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -390,38 +361,18 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() == b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.cause_comp_tuple() < b.cause_comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.effect_comp_tuple() < b.effect_comp_tuple());
+    return std::make_tuple(a._effect_time, a._cause_time, a._heads, a._tails) <
+      std::make_tuple(a._effect_time, a._cause_time, a._heads, a._tails);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& b) {
-    if (a._time + a._delay >= b._time) {
+    if (a._effect_time >= b._cause_time) {
       return false;
     } else {
       std::vector<VertexType> common;
@@ -430,23 +381,6 @@ namespace dag {
       return common.size() > 0;
     }
   }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, TimeType,
-    std::vector<VertexType>, std::vector<VertexType>>
-    directed_delayed_temporal_hyperedge<VertexType, TimeType>::
-      cause_comp_tuple() const {
-    return std::make_tuple(_time, _time+_delay, _tails, _heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, TimeType,
-    std::vector<VertexType>, std::vector<VertexType>>
-    directed_delayed_temporal_hyperedge<VertexType, TimeType>::
-      effect_comp_tuple() const {
-    return std::make_tuple(_time+_delay, _time, _heads, _tails);
-  }
-
 
   // properties of undirected temporal edges:
 
@@ -527,31 +461,10 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  bool operator!=(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-      const undirected_temporal_hyperedge<VertexType, TimeType>& b) {
-    return !(a == b);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator==(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-      const undirected_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() == b.comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool operator<(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& a,
-      const undirected_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() < b.comp_tuple());
-  }
-
-  template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const undirected_temporal_hyperedge<VertexType, TimeType>& a,
       const undirected_temporal_hyperedge<VertexType, TimeType>& b) {
-    return (a.comp_tuple() < b.comp_tuple());
+    return a < b;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -567,12 +480,4 @@ namespace dag {
       return common.size() > 0;
     }
   }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::tuple<TimeType, std::vector<VertexType>>
-  undirected_temporal_hyperedge<VertexType, TimeType>::comp_tuple() const {
-    return std::make_tuple(_time, _verts);
-  }
 }  // namespace dag
-
-
