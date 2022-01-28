@@ -8,6 +8,8 @@
 #include "network_concepts.hpp"
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"
+#include "static_hyperedges.hpp"
+#include "temporal_hyperedges.hpp"
 
 namespace dag {
   /**
@@ -235,6 +237,43 @@ namespace dag {
   template <typename VertT, typename TimeT>
   using undirected_temporal_network =
     network<undirected_temporal_edge<VertT, TimeT>>;
+
+
+  /**
+    Directed hypernetwork class. network class with directed hyperedges.
+   */
+  template <class VertT>
+  using directed_hypernetwork = network<directed_hyperedge<VertT>>;
+
+  /**
+    Undirected hypernetwork class. network class with undirected hyperedges.
+   */
+  template <class VertT>
+  using undirected_hypernetwork = network<undirected_hyperedge<VertT>>;
+
+  /**
+    Directed temporal hypernetwork class. network class with directed temporal
+    hyperedges.
+   */
+  template <class VertT, class TimeT>
+  using directed_temporal_hypernetwork =
+    network<directed_temporal_hyperedge<VertT, TimeT>>;
+
+  /**
+    Directed delayed temporal hypernetwork class. network class with directed
+    delayed temporal hyperedges.
+   */
+  template <class VertT, class TimeT>
+  using directed_delayed_temporal_hypernetwork =
+    network<directed_delayed_temporal_hyperedge<VertT, TimeT>>;
+
+  /**
+    Undirected temporal hypernetwork class. network class with undirected
+    temporal hyperedges.
+   */
+  template <typename VertT, typename TimeT>
+  using undirected_temporal_hypernetwork =
+    network<undirected_temporal_hyperedge<VertT, TimeT>>;
 }  // namespace dag
 
 #include "../../src/networks.tpp"
