@@ -338,6 +338,18 @@ TEST_CASE("undirected temporal hyperedges",
         dag::undirected_temporal_hyperedge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
         dag::undirected_temporal_hyperedge<int, int>>{}(edge, uint32_t{}));
+
+    dag::undirected_temporal_hyperedge<std::string, int>
+      edge2({"hello", "world", "!!"}, 2);
+    REQUIRE_NOTHROW(dag::hash<
+        dag::undirected_temporal_hyperedge<
+          std::string, int>>{}(edge2));
+    REQUIRE_NOTHROW(std::hash<
+        dag::undirected_temporal_hyperedge<
+          std::string, int>>{}(edge2));
+    REQUIRE_NOTHROW(hll::hash<
+        dag::undirected_temporal_hyperedge<
+          std::string, int>>{}(edge2, uint32_t{}));
   }
 
   SECTION("compare correctly") {

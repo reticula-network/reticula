@@ -8,13 +8,13 @@ namespace std {
   struct hash<dag::directed_hyperedge<VertexType>> {
     std::size_t
     operator()(const dag::directed_hyperedge<VertexType>& e) const {
-      std::size_t heads_hash = std::reduce(
+      std::size_t heads_hash = std::accumulate(
           e._heads.begin(), e._heads.end(), 0ul,
-          [](std::size_t h, VertexType v) {
+          [](std::size_t h, const VertexType& v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
-      std::size_t tails_hash = std::reduce(
+      std::size_t tails_hash = std::accumulate(
           e._tails.begin(), e._tails.end(), 0ul,
-          [](std::size_t h, VertexType v) {
+          [](std::size_t h, const VertexType& v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
       return dag::utils::combine_hash<std::size_t, dag::hash>(
           heads_hash, tails_hash);
@@ -25,9 +25,9 @@ namespace std {
   struct hash<dag::undirected_hyperedge<VertexType>> {
     std::size_t operator()(
         const dag::undirected_hyperedge<VertexType>& e) const {
-      return std::reduce(
+      return std::accumulate(
           e._verts.begin(), e._verts.end(), 0ul,
-          [](std::size_t h, VertexType v) {
+          [](std::size_t h, const VertexType& v) {
             return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
     }
   };
