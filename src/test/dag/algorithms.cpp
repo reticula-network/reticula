@@ -162,6 +162,9 @@ TEST_CASE("out components", "[dag::out_components]") {
           {{1, 6}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 1}});
 
     REQUIRE(comp_map == res);
+
+    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -190,6 +193,9 @@ TEST_CASE("out components", "[dag::out_components]") {
           {{1, 6}, {2, 5}, {3, 4}, {4, 1}, {5, 3}, {6, 1}});
 
     REQUIRE(comp_map == res);
+
+    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 }
 
@@ -252,6 +258,9 @@ TEST_CASE("in components", "[dag::in_components]") {
           {{1, 1}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 6}});
 
     REQUIRE(comp_map == res);
+
+    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -281,6 +290,9 @@ TEST_CASE("in components", "[dag::in_components]") {
           {{1, 1}, {2, 2}, {3, 3}, {4, 5}, {5, 4}, {6, 5}});
 
     REQUIRE(comp_map == res);
+
+    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 }
 

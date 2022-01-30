@@ -4,6 +4,8 @@
 #include <stack>
 #include <cmath>
 
+#include <iostream>
+
 #include <ds/disjoint_set.hpp>
 
 namespace dag {
@@ -130,62 +132,136 @@ namespace dag {
     std::constructible_from<Res, Comp> &&
     std::same_as<typename Comp::VertexType, VertT>
   std::vector<std::pair<VertT, Res>>
-  _out_components(
+  _out_components_dag(
       const directed_network<VertT>& dir,
       std::size_t seed,
-      bool revert_graph) {
+      bool revert_graph,
+      std::vector<VertT> topo) {
     std::vector<std::pair<VertT, Res>> res;
     res.reserve(dir.vertices().size());
 
-    auto maybe_topo = try_topological_order(dir);
-    if (maybe_topo) {
-      // DAG in-/out-component algorithm
-      std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
-      std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
+    // DAG in-/out-component algorithm
+    std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
+    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
 
-      if (!revert_graph)
-        std::ranges::reverse(*maybe_topo);
+    if (!revert_graph)
+      std::ranges::reverse(topo);
 
-      for (auto& vert: *maybe_topo) {
-        Comp comp(0, seed);
-        comp.insert(vert);
-        ongoing_components[vert] = comp;
+    for (auto& vert: topo) {
+      Comp comp(0, seed);
+      comp.insert(vert);
+      ongoing_components[vert] = comp;
 
-        std::size_t in_degree =
-          revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
-        std::vector<VertT> successors =
-          revert_graph ? dir.predecessors(vert) : dir.successors(vert);
+      std::size_t in_degree =
+        revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
+      std::vector<VertT> successors =
+        revert_graph ? dir.predecessors(vert) : dir.successors(vert);
 
-        in_degrees[vert] = in_degree;
+      in_degrees[vert] = in_degree;
 
-        for (auto& other: successors) {
-          ongoing_components.at(vert).merge(ongoing_components.at(other));
-          in_degrees.at(other)--;
-          if (in_degrees.at(other) == 0) {
-            res.emplace_back(other, ongoing_components.at(other));
-            in_degrees.erase(other);
-            ongoing_components.erase(other);
-          }
-        }
-
-        if (in_degrees.at(vert) == 0) {
-          res.emplace_back(vert, ongoing_components.at(vert));
-          in_degrees.erase(vert);
-          ongoing_components.erase(vert);
+      for (auto& other: successors) {
+        ongoing_components.at(vert).merge(ongoing_components.at(other));
+        in_degrees.at(other)--;
+        if (in_degrees.at(other) == 0) {
+          res.emplace_back(other, ongoing_components.at(other));
+          in_degrees.erase(other);
+          ongoing_components.erase(other);
         }
       }
-    } else {
-      // TODO: Not optimal... Look at the transitive closure litrature for
-      // better alternatives
-      for (auto& v: dir.vertices()) {
-        auto comp = breadth_first_search(dir, v,
-            [](const VertT&, const VertT&){ return true; },
-            revert_graph, false, 0);
-        res.emplace_back(v, comp);
+
+      if (in_degrees.at(vert) == 0) {
+        res.emplace_back(vert, ongoing_components.at(vert));
+        in_degrees.erase(vert);
+        ongoing_components.erase(vert);
       }
     }
 
     return res;
+  }
+
+  template <
+    network_vertex VertT,
+    network_component Comp,
+    typename Res>
+  requires
+    std::constructible_from<Res, Comp> &&
+    std::same_as<typename Comp::VertexType, VertT>
+  std::vector<std::pair<VertT, Res>>
+  _out_components(
+      const directed_network<VertT>& dir,
+      std::size_t seed,
+      bool revert_graph) {
+    if (auto maybe_topo = try_topological_order(dir); maybe_topo)
+      return _out_components_dag<VertT, Comp, Res>(
+          dir, seed, revert_graph, *maybe_topo);
+
+    // Non-recursive version of SIMPLE_TC, based on Tarjan's algorithm
+    std::unordered_map<VertT, Comp, hash<VertT>> out_comp;
+    out_comp.reserve(dir.vertices().size());
+
+    dag::component<VertT> seen(dir.vertices().size());
+    std::stack<VertT, std::vector<VertT>> scc_stack;
+
+    std::unordered_map<VertT, std::size_t, hash<VertT>> pre_order;
+    pre_order.reserve(dir.vertices().size());
+    auto not_preordered = [&pre_order](const VertT& v) {
+      return !pre_order.contains(v);
+    };
+
+    std::unordered_map<VertT, std::size_t, hash<VertT>> root_order;
+    root_order.reserve(dir.vertices().size());
+
+    std::size_t current_preorder = 0;
+    for (auto& source: dir.vertices()) {
+      if (!seen.contains(source)) {
+        std::stack<VertT, std::vector<VertT>> stack;
+        stack.push(source);
+        while (!stack.empty()) {
+          VertT v = stack.top();
+          if (not_preordered(v))
+            pre_order[v] = current_preorder++;
+
+          std::vector<VertT> succs =
+            revert_graph ? dir.predecessors(v) : dir.successors(v);
+          out_comp.emplace(
+              std::piecewise_construct,
+              std::forward_as_tuple(v),
+              std::forward_as_tuple(succs, 0, seed));
+          out_comp.at(v).insert(v);
+          if (auto child = std::ranges::find_if(succs, not_preordered);
+              child != succs.end()) {
+            stack.push(*child);
+          } else {
+            root_order[v] = pre_order.at(v);
+            for (auto& s: succs) {
+              out_comp.at(v).merge(out_comp.at(s));
+              if (!seen.contains(s)) {
+                if (pre_order.at(s) > pre_order.at(v))
+                  root_order.at(v) = std::min(
+                      root_order.at(v), root_order.at(s));
+                else
+                  root_order.at(v) = std::min(
+                      root_order.at(v), pre_order.at(s));
+              }
+            }
+            stack.pop();
+            if (root_order.at(v) == pre_order.at(v)) {
+              while (!scc_stack.empty() &&
+                  pre_order[scc_stack.top()] >= pre_order[v]) {
+                auto s = scc_stack.top();
+                scc_stack.pop();
+                seen.insert(s);
+                out_comp.at(s) = out_comp.at(v);
+              }
+            } else {
+              scc_stack.push(v);
+            }
+          }
+        }
+      }
+    }
+
+    return {out_comp.begin(), out_comp.end()};
   }
 
 

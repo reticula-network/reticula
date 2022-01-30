@@ -38,14 +38,21 @@ namespace dag {
       typename std::unordered_set<VertexType, hash<VertexType>>::const_iterator;
 
     explicit component(std::size_t size_hint = 0, std::size_t seed = 0);
-    component(std::initializer_list<VertexType> verts);
+    component(std::initializer_list<VertexType> verts,
+        std::size_t size_hint = 0, std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
-    explicit component(const Range& verts);
+    explicit component(const Range& verts,
+        std::size_t size_hint = 0, std::size_t seed = 0);
 
+
+    template <std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    void insert(const Range& verts);
 
     void insert(const VertexType& v);
+
     void merge(const component<VertT>& other);
 
     bool operator==(const component<VertT> &other) const;
@@ -80,13 +87,21 @@ namespace dag {
     using SketchType = hll::hyperloglog<VertexType, 13, 14>;
 
     explicit component_sketch(std::size_t size_hint = 0, std::size_t seed = 0);
-    component_sketch(std::initializer_list<VertexType> verts);
+    component_sketch(std::initializer_list<VertexType> verts,
+        std::size_t size_hint = 0, std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
-    explicit component_sketch(const Range& verts);
+    explicit component_sketch(const Range& verts,
+        std::size_t size_hint = 0, std::size_t seed = 0);
+
+    template <std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    void insert(const Range& verts);
 
     void insert(const VertexType& v);
+
+
     void merge(const component_sketch<VertT>& other);
 
     double size_estimate() const;

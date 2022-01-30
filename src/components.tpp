@@ -7,15 +7,23 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  component<VertT>::component(std::initializer_list<VertT> verts) :
-    component(std::vector(verts)) {}
+  component<VertT>::component(
+      std::initializer_list<VertT> verts,
+      std::size_t size_hint, std::size_t seed) :
+    component(std::vector(verts), size_hint, seed) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-  component<VertT>::component(const Range& verts) {
-    if constexpr (std::ranges::sized_range<Range>)
-      _verts.reserve(std::ranges::size(verts));
+  component<VertT>::component(
+      const Range& verts, std::size_t size_hint, std::size_t /* seed */) {
+    if (size_hint == 0) {
+      if constexpr (std::ranges::sized_range<Range>)
+        _verts.reserve(std::ranges::size(verts));
+    } else {
+      _verts.reserve(size_hint);
+    }
+
     for (auto& v: verts)
       _verts.insert(v);
   }
@@ -24,6 +32,15 @@ namespace dag {
   template <network_vertex VertT>
   void component<VertT>::insert(const VertT& v) {
     _verts.insert(v);
+  }
+
+
+  template <network_vertex VertT>
+  template <std::ranges::input_range Range>
+  requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+  void component<VertT>::insert(const Range& verts) {
+    for (auto& v: verts)
+      _verts.insert(v);
   }
 
   template <network_vertex VertT>
@@ -65,13 +82,16 @@ namespace dag {
 
   template <network_vertex VertT>
   component_sketch<VertT>::component_sketch(
-      std::initializer_list<VertT> verts) :
-    component_sketch(std::vector(verts)) {}
+      std::initializer_list<VertT> verts,
+      std::size_t size_hint, std::size_t seed) :
+    component_sketch(std::vector(verts), size_hint, seed) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-  component_sketch<VertT>::component_sketch(const Range& verts) {
+  component_sketch<VertT>::component_sketch(
+      const Range& verts, std::size_t /* size_hint */, std::size_t seed) :
+    _verts(true, static_cast<uint32_t>(seed)) {
     for (auto& v: verts)
       _verts.insert(v);
   }
@@ -79,6 +99,14 @@ namespace dag {
   template <network_vertex VertT>
   void component_sketch<VertT>::insert(const VertT& v) {
     _verts.insert(v);
+  }
+
+  template <network_vertex VertT>
+  template <std::ranges::input_range Range>
+  requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+  void component_sketch<VertT>::insert(const Range& verts) {
+    for (auto& v: verts)
+      _verts.insert(v);
   }
 
   template <network_vertex VertT>
