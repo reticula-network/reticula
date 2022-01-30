@@ -74,6 +74,7 @@ namespace dag {
     explicit component_size(const component<VertT>& c);
 
     std::size_t size() const;
+
   private:
     std::size_t _verts;
   };
@@ -105,6 +106,7 @@ namespace dag {
     void merge(const component_sketch<VertT>& other);
 
     double size_estimate() const;
+
   private:
     SketchType _verts;
   };
