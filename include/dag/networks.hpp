@@ -40,7 +40,7 @@ namespace dag {
       created so that a brace-enclosed initializer list can be used to
       initialize the class.
      */
-    explicit network(std::initializer_list<EdgeType> edges);
+    network(std::initializer_list<EdgeType> edges);
 
     /**
       Create a network from a range of edges and a supplementary set of
