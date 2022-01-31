@@ -32,9 +32,9 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
+  template <static_directed_edge EdgeT>
   bool is_acyclic(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Tries to sorts the vertices of `dir` in a way that for every directed edge
@@ -44,10 +44,10 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::optional<std::vector<VertT>>
+  template <static_directed_edge EdgeT>
+  std::optional<std::vector<typename EdgeT::VertexType>>
   try_topological_order(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Sorts the vertices of `dir` in a way that for every directed edge in that
@@ -57,10 +57,10 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<VertT>
+  template <static_directed_edge EdgeT>
+  std::vector<typename EdgeT::VertexType>
   topological_order(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
 
   // out-components:
@@ -73,11 +73,11 @@ namespace dag {
     @param dir Directed network in question
     @param root The destination vert
   */
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
   out_component(
-      const directed_network<VertT>& dir,
-      const VertT& root,
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& root,
       std::size_t size_hint = 0);
 
   /**
@@ -86,10 +86,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component<typename EdgeT::VertexType>>>
   out_components(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Returns the size of the component of the graph `dir` that can be reached
@@ -97,10 +99,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size<typename EdgeT::VertexType>>>
   out_component_sizes(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Returns an estimate of the size of the component of the graph `dir` that
@@ -109,10 +113,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size_estimate<typename EdgeT::VertexType>>>
   out_component_size_estimates(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
 
   // in-components:
@@ -125,11 +131,11 @@ namespace dag {
     @param dir Directed network in question
     @param root The destination vert
   */
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
   in_component(
-      const directed_network<VertT>& dir,
-      const VertT& root,
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& root,
       std::size_t size_hint = 0);
 
 
@@ -139,10 +145,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component<typename EdgeT::VertexType>>>
   in_components(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Returns the size of the component of the graph `dir` that can reach
@@ -150,10 +158,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size<typename EdgeT::VertexType>>>
   in_component_sizes(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Returns an estimate of the size of the component of the graph `dir` that
@@ -162,10 +172,12 @@ namespace dag {
 
     @param dir Directed network in question
   */
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size_estimate<typename EdgeT::VertexType>>>
   in_component_size_estimates(
-      const directed_network<VertT>& dir);
+      const network<EdgeT>& dir);
 
   /**
     Returns the weakly connected components of `dir` containing vertex `vert`.
@@ -173,11 +185,11 @@ namespace dag {
     @param dir Directed network in question
     @param `vert` A vertex that belongs to the returned component.
   */
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
   weakly_connected_component(
-      const directed_network<VertT>& dir,
-      const VertT& vert,
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& vert,
       std::size_t size_hint = 0);
 
   /**
@@ -186,10 +198,10 @@ namespace dag {
     @param dir Directed network in question
     @param singletons If true, also returns components with only one members.
   */
-  template <network_vertex VertT>
-  std::vector<component<VertT>>
+  template <static_directed_edge EdgeT>
+  std::vector<component<typename EdgeT::VertexType>>
   weakly_connected_components(
-      const directed_network<VertT>& dir,
+      const network<EdgeT>& dir,
       bool singletons = true);
 
   /**
@@ -198,11 +210,11 @@ namespace dag {
     @param net An undirected Network
     @param vert A vertex that will belong to the final component
   */
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_undirected_edge EdgeT>
+  component<typename EdgeT::VertexType>
   connected_component(
-      const undirected_network<VertT>& net,
-      const VertT& vert,
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert,
       std::size_t size_hint = 0);
 
   /**
@@ -211,10 +223,10 @@ namespace dag {
     @param net Directed network in question
     @param singletons If true, also returns components with only one members.
   */
-  template <network_vertex VertT>
-  std::vector<component<VertT>>
+  template <static_undirected_edge EdgeT>
+  std::vector<component<typename EdgeT::VertexType>>
   connected_components(
-      const undirected_network<VertT>& net,
+      const network<EdgeT>& net,
       bool singletons = true);
 
 

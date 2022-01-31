@@ -73,43 +73,53 @@ namespace dag {
     return directed_network<EdgeT>(eg);
   }
 
-  template <network_vertex VertT>
-  std::optional<std::vector<VertT>>
-  try_topological_order(
-      const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::optional<std::vector<typename EdgeT::VertexType>>
+  try_topological_order(const network<EdgeT>& dir) {
     auto verts = dir.vertices();
 
-    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
-    in_degrees.reserve(verts.size());
-    for (auto&& v: verts)
-      in_degrees[v] = dir.in_degree(v);
-
-    std::vector<VertT> topo;
+    std::vector<typename EdgeT::VertexType> topo;
     topo.reserve(verts.size());
 
-    std::queue<VertT> queue;
+    std::stack<
+      typename EdgeT::VertexType,
+      std::vector<typename EdgeT::VertexType>> stack;
 
-    for (auto&& [v, deg]: in_degrees)
-      if (deg == 0) queue.push(v);
+    // in order for this to work with hypergraphs, we need to count sum of the
+    // number of mutator_verts of all in_edges, not in-degree, i.e. the number
+    // of in-edges or even the number predecessor:
+    std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>> in_counts;
+    in_counts.reserve(verts.size());
 
-    while (!queue.empty()) {
-      VertT v = queue.front();
-      queue.pop();
+    for (auto& e: dir.edges())
+      for (const auto &v: e.mutated_verts())
+        in_counts[v] += e.mutator_verts().size();
+
+    for (auto& v: verts)
+      if (!in_counts.contains(v))
+        stack.push(v);
+
+    while (!stack.empty()) {
+      auto v = stack.top();
+      stack.pop();
       topo.push_back(v);
-      for (const auto &ov: dir.successors(v))
-        if (--in_degrees[ov] == 0) queue.push(ov);
+      for (const auto &e: dir.out_edges(v))
+        for (const auto &ov: e.mutated_verts())
+          if (--in_counts[ov] == 0)
+            stack.push(ov);
     }
 
-    if (topo.size() < in_degrees.size())
+    if (topo.size() < in_counts.size())
       return std::nullopt;
 
     return topo;
   }
 
-  template <network_vertex VertT>
-  std::vector<VertT>
-  topological_order(
-      const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<typename EdgeT::VertexType>
+  topological_order(const network<EdgeT>& dir) {
     auto o = try_topological_order(dir);
     if (o)
       return *o;
@@ -118,31 +128,34 @@ namespace dag {
   }
 
 
-  template <network_vertex VertT>
-  bool is_acyclic(
-      const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  bool is_acyclic(const network<EdgeT>& dir) {
     return try_topological_order(dir).has_value();
   }
 
   template <
-    network_vertex VertT,
+    static_directed_edge EdgeT,
     network_component Comp,
     typename Res>
   requires
     std::constructible_from<Res, Comp> &&
-    std::same_as<typename Comp::VertexType, VertT>
-  std::vector<std::pair<VertT, Res>>
+    std::same_as<typename Comp::VertexType, typename EdgeT::VertexType>
+  std::vector<std::pair<typename EdgeT::VertexType, Res>>
   _out_components_dag(
-      const directed_network<VertT>& dir,
+      const network<EdgeT>& dir,
       std::size_t seed,
       bool revert_graph,
-      std::vector<VertT> topo) {
-    std::vector<std::pair<VertT, Res>> res;
+      std::vector<typename EdgeT::VertexType> topo) {
+    std::vector<std::pair<typename EdgeT::VertexType, Res>> res;
     res.reserve(dir.vertices().size());
 
     // DAG in-/out-component algorithm
-    std::unordered_map<VertT, Comp, hash<VertT>> ongoing_components;
-    std::unordered_map<VertT, std::size_t, hash<VertT>> in_degrees;
+    std::unordered_map<
+      typename EdgeT::VertexType, Comp,
+      hash<typename EdgeT::VertexType>> ongoing_components;
+    std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>> in_counts;
 
     if (!revert_graph)
       std::ranges::reverse(topo);
@@ -152,26 +165,35 @@ namespace dag {
       comp.insert(vert);
       ongoing_components[vert] = comp;
 
-      std::size_t in_degree =
-        revert_graph ? dir.out_degree(vert) : dir.in_degree(vert);
-      std::vector<VertT> successors =
-        revert_graph ? dir.predecessors(vert) : dir.successors(vert);
+      auto in_edges =
+        revert_graph ? dir.out_edges(vert) : dir.in_edges(vert);
 
-      in_degrees[vert] = in_degree;
+      in_counts[vert] = 0;
+      for (auto& e: in_edges)
+        in_counts[vert] +=
+          (revert_graph ? e.mutated_verts() : e.mutator_verts()).size();
 
-      for (auto& other: successors) {
-        ongoing_components.at(vert).merge(ongoing_components.at(other));
-        in_degrees.at(other)--;
-        if (in_degrees.at(other) == 0) {
-          res.emplace_back(other, ongoing_components.at(other));
-          in_degrees.erase(other);
-          ongoing_components.erase(other);
+      auto out_edges =
+        revert_graph ? dir.in_edges(vert) : dir.out_edges(vert);
+
+      for (auto& oe: out_edges) {
+        auto mutated_verts =
+          revert_graph ? oe.mutator_verts() : oe.mutated_verts();
+        for (auto& other: mutated_verts) {
+          ongoing_components.at(vert).merge(ongoing_components.at(other));
+          in_counts.at(other)--;
+
+          if (in_counts.at(other) == 0) {
+            res.emplace_back(other, ongoing_components.at(other));
+            in_counts.erase(other);
+            ongoing_components.erase(other);
+          }
         }
       }
 
-      if (in_degrees.at(vert) == 0) {
+      if (in_counts.at(vert) == 0) {
         res.emplace_back(vert, ongoing_components.at(vert));
-        in_degrees.erase(vert);
+        in_counts.erase(vert);
         ongoing_components.erase(vert);
       }
     }
@@ -180,48 +202,58 @@ namespace dag {
   }
 
   template <
-    network_vertex VertT,
+    static_directed_edge EdgeT,
     network_component Comp,
     typename Res>
   requires
     std::constructible_from<Res, Comp> &&
-    std::same_as<typename Comp::VertexType, VertT>
-  std::vector<std::pair<VertT, Res>>
+    std::same_as<typename Comp::VertexType, typename EdgeT::VertexType>
+  std::vector<std::pair<typename EdgeT::VertexType, Res>>
   _out_components(
-      const directed_network<VertT>& dir,
+      const network<EdgeT>& dir,
       std::size_t seed,
       bool revert_graph) {
     if (auto maybe_topo = try_topological_order(dir); maybe_topo)
-      return _out_components_dag<VertT, Comp, Res>(
+      return _out_components_dag<EdgeT, Comp, Res>(
           dir, seed, revert_graph, *maybe_topo);
 
     // Non-recursive version of SIMPLE_TC, based on Tarjan's algorithm
-    std::unordered_map<VertT, Comp, hash<VertT>> out_comp;
+    std::unordered_map<
+      typename EdgeT::VertexType, Comp,
+      hash<typename EdgeT::VertexType>> out_comp;
     out_comp.reserve(dir.vertices().size());
 
-    dag::component<VertT> seen(dir.vertices().size());
-    std::stack<VertT, std::vector<VertT>> scc_stack;
+    dag::component<typename EdgeT::VertexType> seen(dir.vertices().size());
+    std::stack<
+      typename EdgeT::VertexType,
+      std::vector<typename EdgeT::VertexType>> scc_stack;
 
-    std::unordered_map<VertT, std::size_t, hash<VertT>> pre_order;
+    std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>> pre_order;
     pre_order.reserve(dir.vertices().size());
-    auto not_preordered = [&pre_order](const VertT& v) {
+    auto not_preordered = [&pre_order](const typename EdgeT::VertexType& v) {
       return !pre_order.contains(v);
     };
 
-    std::unordered_map<VertT, std::size_t, hash<VertT>> root_order;
+    std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>> root_order;
     root_order.reserve(dir.vertices().size());
 
     std::size_t current_preorder = 0;
     for (auto& source: dir.vertices()) {
       if (!seen.contains(source)) {
-        std::stack<VertT, std::vector<VertT>> stack;
+        std::stack<
+          typename EdgeT::VertexType,
+          std::vector<typename EdgeT::VertexType>> stack;
         stack.push(source);
         while (!stack.empty()) {
-          VertT v = stack.top();
+          auto v = stack.top();
           if (not_preordered(v))
             pre_order[v] = current_preorder++;
 
-          std::vector<VertT> succs =
+          auto succs =
             revert_graph ? dir.predecessors(v) : dir.successors(v);
           out_comp.emplace(
               std::piecewise_construct,
@@ -265,81 +297,93 @@ namespace dag {
   }
 
 
-  template <network_vertex VertT>
-  component<VertT> out_component(
-      const directed_network<VertT>& dir,
-      const VertT& root,
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType> out_component(
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& root,
       std::size_t size_hint) {
     return breadth_first_search(dir, root,
-        [](const VertT&, const VertT&){ return true; },
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
         false, false, size_hint);
   }
 
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component<VertT>>>
-  out_components(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component<typename EdgeT::VertexType>>>
+  out_components(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component<VertT>,
-      component<VertT>>(dir, 0, false);
+      EdgeT,
+      component<typename EdgeT::VertexType>,
+      component<typename EdgeT::VertexType>>(dir, 0, false);
   }
 
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size<VertT>>>
-  out_component_sizes(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size<typename EdgeT::VertexType>>>
+  out_component_sizes(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component<VertT>,
-      component_size<VertT>>(dir, 0, false);
+      EdgeT,
+      component<typename EdgeT::VertexType>,
+      component_size<typename EdgeT::VertexType>>(dir, 0, false);
   }
 
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
-  out_component_size_estimates(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size_estimate<typename EdgeT::VertexType>>>
+  out_component_size_estimates(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component_sketch<VertT>,
-      component_size_estimate<VertT>>(dir, 0, false);
+      EdgeT,
+      component_sketch<typename EdgeT::VertexType>,
+      component_size_estimate<typename EdgeT::VertexType>>(dir, 0, false);
   }
 
-  template <network_vertex VertT>
-  component<VertT> in_component(
-      const directed_network<VertT>& dir,
-      const VertT& root,
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType> in_component(
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& root,
       std::size_t size_hint) {
     return breadth_first_search(dir, root,
-        [](const VertT&, const VertT&){ return true; },
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
         true, false, size_hint);
   }
 
 
-  template <network_vertex VertT>
-  std::vector<
-    std::pair<VertT, component<VertT>>>
-  in_components(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component<typename EdgeT::VertexType>>>
+  in_components(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component<VertT>,
-      component<VertT>>(dir, 0, true);
+      EdgeT,
+      component<typename EdgeT::VertexType>,
+      component<typename EdgeT::VertexType>>(dir, 0, true);
   }
 
-  template <network_vertex VertT>
-  std::vector<
-    std::pair<VertT, component_size<VertT>>>
-  in_component_sizes(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size<typename EdgeT::VertexType>>>
+  in_component_sizes(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component<VertT>,
-      component_size<VertT>>(dir, 0, true);
+      EdgeT,
+      component<typename EdgeT::VertexType>,
+      component_size<typename EdgeT::VertexType>>(dir, 0, true);
   }
 
-  template <network_vertex VertT>
-  std::vector<std::pair<VertT, component_size_estimate<VertT>>>
-  in_component_size_estimates(const directed_network<VertT>& dir) {
+  template <static_directed_edge EdgeT>
+  std::vector<std::pair<
+    typename EdgeT::VertexType,
+    component_size_estimate<typename EdgeT::VertexType>>>
+  in_component_size_estimates(const network<EdgeT>& dir) {
     return _out_components<
-      VertT,
-      component_sketch<VertT>,
-      component_size_estimate<VertT>>(dir, 0, true);
+      EdgeT,
+      component_sketch<typename EdgeT::VertexType>,
+      component_size_estimate<typename EdgeT::VertexType>>(dir, 0, true);
   }
 
   template <network_edge EdgeT>
@@ -361,7 +405,7 @@ namespace dag {
       for (auto v1: e.mutator_verts())
         for (auto v2: e.mutated_verts())
           if (!is_undirected_v<EdgeT> || v1 < v2)
-            disj_set.merge(vert_idx[v1], vert_idx[v2]);
+            disj_set.merge(vert_idx.at(v1), vert_idx.at(v2));
 
     auto sets = disj_set.sets(singletons);
     std::vector<component<typename EdgeT::VertexType>> comp_vector;
@@ -376,41 +420,42 @@ namespace dag {
     return comp_vector;
   }
 
-  template <network_vertex VertT>
-  std::vector<component<VertT>>
+  template <static_directed_edge EdgeT>
+  std::vector<component<typename EdgeT::VertexType>>
   weakly_connected_components(
-      const directed_network<VertT>& dir,
-      bool singletons) {
+      const network<EdgeT>& dir, bool singletons) {
     return _generic_weakly_connected_components(dir, singletons);
   }
 
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
   weakly_connected_component(
-      const directed_network<VertT>& dir,
-      const VertT& vert,
+      const network<EdgeT>& dir,
+      const typename EdgeT::VertexType& vert,
       std::size_t size_hint) {
     return breadth_first_search(dir, vert,
-        [](const VertT&, const VertT&){ return true; },
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
         false, true, size_hint);
   }
 
-  template <network_vertex VertT>
-  std::vector<component<VertT>>
+  template <static_undirected_edge EdgeT>
+  std::vector<component<typename EdgeT::VertexType>>
   connected_components(
-      const undirected_network<VertT>& net,
+      const network<EdgeT>& net,
       bool singletons) {
     return _generic_weakly_connected_components(net, singletons);
   }
 
-  template <network_vertex VertT>
-  component<VertT>
+  template <static_undirected_edge EdgeT>
+  component<typename EdgeT::VertexType>
   connected_component(
-      const undirected_network<VertT>& net,
-      const VertT& vert,
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert,
       std::size_t size_hint) {
     return breadth_first_search(net, vert,
-        [](const VertT&, const VertT&){ return true; },
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
         false, false, size_hint);
   }
 
