@@ -49,7 +49,12 @@ add_executable(
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2)
 target_compile_options(${PROJECT_NAME}_tests PRIVATE
-  -Werror -Wall -Wextra -Wconversion -Wsign-conversion)
+  -Werror -Wall -Wextra -Wconversion -Wsign-conversion
+  -fconcepts-diagnostics-depth=3 -g)
+target_compile_options(${PROJECT_NAME}_tests PRIVATE
+  -fsanitize=address,undefined,leak)
+target_link_options(${PROJECT_NAME}_tests PRIVATE
+  -fsanitize=address,undefined,leak)
 
 
 install(
