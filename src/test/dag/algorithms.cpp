@@ -698,7 +698,8 @@ TEST_CASE("weakly connected component", "[dag::weakly_connected_component]") {
 TEST_CASE("connected components", "[dag::connected_components]") {
   SECTION("works for undirected graph") {
     dag::undirected_network<int> graph({
-        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+        {8, 9}});
 
     std::vector<int> weak1({1, 2, 3, 4, 5, 6}), weak2({7, 8, 9});
 
