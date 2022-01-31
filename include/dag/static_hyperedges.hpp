@@ -208,7 +208,7 @@ namespace dag {
       variation is specifically created so that a brace-enclosed initializer
       list can be used to initialize this class.
      */
-    explicit undirected_hyperedge(std::initializer_list<VertexType> verts);
+    undirected_hyperedge(std::initializer_list<VertexType> verts);
 
     /**
       Create an undirected hyperedge. Order of the vertices is arbitrary.
