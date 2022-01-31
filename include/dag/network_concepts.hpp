@@ -3,6 +3,8 @@
 
 #include <concepts>
 
+#include "type_traits.hpp"
+
 namespace dag {
   template <typename T, template<typename> class HashStruct>
   concept hashable_with = requires(T a) {
@@ -57,6 +59,15 @@ namespace dag {
     !requires(const T& a) {  // it has to be more specialized than network_edge
       a.effect_time();
     };  // NOLINT(readability/braces)
+
+
+  template <typename T>
+  concept static_directed_edge =
+    static_edge<T> && !is_undirected_v<T>;
+
+  template <typename T>
+  concept static_undirected_edge =
+    static_edge<T> && is_undirected_v<T>;
 
   template <typename T>
   concept temporal_edge =
