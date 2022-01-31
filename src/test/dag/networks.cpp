@@ -64,33 +64,36 @@ TEST_CASE("undirected hypernetworks", "[dag::undirected_hypernetwork]") {
   SECTION("when given one") {
     using U = dag::undirected_hyperedge<int>;
     dag::undirected_hypernetwork<int> graph(
-        {U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3}, U{4, 6},
+        {U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3, 7}, U{4, 6},
          U{1, 2}, U{2, 1}, U{5, 2}}, {0});
 
     SECTION("basic properties are correct") {
       REQUIRE_THAT(graph.successors(3),
-          UnorderedEquals(std::vector<int>({2, 4})));
+          UnorderedEquals(std::vector<int>({2, 4, 7})));
       REQUIRE_THAT(graph.predecessors(3),
-          UnorderedEquals(std::vector<int>({2, 4})));
+          UnorderedEquals(std::vector<int>({2, 4, 7})));
       REQUIRE_THAT(graph.neighbours(3),
-          UnorderedEquals(std::vector<int>({2, 4})));
+          UnorderedEquals(std::vector<int>({2, 4, 7})));
 
       REQUIRE_THAT(graph.out_edges(3),
           UnorderedEquals(
-            std::vector<dag::undirected_hyperedge<int>>({U{3, 4}, U{3, 2}})));
+            std::vector<dag::undirected_hyperedge<int>>({
+              U{3, 4, 7}, U{3, 2}})));
       REQUIRE_THAT(graph.in_edges(3),
           UnorderedEquals(
-            std::vector<dag::undirected_hyperedge<int>>({U{3, 4}, U{3, 2}})));
+            std::vector<dag::undirected_hyperedge<int>>({
+              U{3, 4, 7}, U{3, 2}})));
       REQUIRE_THAT(graph.incident_edges(3),
           UnorderedEquals(
-            std::vector<dag::undirected_hyperedge<int>>({U{3, 4}, U{3, 2}})));
+            std::vector<dag::undirected_hyperedge<int>>({
+              U{3, 4, 7}, U{3, 2}})));
 
       REQUIRE(graph.out_degree(3) == 2);
       REQUIRE(graph.in_degree(3) == 2);
       REQUIRE(graph.degree(3) == 2);
 
       std::vector<dag::undirected_hyperedge<int>> edges({
-          U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3}, U{4, 6}});
+          U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3, 7}, U{4, 6}});
       std::sort(edges.begin(), edges.end());
 
       REQUIRE_THAT(graph.edges(), Equals(edges));
@@ -106,7 +109,7 @@ TEST_CASE("undirected hypernetworks", "[dag::undirected_hypernetwork]") {
 
       // test sorted output as well
       REQUIRE_THAT(graph.vertices(),
-          Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6})));
+          Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7})));
     }
   }
 }
@@ -164,21 +167,21 @@ TEST_CASE("directed networks", "[dag::directed_network]") {
 TEST_CASE("directed hypernetworks", "[dag::directed_network]") {
   SECTION("when given one") {
     dag::directed_hypernetwork<int> graph(
-        {{{1}, {2}}, {{2}, {3}}, {{3}, {5}}, {{5}, {6}}, {{5}, {4}},
-          {{4}, {2}}, {{1}, {2}}, {{2}, {3}}, {{3}, {5}}}, {0});
+        {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3, 7}}, {{3}, {5}}, {{5}, {6}},
+        {{5}, {4}}, {{4}, {2}}, {{1}, {2}}, {{2}, {3}}, {{3}, {5}}}, {0});
 
     SECTION("basic properties are correct") {
       REQUIRE_THAT(graph.successors(2),
-          UnorderedEquals(std::vector<int>({3})));
+          UnorderedEquals(std::vector<int>({3, 7})));
       REQUIRE_THAT(graph.predecessors(2),
           UnorderedEquals(std::vector<int>({1, 4})));
       REQUIRE_THAT(graph.neighbours(2),
-          UnorderedEquals(std::vector<int>({1, 3, 4})));
+          UnorderedEquals(std::vector<int>({1, 3, 4, 7})));
 
       REQUIRE_THAT(graph.out_edges(2),
           UnorderedEquals(
             std::vector<dag::directed_hyperedge<int>>(
-              {{{2}, {3}}})));
+              {{{2}, {3, 7}}, {{2}, {3}}})));
       REQUIRE_THAT(graph.in_edges(2),
           UnorderedEquals(
             std::vector<dag::directed_hyperedge<int>>(
@@ -186,15 +189,15 @@ TEST_CASE("directed hypernetworks", "[dag::directed_network]") {
       REQUIRE_THAT(graph.incident_edges(2),
           UnorderedEquals(
             std::vector<dag::directed_hyperedge<int>>(
-              {{{4}, {2}}, {{1}, {2}}, {{2}, {3}}})));
+              {{{4}, {2}}, {{1}, {2}}, {{2}, {3}}, {{2}, {3, 7}}})));
 
-      REQUIRE(graph.out_degree(2) == 1);
+      REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
-      REQUIRE(graph.degree(2) == 3);
+      REQUIRE(graph.degree(2) == 4);
 
       std::vector<dag::directed_hyperedge<int>> edges(
-          {{{1}, {2}}, {{2}, {3}}, {{3}, {5}}, {{5}, {6}}, {{5}, {4}},
-          {{4}, {2}}});
+          {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3}}, {{3}, {5}}, {{5}, {6}},
+          {{5}, {4}}, {{4}, {2}}});
       std::sort(edges.begin(), edges.end());
 
       REQUIRE_THAT(graph.edges(), Equals(edges));
@@ -210,7 +213,7 @@ TEST_CASE("directed hypernetworks", "[dag::directed_network]") {
 
 
       REQUIRE_THAT(graph.vertices(),
-          Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6})));
+          Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7})));
     }
   }
 }
