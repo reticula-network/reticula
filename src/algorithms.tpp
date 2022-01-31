@@ -4,9 +4,9 @@
 #include <stack>
 #include <cmath>
 
-#include <iostream>
-
 #include <ds/disjoint_set.hpp>
+
+#include "../include/dag/utils.hpp"
 
 namespace dag {
   template <static_edge EdgeT, typename DiscoveryF>

@@ -2,10 +2,12 @@
 #define INCLUDE_DAG_ALGORITHMS_HPP_
 
 #include <vector>
+#include <ranges>
 #include <unordered_set>
 #include <optional>
 
 #include "network_concepts.hpp"
+#include "networks.hpp"
 #include "components.hpp"
 #include "adjacency_prob.hpp"
 

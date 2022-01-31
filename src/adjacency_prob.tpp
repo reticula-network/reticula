@@ -1,6 +1,8 @@
 #include <cmath>
 #include <random>
 
+#include "../include/dag/utils.hpp"
+
 namespace dag {
   namespace adjacency_prob {
     template <temporal_edge EdgeT>
