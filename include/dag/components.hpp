@@ -23,7 +23,6 @@ namespace dag {
   concept exact_component =
     network_component<T> &&
     std::ranges::forward_range<T> &&
-    std::ranges::viewable_range<T> &&
     std::ranges::sized_range<T> &&
     std::equality_comparable<T> &&
     requires(const T& a, const T::VertexType& v) {
@@ -31,7 +30,7 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <network_vertex VertT>
-  class component : public std::ranges::view_interface<component<VertT>> {
+  class component {
   public:
     using VertexType = VertT;
     using IteratorType =
@@ -55,9 +54,10 @@ namespace dag {
 
     void merge(const component<VertT>& other);
 
-    bool operator==(const component<VertT> &other) const;
+    bool operator==(const component<VertT>&) const = default;
     std::size_t size() const;
     bool contains(const VertexType& v) const;
+    bool empty() const;
 
     IteratorType begin() const;
     IteratorType end() const;

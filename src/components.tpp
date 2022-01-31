@@ -54,8 +54,8 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  bool component<VertT>::operator==(const component<VertT>& other) const {
-    return _verts == other._verts;
+  bool component<VertT>::empty() const {
+    return _verts.empty();
   }
 
   template <network_vertex VertT>
