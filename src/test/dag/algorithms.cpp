@@ -846,3 +846,13 @@ TEST_CASE("is digraphic", "[dag::is_digraphic]") {
   REQUIRE_FALSE(dag::is_digraphic(std::vector<std::pair<int, int>>(
           {{4, 0}, {0, 1}, {1, 1}, {3, 1}, {0, 1}})));
 }
+
+TEST_CASE("time_window",
+    "[dag::time_window][dag::cause_time_window][dag::effect_time_window]") {
+  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+  dag::network<EdgeType> network(
+      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}});
+  REQUIRE(dag::cause_time_window(network) == std::make_pair(1, 8));
+  REQUIRE(dag::effect_time_window(network) == std::make_pair(3, 9));
+  REQUIRE(dag::time_window(network) == std::make_pair(1, 9));
+}

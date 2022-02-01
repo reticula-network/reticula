@@ -658,4 +658,28 @@ namespace dag {
 
     return true;
   }
+
+  template <temporal_edge EdgeT>
+  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+  time_window(const network<EdgeT>& temp) {
+    return {
+      temp.edges_cause().front().cause_time(),
+      temp.edges_effect().back().effect_time()};
+  }
+
+  template <temporal_edge EdgeT>
+  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+  cause_time_window(const network<EdgeT>& temp) {
+    return {
+      temp.edges_cause().front().cause_time(),
+      temp.edges_cause().back().cause_time()};
+  }
+
+  template <temporal_edge EdgeT>
+  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+  effect_time_window(const network<EdgeT>& temp) {
+    return {
+      temp.edges_effect().front().effect_time(),
+      temp.edges_effect().back().effect_time()};
+  }
 }  // namespace dag
