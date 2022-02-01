@@ -14,7 +14,7 @@ namespace dag {
 
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(static_cast<std::size_t>(
-          std::lround(std::pow(n, 2)*p)));
+          static_cast<double>(n)*static_cast<double>(n/2)*p));
 
     std::uniform_real_distribution<> rd;
 
@@ -29,11 +29,12 @@ namespace dag {
         v = v + 1;
       }
       if (v < n)
-        edges.emplace_back(static_cast<VertT>(v), static_cast<VertT>(w));
+        edges.emplace_back(v, w);
       double lr = std::log(1.0 - rd(generator));
       w = w + static_cast<VertT>(1 + std::floor(lr/lp));
     }
 
-    return undirected_network<VertT>(edges);
+    return undirected_network<VertT>(edges,
+        std::ranges::iota_view{VertT{}, n});
   }
 }  // namespace dag
