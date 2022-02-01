@@ -332,9 +332,6 @@ namespace dag {
             });
     }
     return std::nullopt;
-
-
-    // TODO not implemented
   }
 
 }  // namespace dag
