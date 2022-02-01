@@ -207,6 +207,15 @@ namespace dag {
       bool singletons = true);
 
   /**
+    Returns true if all vertices in `dir` belong to the same weakly connected
+    component.
+
+    @param dir A directed network
+  */
+  template <static_directed_edge EdgeT>
+  bool is_weakly_connected(const network<EdgeT>& dir);
+
+  /**
     Returns the connected component of `net` that includes node `vert`.
 
     @param net An undirected Network
@@ -222,7 +231,7 @@ namespace dag {
   /**
     Returns list of all connected components of `net`.
 
-    @param net Directed network in question
+    @param net An undirected Network
     @param singletons If true, also returns components with only one members.
   */
   template <static_undirected_edge EdgeT>
@@ -230,6 +239,15 @@ namespace dag {
   connected_components(
       const network<EdgeT>& net,
       bool singletons = true);
+
+  /**
+    Returns true if all all vertices in `net` belong to a single connected
+    component.
+
+    @param net An undirected Network
+  */
+  template <static_undirected_edge EdgeT>
+  bool is_connected(const network<EdgeT>& net);
 
 
   template <network_vertex VertT1, network_vertex VertT2>

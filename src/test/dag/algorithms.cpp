@@ -655,6 +655,15 @@ TEST_CASE("weakly connected components", "[dag::weakly_connected_components]") {
   }
 }
 
+TEST_CASE("is weakly connected?", "[dag::is_weakly_connected]") {
+  dag::directed_network<int> graph({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+  REQUIRE_FALSE(dag::is_weakly_connected(graph));
+  dag::directed_network<int> connected({
+          {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+  REQUIRE(dag::is_weakly_connected(connected));
+}
+
 TEST_CASE("weakly connected component", "[dag::weakly_connected_component]") {
   SECTION("works for directed graph") {
     dag::directed_network<int> graph({
@@ -726,6 +735,16 @@ TEST_CASE("connected components", "[dag::connected_components]") {
         UnorderedEquals(weak1) || UnorderedEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
   }
+}
+
+TEST_CASE("is connected?", "[dag::is_connected]") {
+  dag::undirected_network<int> graph({
+      {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+      {8, 9}});
+  REQUIRE_FALSE(dag::is_connected(graph));
+  dag::undirected_network<int> connected({
+      {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+  REQUIRE(dag::is_connected(connected));
 }
 
 TEST_CASE("connected component", "[dag::connected_component]") {

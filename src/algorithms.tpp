@@ -428,6 +428,14 @@ namespace dag {
   }
 
   template <static_directed_edge EdgeT>
+  bool is_weakly_connected(const network<EdgeT>& dir) {
+    return breadth_first_search(dir, dir.vertices().front(),
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
+        false, true, 0).size() == dir.vertices().size();
+  }
+
+  template <static_directed_edge EdgeT>
   component<typename EdgeT::VertexType>
   weakly_connected_component(
       const network<EdgeT>& dir,
@@ -445,6 +453,14 @@ namespace dag {
       const network<EdgeT>& net,
       bool singletons) {
     return _generic_weakly_connected_components(net, singletons);
+  }
+
+  template <static_undirected_edge EdgeT>
+  bool is_connected(const network<EdgeT>& net) {
+    return breadth_first_search(net, net.vertices().front(),
+        [](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType&){ return true; },
+        false, false, 0).size() == net.vertices().size();
   }
 
   template <static_undirected_edge EdgeT>
