@@ -80,7 +80,8 @@ namespace dag {
       if (edges.size() == static_cast<std::size_t>(size*degree)/2)
         return undirected_network<VertT>(
             std::vector<dag::undirected_edge<VertT>>(
-              edges.begin(), edges.end()));
+              edges.begin(), edges.end()),
+            std::ranges::iota_view{VertT{}, size});
     }
 
     return std::nullopt;
