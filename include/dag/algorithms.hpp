@@ -20,6 +20,42 @@ namespace dag {
       DiscoveryF discovered,
       std::size_t size_hint = 0);
 
+
+  /**
+    Vertex induced subgraph is a subset of the graph that includes only nodes
+    that are present in the provided set, along with any edge with all incident
+    vertices present in the set.
+
+    @param net The network in question
+    @param verts The set of vertices. You can pass a component or any other type
+    that conforms to the input_range concept, for example a vector or a set of
+    vertices.
+  */
+  template <network_edge EdgeT, std::ranges::input_range Range>
+  requires std::same_as<
+            std::ranges::range_value_t<Range>,
+            typename EdgeT::VertexType>
+  network<EdgeT>
+  vertex_induced_subgraph(
+      const network<EdgeT>& net,
+      const Range& verts);
+
+  /**
+    Edge induced subgraph is a subset of the graph that includes only edges that
+    are present in the provided set of edges, along with all their incident
+    verices.
+
+    @param net The network in question
+    @param edges The set of edges. You can pass any type that conforms to the
+    input_range concept, for example a vector or a set of edges.
+  */
+  template <network_edge EdgeT, std::ranges::input_range Range>
+  requires std::same_as<std::ranges::range_value_t<Range>, EdgeT>
+  network<EdgeT>
+  edge_induced_subgraph(
+      const network<EdgeT>& net,
+      const Range& edges);
+
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(

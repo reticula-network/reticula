@@ -45,6 +45,51 @@ namespace dag {
     return discovered_comp;
   }
 
+  template <network_edge EdgeT, std::ranges::input_range Range>
+  requires std::same_as<
+            std::ranges::range_value_t<Range>,
+            typename EdgeT::VertexType>
+  network<EdgeT>
+  vertex_induced_subgraph(
+      const network<EdgeT>& net,
+      const Range& verts) {
+    component<typename EdgeT::VertexType> verts_comp(verts);
+
+    std::vector<EdgeT> es;
+    std::ranges::copy_if(net.edges(), std::back_inserter(es),
+        [&verts_comp](const EdgeT& e) {
+          for (auto& v: e.incident_verts())
+            if (!verts_comp.contains(v))
+              return false;
+          return true;
+        });
+
+    std::vector<typename EdgeT::VertexType> vs;
+    std::ranges::copy_if(net.vertices(), std::back_inserter(vs),
+        [&verts_comp](const typename EdgeT::VertexType& v) {
+          return verts_comp.contains(v);
+        });
+
+    return network<EdgeT>(es, vs);
+  }
+
+  template <network_edge EdgeT, std::ranges::input_range Range>
+  requires std::same_as<std::ranges::range_value_t<Range>, EdgeT>
+  network<EdgeT>
+  edge_induced_subgraph(
+      const network<EdgeT>& net,
+      const Range& edges) {
+    component<EdgeT> edge_comp(edges);
+
+    std::vector<EdgeT> es;
+    std::ranges::copy_if(net.edges(), std::back_inserter(es),
+        [&edge_comp](const EdgeT& e) {
+          return edge_comp.contains(e);
+        });
+
+    return network<EdgeT>(es);
+  }
+
   template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
   directed_network<EdgeT>
   event_graph(

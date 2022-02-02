@@ -43,6 +43,43 @@ TEST_CASE("event graph", "[dag::event_graph]") {
     }
   }
 
+  SECTION("vertex induced subgraph", "[dag::vertex_induced_subgraph]") {
+    using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+    dag::network<EdgeType> network(
+        {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
+        {{3, 4}, {4}, 8}});
+
+    dag::component<typename EdgeType::VertexType> comp({1, 2, 3, 4, 9});
+    auto res = dag::vertex_induced_subgraph(network, comp);
+
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 3, 4}),
+        UnorderedEquals(res.vertices()));
+
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
+        UnorderedEquals(res.edges()));
+  }
+
+  SECTION("edge induced subgraph", "[dag::edge_induced_subgraph]") {
+    using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+    dag::network<EdgeType> network(
+        {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
+        {{3, 4}, {4}, 8}});
+
+    dag::component<EdgeType> comp({
+        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
+    auto res = dag::edge_induced_subgraph(network, comp);
+
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 4, 7}),
+        UnorderedEquals(res.vertices()));
+
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
+        UnorderedEquals(res.edges()));
+  }
+
   SECTION("directed temporal network") {
     using EdgeType = dag::directed_temporal_edge<int, int>;
     dag::network<EdgeType> network(
