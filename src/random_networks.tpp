@@ -1,68 +1,4 @@
 namespace dag {
-  template <
-    temporal_edge EdgeT,
-    random_number_distribution Distribution,
-    random_number_distribution ResDistribution,
-    std::uniform_random_bit_generator Gen>
-  std::vector<EdgeT>
-  random_events(
-      const undirected_network<typename EdgeT::VertexType>& base_net,
-      typename EdgeT::TimeType max_t,
-      Distribution inter_event_time_dist,
-      ResDistribution residual_time_dist,
-      Gen& generator,
-      std::size_t size_hint) {
-    std::vector<EdgeT> temp;
-    if (size_hint > 0)
-      temp.reserve(size_hint);
-
-    // reproducable since base_net.edges() is always sorted
-    for (const auto& e: base_net.edges()) {
-      typename EdgeT::TimeType t = static_cast<typename EdgeT::TimeType>(
-          residual_time_dist(generator));
-      while (t < max_t) {
-        auto v = e.mutated_verts();  // e is an undirected event
-        temp.emplace_back(v[0], v[1], t);
-        typename EdgeT::TimeType iet = static_cast<typename EdgeT::TimeType>(
-            inter_event_time_dist(generator));
-        t += iet;
-      }
-    }
-    return temp;
-  }
-
-  template <
-    temporal_edge EdgeT,
-    random_number_distribution Distribution,
-    std::uniform_random_bit_generator Gen>
-  std::vector<EdgeT>
-  random_events(
-      const undirected_network<typename EdgeT::VertexType>& base_net,
-      typename EdgeT::TimeType max_t,
-      Distribution inter_event_time_dist,
-      Gen& generator,
-      std::size_t size_hint) {
-    std::vector<EdgeT> temp;
-    if (size_hint > 0)
-      temp.reserve(size_hint);
-
-    // reproducable since base_net.edges() is always sorted
-    for (const auto& e: base_net.edges()) {
-      // we can't be sure TimeType is signed so we start at zero and warm-up
-      // until max_t then record t - max_t from there up to max_t*2
-      typename EdgeT::TimeType t {};
-      while (t < max_t * 2) {
-        auto v = e.mutated_verts();  // e is an undirected event
-        if (t > max_t)
-          temp.emplace_back(v[0], v[1], t - max_t);
-        typename EdgeT::TimeType iet = static_cast<typename EdgeT::TimeType>(
-          inter_event_time_dist(generator));
-        t += iet;
-      }
-    }
-    return temp;
-  }
-
   // power_law_with_specified_mean
   template <class RealType>
   power_law_with_specified_mean<RealType>::power_law_with_specified_mean(
@@ -191,3 +127,4 @@ namespace dag {
 #include "random_networks/regular.tpp"
 #include "random_networks/expected_degree_sequence.tpp"
 #include "random_networks/degree_sequence.tpp"
+#include "random_networks/activation_temporal.tpp"

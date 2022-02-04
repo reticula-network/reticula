@@ -161,40 +161,129 @@ namespace dag {
       Gen& generator,
       bool self_loops = false);
 
+
   /**
-    Random events with the given `inter_event_time_dist` and
-    `residual_time_dist` for generating time to first event.
-    */
+    Random undirected temporal network, with nodes labeled from 0 to `size` and
+    where and undirected connection between any two nodes can be activated
+    independently as Poisson point processes with rate `rate`. The activations
+    are recorded in range of time [0, `max_t`).
+
+    @param size The number of nodes
+    @param rate Per-edge Poisson point process rate
+    @param max_t The end of observation window.
+  */
+  template <
+    integer_vertex VertT,
+    std::uniform_random_bit_generator Gen>
+  undirected_temporal_network<VertT, double>
+  random_fully_mixed_temporal_network(
+      VertT size, double rate, double max_t, Gen& generator);
+
+  /**
+    Random directed temporal network, with nodes labeled from 0 to `size` and
+    where a directed connection between any two nodes can be activated
+    independently as Poisson point processes with rate `rate`. The activations
+    are recorded in range of time [0, `max_t`).
+
+    @param size The number of nodes
+    @param rate Per-edge Poisson point process rate
+    @param max_t The end of observation window.
+    @param generator A uniform random bit generator
+  */
+  template <
+    integer_vertex VertT,
+    std::uniform_random_bit_generator Gen>
+  directed_temporal_network<VertT, double>
+  random_directed_fully_mixed_temporal_network(
+      VertT size, double rate, double max_t, Gen& generator);
+
+
+  /**
+    Random temporal network constructed from a base (aggregate) static network
+    where each link is activated according to the inter-event time distribution
+    provided by invoking `inter_event_time_edge_activation` with each static
+    network edge observed in time range [0, `max_t`). The time of the first
+    event for each edge is derived from invoking `residual_time_edge_activation`
+    with the static edge.
+
+    @param base_net Base (aggregate) static network
+    @param max_t The end of observation window
+    @param inter_event_time_edge_activation Callable accepting a base_net edge
+    and returning a random_number_distribution that generates inter-event times.
+    @param residual_time_edge_activation Callable accepting a base_net edge
+    and returning a random_number_distribution that generates the first event
+    corresponding to that edge.
+    @param generator A uniform random bit generator
+    @param size_hint Estimated number of edges in the final temporal network.
+  */
   template <
     temporal_edge EdgeT,
-    random_number_distribution Distribution,
-    random_number_distribution ResDistribution,
+    typename ActivationF,
+    typename ResActivationF,
     std::uniform_random_bit_generator Gen>
-  std::vector<EdgeT>
-  random_events(
-      const undirected_network<typename EdgeT::VertexType>& base_net,
+  requires
+    random_number_distribution<std::invoke_result_t<
+      ActivationF, typename EdgeT::StaticProjectionType>> &&
+    random_number_distribution<std::invoke_result_t<
+      ResActivationF, typename EdgeT::StaticProjectionType>> &&
+    std::same_as<
+      typename std::invoke_result_t<
+        ResActivationF,
+        typename EdgeT::StaticProjectionType>::result_type,
+      typename std::invoke_result_t<
+        ActivationF,
+        typename EdgeT::StaticProjectionType>::result_type> &&
+    std::constructible_from<
+      EdgeT,
+      typename EdgeT::StaticProjectionType,
+      typename std::invoke_result_t<
+        ActivationF,
+        typename EdgeT::StaticProjectionType>::result_type>
+  network<EdgeT>
+  random_activation_temporal_network(
+      network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
-      Distribution inter_event_time_dist,
-      ResDistribution residual_time_dist,
+      ActivationF&& inter_event_time_edge_activation,
+      ResActivationF&& residual_time_edge_activation,
       Gen& generator,
       std::size_t size_hint = 0);
 
+
   /**
-    Random events with the given inter-event time distribution and `max_t`
-    units of time burn-in before being recorded.
-    */
+    Random temporal network constructed from a base (aggregate) static network
+    where each link is activated according to the inter-event time distribution
+    provided by invoking `inter_event_time_edge_activation` with each static
+    network edge observed in time range [0, `max_t`). The time of the first
+    event for each edge is derived from a burn-in process by running the
+    inter-event time distribution for time period equal to `max_t`.
+
+    @param base_net Base (aggregate) static network
+    @param max_t The end of observation window
+    @param inter_event_time_edge_activation Callable accepting a base_net edge
+    and returning a random_number_distribution that generates inter-event times.
+    @param generator A uniform random bit generator
+    @param size_hint Estimated number of edges in the final temporal network.
+  */
   template <
     temporal_edge EdgeT,
-    random_number_distribution Distribution,
+    typename ActivationF,
     std::uniform_random_bit_generator Gen>
-  std::vector<EdgeT>
-  random_events(
-      const undirected_network<typename EdgeT::VertexType>& base_net,
+  requires
+    random_number_distribution<std::invoke_result_t<
+      ActivationF, typename EdgeT::StaticProjectionType>> &&
+    std::constructible_from<
+      EdgeT,
+      typename EdgeT::StaticProjectionType,
+      typename std::invoke_result_t<
+        ActivationF,
+        typename EdgeT::StaticProjectionType>::result_type>
+  network<EdgeT>
+  random_activation_temporal_network(
+      network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
-      Distribution inter_event_time_dist,
+      ActivationF&& inter_event_time_edge_activation,
       Gen& generator,
-      std::size_t size_hint = 0);
-
+      std::size_t size_hint);
 
   template <class RealType = double>
   class power_law_with_specified_mean {
