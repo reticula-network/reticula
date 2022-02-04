@@ -75,6 +75,11 @@ namespace dag {
      */
     using TimeType = TimeT;
 
+    /**
+      Static projection of the temporal edge.
+     */
+    using StaticProjectionType = directed_edge<VertT>;
+
     directed_temporal_edge() = default;
     /**
       Create a directed temporal edge.
@@ -87,13 +92,23 @@ namespace dag {
      */
     directed_temporal_edge(
         VertexType tail, VertexType head, TimeType time);
+    /**
+      Create a directed temporal edge from a static projection and a time. The
+      resulting edge would have the same endpoints as projection and the time
+      from the parameter `time`.
+
+      @param projection The static projection of this temporal edge.
+      @param time Timestamp at which the event "happened"
+     */
+    directed_temporal_edge(
+        const StaticProjectionType& projection, TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
       edge.
      */
     [[nodiscard]]
-    directed_edge<VertT>
+    StaticProjectionType
     static_projection() const;
 
     /**
@@ -253,8 +268,12 @@ namespace dag {
      */
     using TimeType = TimeT;
 
-    directed_delayed_temporal_edge() = default;
+    /**
+      Static projection of the temporal edge.
+     */
+    using StaticProjectionType = directed_edge<VertT>;
 
+    directed_delayed_temporal_edge() = default;
     /**
       Create a directed delayed temporal edge.
 
@@ -281,13 +300,26 @@ namespace dag {
     directed_delayed_temporal_edge(
         VertexType tail, VertexType head,
         TimeType cause_time, TimeType effect_time);
+    /**
+      Create a directed delayed temporal edge from a static projection, a cause
+      time and an effect time. The resulting edge would have the same endpoints
+      as the projection and the cause and effect times from the parameters
+      `cause_time` and `effect_time`.
+
+      @param projection The static projection of this temporal edge.
+      @param cause_time The timestamp at which the event "happened".
+      @param effect_time The timestamp at which the event was "received".
+     */
+    directed_delayed_temporal_edge(
+        const StaticProjectionType& projection,
+        TimeType cause_time, TimeType effect_time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
       edge.
      */
     [[nodiscard]]
-    directed_edge<VertT>
+    StaticProjectionType
     static_projection() const;
 
     /**
@@ -435,16 +467,38 @@ namespace dag {
      */
     using TimeType = TimeT;
 
+    /**
+      Static projection of the temporal edge.
+     */
+    using StaticProjectionType = undirected_edge<VertT>;
+
     undirected_temporal_edge() = default;
+    /**
+      Create an undirected temporal edge.
+
+      @param v1 First incident vertex of the edge.
+      @param v2 Second incident vertex of the edge.
+      @param time Timestamp at which the event "happened".
+    */
     undirected_temporal_edge(
         VertexType v1, VertexType v2, TimeType time);
+    /**
+      Create an undirected temporal edge from a static projection and a time.
+      The resulting edge would have the same endpoints as projection and the
+      time from the parameter `time`.
+
+      @param projection The static projection of this temporal edge.
+      @param time Timestamp at which the event "happened"
+    */
+    undirected_temporal_edge(
+        const StaticProjectionType& projection, TimeType time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
       edge.
      */
     [[nodiscard]]
-    undirected_edge<VertT>
+    StaticProjectionType
     static_projection() const;
 
     /**

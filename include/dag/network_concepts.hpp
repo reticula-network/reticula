@@ -73,10 +73,12 @@ namespace dag {
   concept temporal_edge =
     network_edge<T> &&
     std::is_arithmetic_v<typename T::TimeType> &&
+    static_edge<typename T::StaticProjectionType> &&
     requires(const T& a) {
       { a.cause_time() } -> std::convertible_to<typename T::TimeType>;
       { a.effect_time() } -> std::convertible_to<typename T::TimeType>;
-      { a.static_projection() } -> static_edge;
+      { a.static_projection() } -> std::convertible_to<
+        typename T::StaticProjectionType>;
     };  // NOLINT(readability/braces)
 
 

@@ -76,6 +76,11 @@ namespace dag {
      */
     using TimeType = TimeT;
 
+    /**
+      Static projection of the temporal hyperedge.
+     */
+    using StaticProjectionType = directed_hyperedge<VertT>;
+
     directed_temporal_hyperedge() = default;
 
     /**
@@ -111,11 +116,22 @@ namespace dag {
         const R1& tails, const R2& heads, TimeType time);
 
     /**
+      Create a directed temporal hyperedge from a static projection and a time.
+      The resulting edge would have the same endpoints as projection and the
+      time from the parameter `time`.
+
+      @param projection The static projection of this temporal hyperedge.
+      @param time Timestamp at which the event "happened"
+     */
+    directed_temporal_hyperedge(
+        const StaticProjectionType& projection, TimeType time);
+
+    /**
       Static hyperedge that encompasses all the non-temporal information about this
       hyperedge.
      */
     [[nodiscard]]
-    directed_hyperedge<VertexType>
+    StaticProjectionType
     static_projection() const;
 
     /**
@@ -258,6 +274,11 @@ namespace dag {
      */
     using TimeType = TimeT;
 
+    /**
+      Static projection of the temporal hyperedge.
+     */
+    using StaticProjectionType = directed_hyperedge<VertT>;
+
     directed_delayed_temporal_hyperedge() = default;
 
     /**
@@ -310,11 +331,25 @@ namespace dag {
         TimeType cause_time, TimeType effect_time);
 
     /**
+      Create a directed delayed temporal hyperedge from a static projection, a
+      cause time and an effect time. The resulting edge would have the same
+      endpoints as the projection and the cause and effect times from the
+      parameters `cause_time` and `effect_time`.
+
+      @param projection The static projection of this temporal hyperedge.
+      @param cause_time The timestamp at which the event "happened".
+      @param effect_time The timestamp at which the event was "received".
+     */
+    directed_delayed_temporal_hyperedge(
+        const StaticProjectionType& projection,
+        TimeType cause_time, TimeType effect_time);
+
+    /**
       Static hyperedge that encompasses all the non-temporal information about
       this hyperedge.
      */
     [[nodiscard]]
-    directed_hyperedge<VertT>
+    StaticProjectionType
     static_projection() const;
 
     /**
@@ -452,8 +487,12 @@ namespace dag {
      */
     using TimeType = TimeT;
 
-    undirected_temporal_hyperedge() = default;
+    /**
+      Static projection of the temporal edge.
+     */
+    using StaticProjectionType = undirected_hyperedge<VertT>;
 
+    undirected_temporal_hyperedge() = default;
 
     /**
       Create an undirected temporal hyperedge. This variation is specifically
@@ -476,13 +515,24 @@ namespace dag {
     requires std::convertible_to<std::ranges::range_value_t<R>, VertT>
     undirected_temporal_hyperedge(const R& verts, TimeType time);
 
+    /**
+      Create an undirected temporal hyperedge from a static projection and a
+      time.  The resulting edge would have the same endpoints as projection and
+      the time from the parameter `time`.
+
+      @param projection The static projection of this temporal hyperedge.
+      @param time Timestamp at which the event "happened"
+    */
+    undirected_temporal_hyperedge(
+        const StaticProjectionType& projection, TimeType time);
+
 
     /**
       Static hyperedge that encompasses all the non-temporal information about
       this hyperedge.
      */
     [[nodiscard]]
-    undirected_hyperedge<VertT>
+    StaticProjectionType
     static_projection() const;
 
     /**

@@ -92,6 +92,11 @@ namespace dag {
     : _time(time), _tail(tail), _head(head) {}
 
   template <network_vertex VertexType, typename TimeType>
+  directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
+    const directed_edge<VertexType>& projection, TimeType time)
+    : _time(time), _tail(projection.tail()), _head(projection.head()) {}
+
+  template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_temporal_edge<VertexType, TimeType>::static_projection() const {
     return directed_edge<VertexType>(_tail, _head);
@@ -201,6 +206,18 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  directed_delayed_temporal_edge<VertexType, TimeType>::
+    directed_delayed_temporal_edge(
+      const directed_edge<VertexType>& projection,
+      TimeType cause_time, TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time),
+      _tail(projection.tail()), _head(projection.head()) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
+          " cause_time larger than effect_time");
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
       static_projection() const {
@@ -304,8 +321,21 @@ namespace dag {
 
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
-    VertexType v1, VertexType v2, TimeType time) : _time(time) {
+      VertexType v1, VertexType v2, TimeType time) : _time(time) {
     std::tie(_v1, _v2) = std::minmax(v1, v2);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
+      const undirected_edge<VertexType>& projection,
+      TimeType time) : _time(time) {
+    auto verts = projection.incident_verts();
+
+    _v1 = verts[0];
+    if (verts.size() > 1)
+      _v2 = verts[1];
+    else
+      _v2 = verts[0];
   }
 
   template <network_vertex VertexType, typename TimeType>

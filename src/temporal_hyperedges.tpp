@@ -148,6 +148,12 @@ namespace dag {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  directed_temporal_hyperedge<VertexType, TimeType>::
+  directed_temporal_hyperedge(
+    const directed_hyperedge<VertexType>& projection, TimeType time)
+    : _time(time), _tails(projection.tails()), _heads(projection.heads()) {}
+
+  template <network_vertex VertexType, typename TimeType>
   directed_hyperedge<VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::static_projection() const {
     return directed_hyperedge<VertexType>(_tails, _heads);
@@ -262,7 +268,7 @@ namespace dag {
       _cause_time(cause_time), _effect_time(effect_time) {
     if (_effect_time < _cause_time)
       throw std::invalid_argument("directed_delayed_temporal_hyperedge cannot"
-          "have a cause_time larger than effect_time");
+          " have a cause_time larger than effect_time");
 
     if constexpr (std::ranges::sized_range<R1>)
       _heads.reserve(std::ranges::size(heads));
@@ -282,6 +288,19 @@ namespace dag {
     _tails.erase(tfirst, tlast);
     _tails.shrink_to_fit();
   }
+
+  template <network_vertex VertexType, typename TimeType>
+  directed_delayed_temporal_hyperedge<VertexType, TimeType>::
+    directed_delayed_temporal_hyperedge(
+      const directed_hyperedge<VertexType>& projection,
+      TimeType cause_time, TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time),
+      _tails(projection.tails()), _heads(projection.heads()) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument("directed_delayed_temporal_hyperedge cannot"
+          " have a cause_time larger than effect_time");
+  }
+
 
   template <network_vertex VertexType, typename TimeType>
   directed_hyperedge<VertexType>
@@ -404,6 +423,13 @@ namespace dag {
     _verts.erase(first, last);
     _verts.shrink_to_fit();
   }
+
+
+  template <network_vertex VertexType, typename TimeType>
+  undirected_temporal_hyperedge<VertexType, TimeType>::
+  undirected_temporal_hyperedge(
+      const undirected_hyperedge<VertexType>& projection, TimeType time) :
+    _time(time), _verts(projection.incident_verts()) {};
 
   template <network_vertex VertexType, typename TimeType>
   undirected_hyperedge<VertexType>
