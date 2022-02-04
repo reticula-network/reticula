@@ -21,6 +21,9 @@ namespace dag {
 
   template <integer_vertex VertT>
   undirected_network<VertT> complete_graph(VertT size);
+
+  template <integer_vertex VertT>
+  directed_network<VertT> complete_directed_graph(VertT size);
 }  // namespace dag
 
 #include "../../src/generators.tpp"

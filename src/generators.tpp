@@ -32,18 +32,6 @@ namespace dag {
   }
 
   template <integer_vertex VertT>
-  undirected_network<VertT> complete_graph(VertT size) {
-    std::vector<undirected_edge<VertT>> edges;
-    edges.reserve((size*(size-1))/2);
-
-    for (VertT i = {}; i < size; i++)
-      for (VertT j = {}; j < i; j++)
-        edges.emplace_back(i, j);
-
-    return undirected_network<VertT>(edges);
-  }
-
-  template <integer_vertex VertT>
   undirected_network<VertT> regular_ring_lattice(VertT size, VertT degree) {
     if (degree >= size)
       throw std::invalid_argument("degree should be smaller than size");
@@ -58,5 +46,29 @@ namespace dag {
         edges.emplace_back(i, j % size);
 
     return undirected_network<VertT>(edges);
+  }
+
+  template <integer_vertex VertT>
+  undirected_network<VertT> complete_graph(VertT size) {
+    std::vector<undirected_edge<VertT>> edges;
+    edges.reserve((size*(size-1))/2);
+
+    for (VertT i = {}; i < size; i++)
+      for (VertT j = {}; j < i; j++)
+        edges.emplace_back(i, j);
+
+    return undirected_network<VertT>(edges);
+  }
+
+  template <integer_vertex VertT>
+  directed_network<VertT> complete_directed_graph(VertT size) {
+    std::vector<directed_edge<VertT>> edges;
+    edges.reserve((size*(size-1)));
+
+    for (VertT i = {}; i < size; i++)
+      for (VertT j = {}; j < size; j++)
+        if (i != j) edges.emplace_back(i, j);
+
+    return directed_network<VertT>(edges);
   }
 }  // namespace dag

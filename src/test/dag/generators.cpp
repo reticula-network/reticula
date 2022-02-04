@@ -235,3 +235,11 @@ TEST_CASE("complete graph", "[dag::complete_graph]") {
   REQUIRE(comp.vertices().size() == n);
   REQUIRE(comp.edges().size() == n*(n-1)/2);
 }
+
+TEST_CASE("complete directed graph", "[dag::complete_directed_graph]") {
+  std::size_t n = 100;
+  dag::directed_network<std::size_t> comp = dag::complete_directed_graph(n);
+
+  REQUIRE(comp.vertices().size() == n);
+  REQUIRE(comp.edges().size() == n*(n-1));
+}
