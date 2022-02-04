@@ -16,6 +16,12 @@ using Catch::Matchers::Equals;
 TEST_CASE("component complies with the concept", "[dag::component]") {
   STATIC_REQUIRE(dag::exact_component<dag::component<int>>);
   STATIC_REQUIRE(dag::network_component<dag::component<int>>);
+
+  STATIC_REQUIRE(dag::network_component<
+      dag::component<dag::directed_edge<long int>>>);
+  REQUIRE_NOTHROW(dag::component<int>());
+  REQUIRE_NOTHROW(dag::component<
+        dag::directed_temporal_hyperedge<std::pair<int, int>, double>>());
 }
 
 TEST_CASE("component sketch complies with the concept",
@@ -27,6 +33,9 @@ TEST_CASE("component sketch complies with the concept",
   STATIC_REQUIRE(dag::network_component<
       dag::component_sketch<
         dag::directed_temporal_hyperedge<std::pair<int, int>, double>>>);
+  REQUIRE_NOTHROW(dag::component_sketch<int>());
+  REQUIRE_NOTHROW(dag::component_sketch<
+        dag::directed_temporal_hyperedge<std::pair<int, int>, double>>());
 }
 
 TEST_CASE("component properties", "[dag::component]") {
