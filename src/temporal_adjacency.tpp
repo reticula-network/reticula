@@ -16,9 +16,10 @@ namespace dag {
     }
 
     template <temporal_edge EdgeT>
-    double simple<EdgeT>::cutoff_dt(const EdgeType& e) const {
+    double simple<EdgeT>::cutoff_dt(const EdgeT& e) const {
       return std::numeric_limits<typename EdgeT::TimeType>::infinity();
     }
+
 
     template <temporal_edge EdgeT>
     limited_waiting_time<EdgeT>::limited_waiting_time(
@@ -31,10 +32,13 @@ namespace dag {
     }
 
     template <temporal_edge EdgeT>
-    double limited_waiting_time<EdgeT>::cutoff_dt(const EdgeType& e) const {
+    double limited_waiting_time<EdgeT>::cutoff_dt(const EdgeT& e) const {
       return static_cast<double>(_dt);
     }
 
+    template <temporal_edge EdgeT>
+    typename EdgeT::TimeType
+    limited_waiting_time<EdgeT>::dt() const { return _dt; }
 
     template <temporal_edge EdgeT>
     exponential<EdgeT>::exponential(
@@ -54,11 +58,15 @@ namespace dag {
     }
 
     template <temporal_edge EdgeT>
-    double exponential<EdgeT>::cutoff_dt(const EdgeType& e) const {
+    double exponential<EdgeT>::cutoff_dt(const EdgeT& e) const {
       size_t seed = utils::combine_hash<EdgeT, hash>(_seed, e);
       std::mt19937_64 gen(seed);
       std::exponential_distribution<double> dst(1.0/static_cast<double>(_dt));
       return dst(gen);
     }
+
+    template <temporal_edge EdgeT>
+    typename EdgeT::TimeType
+    exponential<EdgeT>::expected_dt() const { return _dt; }
   }  // namespace temporal_adjacency
 }  // namespace dag
