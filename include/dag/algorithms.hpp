@@ -9,7 +9,7 @@
 #include "network_concepts.hpp"
 #include "networks.hpp"
 #include "components.hpp"
-#include "adjacency_prob.hpp"
+#include "temporal_adjacency.hpp"
 
 namespace dag {
   template <static_edge EdgeT, typename DiscoveryF>
@@ -55,13 +55,6 @@ namespace dag {
   edge_induced_subgraph(
       const network<EdgeT>& net,
       const Range& edges);
-
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  directed_network<EdgeT>
-  event_graph(
-      const network<EdgeT>& temp,
-      const AdjacencyProbT& prob,
-      std::size_t seed);
 
   /**
     Returns true if the directed graph contains no cycles. This is detemined by
@@ -351,6 +344,22 @@ namespace dag {
   template <temporal_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   effect_time_window(const network<EdgeT>& temp);
+
+
+  /**
+    Generates the event graph representation of the temporal network.
+
+    @param temp A temporal network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    between two otherwise adjacent events.
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  directed_network<EdgeT>
+  event_graph(
+      const network<EdgeT>& temp,
+      const AdjT& adj);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

@@ -9,7 +9,7 @@ namespace dag {}
 #include "utils.hpp"
 #include "type_traits.hpp"
 #include "network_concepts.hpp"
-#include "adjacency_prob.hpp"
+#include "temporal_adjacency.hpp"
 #include "static_edges.hpp"
 #include "static_hyperedges.hpp"
 #include "temporal_edges.hpp"

@@ -37,7 +37,7 @@ add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
   src/test/dag/tests.cpp
-  src/test/dag/adjacency_prob.cpp
+  src/test/dag/temporal_adjacency.cpp
   src/test/dag/algorithms.cpp
   src/test/dag/compile.cpp
   src/test/dag/edge_tests.cpp

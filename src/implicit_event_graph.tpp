@@ -1,34 +1,23 @@
-#include <queue>
-#include <random>
-
-#include "../include/dag/adjacency_prob.hpp"
-
 namespace dag {
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const std::initializer_list<EdgeT>& events,
-      const AdjacencyProbT& prob,
-      std::size_t seed) :
-    _seed(seed), _temp(events), _prob(prob) {}
+      const AdjT& adj) : _temp(events), _adj(adj) {}
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const std::initializer_list<EdgeT>& events,
       const std::initializer_list<typename EdgeT::VertexType>& verts,
-      const AdjacencyProbT& prob,
-      std::size_t seed) :
-    _seed(seed), _temp(events, verts), _prob(prob) {}
+      const AdjT& adj) : _temp(events, verts), _adj(adj) {}
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+  implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const Range& events,
-      const AdjacencyProbT& prob,
-      size_t seed) :
-    _seed(seed), _temp(events), _prob(prob) {}
+      const AdjT& adj) : _temp(events), _adj(adj) {}
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <
     std::ranges::input_range EdgeRange,
     std::ranges::input_range VertRange>
@@ -36,54 +25,43 @@ namespace dag {
     std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
     std::convertible_to<std::ranges::range_value_t<VertRange>,
       typename EdgeT::VertexType>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+  implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const EdgeRange& events,
       const VertRange& verts,
-      const AdjacencyProbT& prob,
-      size_t seed) :
-    _seed(seed), _temp(events, verts), _prob(prob) {}
+      const AdjT& adj) : _temp(events, verts), _adj(adj) {}
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::implicit_event_graph(
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const network<EdgeT>& temp,
-      const AdjacencyProbT& prob,
-      std::size_t seed) :
-    _seed(seed), _temp(temp), _prob(prob) {}
+      const AdjT& adj) : _temp(temp), _adj(adj) {}
 
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  AdjacencyProbT
-  implicit_event_graph<EdgeT, AdjacencyProbT>::adjacency_prob() const {
-    return _prob;
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  AdjT implicit_event_graph<EdgeT, AdjT>::temporal_adjacency() const {
+    return _adj;
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  std::size_t
-  implicit_event_graph<EdgeT, AdjacencyProbT>::seed() const {
-    return _seed;
-  }
-
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   const std::vector<EdgeT>&
-  implicit_event_graph<EdgeT, AdjacencyProbT>::events_cause() const {
+  implicit_event_graph<EdgeT, AdjT>::events_cause() const {
     return _temp.edges_cause();
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   const std::vector<EdgeT>&
-  implicit_event_graph<EdgeT, AdjacencyProbT>::events_effect() const {
+  implicit_event_graph<EdgeT, AdjT>::events_effect() const {
     return _temp.edges_effect();
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<typename EdgeT::VertexType>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::temporal_net_vertices() const {
+  implicit_event_graph<EdgeT, AdjT>::temporal_net_vertices() const {
     return _temp.vertices();
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::time_window() const {
+  implicit_event_graph<EdgeT, AdjT>::time_window() const {
     if (_temp.edges().empty())
       return std::make_pair(0, 0);
     else
@@ -92,9 +70,9 @@ namespace dag {
           _temp.edges().back().cause_time());
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::predecessors(
+  implicit_event_graph<EdgeT, AdjT>::predecessors(
       const EdgeT& e, bool just_first) const {
     std::vector<EdgeT> pred;
 
@@ -118,9 +96,9 @@ namespace dag {
     return pred;
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::successors(
+  implicit_event_graph<EdgeT, AdjT>::successors(
       const EdgeT& e, bool just_first) const {
     std::vector<EdgeT> succ;
 
@@ -144,11 +122,10 @@ namespace dag {
     return succ;
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::successors_vert(
+  implicit_event_graph<EdgeT, AdjT>::successors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
-    constexpr double cutoff = 1e-20;
 
     std::size_t reserve_max = 32;
     if (just_first)
@@ -162,32 +139,29 @@ namespace dag {
     auto other = std::lower_bound(
         out_edges_it->second.begin(), out_edges_it->second.end(), e,
         [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
+
+    typename EdgeT::TimeType cutoff = _adj.cutoff_time(e);
     res.reserve(std::min<std::size_t>(
           reserve_max, static_cast<std::size_t>(
             out_edges_it->second.end() - other)));
-    double last_p = 1.0;
-    while ((other < out_edges_it->second.end()) && last_p > cutoff) {
+    while ((other < out_edges_it->second.end()) &&
+        other->cause_time() <= cutoff) {
       if (adjacent(e, *other)) {
-        last_p = _prob.p(e, *other);
-        if (adjacency_prob::bernoulli_trial(e, *other, last_p, _seed)) {
-          if (just_first && !res.empty() &&
-              res[0].cause_time() != other->cause_time())
-            return res;
-          else
-            res.push_back(*other);
-        }
+        if (just_first && !res.empty() &&
+            res[0].cause_time() != other->cause_time())
+          return res;
+        else
+          res.push_back(*other);
       }
       other++;
     }
     return res;
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
-  implicit_event_graph<EdgeT, AdjacencyProbT>::predecessors_vert(
+  implicit_event_graph<EdgeT, AdjT>::predecessors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
-    constexpr double cutoff = 1e-20;
-
     std::size_t reserve_max = 32;
     if (just_first)
       reserve_max = 1;
@@ -204,22 +178,18 @@ namespace dag {
     if (other > in_edges_it->second.begin())
       other--;
 
+    typename EdgeT::TimeType cutoff = _adj.cutoff_time(e);
     res.reserve(std::min<std::size_t>(
           reserve_max, static_cast<std::size_t>(
             other - in_edges_it->second.begin())));
-    double last_p = 1.0;
-    while (other < in_edges_it->second.end() &&
-            other >= in_edges_it->second.begin() &&
-            last_p > cutoff) {
+    while (other >= in_edges_it->second.begin() &&
+        other->cause_time() <= cutoff) {
       if (adjacent(*other, e)) {
-        last_p = _prob.p(*other, e);
-        if (adjacency_prob::bernoulli_trial(*other, e, last_p, _seed)) {
-          if (just_first && !res.empty() &&
-              res[0].cause_time() != other->cause_time())
-            return res;
-          else
-            res.push_back(*other);
-        }
+        if (just_first && !res.empty() &&
+            res[0].cause_time() != other->cause_time())
+          return res;
+        else
+          res.push_back(*other);
       }
       other--;
     }

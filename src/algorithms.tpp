@@ -90,34 +90,6 @@ namespace dag {
     return network<EdgeT>(es);
   }
 
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
-  directed_network<EdgeT>
-  event_graph(
-      const network<EdgeT>& temp,
-      const AdjacencyProbT& prob,
-      std::size_t seed) {
-    auto verts = temp.vertices();
-    std::vector<directed_edge<EdgeT>> eg;
-    for (const auto &v: verts) {
-      auto events = temp.incident_edges(v);
-
-      for (auto e1 = events.begin(); e1 < events.end(); e1++) {
-        constexpr double cutoff = 1e-20;
-        double last_prob = 1.0;
-        for (auto e2 = e1; e2 < events.end() && last_prob > cutoff; e2++) {
-          if (adjacent(*e1, *e2)) {
-            last_prob = prob.p(*e1, *e2);
-            if (adjacency_prob::bernoulli_trial(
-                  *e1, *e2, last_prob, seed))
-              eg.emplace_back(*e1, *e2);
-          }
-        }
-      }
-    }
-
-    return directed_network<EdgeT>(eg);
-  }
-
   template <static_directed_edge EdgeT>
   std::optional<std::vector<typename EdgeT::VertexType>>
   try_topological_order(const network<EdgeT>& dir) {
@@ -743,4 +715,30 @@ namespace dag {
       temp.edges_effect().front().effect_time(),
       temp.edges_effect().back().effect_time()};
   }
+
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  directed_network<EdgeT>
+  event_graph(
+      const network<EdgeT>& temp,
+      const AdjT& adj) {
+    auto verts = temp.vertices();
+    std::vector<directed_edge<EdgeT>> eg;
+    for (const auto &v: verts) {
+      auto events = temp.incident_edges(v);
+
+      for (auto e1 = events.begin(); e1 < events.end(); e1++) {
+        auto cutoff = adj.cutoff_time(*e1);
+        for (auto e2 = e1 + 1;
+            e2 < events.end() && e2->cause_time() <= cutoff; e2++) {
+          if (adjacent(*e1, *e2))
+            eg.emplace_back(*e1, *e2);
+        }
+      }
+    }
+
+    return directed_network<EdgeT>(eg);
+  }
+
 }  // namespace dag

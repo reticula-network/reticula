@@ -7,7 +7,7 @@
 #include "temporal_edges.hpp"
 #include "networks.hpp"
 #include "network_concepts.hpp"
-#include "adjacency_prob.hpp"
+#include "temporal_adjacency.hpp"
 
 namespace dag {
   /**
@@ -19,12 +19,11 @@ namespace dag {
     @tparam EdgeT Edge type (i.e. event type) for this network. Different edge
     types encapsulate different behaviour in networks, e.g. a directed temporal
     network is a temporal network with directed events.
-    @tparam AdjacencyProbT Adjacency probability class that determines how
-    probable it is whether two logically adjacent events are actually adjacent,
-    i.e. that an effect transmitted in the first event is also tranmitted in the
-    second event.
+    @tparam AdjT Temporal adjacency class that determines whether two logically
+    adjacent events are actually adjacent, i.e. that an effect transmitted in
+    the first event is also tranmitted in the second event.
    */
-  template <temporal_edge EdgeT, adjacency_prob::adjacency_prob AdjacencyProbT>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   class implicit_event_graph {
   public:
     using EdgeType = EdgeT;
@@ -40,15 +39,12 @@ namespace dag {
        initialize the class.
 
        @param events An event sequence
-       @param prob AdjacencyProb class determinimg probability of whether two
-       events are adjacent or not based on the events and the time delta.
-       @param seed Seed for reproducable randomness (in case of probabilistic
-       AdjacencyProb)
+       @param adj AdjT instance determinimg probability of whether two events
+       are adjacent or not based on the events and the time delta.
      */
     implicit_event_graph(
         const std::initializer_list<EdgeType>& events,
-        const AdjacencyProbT& prob,
-        size_t seed);
+        const AdjT& adj);
     /**
        Create an implicit event graph representation of a temporal network,
        constructed from a sequence of events and a supplementary set of vertices
@@ -59,33 +55,27 @@ namespace dag {
        @param events An event sequence
        @param verts A supplementary set of vertices that might have no
        neighbours and thereby not be present in `events`.
-       @param prob AdjacencyProb instance determinimg probability of whether two
-       events are adjacent or not based on the events and the time delta.
-       @param seed Seed for reproducable randomness (in case of probabilistic
-       AdjacencyProb)
+       @param adj AdjT instance determinimg whether two events are adjacent or
+       not based on the events and the time delta.
      */
     implicit_event_graph(
         const std::initializer_list<EdgeType>& events,
         const std::initializer_list<VertexType>& verts,
-        const AdjacencyProbT& prob,
-        size_t seed);
+        const AdjT& adj);
 
     /**
        Create an implicit event graph representation of a temporal network,
        constructed from a sequence of events.
 
        @param events An event sequence
-       @param prob AdjacencyProb instance determinimg probability of whether two
-       events are adjacent or not based on the events and the time delta.
-       @param seed Seed for reproducable randomness (in case of probabilistic
-       AdjacencyProb)
+       @param adj AdjT instance determinimg whether two events are adjacent or
+       not based on the events and the time delta.
      */
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeType>
     implicit_event_graph(
         const Range& events,
-        const AdjacencyProbT& prob,
-        size_t seed);
+        const AdjT& prob);
 
     /**
        Create an implicit event graph representation of a temporal network,
@@ -95,10 +85,8 @@ namespace dag {
        @param events An event sequence
        @param verts A supplementary set of vertices that might have no
        neighbours and thereby not be present in `events`.
-       @param prob AdjacencyProb instance determinimg probability of whether two
-       events are adjacent or not based on the events and the time delta.
-       @param seed Seed for reproducable randomness (in case of probabilistic
-       AdjacencyProb)
+       @param adj AdjT instance determinimg whether two events are adjacent or
+       not based on the events and the time delta.
      */
     template <
       std::ranges::input_range EdgeRange,
@@ -109,23 +97,19 @@ namespace dag {
     implicit_event_graph(
         const EdgeRange& events,
         const VertRange& verts,
-        const AdjacencyProbT& prob,
-        size_t seed);
+        const AdjT& adj);
 
     /**
        Create an implicit event graph representation of a temporal network,
        constructed from a pre-existing temporal network 
 
        @param temp A temporal network
-       @param prob AdjacencyProb instance determinimg probability of whether two
-       events are adjacent or not based on the events and the time delta.
-       @param seed Seed for reproducable randomness (in case of probabilistic
-       AdjacencyProb)
+       @param adj AdjT instance determinimg whether two events are adjacent or
+       not based on the events and the time delta.
      */
     implicit_event_graph(
         const network<EdgeType>& temp,
-        const AdjacencyProbT& prob,
-        size_t seed);
+        const AdjT& adj);
 
     /**
        The set of events represented in the original temporal network, sorted by
@@ -144,8 +128,7 @@ namespace dag {
      */
     std::vector<VertexType> temporal_net_vertices() const;
 
-    AdjacencyProbT adjacency_prob() const;
-    size_t seed() const;
+    AdjT temporal_adjacency() const;
 
 
     std::pair<TimeType, TimeType> time_window() const;
@@ -157,9 +140,8 @@ namespace dag {
     successors(const EdgeType& e, bool just_first = false) const;
 
   private:
-    size_t _seed;
     network<EdgeType> _temp;
-    AdjacencyProbT _prob;
+    AdjT _adj;
 
     std::vector<EdgeType>
     successors_vert(const EdgeType& e, VertexType v, bool just_first) const;

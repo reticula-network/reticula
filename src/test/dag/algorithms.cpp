@@ -8,138 +8,7 @@ using Catch::Matchers::Equals;
 #include <dag/temporal_edges.hpp>
 #include <dag/networks.hpp>
 #include <dag/algorithms.hpp>
-#include <dag/adjacency_prob.hpp>
-
-TEST_CASE("event graph", "[dag::event_graph]") {
-  SECTION("undirected temporal network") {
-    using EdgeType = dag::undirected_temporal_edge<int, int>;
-    dag::network<EdgeType> network(
-        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
-    SECTION("small delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(3);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1}, {2, 1, 2}},
-              {{1, 2, 5}, {2, 3, 6}},
-              {{2, 3, 6}, {3, 4, 8}}
-            })));
-    }
-    SECTION("large delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(6);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1}, {2, 1, 2}},
-              {{1, 2, 1}, {1, 2, 5}},
-              {{1, 2, 1}, {2, 3, 6}},
-              {{2, 1, 2}, {1, 2, 5}},
-              {{2, 1, 2}, {2, 3, 6}},
-              {{1, 2, 5}, {2, 3, 6}},
-              {{2, 3, 6}, {3, 4, 8}}
-            })));
-    }
-  }
-
-  SECTION("vertex induced subgraph", "[dag::vertex_induced_subgraph]") {
-    using EdgeType = dag::directed_temporal_hyperedge<int, int>;
-    dag::network<EdgeType> network(
-        {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
-        {{3, 4}, {4}, 8}});
-
-    dag::component<typename EdgeType::VertexType> comp({1, 2, 3, 4, 9});
-    auto res = dag::vertex_induced_subgraph(network, comp);
-
-    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
-          {1, 2, 3, 4}),
-        UnorderedEquals(res.vertices()));
-
-    REQUIRE_THAT(std::vector<EdgeType>({
-          {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
-        UnorderedEquals(res.edges()));
-  }
-
-  SECTION("edge induced subgraph", "[dag::edge_induced_subgraph]") {
-    using EdgeType = dag::directed_temporal_hyperedge<int, int>;
-    dag::network<EdgeType> network(
-        {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
-        {{3, 4}, {4}, 8}});
-
-    dag::component<EdgeType> comp({
-        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
-    auto res = dag::edge_induced_subgraph(network, comp);
-
-    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
-          {1, 2, 4, 7}),
-        UnorderedEquals(res.vertices()));
-
-    REQUIRE_THAT(std::vector<EdgeType>({
-          {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
-        UnorderedEquals(res.edges()));
-  }
-
-  SECTION("directed temporal network") {
-    using EdgeType = dag::directed_temporal_edge<int, int>;
-    dag::network<EdgeType> network(
-        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
-    SECTION("small delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(3);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1}, {2, 1, 2}},
-              {{1, 2, 5}, {2, 3, 6}},
-              {{2, 3, 6}, {3, 4, 8}}
-            })));
-    }
-    SECTION("large delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(6);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1}, {2, 1, 2}},
-              {{1, 2, 1}, {2, 3, 6}},
-              {{2, 1, 2}, {1, 2, 5}},
-              {{1, 2, 5}, {2, 3, 6}},
-              {{2, 3, 6}, {3, 4, 8}}
-            })));
-    }
-  }
-
-  SECTION("directed delayed temporal network") {
-    using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
-    dag::network<EdgeType> network(
-        {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}});
-    SECTION("small delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(3);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1, 5}, {2, 3, 6, 7}},
-              {{2, 1, 2, 3}, {1, 2, 5, 5}},
-              {{1, 2, 5, 5}, {2, 3, 6, 7}},
-              {{2, 3, 6, 7}, {3, 4, 8, 9}}
-            })));
-    }
-    SECTION("large delta-t") {
-      dag::adjacency_prob::deterministic<EdgeType> prob(6);
-      dag::directed_network<EdgeType> eg = event_graph(network, prob, 0ul);
-      REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
-            std::vector<dag::directed_edge<EdgeType>>({
-              {{1, 2, 1, 5}, {2, 3, 6, 7}},
-              {{2, 1, 2, 3}, {1, 2, 5, 5}},
-              {{1, 2, 5, 5}, {2, 3, 6, 7}},
-              {{2, 3, 6, 7}, {3, 4, 8, 9}}
-            })));
-    }
-  }
-}
+#include <dag/temporal_adjacency.hpp>
 
 TEST_CASE("out component", "[dag::out_component]") {
   SECTION("gives correct answer on a cyclic graph") {
@@ -912,3 +781,136 @@ TEST_CASE("time_window",
   REQUIRE(dag::effect_time_window(network) == std::make_pair(3, 9));
   REQUIRE(dag::time_window(network) == std::make_pair(1, 9));
 }
+
+TEST_CASE("vertex induced subgraph", "[dag::vertex_induced_subgraph]") {
+  using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+  dag::network<EdgeType> network(
+      {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
+      {{3, 4}, {4}, 8}});
+
+  dag::component<typename EdgeType::VertexType> comp({1, 2, 3, 4, 9});
+  auto res = dag::vertex_induced_subgraph(network, comp);
+
+  REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+        {1, 2, 3, 4}),
+      UnorderedEquals(res.vertices()));
+
+  REQUIRE_THAT(std::vector<EdgeType>({
+        {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
+      UnorderedEquals(res.edges()));
+}
+
+TEST_CASE("edge induced subgraph", "[dag::edge_induced_subgraph]") {
+  using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+  dag::network<EdgeType> network(
+      {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
+      {{3, 4}, {4}, 8}});
+
+  dag::component<EdgeType> comp({
+      {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
+  auto res = dag::edge_induced_subgraph(network, comp);
+
+  REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+        {1, 2, 4, 7}),
+      UnorderedEquals(res.vertices()));
+
+  REQUIRE_THAT(std::vector<EdgeType>({
+        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
+      UnorderedEquals(res.edges()));
+}
+
+
+TEST_CASE("event graph", "[dag::event_graph]") {
+  SECTION("undirected temporal network") {
+    using EdgeType = dag::undirected_temporal_edge<int, int>;
+    dag::network<EdgeType> network(
+        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+    SECTION("small delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1}, {2, 1, 2}},
+              {{1, 2, 5}, {2, 3, 6}},
+              {{2, 3, 6}, {3, 4, 8}}
+            })));
+    }
+    SECTION("large delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1}, {2, 1, 2}},
+              {{1, 2, 1}, {1, 2, 5}},
+              {{1, 2, 1}, {2, 3, 6}},
+              {{2, 1, 2}, {1, 2, 5}},
+              {{2, 1, 2}, {2, 3, 6}},
+              {{1, 2, 5}, {2, 3, 6}},
+              {{2, 3, 6}, {3, 4, 8}}
+            })));
+    }
+  }
+
+  SECTION("directed temporal network") {
+    using EdgeType = dag::directed_temporal_edge<int, int>;
+    dag::network<EdgeType> network(
+        {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+    SECTION("small delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1}, {2, 1, 2}},
+              {{1, 2, 5}, {2, 3, 6}},
+              {{2, 3, 6}, {3, 4, 8}}
+            })));
+    }
+    SECTION("large delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1}, {2, 1, 2}},
+              {{1, 2, 1}, {2, 3, 6}},
+              {{2, 1, 2}, {1, 2, 5}},
+              {{1, 2, 5}, {2, 3, 6}},
+              {{2, 3, 6}, {3, 4, 8}}
+            })));
+    }
+  }
+
+  SECTION("directed delayed temporal network") {
+    using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+    dag::network<EdgeType> network(
+        {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}});
+    SECTION("small delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1, 5}, {2, 3, 6, 7}},
+              {{2, 1, 2, 3}, {1, 2, 5, 5}},
+              {{1, 2, 5, 5}, {2, 3, 6, 7}},
+              {{2, 3, 6, 7}, {3, 4, 8, 9}}
+            })));
+    }
+    SECTION("large delta-t") {
+      dag::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
+      dag::directed_network<EdgeType> eg = event_graph(network, adj);
+      REQUIRE_THAT(eg.edges(),
+          UnorderedEquals(
+            std::vector<dag::directed_edge<EdgeType>>({
+              {{1, 2, 1, 5}, {2, 3, 6, 7}},
+              {{2, 1, 2, 3}, {1, 2, 5, 5}},
+              {{1, 2, 5, 5}, {2, 3, 6, 7}},
+              {{2, 3, 6, 7}, {3, 4, 8, 9}}
+            })));
+    }
+  }
+}
+
