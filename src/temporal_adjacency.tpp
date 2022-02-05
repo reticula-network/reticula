@@ -16,7 +16,7 @@ namespace dag {
     }
 
     template <temporal_edge EdgeT>
-    double simple<EdgeT>::cutoff_dt(const EdgeT& e) const {
+    double simple<EdgeT>::cutoff_dt(const EdgeT&) const {
       return std::numeric_limits<typename EdgeT::TimeType>::infinity();
     }
 
@@ -32,7 +32,7 @@ namespace dag {
     }
 
     template <temporal_edge EdgeT>
-    double limited_waiting_time<EdgeT>::cutoff_dt(const EdgeT& e) const {
+    double limited_waiting_time<EdgeT>::cutoff_dt(const EdgeT&) const {
       return static_cast<double>(_dt);
     }
 
