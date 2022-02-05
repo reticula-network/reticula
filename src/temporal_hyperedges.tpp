@@ -429,7 +429,7 @@ namespace dag {
   undirected_temporal_hyperedge<VertexType, TimeType>::
   undirected_temporal_hyperedge(
       const undirected_hyperedge<VertexType>& projection, TimeType time) :
-    _time(time), _verts(projection.incident_verts()) {};
+    _time(time), _verts(projection.incident_verts()) {}
 
   template <network_vertex VertexType, typename TimeType>
   undirected_hyperedge<VertexType>
