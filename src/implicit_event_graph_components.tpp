@@ -291,4 +291,4 @@ namespace dag {
       const EdgeT& root) {
     return detail::generic_out_component(eg, root, false, true);
   }
-}
+}  // namespace dag

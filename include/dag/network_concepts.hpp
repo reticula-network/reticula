@@ -2,6 +2,9 @@
 #define INCLUDE_DAG_NETWORK_CONCEPTS_HPP_
 
 #include <concepts>
+#include <vector>
+#include <istream>
+#include <ostream>
 
 #include "type_traits.hpp"
 

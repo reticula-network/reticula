@@ -90,7 +90,7 @@ TEST_CASE("geometric temporal adjacency",
   typename EdgeType::TimeType t = 0;
   for (std::size_t i = 0; i < ens; i++)
     t += dag::temporal_adjacency::geometric<EdgeType>(p, i).linger(a, 2)
-      + 1; // add one since the linger time is inclusive of the last timestamp
+      + 1;  // The linger time is inclusive of the last timestamp
 
   double val = static_cast<double>(t)/static_cast<double>(ens);
   double sigma = std::sqrt(1.0/p);
