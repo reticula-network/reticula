@@ -122,15 +122,25 @@ namespace dag {
     return succ;
   }
 
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  std::vector<EdgeT>
+  implicit_event_graph<EdgeT, AdjT>::neighbours(
+      const EdgeT& e, bool just_first) const {
+    std::vector<EdgeT> inc(successors(e, just_first));
+    std::vector<EdgeT> pred(predecessors(e, just_first));
+    inc.insert(inc.end(), pred.begin(), pred.end());
+
+    std::sort(inc.begin(), inc.end());
+    inc.erase(std::unique(inc.begin(), inc.end()), inc.end());
+
+    return inc;
+  }
+
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::successors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
-
-    std::size_t reserve_max = 32;
-    if (just_first)
-      reserve_max = 1;
-
     std::vector<EdgeT> res;
     auto out_edges_it = _temp.out_edges().find(v);
     if (out_edges_it == _temp.out_edges().end())
@@ -140,12 +150,16 @@ namespace dag {
         out_edges_it->second.begin(), out_edges_it->second.end(), e,
         [](const EdgeT& e1, const EdgeT& e2) { return e1 < e2; });
 
-    typename EdgeT::TimeType cutoff = _adj.cutoff_time(e);
-    res.reserve(std::min<std::size_t>(
-          reserve_max, static_cast<std::size_t>(
-            out_edges_it->second.end() - other)));
+    typename EdgeT::TimeType cutoff = _adj.linger(e, v);
+
+    if (just_first)
+      res.reserve(2);
+    else
+      res.reserve(std::min<std::size_t>(
+            32, static_cast<std::size_t>(
+              out_edges_it->second.end() - other)));
     while ((other < out_edges_it->second.end()) &&
-        other->cause_time() <= cutoff) {
+        other->cause_time() - e.effect_time() <= cutoff) {
       if (adjacent(e, *other)) {
         if (just_first && !res.empty() &&
             res[0].cause_time() != other->cause_time())
@@ -162,10 +176,6 @@ namespace dag {
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::predecessors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
-    std::size_t reserve_max = 32;
-    if (just_first)
-      reserve_max = 1;
-
     std::vector<EdgeT> res;
     auto in_edges_it = _temp.in_edges().find(v);
     if (in_edges_it == _temp.in_edges().end())
@@ -178,15 +188,18 @@ namespace dag {
     if (other > in_edges_it->second.begin())
       other--;
 
-    typename EdgeT::TimeType cutoff = _adj.cutoff_time(e);
-    res.reserve(std::min<std::size_t>(
-          reserve_max, static_cast<std::size_t>(
+    typename EdgeT::TimeType cutoff = _adj.maximum_linger(v);
+    if (just_first)
+      res.reserve(2);
+    else
+      res.reserve(std::min<std::size_t>(
+            32, static_cast<std::size_t>(
             other - in_edges_it->second.begin())));
     while (other >= in_edges_it->second.begin() &&
-        other->cause_time() <= cutoff) {
+        e.cause_time() - other->effect_time() <= cutoff) {
       if (adjacent(*other, e)) {
         if (just_first && !res.empty() &&
-            res[0].cause_time() != other->cause_time())
+            res[0].effect_time() != other->effect_time())
           return res;
         else
           res.push_back(*other);

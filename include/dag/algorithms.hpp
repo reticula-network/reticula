@@ -149,7 +149,8 @@ namespace dag {
     typename EdgeT::VertexType,
     component_size_estimate<typename EdgeT::VertexType>>>
   out_component_size_estimates(
-      const network<EdgeT>& dir);
+      const network<EdgeT>& dir,
+      std::size_t seed);
 
 
   // in-components:
@@ -208,7 +209,8 @@ namespace dag {
     typename EdgeT::VertexType,
     component_size_estimate<typename EdgeT::VertexType>>>
   in_component_size_estimates(
-      const network<EdgeT>& dir);
+      const network<EdgeT>& dir,
+      std::size_t seed);
 
   /**
     Returns the weakly connected components of `dir` containing vertex `vert`.

@@ -139,6 +139,9 @@ namespace dag {
     std::vector<EdgeType>
     successors(const EdgeType& e, bool just_first = false) const;
 
+    std::vector<EdgeType>
+    neighbours(const EdgeType& e, bool just_first = false) const;
+
   private:
     network<EdgeType> _temp;
     AdjT _adj;

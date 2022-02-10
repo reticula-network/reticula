@@ -6,67 +6,114 @@
 
 namespace dag {
   namespace temporal_adjacency {
+    // simple adjacency
     template <temporal_edge EdgeT>
     typename EdgeT::TimeType
-    simple<EdgeT>::cutoff_time(const EdgeT&) const {
-      if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
-        return std::numeric_limits<typename EdgeT::TimeType>::infinity();
-      else
-        return std::numeric_limits<typename EdgeT::TimeType>::max();
+    simple<EdgeT>::linger(
+        const EdgeT&, const typename EdgeT::VertexType& v) const {
+      return maximum_linger(v);
     }
 
     template <temporal_edge EdgeT>
-    double simple<EdgeT>::cutoff_dt(const EdgeT&) const {
-      return std::numeric_limits<typename EdgeT::TimeType>::infinity();
+    typename EdgeT::TimeType
+    simple<EdgeT>::maximum_linger(
+        const typename EdgeT::VertexType&) const {
+      return std::numeric_limits<typename EdgeT::TimeType>::max();
     }
 
 
+    // limited waiting-time adjacency
     template <temporal_edge EdgeT>
     limited_waiting_time<EdgeT>::limited_waiting_time(
         typename EdgeT::TimeType dt) : _dt(dt) {}
 
     template <temporal_edge EdgeT>
     typename EdgeT::TimeType
-    limited_waiting_time<EdgeT>::cutoff_time(const EdgeT& e) const {
-      return e.effect_time() + _dt;
-    }
-
-    template <temporal_edge EdgeT>
-    double limited_waiting_time<EdgeT>::cutoff_dt(const EdgeT&) const {
-      return static_cast<double>(_dt);
+    limited_waiting_time<EdgeT>::linger(
+        const EdgeT&, const typename EdgeT::VertexType&) const {
+      return _dt;
     }
 
     template <temporal_edge EdgeT>
     typename EdgeT::TimeType
-    limited_waiting_time<EdgeT>::dt() const { return _dt; }
+    limited_waiting_time<EdgeT>::maximum_linger(
+        const typename EdgeT::VertexType&) const {
+      return _dt;
+    }
 
     template <temporal_edge EdgeT>
+    typename EdgeT::TimeType
+    limited_waiting_time<EdgeT>::dt() const {
+      return _dt;
+    }
+
+
+    // exponential adjacency
+    template <temporal_edge EdgeT>
+    requires std::is_floating_point_v<typename EdgeT::TimeType>
     exponential<EdgeT>::exponential(
-        typename EdgeT::TimeType expected_dt, std::size_t seed) :
-      _dt(expected_dt), _seed(seed) {}
+        typename EdgeT::TimeType rate, std::size_t seed) :
+      _rate(rate), _seed(seed) {}
 
     template <temporal_edge EdgeT>
+    requires std::is_floating_point_v<typename EdgeT::TimeType>
     typename EdgeT::TimeType
-    exponential<EdgeT>::cutoff_time(const EdgeT& e) const {
-      double alive_dt = cutoff_dt(e);
-      if constexpr (std::numeric_limits<typename EdgeT::TimeType>::is_integer)
-        return e.effect_time() +
-          static_cast<typename EdgeT::TimeType>(std::round(alive_dt));
-      else
-        return e.effect_time() +
-          static_cast<typename EdgeT::TimeType>(alive_dt);
-    }
-
-    template <temporal_edge EdgeT>
-    double exponential<EdgeT>::cutoff_dt(const EdgeT& e) const {
+    exponential<EdgeT>::linger(
+        const EdgeT& e, const typename EdgeT::VertexType& v) const {
+      std::exponential_distribution<typename EdgeType::TimeType> dist(_rate);
       size_t seed = utils::combine_hash<EdgeT, hash>(_seed, e);
+      seed = utils::combine_hash<typename EdgeT::VertexType, hash>(seed, v);
       std::mt19937_64 gen(seed);
-      std::exponential_distribution<double> dst(1.0/static_cast<double>(_dt));
-      return dst(gen);
+      return dist(gen);
     }
 
     template <temporal_edge EdgeT>
+    requires std::is_floating_point_v<typename EdgeT::TimeType>
     typename EdgeT::TimeType
-    exponential<EdgeT>::expected_dt() const { return _dt; }
+    exponential<EdgeT>::maximum_linger(
+        const typename EdgeT::VertexType&) const {
+      std::exponential_distribution<typename EdgeType::TimeType> dist(_rate);
+      return dist.max();
+    }
+
+    template <temporal_edge EdgeT>
+    requires std::is_floating_point_v<typename EdgeT::TimeType>
+    typename EdgeT::TimeType exponential<EdgeT>::rate() const {
+      return _rate;
+    }
+
+
+    // geometric adjacency
+    template <temporal_edge EdgeT>
+    requires std::is_integral_v<typename EdgeT::TimeType>
+    geometric<EdgeT>::geometric(double p, std::size_t seed) :
+      _p(p), _seed(seed) {}
+
+    template <temporal_edge EdgeT>
+    requires std::is_integral_v<typename EdgeT::TimeType>
+    typename EdgeT::TimeType
+    geometric<EdgeT>::linger(
+        const EdgeT& e, const typename EdgeT::VertexType& v) const {
+      std::geometric_distribution<typename EdgeType::TimeType> dist(_p);
+      size_t seed = utils::combine_hash<EdgeT, hash>(_seed, e);
+      seed = utils::combine_hash<typename EdgeT::VertexType, hash>(seed, v);
+      std::mt19937_64 gen(seed);
+      return dist(gen);
+    }
+
+    template <temporal_edge EdgeT>
+    requires std::is_integral_v<typename EdgeT::TimeType>
+    typename EdgeT::TimeType
+    geometric<EdgeT>::maximum_linger(
+        const typename EdgeT::VertexType&) const {
+      std::geometric_distribution<typename EdgeType::TimeType> dist(_p);
+      return dist.max();
+    }
+
+    template <temporal_edge EdgeT>
+    requires std::is_integral_v<typename EdgeT::TimeType>
+    double geometric<EdgeT>::p() const {
+      return _p;
+    }
   }  // namespace temporal_adjacency
 }  // namespace dag

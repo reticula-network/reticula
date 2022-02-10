@@ -106,7 +106,7 @@ TEST_CASE("out components", "[dag::out_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    auto comp_size_ests = dag::out_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -139,7 +139,7 @@ TEST_CASE("out components", "[dag::out_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    auto comp_size_ests = dag::out_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -170,7 +170,7 @@ TEST_CASE("out components", "[dag::out_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    auto comp_size_ests = dag::out_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -204,7 +204,7 @@ TEST_CASE("out components", "[dag::out_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::out_component_size_estimates(graph);
+    auto comp_size_ests = dag::out_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 }
@@ -298,7 +298,7 @@ TEST_CASE("in components", "[dag::in_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    auto comp_size_ests = dag::in_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -332,7 +332,7 @@ TEST_CASE("in components", "[dag::in_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    auto comp_size_ests = dag::in_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -365,7 +365,7 @@ TEST_CASE("in components", "[dag::in_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    auto comp_size_ests = dag::in_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
@@ -403,7 +403,7 @@ TEST_CASE("in components", "[dag::in_components]") {
 
     REQUIRE(comp_map == res);
 
-    auto comp_size_ests = dag::in_component_size_estimates(graph);
+    auto comp_size_ests = dag::in_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 }

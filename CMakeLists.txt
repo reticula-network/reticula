@@ -43,6 +43,7 @@ add_executable(
   src/test/dag/edge_tests.cpp
   src/test/dag/generators.cpp
   src/test/dag/implicit_event_graph.cpp
+  src/test/dag/implicit_event_graph_components.cpp
   src/test/dag/networks.cpp
   src/test/dag/random_networks.cpp
   src/test/dag/components.cpp)
