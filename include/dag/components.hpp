@@ -2,6 +2,7 @@
 #define INCLUDE_DAG_COMPONENTS_HPP_
 
 #include <ranges>
+#include <unordered_set>
 
 #include <hll/hyperloglog.hpp>
 
@@ -56,6 +57,7 @@ namespace dag {
 
     bool operator==(const component<VertT>&) const = default;
     std::size_t size() const;
+
     bool contains(const VertexType& v) const;
     bool empty() const;
 
