@@ -12,15 +12,22 @@ namespace dag {
     if (end < start)
       throw std::invalid_argument("interval end cannot be less than the start");
 
+    std::pair<T, T> current(start, end);
+
     typename std::vector<std::pair<T, T>>::iterator ostart;
-    if (_ints.empty() || start > _ints.back().second)
+    if (_ints.empty() || current.first > _ints.back().second)
       ostart = _ints.end();
+    else if (can_merge(current, _ints.back()))
+      ostart = _ints.end() - 1;
+    else if (current.second >= _ints.front().first ||
+              can_merge(current, _ints.front()))
+      ostart = _ints.begin();
     else
       ostart = std::ranges::lower_bound(
-          _ints, start, std::ranges::less{}, [](auto& p) { return p.second; });
+          _ints, current.first, std::ranges::less{},
+          [](auto& p) { return p.second; });
     auto oend = ostart;
 
-    std::pair<T, T> current(start, end);
     while (oend != _ints.end() && can_merge(current, *oend)) {
       current.first = std::min(current.first, oend->first);
       current.second = std::max(current.second, oend->second);
@@ -31,7 +38,7 @@ namespace dag {
       _ints.insert(ostart, current);
     } else {
       *(ostart++) = current;
-      std::move(oend, _ints.end(), ostart);
+      _ints.erase(ostart, oend);
     }
   }
 
@@ -40,7 +47,7 @@ namespace dag {
     std::vector<std::pair<T, T>> out;
     out.reserve((_ints.capacity() + cs._ints.capacity()));
 
-    auto f1 = _ints.begin(), l1= _ints.end();
+    auto f1 = _ints.begin(), l1 = _ints.end();
     auto f2 = cs._ints.begin(), l2 = cs._ints.end();
     while (f1 != l1 && f2 != l2) {
       if (out.empty())

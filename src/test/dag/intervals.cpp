@@ -1,21 +1,11 @@
-#include <iostream>
+#include <ranges>
+#include <algorithm>
 
 #include <catch2/catch.hpp>
 
 #include <dag/intervals.hpp>
 
 TEST_CASE("interval set", "[dag::interval_set]") {
-  /* SECTION("can be initialized with a range of intervals") { */
-  /*   dag::interval_set<int> is1{{0, 3}, {5, 8}}; */
-  /*   REQUIRE(is1.cover() == 6) */
-
-  /*   dag::interval_set<int> is2{{0, 6}, {5, 8}}; */
-  /*   REQUIRE(is2.cover() == 8) */
-
-  /*   dag::interval_set<int> is3{{5, 8}, {0, 6}}; */
-  /*   REQUIRE(is3.cover() == 8) */
-  /* } */
-
   SECTION("insert") {
     dag::interval_set<int> is;
 
@@ -28,16 +18,18 @@ TEST_CASE("interval set", "[dag::interval_set]") {
     is.insert(-3, -2);
 
     REQUIRE(is.cover() == 9);
+    REQUIRE(std::ranges::is_sorted(is));
 
     REQUIRE_FALSE(is.is_covered(-4));
-    REQUIRE(      is.is_covered(-2));
-    REQUIRE(      is.is_covered(-3));
     REQUIRE_FALSE(is.is_covered(0));
-    REQUIRE(      is.is_covered(2));
-    REQUIRE(      is.is_covered(4));
     REQUIRE_FALSE(is.is_covered(5));
-    REQUIRE(      is.is_covered(7));
     REQUIRE_FALSE(is.is_covered(8));
+
+    REQUIRE(is.is_covered(-2));
+    REQUIRE(is.is_covered(-3));
+    REQUIRE(is.is_covered(2));
+    REQUIRE(is.is_covered(4));
+    REQUIRE(is.is_covered(7));
   }
 
   SECTION("merge") {
@@ -59,12 +51,14 @@ TEST_CASE("interval set", "[dag::interval_set]") {
       dag::interval_set<int> is3;
       is1.merge(is3);
       REQUIRE(is1 == is2);
+      REQUIRE(std::ranges::is_sorted(is1));
     }
 
     SECTION("identical") {
       dag::interval_set<int> is2(is1);
       is1.merge(is2);
       REQUIRE(is1 == is2);
+      REQUIRE(std::ranges::is_sorted(is1));
     }
 
     SECTION("overlapping") {
@@ -75,6 +69,7 @@ TEST_CASE("interval set", "[dag::interval_set]") {
 
       dag::interval_set<int> original_is2(is2);
       is2.merge(is1);
+      REQUIRE(std::ranges::is_sorted(is2));
       REQUIRE(std::ranges::all_of(std::views::iota(-10, 20),
             [&is1, &is2, &original_is2](int i) {
               return (is1.is_covered(i) | original_is2.is_covered(i)) ==
