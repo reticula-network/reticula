@@ -97,7 +97,7 @@ namespace dag {
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   bool temporal_component<EdgeT, AdjT>::covers(
-      EdgeT::VertexType v, EdgeT::TimeType t) const {
+      typename EdgeT::VertexType v, typename EdgeT::TimeType t) const {
     if (_ints.contains(v))
       return _ints.at(v).covers(t);
     else

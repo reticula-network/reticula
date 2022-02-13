@@ -64,7 +64,7 @@ namespace dag {
     std::size_t size() const;
 
     bool contains(const EdgeT& e) const;
-    bool covers(EdgeT::VertexType v, EdgeT::TimeType t) const;
+    bool covers(typename EdgeT::VertexType v, typename EdgeT::TimeType t) const;
     bool empty() const;
 
     IteratorType begin() const;
