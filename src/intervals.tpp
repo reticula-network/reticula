@@ -92,7 +92,7 @@ namespace dag {
   }
 
   template <typename T>
-  bool interval_set<T>::is_covered(T time) const {
+  bool interval_set<T>::covers(T time) const {
     auto lower = std::ranges::lower_bound(
         _ints, time, std::ranges::less{}, [](auto& p) { return p.second; });
     if (lower != _ints.end() &&

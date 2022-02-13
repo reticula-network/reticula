@@ -16,7 +16,7 @@ namespace dag {
     void insert(T start, T end);
     void merge(const interval_set<T>& cs);
 
-    bool is_covered(T time) const;
+    bool covers(T time) const;
     T cover() const;
 
     IteratorType begin() const;

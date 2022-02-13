@@ -20,16 +20,16 @@ TEST_CASE("interval set", "[dag::interval_set]") {
     REQUIRE(is.cover() == 9);
     REQUIRE(std::ranges::is_sorted(is));
 
-    REQUIRE_FALSE(is.is_covered(-4));
-    REQUIRE_FALSE(is.is_covered(0));
-    REQUIRE_FALSE(is.is_covered(5));
-    REQUIRE_FALSE(is.is_covered(8));
+    REQUIRE_FALSE(is.covers(-4));
+    REQUIRE_FALSE(is.covers(0));
+    REQUIRE_FALSE(is.covers(5));
+    REQUIRE_FALSE(is.covers(8));
 
-    REQUIRE(is.is_covered(-2));
-    REQUIRE(is.is_covered(-3));
-    REQUIRE(is.is_covered(2));
-    REQUIRE(is.is_covered(4));
-    REQUIRE(is.is_covered(7));
+    REQUIRE(is.covers(-2));
+    REQUIRE(is.covers(-3));
+    REQUIRE(is.covers(2));
+    REQUIRE(is.covers(4));
+    REQUIRE(is.covers(7));
   }
 
   SECTION("merge") {
@@ -72,8 +72,8 @@ TEST_CASE("interval set", "[dag::interval_set]") {
       REQUIRE(std::ranges::is_sorted(is2));
       REQUIRE(std::ranges::all_of(std::views::iota(-10, 20),
             [&is1, &is2, &original_is2](int i) {
-              return (is1.is_covered(i) | original_is2.is_covered(i)) ==
-                (is2.is_covered(i));
+              return (is1.covers(i) | original_is2.covers(i)) ==
+                (is2.covers(i));
               }));
     }
   }
