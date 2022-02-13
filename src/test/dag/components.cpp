@@ -3,8 +3,6 @@
 #include <unordered_set>
 
 #include <catch2/catch.hpp>
-using Catch::Matchers::UnorderedEquals;
-using Catch::Matchers::Equals;
 
 #include <dag/components.hpp>
 
