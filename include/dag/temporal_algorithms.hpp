@@ -126,6 +126,25 @@ namespace dag {
 
 
   /**
+    Finds the estimated set of events that transmit a spreading process starting
+    at each event.
+
+    @param temp A temporal network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    between two otherwise adjacent events.
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT,
+    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1)>
+  std::vector<
+    std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
+  out_cluster_size_estimates(
+          const network<EdgeT>& temp,
+          const AdjT adj,
+          std::size_t seed);
+
+  /**
     Finds the set of events where a spreading process starting there would be
     transmitted to the specified node at the specified time.
 
@@ -194,6 +213,25 @@ namespace dag {
   in_cluster_sizes(
           const network<EdgeT>& temp,
           const AdjT adj);
+
+  /**
+    For each event, finds the estimated set of initial events that a spreading
+    process starting there would spread to the event in question.
+
+    @param temp A temporal network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    between two otherwise adjacent events.
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT,
+    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1.0)>
+  std::vector<
+    std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
+  in_cluster_size_estimates(
+          const network<EdgeT>& temp,
+          const AdjT adj,
+          std::size_t seed);
 }  // namespace dag
 
 #include "../../src/temporal_algorithms.tpp"

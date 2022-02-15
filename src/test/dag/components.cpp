@@ -78,3 +78,29 @@ TEST_CASE("component properties", "[dag::component]") {
     REQUIRE(comp.size() == 4);
   }
 }
+
+TEST_CASE("component size", "[dag::component_size]") {
+  using CompType = dag::component<int>;
+
+  CompType comp(0, 0);
+
+  comp.insert(0);
+  comp.insert(1);
+  comp.insert(2);
+
+  dag::component_size<int> comp_size(comp);
+  REQUIRE(comp_size.size() == comp.size());
+}
+
+TEST_CASE("component size estimate", "[dag::component_size_estimate]") {
+  using CompType = dag::component_sketch<int>;
+
+  CompType comp(0, 0);
+
+  comp.insert(0);
+  comp.insert(1);
+  comp.insert(2);
+
+  dag::component_size_estimate<int> comp_size_est(comp);
+  REQUIRE(comp_size_est.size_estimate() == comp.size_estimate());
+}

@@ -93,6 +93,7 @@ namespace dag {
       hash<typename EdgeT::VertexType>> _ints;
   };
 
+
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   class temporal_component_size {
   public:
@@ -112,6 +113,91 @@ namespace dag {
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType> _lifetime;
     typename EdgeT::TimeType _mass;
     std::size_t _volume;
+  };
+
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT,
+    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1)>
+  class temporal_component_sketch {
+  public:
+    using VertexType = EdgeT;
+    using AdjacencyType = AdjT;
+    using EventSketchType =
+      hll::hyperloglog<
+        EdgeT,
+        13, 14>;
+    using VertSketchType =
+      hll::hyperloglog<
+        typename EdgeT::VertexType,
+        13, 14>;
+    using TimeSketchType =
+      hll::hyperloglog<
+        std::pair<typename EdgeT::VertexType, typename EdgeT::TimeType>,
+        13, 14>;
+
+    explicit temporal_component_sketch(
+        AdjT adj, std::size_t size_hint = 0, std::size_t seed = 0);
+    temporal_component_sketch(
+        std::initializer_list<EdgeT> verts, AdjT adj,
+        std::size_t size_hint = 0, std::size_t seed = 0);
+
+    template<std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    explicit temporal_component_sketch(const Range& verts, AdjT adj,
+        std::size_t size_hint = 0, std::size_t seed = 0);
+
+    template <std::ranges::input_range Range>
+    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    void insert(const Range& events);
+
+    void insert(const EdgeT& e);
+
+    void merge(const temporal_component_sketch<EdgeT, AdjT, dt>& other);
+
+    double size_estimate() const;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+    lifetime() const;
+    double volume_estimate() const;
+    double mass_estimate() const;
+
+  private:
+    void insert_time_range(
+        typename EdgeT::VertexType v,
+        typename EdgeT::TimeType start,
+        typename EdgeT::TimeType end);
+
+    AdjT _adj;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType> _lifetime;
+    EventSketchType _events;
+    VertSketchType _verts;
+    TimeSketchType _times;
+  };
+
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT,
+    EdgeT::TimeType dt = static_cast<EdgeT::TimeType>(1)>
+  class temporal_component_size_estimate {
+  public:
+    using VertexType = EdgeT;
+    using AdjacencyType = AdjT;
+
+    explicit temporal_component_size_estimate(
+        const temporal_component_sketch<EdgeT, AdjT, dt>& c);
+
+    double size_estimate() const;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+    lifetime() const;
+    double volume_estimate() const;
+    double mass_estimate() const;
+
+  private:
+    double _size_estimate;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+    _lifetime;
+    double _volume_estimate;
+    double _mass_estimate;
   };
 }  // namespace dag
 

@@ -75,3 +75,45 @@ TEST_CASE("temporal component properties", "[dag::temporal_component]") {
     REQUIRE(comp.covers(5, 15.0));
   }
 }
+
+TEST_CASE("temporal component size", "[dag::temporal_component_size]") {
+  using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
+  using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
+  using CompType = dag::temporal_component<EdgeType, AdjType>;
+
+  CompType comp(AdjType(3.0));
+
+  comp.insert({{1, 2}, 1.0});
+  comp.insert({{1, 3}, 3.0});
+  comp.insert({{2, 5}, 3.0});
+  comp.insert({{4, 5}, 5.0});
+
+  dag::temporal_component_size<EdgeType, AdjType> comp_size(comp);
+
+  REQUIRE(comp.size() == comp_size.size());
+  REQUIRE(comp.volume() == comp_size.volume());
+  REQUIRE(comp.mass() == comp_size.mass());
+  REQUIRE(comp.lifetime() == comp_size.lifetime());
+}
+
+
+TEST_CASE("temporal component size estimate",
+    "[dag::temporal_component_size_estimate]") {
+  using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
+  using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
+  using CompType = dag::temporal_component_sketch<EdgeType, AdjType>;
+
+  CompType comp(AdjType(3.0));
+
+  comp.insert({{1, 2}, 1.0});
+  comp.insert({{1, 3}, 3.0});
+  comp.insert({{2, 5}, 3.0});
+  comp.insert({{4, 5}, 5.0});
+
+  dag::temporal_component_size_estimate<EdgeType, AdjType> comp_size(comp);
+
+  REQUIRE(comp.size_estimate() == comp_size.size_estimate());
+  REQUIRE(comp.mass_estimate() == comp_size.mass_estimate());
+  REQUIRE(comp.volume_estimate() == comp_size.volume_estimate());
+  REQUIRE(comp.lifetime() == comp_size.lifetime());
+}
