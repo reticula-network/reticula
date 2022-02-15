@@ -150,4 +150,33 @@ namespace dag {
 
     return total;
   }
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  temporal_component_size<EdgeT, AdjT>::temporal_component_size(
+      const temporal_component<EdgeT, AdjT>& c) :
+    _size(c.size()), _lifetime(c.lifetime()),
+    _mass(c.mass()), _volume(c.volume()) {}
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  std::size_t temporal_component_size<EdgeT, AdjT>::size() const {
+    return _size;
+  }
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+  temporal_component_size<EdgeT, AdjT>::lifetime() const {
+    return _lifetime;
+  }
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  std::size_t
+  temporal_component_size<EdgeT, AdjT>::volume() const {
+    return _volume;
+  }
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  typename EdgeT::TimeType
+  temporal_component_size<EdgeT, AdjT>::mass() const {
+    return _mass;
+  }
 }  // namespace dag

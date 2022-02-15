@@ -108,6 +108,22 @@ namespace dag {
           const network<EdgeT>& temp,
           const AdjT adj);
 
+  /**
+    Finds the set of events that transmit a spreading process starting at each
+    event.
+
+    @param temp A temporal network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    between two otherwise adjacent events.
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
+  out_cluster_sizes(
+          const network<EdgeT>& temp,
+          const AdjT adj);
+
 
   /**
     Finds the set of events where a spreading process starting there would be
@@ -160,6 +176,22 @@ namespace dag {
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
   in_clusters(
+          const network<EdgeT>& temp,
+          const AdjT adj);
+
+  /**
+    For each event, finds the set of initial events that a spreading process
+    starting there would spread to the event in question.
+
+    @param temp A temporal network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    between two otherwise adjacent events.
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
+  in_cluster_sizes(
           const network<EdgeT>& temp,
           const AdjT adj);
 }  // namespace dag

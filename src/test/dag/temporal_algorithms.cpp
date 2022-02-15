@@ -254,5 +254,7 @@ TEST_CASE("percolation in-clusters", "[dag::in_clusters]") {
           {3, 4, 8, 9}}, adj}},
         {{5, 6, 1, 3},
           {{{5, 6, 1, 3}}, adj}}});
+
+
   REQUIRE_THAT(dag::in_clusters(network, adj), UnorderedEquals(true_ic));
 }

@@ -92,6 +92,27 @@ namespace dag {
       dag::interval_set<typename EdgeT::TimeType>,
       hash<typename EdgeT::VertexType>> _ints;
   };
+
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  class temporal_component_size {
+  public:
+    using VertexType = EdgeT;
+    using AdjacencyType = AdjT;
+
+    explicit temporal_component_size(const temporal_component<EdgeT, AdjT>& c);
+
+    std::size_t size() const;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
+    lifetime() const;
+    std::size_t volume() const;
+    typename EdgeT::TimeType mass() const;
+
+  private:
+    std::size_t _size;
+    std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType> _lifetime;
+    typename EdgeT::TimeType _mass;
+    std::size_t _volume;
+  };
 }  // namespace dag
 
 #include "../../src/temporal_components.tpp"
