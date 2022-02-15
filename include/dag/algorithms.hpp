@@ -9,7 +9,6 @@
 #include "network_concepts.hpp"
 #include "networks.hpp"
 #include "components.hpp"
-#include "temporal_adjacency.hpp"
 
 namespace dag {
   template <static_edge EdgeT, typename DiscoveryF>
@@ -19,7 +18,6 @@ namespace dag {
       const typename EdgeT::VertexType& vert,
       DiscoveryF discovered,
       std::size_t size_hint = 0);
-
 
   /**
     Vertex induced subgraph is a subset of the graph that includes only nodes
@@ -319,49 +317,6 @@ namespace dag {
   template <std::ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
   bool is_digraphic(const PairRange& in_out_degree_sequence);
-
-  /**
-    Finds the range of times present in the events. If temporal edges have
-    different cause and effect times (i.e. they have delays) this would be
-    equivalent to minimum cause time and maximum effect time.
-  */
-  template <temporal_edge EdgeT>
-  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  time_window(const network<EdgeT>& temp);
-
-  /**
-    Finds the range of cause times present in the events. If temporal edges have
-    don't haver different cause and effect times (i.e. they are not delayed)
-    this would be equivalent to time_window.
-  */
-  template <temporal_edge EdgeT>
-  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  cause_time_window(const network<EdgeT>& temp);
-
-  /**
-    Finds the range of effect times present in the events. If temporal edges
-    have don't haver different cause and effect times (i.e. they are not
-    delayed) this would be equivalent to time_window.
-  */
-  template <temporal_edge EdgeT>
-  std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  effect_time_window(const network<EdgeT>& temp);
-
-
-  /**
-    Generates the event graph representation of the temporal network.
-
-    @param temp A temporal network
-    @param adj A `temporal_adjacency` class limiting the adjacency relationship
-    between two otherwise adjacent events.
-  */
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT>
-  directed_network<EdgeT>
-  event_graph(
-      const network<EdgeT>& temp,
-      const AdjT& adj);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

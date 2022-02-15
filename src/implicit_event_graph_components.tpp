@@ -6,6 +6,24 @@
 namespace dag {
   namespace detail {
     template <
+      typename ComponentType,
+      temporal_adjacency::temporal_adjacency AdjT>
+    struct component_type_constructor {
+      ComponentType
+      operator()(AdjT adj, std::size_t size_est, std::size_t seed);
+    };
+
+    template <
+      network_component Comp,
+      temporal_adjacency::temporal_adjacency AdjT>
+    struct component_type_constructor<Comp, AdjT> {
+      Comp
+      operator()(AdjT /* adj */, std::size_t size_est, std::size_t seed) {
+        return Comp{size_est, seed};
+      }
+    };
+
+    template <
       temporal_edge EdgeT,
       temporal_adjacency::temporal_adjacency AdjT,
       typename IntermComponent,
@@ -26,7 +44,9 @@ namespace dag {
       auto end = eg.events_cause().rend();
 
       while (temp_edge_iter < end) {
-        out_components[*temp_edge_iter] = IntermComponent(0, seed);
+        out_components.emplace(*temp_edge_iter,
+          component_type_constructor<IntermComponent, AdjT>{}(
+              eg.temporal_adjacency(), 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
             *temp_edge_iter, true);
@@ -80,7 +100,9 @@ namespace dag {
       auto end = eg.events_effect().end();
 
       while (temp_edge_iter < end) {
-        in_components[*temp_edge_iter] = IntermComponent(0, seed);
+        in_components.emplace(*temp_edge_iter,
+          component_type_constructor<IntermComponent, AdjT>{}(
+              eg.temporal_adjacency(), 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
             *temp_edge_iter, true);

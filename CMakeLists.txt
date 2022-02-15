@@ -40,6 +40,7 @@ add_executable(
   src/test/dag/intervals.cpp
   src/test/dag/temporal_adjacency.cpp
   src/test/dag/algorithms.cpp
+  src/test/dag/temporal_algorithms.cpp
   src/test/dag/compile.cpp
   src/test/dag/edge_tests.cpp
   src/test/dag/generators.cpp
