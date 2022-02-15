@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install GCC 10
+    - name: Install GCC
       run: |
         sudo apt-get -qy update
         sudo apt-get install g++-11
