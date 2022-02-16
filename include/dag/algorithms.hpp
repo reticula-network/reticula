@@ -278,6 +278,19 @@ namespace dag {
   template <static_undirected_edge EdgeT>
   bool is_connected(const network<EdgeT>& net);
 
+  /**
+    Returns true if node `destination` can be reached by following edges
+    starting from node `source`.
+
+    @param net The network
+    @param source The starting point of the reachability query
+    @param destination The end point of the reachability query
+  */
+  template <static_edge EdgeT>
+  bool is_reachable(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& source,
+      const typename EdgeT::VertexType& destination);
 
   template <network_vertex VertT1, network_vertex VertT2>
   undirected_network<std::pair<VertT1, VertT2>>

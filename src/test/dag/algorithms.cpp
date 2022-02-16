@@ -652,6 +652,61 @@ TEST_CASE("is connected?", "[dag::is_connected]") {
   REQUIRE(dag::is_connected(connected));
 }
 
+TEST_CASE("is reachable", "[dag::is_reachable]") {
+  SECTION("works for undirected graph") {
+    dag::undirected_network<int> graph({
+        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+        {8, 9}});
+    REQUIRE(dag::is_reachable(graph, 1, 1));
+    REQUIRE(dag::is_reachable(graph, 1, 6));
+    REQUIRE(dag::is_reachable(graph, 6, 1));
+    REQUIRE(dag::is_reachable(graph, 7, 9));
+
+    REQUIRE_FALSE(dag::is_reachable(graph, 1, 7));
+    REQUIRE_FALSE(dag::is_reachable(graph, 7, 1));
+  }
+
+  SECTION("works for undirected hypergraph") {
+    dag::undirected_hypernetwork<int> graph({
+        {1, 2, 3}, {3, 4, 5}, {6, 7, 8}, {8, 9}});
+
+    REQUIRE(dag::is_reachable(graph, 1, 1));
+    REQUIRE(dag::is_reachable(graph, 1, 5));
+    REQUIRE(dag::is_reachable(graph, 5, 1));
+    REQUIRE(dag::is_reachable(graph, 7, 9));
+
+    REQUIRE_FALSE(dag::is_reachable(graph, 1, 7));
+    REQUIRE_FALSE(dag::is_reachable(graph, 7, 1));
+  }
+
+  SECTION("gives correct answer on a directed graph") {
+    dag::directed_network<int> graph({
+        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+
+    REQUIRE(dag::is_reachable(graph, 2, 2));
+    REQUIRE(dag::is_reachable(graph, 2, 5));
+    REQUIRE(dag::is_reachable(graph, 2, 6));
+    REQUIRE(dag::is_reachable(graph, 5, 6));
+
+    REQUIRE_FALSE(dag::is_reachable(graph, 2, 1));
+    REQUIRE_FALSE(dag::is_reachable(graph, 6, 2));
+  }
+
+  SECTION("gives correct answer on a directed hypergraph") {
+    dag::directed_hypernetwork<int> graph({
+        {{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}},
+        {{5}, {4}}, {{4}, {2, 3}}});
+
+    REQUIRE(dag::is_reachable(graph, 2, 2));
+    REQUIRE(dag::is_reachable(graph, 2, 5));
+    REQUIRE(dag::is_reachable(graph, 2, 6));
+    REQUIRE(dag::is_reachable(graph, 5, 6));
+
+    REQUIRE_FALSE(dag::is_reachable(graph, 5, 7));
+    REQUIRE_FALSE(dag::is_reachable(graph, 6, 2));
+  }
+}
+
 TEST_CASE("connected component", "[dag::connected_component]") {
   SECTION("works for undirected graph") {
     dag::undirected_network<int> graph({

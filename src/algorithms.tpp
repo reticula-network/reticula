@@ -499,6 +499,18 @@ namespace dag {
         false, false, size_hint);
   }
 
+
+  template <static_edge EdgeT>
+  bool is_reachable(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& source,
+      const typename EdgeT::VertexType& destination) {
+    return breadth_first_search(net, source,
+        [destination](const typename EdgeT::VertexType&,
+          const typename EdgeT::VertexType& v){ return v != destination; },
+        false, false, 0).contains(destination);
+  }
+
   template <network_vertex VertT1, network_vertex VertT2>
   undirected_network<std::pair<VertT1, VertT2>>
   cartesian_product(
