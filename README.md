@@ -25,4 +25,4 @@ $ ./dag_tests
 ```
 
 [action-image]: https://github.com/arashbm/dag/workflows/Tests/badge.svg
-[action-link]
+[action-link]: https://github.com/arashbm/dag/actions
