@@ -1,4 +1,4 @@
-# DAG [![Actions Status](https://github.com/arashbm/dag/workflows/Tests/badge.svg)](https://github.com/arashbm/dag/actions)
+# DAG [![Actions Status][action-image]][action-link]
 `dag` is a general-purpose complex network analysis tool with focus on [temporal
 networks][temp], [event graphs][event] and [reachability][out-component].
 
@@ -23,3 +23,6 @@ $ cmake ..
 $ cmake --build . --target dag_tests
 $ ./dag_tests
 ```
+
+[action-image]: https://github.com/arashbm/dag/workflows/Tests/badge.svg
+[action-link]
