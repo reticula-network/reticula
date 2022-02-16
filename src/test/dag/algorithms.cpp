@@ -652,7 +652,7 @@ TEST_CASE("is connected?", "[dag::is_connected]") {
   REQUIRE(dag::is_connected(connected));
 }
 
-TEST_CASE("is reachable", "[dag::is_reachable]") {
+TEST_CASE("is reachable (static networks)", "[dag::is_reachable]") {
   SECTION("works for undirected graph") {
     dag::undirected_network<int> graph({
         {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},

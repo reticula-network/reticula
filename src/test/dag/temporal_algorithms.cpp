@@ -258,3 +258,17 @@ TEST_CASE("percolation in-clusters", "[dag::in_clusters]") {
 
   REQUIRE_THAT(dag::in_clusters(network, adj), UnorderedEquals(true_ic));
 }
+
+TEST_CASE("is reachable (temporal networks)", "[dag::is_reachable]") {
+  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+  using AdjT = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
+  AdjT adj(2);
+  dag::network<EdgeType> network(
+      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+        {5, 6, 1, 3}});
+
+  REQUIRE(dag::is_reachable(network, adj, 2, 0, 3, 8));
+  REQUIRE(dag::is_reachable(network, adj, 2, 0, 4, 10));
+  REQUIRE_FALSE(dag::is_reachable(network, adj, 3, 8, 2, 0));
+  REQUIRE_FALSE(dag::is_reachable(network, adj, 5, 0, 4, 10));
+}

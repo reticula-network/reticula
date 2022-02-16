@@ -127,8 +127,8 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
-          typename EdgeT::VertexType v,
+          const AdjT& adj,
+          const typename EdgeT::VertexType& v,
           typename EdgeT::TimeType t) {
     return out_cluster(temp, adj, detail::temporal_loop<EdgeT>{}(v, t));
   }
@@ -139,7 +139,7 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           const EdgeT& e) {
     return temporal_component<EdgeT, AdjT>(
         out_component(implicit_event_graph(temp, adj), e), adj);
@@ -151,7 +151,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
   out_clusters(
           const network<EdgeT>& temp,
-          const AdjT adj) {
+          const AdjT& adj) {
     return detail::out_components<
       EdgeT, AdjT,
       temporal_component<EdgeT, AdjT>,
@@ -164,7 +164,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
   out_cluster_sizes(
           const network<EdgeT>& temp,
-          const AdjT adj) {
+          const AdjT& adj) {
     return detail::out_components<
       EdgeT, AdjT,
       temporal_component<EdgeT, AdjT>,
@@ -179,7 +179,7 @@ namespace dag {
     std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
   out_cluster_size_estimates(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           std::size_t seed) {
     return detail::out_components<
       EdgeT, AdjT,
@@ -194,8 +194,8 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
-          typename EdgeT::VertexType v,
+          const AdjT& adj,
+          const typename EdgeT::VertexType& v,
           typename EdgeT::TimeType t) {
     return in_cluster(temp, adj, detail::temporal_loop<EdgeT>{}(v, t));
   }
@@ -206,7 +206,7 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           const EdgeT& e) {
     return temporal_component<EdgeT, AdjT>(
         in_component(implicit_event_graph(temp, adj), e), adj);
@@ -218,7 +218,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
   in_clusters(
           const network<EdgeT>& temp,
-          const AdjT adj) {
+          const AdjT& adj) {
     return detail::in_components<
       EdgeT, AdjT,
       temporal_component<EdgeT, AdjT>,
@@ -231,7 +231,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
   in_cluster_sizes(
           const network<EdgeT>& temp,
-          const AdjT adj) {
+          const AdjT& adj) {
     return detail::in_components<
       EdgeT, AdjT,
       temporal_component<EdgeT, AdjT>,
@@ -246,12 +246,30 @@ namespace dag {
     std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
   in_cluster_size_estimates(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           std::size_t seed) {
     return detail::in_components<
       EdgeT, AdjT,
       temporal_component_sketch<EdgeT, AdjT, dt>,
       temporal_component_size_estimate<EdgeT, AdjT, dt>>(
           implicit_event_graph(temp, adj), seed);
+  }
+
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  bool is_reachable(
+      const network<EdgeT>& net,
+      const AdjT& adj,
+      const typename EdgeT::VertexType& source,
+      typename EdgeT::TimeType t0,
+      const typename EdgeT::VertexType& destination,
+      typename EdgeT::TimeType t1) {
+    if (t1 < t0)
+      return false;
+
+    return out_cluster(
+        net, adj, detail::temporal_loop<EdgeT>{}(source, t0)).covers(
+          destination, t1);
   }
 }  // namespace dag

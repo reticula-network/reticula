@@ -70,8 +70,8 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
-          typename EdgeT::VertexType v,
+          const AdjT& adj,
+          const typename EdgeT::VertexType& v,
           typename EdgeT::TimeType t);
 
   /**
@@ -89,7 +89,7 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           const EdgeT& e);
 
   /**
@@ -106,7 +106,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
   out_clusters(
           const network<EdgeT>& temp,
-          const AdjT adj);
+          const AdjT& adj);
 
   /**
     Finds the set of events that transmit a spreading process starting at each
@@ -122,7 +122,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
   out_cluster_sizes(
           const network<EdgeT>& temp,
-          const AdjT adj);
+          const AdjT& adj);
 
 
   /**
@@ -141,7 +141,7 @@ namespace dag {
     std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
   out_cluster_size_estimates(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           std::size_t seed);
 
   /**
@@ -160,8 +160,8 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
-          typename EdgeT::VertexType v,
+          const AdjT& adj,
+          const typename EdgeT::VertexType& v,
           typename EdgeT::TimeType t);
 
   /**
@@ -179,7 +179,7 @@ namespace dag {
   temporal_component<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           const EdgeT& e);
 
   /**
@@ -196,7 +196,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
   in_clusters(
           const network<EdgeT>& temp,
-          const AdjT adj);
+          const AdjT& adj);
 
   /**
     For each event, finds the set of initial events that a spreading process
@@ -212,7 +212,7 @@ namespace dag {
   std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
   in_cluster_sizes(
           const network<EdgeT>& temp,
-          const AdjT adj);
+          const AdjT& adj);
 
   /**
     For each event, finds the estimated set of initial events that a spreading
@@ -230,8 +230,30 @@ namespace dag {
     std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
   in_cluster_size_estimates(
           const network<EdgeT>& temp,
-          const AdjT adj,
+          const AdjT& adj,
           std::size_t seed);
+
+  /**
+    Returns true if node `destination` can be reached at time `t1` by following
+    temporal events starting from node `source` at time `t0`. 
+
+    @param net The network
+    @param adj A `temporal_adjacency` class limiting the adjacency relationship
+    @param source The starting point of the reachability query
+    @param t0 The starting time of the reachability query
+    @param destination The end point of the reachability query
+    @param t1 The end time of the reachability query
+  */
+  template <
+    temporal_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
+  bool is_reachable(
+      const network<EdgeT>& net,
+      const AdjT& adj,
+      const typename EdgeT::VertexType& source,
+      typename EdgeT::TimeType t0,
+      const typename EdgeT::VertexType& destination,
+      typename EdgeT::TimeType t1);
 }  // namespace dag
 
 #include "../../src/temporal_algorithms.tpp"
