@@ -189,6 +189,13 @@ namespace dag {
     [[nodiscard]]
     std::vector<VertexType> neighbours(const VertexType& v) const;
 
+    /**
+      Returns a graph that is the union (not the disjoint union) of this graph
+      and the argument.
+    */
+    [[nodiscard]]
+    network<EdgeT> union_with(const network<EdgeT>& other) const;
+
   private:
     std::vector<EdgeType> _edges_cause;
     std::vector<EdgeType> _edges_effect;
