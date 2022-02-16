@@ -317,6 +317,23 @@ namespace dag {
   template <std::ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
   bool is_digraphic(const PairRange& in_out_degree_sequence);
+
+
+  /**
+    Density of an undirected graph is the number of edges divided by the number
+    of possible unordered pairs of distinct vertices. Note that in the presense
+    of self-links, density might be higher than 1.
+  */
+  template <network_vertex VertT>
+  double density(const undirected_network<VertT>& net);
+
+  /**
+    Density of a directed graph is the number of edges divided by the number
+    of possible ordered pairs of distinct vertices. Note that in the presense of
+    self-links, density might be higher than 1.
+  */
+  template <network_vertex VertT>
+  double density(const directed_network<VertT>& net);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"

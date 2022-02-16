@@ -807,3 +807,15 @@ TEST_CASE("edge induced subgraph", "[dag::edge_induced_subgraph]") {
         {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
       UnorderedEquals(res.edges()));
 }
+
+TEST_CASE("network density", "[dag::density]") {
+    dag::undirected_network<int> ug({
+        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+        {8, 9}});
+
+    REQUIRE(dag::density(ug) == Approx(0.25));
+
+    dag::directed_network<int> dg({
+        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+    REQUIRE(dag::density(dg) == Approx(0.2));
+}
