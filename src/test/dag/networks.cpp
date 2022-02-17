@@ -828,7 +828,6 @@ TEST_CASE("directed temporal hypernetworks",
                       return true;
                   }));
     }
-
   }
 }
 
