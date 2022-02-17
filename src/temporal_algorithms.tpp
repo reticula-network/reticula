@@ -58,7 +58,7 @@ namespace dag {
     };
 
     template <
-      network_temporal_component Comp,
+      network_temporal_cluster Comp,
       temporal_adjacency::temporal_adjacency AdjT>
     struct component_type_constructor<Comp, AdjT> {
       Comp
@@ -124,7 +124,7 @@ namespace dag {
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_component<EdgeT, AdjT>
+  temporal_cluster<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
           const AdjT& adj,
@@ -136,39 +136,39 @@ namespace dag {
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_component<EdgeT, AdjT>
+  temporal_cluster<EdgeT, AdjT>
   out_cluster(
           const network<EdgeT>& temp,
           const AdjT& adj,
           const EdgeT& e) {
-    return temporal_component<EdgeT, AdjT>(
+    return temporal_cluster<EdgeT, AdjT>(
         out_component(implicit_event_graph(temp, adj), e), adj);
   }
 
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
+  std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   out_clusters(
           const network<EdgeT>& temp,
           const AdjT& adj) {
     return detail::out_components<
       EdgeT, AdjT,
-      temporal_component<EdgeT, AdjT>,
-      temporal_component<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
+      temporal_cluster<EdgeT, AdjT>,
+      temporal_cluster<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
   }
 
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
+  std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   out_cluster_sizes(
           const network<EdgeT>& temp,
           const AdjT& adj) {
     return detail::out_components<
       EdgeT, AdjT,
-      temporal_component<EdgeT, AdjT>,
-      temporal_component_size<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
+      temporal_cluster<EdgeT, AdjT>,
+      temporal_cluster_size<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
   }
 
   template <
@@ -176,22 +176,22 @@ namespace dag {
     temporal_adjacency::temporal_adjacency AdjT,
     typename EdgeT::TimeType dt>
   std::vector<
-    std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
+    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT, dt>>>
   out_cluster_size_estimates(
           const network<EdgeT>& temp,
           const AdjT& adj,
           std::size_t seed) {
     return detail::out_components<
       EdgeT, AdjT,
-      temporal_component_sketch<EdgeT, AdjT, dt>,
-      temporal_component_size_estimate<EdgeT, AdjT, dt>>(
+      temporal_cluster_sketch<EdgeT, AdjT, dt>,
+      temporal_cluster_size_estimate<EdgeT, AdjT, dt>>(
           implicit_event_graph(temp, adj), seed);
   }
 
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_component<EdgeT, AdjT>
+  temporal_cluster<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
           const AdjT& adj,
@@ -203,39 +203,39 @@ namespace dag {
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_component<EdgeT, AdjT>
+  temporal_cluster<EdgeT, AdjT>
   in_cluster(
           const network<EdgeT>& temp,
           const AdjT& adj,
           const EdgeT& e) {
-    return temporal_component<EdgeT, AdjT>(
+    return temporal_cluster<EdgeT, AdjT>(
         in_component(implicit_event_graph(temp, adj), e), adj);
   }
 
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  std::vector<std::pair<EdgeT, temporal_component<EdgeT, AdjT>>>
+  std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   in_clusters(
           const network<EdgeT>& temp,
           const AdjT& adj) {
     return detail::in_components<
       EdgeT, AdjT,
-      temporal_component<EdgeT, AdjT>,
-      temporal_component<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
+      temporal_cluster<EdgeT, AdjT>,
+      temporal_cluster<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
   }
 
   template <
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  std::vector<std::pair<EdgeT, temporal_component_size<EdgeT, AdjT>>>
+  std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   in_cluster_sizes(
           const network<EdgeT>& temp,
           const AdjT& adj) {
     return detail::in_components<
       EdgeT, AdjT,
-      temporal_component<EdgeT, AdjT>,
-      temporal_component_size<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
+      temporal_cluster<EdgeT, AdjT>,
+      temporal_cluster_size<EdgeT, AdjT>>(implicit_event_graph(temp, adj), 0);
   }
 
   template <
@@ -243,15 +243,15 @@ namespace dag {
     temporal_adjacency::temporal_adjacency AdjT,
     typename EdgeT::TimeType dt>
   std::vector<
-    std::pair<EdgeT, temporal_component_size_estimate<EdgeT, AdjT, dt>>>
+    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT, dt>>>
   in_cluster_size_estimates(
           const network<EdgeT>& temp,
           const AdjT& adj,
           std::size_t seed) {
     return detail::in_components<
       EdgeT, AdjT,
-      temporal_component_sketch<EdgeT, AdjT, dt>,
-      temporal_component_size_estimate<EdgeT, AdjT, dt>>(
+      temporal_cluster_sketch<EdgeT, AdjT, dt>,
+      temporal_cluster_size_estimate<EdgeT, AdjT, dt>>(
           implicit_event_graph(temp, adj), seed);
   }
 

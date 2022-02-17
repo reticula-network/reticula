@@ -4,25 +4,28 @@
 
 #include <catch2/catch.hpp>
 
-#include <dag/temporal_components.hpp>
+#include <dag/temporal_clusters.hpp>
 
 #include <dag/temporal_edges.hpp>
 #include <dag/temporal_hyperedges.hpp>
 
-TEST_CASE("temporal component complies with the concept",
-    "[dag::temporal_component]") {
+TEST_CASE("temporal cluster complies with the concept",
+    "[dag::temporal_cluster]") {
   using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
   using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  STATIC_REQUIRE(dag::exact_temporal_component<
-      dag::temporal_component<EdgeType, AdjType>>);
-  STATIC_REQUIRE(dag::network_temporal_component<
-      dag::temporal_component<EdgeType, AdjType>>);
+  STATIC_REQUIRE(dag::exact_temporal_cluster<
+      dag::temporal_cluster<EdgeType, AdjType>>);
+  STATIC_REQUIRE(dag::network_temporal_cluster<
+      dag::temporal_cluster<EdgeType, AdjType>>);
+
+  STATIC_REQUIRE(dag::network_temporal_cluster<
+      dag::temporal_cluster_sketch<EdgeType, AdjType>>);
 }
 
-TEST_CASE("temporal component properties", "[dag::temporal_component]") {
+TEST_CASE("temporal cluster properties", "[dag::temporal_cluster]") {
   using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
   using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  using CompType = dag::temporal_component<EdgeType, AdjType>;
+  using CompType = dag::temporal_cluster<EdgeType, AdjType>;
 
   CompType comp(AdjType(3.0));
 
@@ -76,10 +79,10 @@ TEST_CASE("temporal component properties", "[dag::temporal_component]") {
   }
 }
 
-TEST_CASE("temporal component size", "[dag::temporal_component_size]") {
+TEST_CASE("temporal cluster size", "[dag::temporal_cluster_size]") {
   using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
   using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  using CompType = dag::temporal_component<EdgeType, AdjType>;
+  using CompType = dag::temporal_cluster<EdgeType, AdjType>;
 
   CompType comp(AdjType(3.0));
 
@@ -88,7 +91,7 @@ TEST_CASE("temporal component size", "[dag::temporal_component_size]") {
   comp.insert({{2, 5}, 3.0});
   comp.insert({{4, 5}, 5.0});
 
-  dag::temporal_component_size<EdgeType, AdjType> comp_size(comp);
+  dag::temporal_cluster_size<EdgeType, AdjType> comp_size(comp);
 
   REQUIRE(comp.size() == comp_size.size());
   REQUIRE(comp.volume() == comp_size.volume());
@@ -97,11 +100,11 @@ TEST_CASE("temporal component size", "[dag::temporal_component_size]") {
 }
 
 
-TEST_CASE("temporal component size estimate",
-    "[dag::temporal_component_size_estimate]") {
+TEST_CASE("temporal cluster size estimate",
+    "[dag::temporal_cluster_size_estimate]") {
   using EdgeType = dag::undirected_temporal_hyperedge<int, float>;
   using AdjType = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  using CompType = dag::temporal_component_sketch<EdgeType, AdjType>;
+  using CompType = dag::temporal_cluster_sketch<EdgeType, AdjType>;
 
   CompType comp(AdjType(3.0));
 
@@ -110,7 +113,7 @@ TEST_CASE("temporal component size estimate",
   comp.insert({{2, 5}, 3.0});
   comp.insert({{4, 5}, 5.0});
 
-  dag::temporal_component_size_estimate<EdgeType, AdjType> comp_size(comp);
+  dag::temporal_cluster_size_estimate<EdgeType, AdjType> comp_size(comp);
 
   REQUIRE(comp.size_estimate() == comp_size.size_estimate());
   REQUIRE(comp.mass_estimate() == comp_size.mass_estimate());

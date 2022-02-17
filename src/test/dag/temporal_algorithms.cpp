@@ -125,7 +125,7 @@ TEST_CASE("percolation out-cluster", "[dag::out_cluster]") {
     std::vector<
       std::pair<
         EdgeType,
-        dag::temporal_component<EdgeType, AdjT>>> true_oc({
+        dag::temporal_cluster<EdgeType, AdjT>>> true_oc({
           {{1, 2, 1, 5},
             {{{1, 2, 1, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
           {{2, 1, 2, 3},
@@ -146,11 +146,11 @@ TEST_CASE("percolation out-cluster", "[dag::out_cluster]") {
 
   SECTION("from a node and time") {
     REQUIRE(dag::out_cluster(network, adj, 1, 3) ==
-        dag::temporal_component<EdgeType, AdjT>({
+        dag::temporal_cluster<EdgeType, AdjT>({
           {1, 1, 3, 3},
           {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj));
     REQUIRE(dag::out_cluster(network, adj, 3, 7) ==
-        dag::temporal_component<EdgeType, AdjT>({
+        dag::temporal_cluster<EdgeType, AdjT>({
           {3, 3, 7, 7},
           {3, 4, 8, 9}}, adj));
   }
@@ -168,7 +168,7 @@ TEST_CASE("percolation in-cluster", "[dag::in_cluster]") {
     std::vector<
       std::pair<
         EdgeType,
-        dag::temporal_component<EdgeType, AdjT>>> true_ic({
+        dag::temporal_cluster<EdgeType, AdjT>>> true_ic({
           {{1, 2, 1, 5},
             {{{1, 2, 1, 5}}, adj}},
           {{2, 1, 2, 3},
@@ -190,13 +190,13 @@ TEST_CASE("percolation in-cluster", "[dag::in_cluster]") {
 
   SECTION("to a node and time") {
     REQUIRE(dag::in_cluster(network, adj, 4, 10) ==
-        dag::temporal_component<EdgeType, AdjT>({
+        dag::temporal_cluster<EdgeType, AdjT>({
           {4, 4, 10, 10},
           {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {1, 2, 1, 5}, {3, 4, 8, 9}},
           adj));
 
     REQUIRE(dag::in_cluster(network, adj, 3, 8) ==
-        dag::temporal_component<EdgeType, AdjT>({
+        dag::temporal_cluster<EdgeType, AdjT>({
           {3, 3, 8, 8},
           {2, 3, 6, 7}, {1, 2, 5, 5}, {2, 1, 2, 3}, {1, 2, 1, 5}}, adj));
   }
@@ -213,7 +213,7 @@ TEST_CASE("percolation out-clusters", "[dag::out_clusters]") {
   std::vector<
     std::pair<
       EdgeType,
-      dag::temporal_component<EdgeType, AdjT>>> true_oc({
+      dag::temporal_cluster<EdgeType, AdjT>>> true_oc({
         {{1, 2, 1, 5},
           {{{1, 2, 1, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
         {{2, 1, 2, 3},
@@ -240,7 +240,7 @@ TEST_CASE("percolation in-clusters", "[dag::in_clusters]") {
   std::vector<
     std::pair<
       EdgeType,
-      dag::temporal_component<EdgeType, AdjT>>> true_ic({
+      dag::temporal_cluster<EdgeType, AdjT>>> true_ic({
         {{1, 2, 1, 5},
           {{{1, 2, 1, 5}}, adj}},
         {{2, 1, 2, 3},

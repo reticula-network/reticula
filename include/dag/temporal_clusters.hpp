@@ -13,7 +13,7 @@
 
 namespace dag {
   template <typename T>
-  concept network_temporal_component =
+  concept network_temporal_cluster =
     temporal_edge<typename T::VertexType> &&
     std::constructible_from<T,
       typename T::AdjacencyType, std::size_t, std::size_t> &&
@@ -24,8 +24,8 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <typename T>
-  concept exact_temporal_component =
-    network_temporal_component<T> &&
+  concept exact_temporal_cluster =
+    network_temporal_cluster<T> &&
     std::ranges::forward_range<T> &&
     std::ranges::sized_range<T> &&
     std::equality_comparable<T> &&
@@ -34,22 +34,22 @@ namespace dag {
     };  // NOLINT(readability/braces)
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
-  class temporal_component {
+  class temporal_cluster {
   public:
     using VertexType = EdgeT;
     using AdjacencyType = AdjT;
     using IteratorType =
       typename std::unordered_set<VertexType, hash<VertexType>>::const_iterator;
 
-    explicit temporal_component(
+    explicit temporal_cluster(
         AdjT adj, std::size_t size_hint = 0, std::size_t seed = 0);
-    temporal_component(
+    temporal_cluster(
         std::initializer_list<EdgeT> verts, AdjT adj,
         std::size_t size_hint = 0, std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    explicit temporal_component(const Range& verts, AdjT adj,
+    explicit temporal_cluster(const Range& verts, AdjT adj,
         std::size_t size_hint = 0, std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
@@ -58,9 +58,9 @@ namespace dag {
 
     void insert(const EdgeT& e);
 
-    void merge(const temporal_component<EdgeT, AdjT>& other);
+    void merge(const temporal_cluster<EdgeT, AdjT>& other);
 
-    bool operator==(const temporal_component<EdgeT, AdjT>& c) const;
+    bool operator==(const temporal_cluster<EdgeT, AdjT>& c) const;
     std::size_t size() const;
 
     bool contains(const EdgeT& e) const;
@@ -95,12 +95,12 @@ namespace dag {
 
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
-  class temporal_component_size {
+  class temporal_cluster_size {
   public:
     using VertexType = EdgeT;
     using AdjacencyType = AdjT;
 
-    explicit temporal_component_size(const temporal_component<EdgeT, AdjT>& c);
+    explicit temporal_cluster_size(const temporal_cluster<EdgeT, AdjT>& c);
 
     std::size_t size() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
@@ -119,7 +119,7 @@ namespace dag {
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT,
     typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1)>
-  class temporal_component_sketch {
+  class temporal_cluster_sketch {
   public:
     using VertexType = EdgeT;
     using AdjacencyType = AdjT;
@@ -136,15 +136,15 @@ namespace dag {
         std::pair<typename EdgeT::VertexType, typename EdgeT::TimeType>,
         13, 14>;
 
-    explicit temporal_component_sketch(
+    explicit temporal_cluster_sketch(
         AdjT adj, std::size_t size_hint = 0, std::size_t seed = 0);
-    temporal_component_sketch(
+    temporal_cluster_sketch(
         std::initializer_list<EdgeT> verts, AdjT adj,
         std::size_t size_hint = 0, std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    explicit temporal_component_sketch(const Range& verts, AdjT adj,
+    explicit temporal_cluster_sketch(const Range& verts, AdjT adj,
         std::size_t size_hint = 0, std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
@@ -153,7 +153,7 @@ namespace dag {
 
     void insert(const EdgeT& e);
 
-    void merge(const temporal_component_sketch<EdgeT, AdjT, dt>& other);
+    void merge(const temporal_cluster_sketch<EdgeT, AdjT, dt>& other);
 
     double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
@@ -178,13 +178,13 @@ namespace dag {
     temporal_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT,
     EdgeT::TimeType dt = static_cast<EdgeT::TimeType>(1)>
-  class temporal_component_size_estimate {
+  class temporal_cluster_size_estimate {
   public:
     using VertexType = EdgeT;
     using AdjacencyType = AdjT;
 
-    explicit temporal_component_size_estimate(
-        const temporal_component_sketch<EdgeT, AdjT, dt>& c);
+    explicit temporal_cluster_size_estimate(
+        const temporal_cluster_sketch<EdgeT, AdjT, dt>& c);
 
     double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
@@ -201,6 +201,6 @@ namespace dag {
   };
 }  // namespace dag
 
-#include "../../src/temporal_components.tpp"
+#include "../../src/temporal_clusters.tpp"
 
 #endif  // INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
