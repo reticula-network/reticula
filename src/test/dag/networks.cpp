@@ -3,6 +3,7 @@
 
 #include <catch2/catch.hpp>
 using Catch::Matchers::Equals;
+using Catch::Matchers::Contains;
 using Catch::Matchers::UnorderedEquals;
 
 #include <dag/static_edges.hpp>
@@ -10,7 +11,10 @@ using Catch::Matchers::UnorderedEquals;
 
 #include <dag/networks.hpp>
 
-TEST_CASE("undirected networks", "[dag::undirected_network]") {
+#include <iostream>
+
+TEST_CASE("undirected networks",
+        "[dag::undirected_network][dag::network]") {
   SECTION("when given one") {
     dag::undirected_network<int> graph(
         {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6},
@@ -57,10 +61,60 @@ TEST_CASE("undirected networks", "[dag::undirected_network]") {
       REQUIRE_THAT(graph.vertices(),
           Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::undirected_network<int> other(
+          {{1, 2}, {1, 5}, {15, 20}, {5, 2}, {7, 4}}, {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), Equals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
-TEST_CASE("undirected hypernetworks", "[dag::undirected_hypernetwork]") {
+TEST_CASE("undirected hypernetworks",
+        "[dag::undirected_hypernetwork][dag::network]") {
   SECTION("when given one") {
     using U = dag::undirected_hyperedge<int>;
     dag::undirected_hypernetwork<int> graph(
@@ -111,10 +165,60 @@ TEST_CASE("undirected hypernetworks", "[dag::undirected_hypernetwork]") {
       REQUIRE_THAT(graph.vertices(),
           Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::undirected_hypernetwork<int> other(
+          {{1, 2}, {1, 5}, {15, 20}, {5, 2}, {7, 4}}, {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), Equals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
-TEST_CASE("directed networks", "[dag::directed_network]") {
+TEST_CASE("directed networks",
+        "[dag::directed_network][dag::network]") {
   SECTION("when given one") {
     dag::directed_network<int> graph(
         {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2},
@@ -161,10 +265,60 @@ TEST_CASE("directed networks", "[dag::directed_network]") {
       REQUIRE_THAT(graph.vertices(),
           Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_network<int> other(
+          {{1, 2}, {1, 5}, {15, 20}, {5, 2}, {7, 4}}, {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
-TEST_CASE("directed hypernetworks", "[dag::directed_network]") {
+TEST_CASE("directed hypernetworks",
+        "[dag::directed_hypernetwork][dag::network]") {
   SECTION("when given one") {
     dag::directed_hypernetwork<int> graph(
         {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3, 7}}, {{3}, {5}}, {{5}, {6}},
@@ -215,11 +369,61 @@ TEST_CASE("directed hypernetworks", "[dag::directed_network]") {
       REQUIRE_THAT(graph.vertices(),
           Equals(std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_hypernetwork<int> other(
+          {{{1}, {2}}, {{1}, {5}}, {{15}, {20}}, {{5}, {2}}, {{7}, {4}}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
 TEST_CASE("undirected temporal networks",
-    "[dag::undirected_temporal_network]") {
+    "[dag::undirected_temporal_network][dag::network]") {
   SECTION("when given one") {
     dag::undirected_temporal_network<int, int> graph(
         {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
@@ -266,11 +470,61 @@ TEST_CASE("undirected temporal networks",
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::undirected_temporal_network<int, int> other(
+          {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1}, {7, 4, 6}, {20, 10, 1}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
 TEST_CASE("undirected temporal hypernetworks",
-    "[dag::undirected_temporal_hypernetwork]") {
+    "[dag::undirected_temporal_hypernetwork][dag::network]") {
   SECTION("when given one") {
     dag::undirected_temporal_hypernetwork<int, int> graph(
         {{{2, 3}, 6}, {{2, 3}, 6}, {{3, 4}, 8}, {{1, 2}, 1},
@@ -320,11 +574,61 @@ TEST_CASE("undirected temporal hypernetworks",
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::undirected_temporal_hypernetwork<int, int> other(
+          {{{2, 3}, 6}, {{2, 3}, 6}, {{3, 4}, 8}, {{1, 2}, 1}, {{7, 4}, 6},
+          {{20, 10}, 1}}, {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
 TEST_CASE("directed temporal networks",
-    "[dag::directed_temporal_network]") {
+    "[dag::directed_temporal_network][dag::network]") {
   SECTION("when given one") {
     dag::directed_temporal_network<int, int> graph(
         {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
@@ -371,11 +675,61 @@ TEST_CASE("directed temporal networks",
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_temporal_network<int, int> other(
+          {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1}, {7, 4, 6}, {20, 10, 1}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
 TEST_CASE("directed temporal hypernetworks",
-    "[dag::directed_temporal_hypernetwork]") {
+    "[dag::directed_temporal_hypernetwork][dag::network]") {
   SECTION("when given one") {
     dag::directed_temporal_hypernetwork<int, int> graph(
         {{{2}, {3}, 6}, {{2}, {3}, 6}, {{3}, {4}, 8}, {{1}, {2}, 1},
@@ -423,12 +777,64 @@ TEST_CASE("directed temporal hypernetworks",
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_temporal_hypernetwork<int, int> other(
+          {{{2}, {3}, 6}, {{2}, {3}, 6}, {{3}, {4}, 8}, {{1}, {2}, 1},
+          {{7}, {4}, 6}, {{20}, {10}, 1}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
+
   }
 }
 
 
 TEST_CASE("directed delayed temporal networks",
-    "[dag::directed_delayed_temporal_network]") {
+    "[dag::directed_delayed_temporal_network][dag::network]") {
   SECTION("when given one") {
     dag::directed_delayed_temporal_network<int, int> graph(
         {{2, 3, 6, 7}, {3, 4, 8, 9}, {1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}},
@@ -476,11 +882,68 @@ TEST_CASE("directed delayed temporal networks",
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
     }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_delayed_temporal_network<int, int> other(
+          {{2, 3, 6, 7}, {3, 4, 8, 9}, {1, 2, 1, 9}, {2, 1, 2, 3},
+          {20, 10, 5, 8}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e,
+                                      [](auto e1, auto e2) {
+                                        return effect_lt(e1, e2);
+                                      }))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e,
+                                      [](auto e1, auto e2) {
+                                        return effect_lt(e1, e2);
+                                      }))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+    }
   }
 }
 
 TEST_CASE("directed delayed temporal hypernetworks",
-    "[dag::directed_delayed_temporal_hypernetwork]") {
+    "[dag::directed_delayed_temporal_hypernetwork][dag::network]") {
   SECTION("when given one") {
     dag::directed_delayed_temporal_hypernetwork<int, int> graph(
         {{{2}, {3}, 6, 7}, {{3}, {4}, 8, 9}, {{1}, {2}, 1, 9}, {{2}, {1}, 2, 3},
@@ -531,6 +994,63 @@ TEST_CASE("directed delayed temporal hypernetworks",
       REQUIRE_THAT(graph.vertices(),
           UnorderedEquals(
             std::vector<int>({0, 1, 2, 3, 4})));
+    }
+
+    SECTION("union operation is correct") {
+      REQUIRE(graph.union_with(graph).edges_cause() == graph.edges_cause());
+      REQUIRE(graph.union_with(graph).vertices() == graph.vertices());
+
+      dag::directed_delayed_temporal_hypernetwork<int, int> other(
+          {{{2}, {3}, 6, 7}, {{3}, {4}, 8, 9}, {{1}, {2}, 1, 9},
+          {{2}, {1}, 2, 3}, {{20}, {10}, 5, 8}},
+          {10, 12});
+      auto u = graph.union_with(other);
+
+      REQUIRE_THAT(u.edges_cause(), UnorderedEquals(u.edges_effect()));
+
+      REQUIRE_THAT(u.vertices(), Contains(graph.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(graph.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(graph.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e,
+                                      [](auto e1, auto e2) {
+                                        return effect_lt(e1, e2);
+                                      }))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(graph.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
+
+      REQUIRE_THAT(u.vertices(), Contains(other.vertices()));
+      REQUIRE_THAT(u.edges_cause(), Contains(other.edges_cause()));
+      REQUIRE_THAT(u.edges_effect(), Contains(other.edges_effect()));
+
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutated_verts())
+                          if (!std::ranges::binary_search(u.in_edges(v), e,
+                                      [](auto e1, auto e2) {
+                                        return effect_lt(e1, e2);
+                                      }))
+                              return false;
+                      return true;
+                  }));
+      REQUIRE(std::ranges::all_of(other.edges(),
+                  [&u](const auto& e) {
+                      for (auto& v: e.mutator_verts())
+                          if (!std::ranges::binary_search(u.out_edges(v), e))
+                              return false;
+                      return true;
+                  }));
     }
   }
 }

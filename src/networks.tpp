@@ -248,49 +248,57 @@ namespace dag {
   network<EdgeT>
   network<EdgeT>::union_with(const network<EdgeT>& other) const {
     network<EdgeT> res(*this);
-    for (auto& [v, es]: other._in_edges) {
-      auto& res_edges = res._in_edges[v];
-      std::size_t original_size = res_edges.size();
-      if (original_size > 0) {
+    if (!instantaneous_undirected) {
+      for (auto& [v, es]: other._in_edges) {
+        auto& res_edges = res._in_edges[v];
         auto mid = res_edges.insert(res_edges.end(), es.begin(), es.end());
-        res.inplace_merge(
-            res_edges.begin(),
-            mid, res_edges.end(),
-            [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-        res_edges.erase(std::ranges::unique(res_edges,
-            [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); }));
+        if (mid > res_edges.begin()) {
+          std::inplace_merge(
+              res_edges.begin(),
+              mid, res_edges.end(),
+              [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+          auto to_erase = std::ranges::unique(res_edges);
+          res_edges.erase(to_erase.begin(), to_erase.end());
+        }
       }
     }
 
     for (auto& [v, es]: other._out_edges) {
       auto& res_edges = res._out_edges[v];
-      std::size_t original_size = res_edges.size();
-      if (original_size > 0) {
-        auto mid = res_edges.insert(res_edges.end(), es.begin(), es.end());
-        res.inplace_merge(
+      auto mid = res_edges.insert(res_edges.end(), es.begin(), es.end());
+      if (mid > res_edges.begin()) {
+        std::inplace_merge(
             res_edges.begin(),
             mid, res_edges.end());
-        res_edges.erase(std::ranges::unique(res_edges));
+        auto to_erase = std::ranges::unique(res_edges);
+        res_edges.erase(to_erase.begin(), to_erase.end());
       }
     }
 
-    auto mid_effect = res._edges_effect.insert(res._edges_effect.end(),
-        other._edges_effect.begin(), other._edges_effect.end());
-    std::inplace_merge(
-        res._edges_effect.begin(),
-        mid_effect,
-        res._edges_effect.end(),
-        [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-    res._edges_effect.erase(std::ranges::unique(res._edges_effect,
-            [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); }));
+    if (!instantaneous_undirected) {
+      auto mid_effect = res._edges_effect.insert(
+          res._edges_effect.end(),
+          other._edges_effect.begin(),
+          other._edges_effect.end());
+      std::inplace_merge(
+          res._edges_effect.begin(),
+          mid_effect,
+          res._edges_effect.end(),
+          [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
+      auto to_erase_effect = std::ranges::unique(res._edges_effect);
+      res._edges_effect.erase(to_erase_effect.begin(), to_erase_effect.end());
+    }
 
-    auto mid_cause = res._edges_cause.insert(res._edges_cause.end(),
-        other._edges_cause.begin(), other._edges_cause.end());
+    auto mid_cause = res._edges_cause.insert(
+        res._edges_cause.end(),
+        other._edges_cause.begin(),
+        other._edges_cause.end());
     std::inplace_merge(
         res._edges_cause.begin(),
         mid_cause,
         res._edges_cause.end());
-    res._edges_cause.erase(std::ranges::unique(res._edges_cause));
+    auto to_erase_cause = std::ranges::unique(res._edges_cause);
+    res._edges_cause.erase(to_erase_cause.begin(), to_erase_cause.end());
 
     return res;
   }
