@@ -290,6 +290,15 @@ namespace dag {
     return network<EdgeT>(es);
   }
 
+  template <network_edge EdgeT>
+  network<EdgeT>
+  graph_union(const network<EdgeT>& g1, const network<EdgeT>& g2) {
+    if (g1.vertices().size() > g2.vertices().size())
+      return g1.union_with(g2);
+    else
+      return g2.union_with(g1);
+  }
+
   template <static_directed_edge EdgeT>
   std::optional<std::vector<typename EdgeT::VertexType>>
   try_topological_order(const network<EdgeT>& dir) {

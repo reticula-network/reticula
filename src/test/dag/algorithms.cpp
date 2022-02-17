@@ -2,6 +2,7 @@
 
 #include <catch2/catch.hpp>
 using Catch::Matchers::UnorderedEquals;
+using Catch::Matchers::Contains;
 using Catch::Matchers::Equals;
 
 #include <dag/utils.hpp>
@@ -861,6 +862,25 @@ TEST_CASE("edge induced subgraph", "[dag::edge_induced_subgraph]") {
   REQUIRE_THAT(std::vector<EdgeType>({
         {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
       UnorderedEquals(res.edges()));
+}
+
+TEST_CASE("graph union", "[dag::graph_union]") {
+  using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+  dag::network<EdgeType> n1(
+      {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
+
+  dag::network<EdgeType> n2(
+      {{{7, 1}, {2}, 5}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}});
+
+  auto res1 = dag::graph_union(n1, n2);
+  auto res2 = dag::graph_union(n1, n2);
+  REQUIRE(res1.edges() == res2.edges());
+  REQUIRE_THAT(res1.edges(), Contains(n1.edges()));
+  REQUIRE_THAT(res1.edges(), Contains(n2.edges()));
+
+  REQUIRE(res1.vertices() == res2.vertices());
+  REQUIRE_THAT(res1.vertices(), Contains(n1.vertices()));
+  REQUIRE_THAT(res1.vertices(), Contains(n2.vertices()));
 }
 
 TEST_CASE("network density", "[dag::density]") {

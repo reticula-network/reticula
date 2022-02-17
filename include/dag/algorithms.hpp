@@ -55,6 +55,15 @@ namespace dag {
       const Range& edges);
 
   /**
+    Returns the graph union (not the disjoint union) of the two graphs. The
+    union of two graphs consists of union of the two graph's vertices connected
+    through the union of their edges.
+  */
+  template <network_edge EdgeT>
+  network<EdgeT>
+  graph_union(const network<EdgeT>& g1, const network<EdgeT>& g2);
+
+  /**
     Returns true if the directed graph contains no cycles. This is detemined by
     trying to find a topologial ordering or the edges. If you intend to get a
     topological ordering of the nodes anyway, use `dag::try_topological_order`.
