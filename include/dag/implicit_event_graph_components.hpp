@@ -62,7 +62,8 @@ namespace dag {
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size_estimate<EdgeT>>>
   out_component_size_estimates(
-      const implicit_event_graph<EdgeT, AdjT>& eg);
+      const implicit_event_graph<EdgeT, AdjT>& eg,
+      std::size_t estimator_seed);
 
   template <
     temporal_edge EdgeT,
