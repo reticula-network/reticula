@@ -1,5 +1,5 @@
-#ifndef INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
-#define INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
+#ifndef INCLUDE_DAG_TEMPORAL_CLUSTERS_HPP_
+#define INCLUDE_DAG_TEMPORAL_CLUSTERS_HPP_
 
 #include <ranges>
 #include <unordered_set>
@@ -203,4 +203,4 @@ namespace dag {
 
 #include "../../src/temporal_clusters.tpp"
 
-#endif  // INCLUDE_DAG_TEMPORAL_COMPONENTS_HPP_
+#endif  // INCLUDE_DAG_TEMPORAL_CLUSTERS_HPP_
