@@ -6,7 +6,19 @@
 #include <dag/intervals.hpp>
 
 TEST_CASE("interval set", "[dag::interval_set]") {
-  SECTION("insert") {
+  SECTION("insert 1") {
+    dag::interval_set<int> is;
+    is.insert(1, 6);
+    is.insert(8, 10);
+    is.insert(3, 9);
+
+    REQUIRE(std::ranges::is_sorted(is));
+    REQUIRE(std::ranges::is_sorted(is, std::ranges::less{},
+          [](auto p){ return p.second; }));
+    REQUIRE(std::ranges::size(is) == 1);
+  }
+
+  SECTION("insert 2") {
     dag::interval_set<int> is;
 
     is.insert(0, 2);

@@ -17,9 +17,10 @@ namespace dag {
     typename std::vector<std::pair<T, T>>::iterator ostart;
     if (_ints.empty() || current.first > _ints.back().second)
       ostart = _ints.end();
-    else if (can_merge(current, _ints.back()))
+    else if (current.first >= _ints.back().first &&
+        can_merge(current, _ints.back()))
       ostart = _ints.end() - 1;
-    else if (current.second >= _ints.front().first ||
+    else if (current.first <= _ints.front().second ||
               can_merge(current, _ints.front()))
       ostart = _ints.begin();
     else
