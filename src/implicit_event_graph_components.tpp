@@ -262,7 +262,7 @@ namespace dag {
     return detail::out_components<
       EdgeT, AdjT,
       component_sketch<EdgeT>,
-      component_size_estimate<EdgeT>>(eg, seed);
+      component_size_estimate<EdgeT>>(eg, 0, seed);
   }
 
   template <
