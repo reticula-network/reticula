@@ -4,7 +4,7 @@
 namespace dag {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
-      AdjT adj, std::size_t size_hint, std::size_t /* seed */) :
+      AdjT adj, std::size_t size_hint) :
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
@@ -15,15 +15,14 @@ namespace dag {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
       std::initializer_list<EdgeT> events, AdjT adj,
-      std::size_t size_hint, std::size_t seed) :
-    temporal_cluster(std::vector(events), adj, size_hint, seed) {}
+      std::size_t size_hint) :
+    temporal_cluster(std::vector(events), adj, size_hint) {}
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
-      const Range& events, AdjT adj,
-      std::size_t size_hint, std::size_t /* seed */) :
+      const Range& events, AdjT adj, std::size_t size_hint) :
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
@@ -183,38 +182,30 @@ namespace dag {
   }
 
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  temporal_cluster_sketch<EdgeT, AdjT, dt>::temporal_cluster_sketch(
-      AdjT adj, std::size_t /* size_hint */, std::size_t seed) :
-      _adj(adj), _lifetime(
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
+      AdjT adj, EdgeT::TimeType temporal_resolution, std::size_t seed) :
+      _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
       _events(true, static_cast<uint32_t>(seed)),
       _verts(true, static_cast<uint32_t>(seed)),
       _times(true, static_cast<uint32_t>(seed)) {}
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  temporal_cluster_sketch<EdgeT, AdjT, dt>::temporal_cluster_sketch(
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       std::initializer_list<EdgeT> events, AdjT adj,
-      std::size_t size_hint, std::size_t seed) :
-    temporal_cluster_sketch(std::vector(events), adj, size_hint, seed) {}
+      EdgeT::TimeType temporal_resolution, std::size_t seed) :
+    temporal_cluster_sketch(
+        std::vector(events), adj, temporal_resolution, seed) {}
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-  temporal_cluster_sketch<EdgeT, AdjT, dt>::temporal_cluster_sketch(
+  temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       const Range& events, AdjT adj,
-      std::size_t /* size_hint */, std::size_t seed) :
-      _adj(adj), _lifetime(
+      EdgeT::TimeType temporal_resolution, std::size_t seed) :
+      _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
       _events(true, static_cast<uint32_t>(seed)),
@@ -224,11 +215,8 @@ namespace dag {
       insert(e);
   }
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  void temporal_cluster_sketch<EdgeT, AdjT, dt>::insert(const EdgeT& e) {
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  void temporal_cluster_sketch<EdgeT, AdjT>::insert(const EdgeT& e) {
     _events.insert(e);
     typename EdgeT::TimeType max =
       std::numeric_limits<typename EdgeT::TimeType>::max(),
@@ -247,23 +235,21 @@ namespace dag {
     }
   }
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-  void temporal_cluster_sketch<EdgeT, AdjT, dt>::insert(const Range& events) {
+  void temporal_cluster_sketch<EdgeT, AdjT>::insert(const Range& events) {
     for (auto& e: events)
       insert(e);
   }
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  void temporal_cluster_sketch<EdgeT, AdjT, dt>::merge(
-      const temporal_cluster_sketch<EdgeT, AdjT, dt>& c) {
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  void temporal_cluster_sketch<EdgeT, AdjT>::merge(
+      const temporal_cluster_sketch<EdgeT, AdjT>& c) {
+    if (_dt != c._dt)
+      throw std::invalid_argument("Cannot merge two temporal cluster sketchs "
+          "with different temporal resolutions");
+
     _lifetime = std::make_pair(
         std::min(c._lifetime.first, _lifetime.first),
         std::max(c._lifetime.second, _lifetime.second));
@@ -275,61 +261,49 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  temporal_cluster_sketch<EdgeT, AdjT, dt>::lifetime() const {
+  temporal_cluster_sketch<EdgeT, AdjT>::lifetime() const {
     return _lifetime;
   }
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  double temporal_cluster_sketch<EdgeT, AdjT, dt>::size_estimate() const {
+    temporal_adjacency::temporal_adjacency AdjT>
+  double temporal_cluster_sketch<EdgeT, AdjT>::size_estimate() const {
     return _events.estimate();
   }
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  double temporal_cluster_sketch<EdgeT, AdjT, dt>::volume_estimate() const {
+    temporal_adjacency::temporal_adjacency AdjT>
+  double temporal_cluster_sketch<EdgeT, AdjT>::volume_estimate() const {
     return _verts.estimate();
   }
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  double temporal_cluster_sketch<EdgeT, AdjT, dt>::mass_estimate() const {
-    return _times.estimate()*static_cast<double>(dt);
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  double temporal_cluster_sketch<EdgeT, AdjT>::mass_estimate() const {
+    return _times.estimate()*static_cast<double>(_dt);
   }
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  void temporal_cluster_sketch<EdgeT, AdjT, dt>::insert_time_range(
-      typename EdgeT::VertexType v,
-      typename EdgeT::TimeType start, typename EdgeT::TimeType end) {
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  void temporal_cluster_sketch<EdgeT, AdjT>::insert_time_range(
+      EdgeT::VertexType v,
+      EdgeT::TimeType start, EdgeT::TimeType end) {
     typename EdgeT::TimeType
-      a = std::floor(start/dt),
-      b = std::floor(end/dt) + 1;
+      a = std::floor(start/_dt),
+      b = std::floor(end/_dt) + 1;
     for (typename EdgeT::TimeType s = a; s <= b; s++)
-      if (s*dt > start && s*dt <= end)
-        _times.insert({v, s*dt});
+      if (s*_dt > start && s*_dt <= end)
+        _times.insert({v, s});
   }
 
 
 
-  template <
-    temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
-  temporal_cluster_size_estimate<EdgeT, AdjT, dt>::
+  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  temporal_cluster_size_estimate<EdgeT, AdjT>::
   temporal_cluster_size_estimate(
-      const temporal_cluster_sketch<EdgeT, AdjT, dt>& c) :
+      const temporal_cluster_sketch<EdgeT, AdjT>& c) :
     _size_estimate(c.size_estimate()),
     _lifetime(c.lifetime()),
     _volume_estimate(c.volume_estimate()),
@@ -337,37 +311,33 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
-  temporal_cluster_size_estimate<EdgeT, AdjT, dt>::lifetime() const {
+  temporal_cluster_size_estimate<EdgeT, AdjT>::lifetime() const {
     return _lifetime;
   }
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   double
-  temporal_cluster_size_estimate<EdgeT, AdjT, dt>::size_estimate() const {
+  temporal_cluster_size_estimate<EdgeT, AdjT>::size_estimate() const {
     return _size_estimate;
   }
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   double
-  temporal_cluster_size_estimate<EdgeT, AdjT, dt>::volume_estimate() const {
+  temporal_cluster_size_estimate<EdgeT, AdjT>::volume_estimate() const {
     return _volume_estimate;
   }
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   double
-  temporal_cluster_size_estimate<EdgeT, AdjT, dt>::mass_estimate() const {
+  temporal_cluster_size_estimate<EdgeT, AdjT>::mass_estimate() const {
     return _mass_estimate;
   }
 }  // namespace dag

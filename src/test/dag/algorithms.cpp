@@ -95,6 +95,12 @@ TEST_CASE("out components", "[dag::out_components]") {
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
             UnorderedEquals(std::vector<int>({4, 2, 3, 5, 6})));
+      else if (v == 5)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({4, 2, 3, 5, 6})));
+      else if (v == 6)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({6})));
 
     auto comp_sizes = dag::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -286,6 +292,13 @@ TEST_CASE("in components", "[dag::in_components]") {
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
             UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      else if (v == 5)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      else if (v == 6)
+        REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
+            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+
 
     auto comp_sizes = dag::in_component_sizes(graph);
 

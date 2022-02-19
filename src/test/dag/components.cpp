@@ -39,7 +39,7 @@ TEST_CASE("component sketch complies with the concept",
 TEST_CASE("component properties", "[dag::component]") {
   using CompType = dag::component<int>;
 
-  CompType comp(0, 0);
+  CompType comp(0);
 
   comp.insert(0);
   comp.insert(1);
@@ -68,7 +68,7 @@ TEST_CASE("component properties", "[dag::component]") {
   }
 
   SECTION("merging") {
-    CompType comp2(0, 0);
+    CompType comp2(0);
 
     comp2.insert(3);
     comp.merge(comp2);
@@ -82,7 +82,7 @@ TEST_CASE("component properties", "[dag::component]") {
 TEST_CASE("component size", "[dag::component_size]") {
   using CompType = dag::component<int>;
 
-  CompType comp(0, 0);
+  CompType comp(0);
 
   comp.insert(0);
   comp.insert(1);
@@ -95,7 +95,7 @@ TEST_CASE("component size", "[dag::component_size]") {
 TEST_CASE("component size estimate", "[dag::component_size_estimate]") {
   using CompType = dag::component_sketch<int>;
 
-  CompType comp(0, 0);
+  CompType comp(0);
 
   comp.insert(0);
   comp.insert(1);

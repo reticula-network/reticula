@@ -13,7 +13,6 @@ namespace dag {
   template <typename T>
   concept network_component =
     network_vertex<typename T::VertexType> &&
-    std::constructible_from<T, std::size_t, std::size_t> &&
     requires(T a, const T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
@@ -37,14 +36,16 @@ namespace dag {
     using IteratorType =
       typename std::unordered_set<VertexType, hash<VertexType>>::const_iterator;
 
-    explicit component(std::size_t size_hint = 0, std::size_t seed = 0);
-    component(std::initializer_list<VertexType> verts,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+    explicit component(std::size_t size_hint = 0);
+    component(
+        std::initializer_list<VertexType> verts,
+        std::size_t size_hint = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
-    explicit component(const Range& verts,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+    explicit component(
+        const Range& verts,
+        std::size_t size_hint = 0);
 
 
     template <std::ranges::input_range Range>
@@ -89,14 +90,16 @@ namespace dag {
     using VertexType = VertT;
     using SketchType = hll::hyperloglog<VertexType, 13, 14>;
 
-    explicit component_sketch(std::size_t size_hint = 0, std::size_t seed = 0);
-    component_sketch(std::initializer_list<VertexType> verts,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+    explicit component_sketch(std::size_t seed = 0);
+    component_sketch(
+        std::initializer_list<VertexType> verts,
+        std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
-    explicit component_sketch(const Range& verts,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+    explicit component_sketch(
+        const Range& verts,
+        std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>

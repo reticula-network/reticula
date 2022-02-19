@@ -10,6 +10,28 @@
 
 namespace dag {
   namespace detail {
+    template <typename Comp>
+    struct component_type_constructor {
+      Comp operator()(std::size_t size_est, std::size_t seed);
+    };
+
+
+    template <network_vertex VertT>
+    struct component_type_constructor<component<VertT>> {
+      component<VertT>
+      operator()(std::size_t size_est, std::size_t /* seed */) {
+        return component<VertT>(size_est);
+      }
+    };
+
+    template <network_vertex VertT>
+    struct component_type_constructor<component_sketch<VertT>> {
+      component_sketch<VertT>
+      operator()(std::size_t /* size_est */, std::size_t seed) {
+        return component_sketch<VertT>(seed);
+      }
+    };
+
     template <
       static_directed_edge EdgeT,
       network_component Comp,
@@ -38,16 +60,16 @@ namespace dag {
         std::ranges::reverse(topo);
 
       for (auto& vert: topo) {
-        Comp comp(0, seed);
+        Comp comp = detail::component_type_constructor<Comp>{}(0, seed);
         comp.insert(vert);
-        ongoing_components[vert] = comp;
+        ongoing_components.emplace(vert, comp);
 
         auto in_edges =
           revert_graph ? dir.out_edges(vert) : dir.in_edges(vert);
 
-        in_counts[vert] = 0;
+        in_counts.emplace(vert, 0);
         for (auto& e: in_edges)
-          in_counts[vert] +=
+          in_counts.at(vert) +=
             (revert_graph ? e.mutated_verts() : e.mutator_verts()).size();
 
         auto out_edges =
@@ -128,20 +150,19 @@ namespace dag {
           while (!stack.empty()) {
             auto v = stack.top();
             if (not_preordered(v))
-              pre_order[v] = current_preorder++;
+              pre_order.emplace(v, current_preorder++);
 
             auto succs =
               revert_graph ? dir.predecessors(v) : dir.successors(v);
-            out_comp.emplace(
-                std::piecewise_construct,
-                std::forward_as_tuple(v),
-                std::forward_as_tuple(succs, 0, seed));
-            out_comp.at(v).insert(v);
+            Comp comp = detail::component_type_constructor<Comp>{}(0, seed);
+            comp.insert(succs);
+            comp.insert(v);
+            out_comp.emplace(v, comp);
             if (auto child = std::ranges::find_if(succs, not_preordered);
                 child != succs.end()) {
               stack.push(*child);
             } else {
-              root_order[v] = pre_order.at(v);
+              root_order.emplace(v, pre_order.at(v));
               for (auto& s: succs) {
                 out_comp.at(v).merge(out_comp.at(s));
                 if (!seen.contains(s)) {
@@ -156,7 +177,7 @@ namespace dag {
               stack.pop();
               if (root_order.at(v) == pre_order.at(v)) {
                 while (!scc_stack.empty() &&
-                    pre_order[scc_stack.top()] >= pre_order[v]) {
+                    pre_order.at(scc_stack.top()) >= pre_order.at(v)) {
                   auto s = scc_stack.top();
                   scc_stack.pop();
                   seen.insert(s);

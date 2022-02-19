@@ -1,7 +1,6 @@
 namespace dag {
   template <network_vertex VertT>
-  component<VertT>::component(
-      std::size_t size_hint, std::size_t /* seed */) {
+  component<VertT>::component(std::size_t size_hint) {
     if (size_hint > 0)
       _verts.reserve(size_hint);
   }
@@ -9,14 +8,15 @@ namespace dag {
   template <network_vertex VertT>
   component<VertT>::component(
       std::initializer_list<VertT> verts,
-      std::size_t size_hint, std::size_t seed) :
-    component(std::vector(verts), size_hint, seed) {}
+      std::size_t size_hint) :
+    component(std::vector(verts), size_hint) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component<VertT>::component(
-      const Range& verts, std::size_t size_hint, std::size_t /* seed */) {
+      const Range& verts,
+      std::size_t size_hint) {
     if (size_hint == 0) {
       if constexpr (std::ranges::sized_range<Range>)
         _verts.reserve(std::ranges::size(verts));
@@ -76,21 +76,20 @@ namespace dag {
   }
 
   template <network_vertex VertT>
-  component_sketch<VertT>::component_sketch(
-      std::size_t /* size_hint */, std::size_t seed) :
+  component_sketch<VertT>::component_sketch(std::size_t seed) :
     _verts(true, static_cast<uint32_t>(seed)) {}
 
   template <network_vertex VertT>
   component_sketch<VertT>::component_sketch(
       std::initializer_list<VertT> verts,
-      std::size_t size_hint, std::size_t seed) :
-    component_sketch(std::vector(verts), size_hint, seed) {}
+      std::size_t seed) :
+    component_sketch(std::vector(verts), seed) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component_sketch<VertT>::component_sketch(
-      const Range& verts, std::size_t /* size_hint */, std::size_t seed) :
+      const Range& verts, std::size_t seed) :
     _verts(true, static_cast<uint32_t>(seed)) {
     for (auto& v: verts)
       _verts.insert(v);

@@ -5,21 +5,32 @@
 
 namespace dag {
   namespace detail {
-    template <
-      typename ComponentType,
-      temporal_adjacency::temporal_adjacency AdjT>
-    struct component_type_constructor {
-      ComponentType
-      operator()(AdjT adj, std::size_t size_est, std::size_t seed);
+    template <typename Comp, typename AdjT, typename TempResType>
+    struct ieg_component_type_constructor {
+      Comp operator()(AdjT adj, TempResType dt,
+          std::size_t size_est, std::size_t seed);
     };
 
-    template <
-      network_component Comp,
-      temporal_adjacency::temporal_adjacency AdjT>
-    struct component_type_constructor<Comp, AdjT> {
-      Comp
-      operator()(AdjT /* adj */, std::size_t size_est, std::size_t seed) {
-        return Comp{size_est, seed};
+
+    template <temporal_adjacency::temporal_adjacency AdjT>
+    struct ieg_component_type_constructor<
+        component<typename AdjT::EdgeType>,
+        AdjT, typename AdjT::EdgeType::TimeType> {
+      component<typename AdjT::EdgeType>
+      operator()(AdjT /* adj */, typename AdjT::EdgeType::TimeType /* dt */,
+          std::size_t size_est, std::size_t /* seed */) {
+        return component<typename AdjT::EdgeType>(size_est);
+      }
+    };
+
+    template <temporal_adjacency::temporal_adjacency AdjT>
+    struct ieg_component_type_constructor<
+        component_sketch<typename AdjT::EdgeType>,
+        AdjT, typename AdjT::EdgeType::TimeType> {
+      component_sketch<typename AdjT::EdgeType>
+      operator()(AdjT /* adj */, typename AdjT::EdgeType::TimeType /* dt */,
+          std::size_t /* size_est */, std::size_t seed) {
+        return component_sketch<typename AdjT::EdgeType>(seed);
       }
     };
 
@@ -31,6 +42,7 @@ namespace dag {
     std::vector<std::pair<EdgeT, OutputComponent>>
     out_components(
         const implicit_event_graph<EdgeT, AdjT>& eg,
+        typename EdgeT::TimeType temporal_resolution,
         std::size_t seed) {
       std::unordered_map<EdgeT, IntermComponent, hash<EdgeT>>
         out_components;
@@ -45,8 +57,9 @@ namespace dag {
 
       while (temp_edge_iter < end) {
         out_components.emplace(*temp_edge_iter,
-          component_type_constructor<IntermComponent, AdjT>{}(
-              eg.temporal_adjacency(), 0, seed));
+          ieg_component_type_constructor<
+              IntermComponent, AdjT, typename AdjT::EdgeType::TimeType>{}(
+            eg.temporal_adjacency(), temporal_resolution, 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
             *temp_edge_iter, true);
@@ -87,6 +100,7 @@ namespace dag {
     std::vector<std::pair<EdgeT, OutputComponent>>
     in_components(
         const implicit_event_graph<EdgeT, AdjT>& eg,
+        typename EdgeT::TimeType temporal_resolution,
         std::size_t seed) {
       std::unordered_map<EdgeT, IntermComponent, hash<EdgeT>>
         in_components;
@@ -101,8 +115,9 @@ namespace dag {
 
       while (temp_edge_iter < end) {
         in_components.emplace(*temp_edge_iter,
-          component_type_constructor<IntermComponent, AdjT>{}(
-              eg.temporal_adjacency(), 0, seed));
+          ieg_component_type_constructor<
+              IntermComponent, AdjT, typename AdjT::EdgeType::TimeType>{}(
+            eg.temporal_adjacency(), temporal_resolution, 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
             *temp_edge_iter, true);
@@ -179,7 +194,7 @@ namespace dag {
   in_components(
       const implicit_event_graph<EdgeT, AdjT>& eg) {
     return detail::in_components<
-      EdgeT, AdjT, component<EdgeT>, component<EdgeT>>(eg, 0);
+      EdgeT, AdjT, component<EdgeT>, component<EdgeT>>(eg, 0, 0);
   }
 
   template <
@@ -189,7 +204,7 @@ namespace dag {
   in_component_sizes(
       const implicit_event_graph<EdgeT, AdjT>& eg) {
     return detail::in_components<
-      EdgeT, AdjT, component<EdgeT>, component_size<EdgeT>>(eg, 0);
+      EdgeT, AdjT, component<EdgeT>, component_size<EdgeT>>(eg, 0, 0);
   }
 
   template <
@@ -202,7 +217,7 @@ namespace dag {
     return detail::in_components<
       EdgeT, AdjT,
       component_sketch<EdgeT>,
-      component_size_estimate<EdgeT>>(eg, seed);
+      component_size_estimate<EdgeT>>(eg, 0, seed);
   }
 
   template <
@@ -224,7 +239,7 @@ namespace dag {
   out_components(
       const implicit_event_graph<EdgeT, AdjT>& eg) {
     return detail::out_components<
-      EdgeT, AdjT, component<EdgeT>, component<EdgeT>>(eg, 0);
+      EdgeT, AdjT, component<EdgeT>, component<EdgeT>>(eg, 0, 0);
   }
 
   template <
@@ -234,7 +249,7 @@ namespace dag {
   out_component_sizes(
       const implicit_event_graph<EdgeT, AdjT>& eg) {
     return detail::out_components<
-      EdgeT, AdjT, component<EdgeT>, component_size<EdgeT>>(eg, 0);
+      EdgeT, AdjT, component<EdgeT>, component_size<EdgeT>>(eg, 0, 0);
   }
 
   template <

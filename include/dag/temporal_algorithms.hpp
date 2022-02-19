@@ -135,13 +135,13 @@ namespace dag {
   */
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1)>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
-    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT, dt>>>
+    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
   out_cluster_size_estimates(
           const network<EdgeT>& temp,
           const AdjT& adj,
+          typename EdgeT::TimeType temporal_resolution,
           std::size_t seed);
 
   /**
@@ -224,13 +224,13 @@ namespace dag {
   */
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1.0)>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
-    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT, dt>>>
+    std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
   in_cluster_size_estimates(
           const network<EdgeT>& temp,
           const AdjT& adj,
+          typename EdgeT::TimeType temporal_resolution,
           std::size_t seed);
 
   /**

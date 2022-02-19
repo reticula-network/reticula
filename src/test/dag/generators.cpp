@@ -24,7 +24,7 @@ std::size_t power(std::size_t n, std::size_t d) {
 }
 
 TEMPLATE_TEST_CASE_SIG("square grid graph", "[dag::square_grid_graph]",
-    ((std::size_t Dims), Dims), 1, 2, 3, 4, 5, 6) {
+    ((std::size_t Dims), Dims), 1, 2, 3, 4, 5) {
   std::size_t n = 5;
 
   SECTION("periodic") {

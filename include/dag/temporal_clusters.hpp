@@ -15,8 +15,6 @@ namespace dag {
   template <typename T>
   concept network_temporal_cluster =
     temporal_edge<typename T::VertexType> &&
-    std::constructible_from<T,
-      typename T::AdjacencyType, std::size_t, std::size_t> &&
     requires(T a, const T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
@@ -42,15 +40,15 @@ namespace dag {
       typename std::unordered_set<VertexType, hash<VertexType>>::const_iterator;
 
     explicit temporal_cluster(
-        AdjT adj, std::size_t size_hint = 0, std::size_t seed = 0);
+        AdjT adj, std::size_t size_hint = 0);
     temporal_cluster(
-        std::initializer_list<EdgeT> verts, AdjT adj,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+        std::initializer_list<EdgeT> verts,
+        AdjT adj, std::size_t size_hint = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    explicit temporal_cluster(const Range& verts, AdjT adj,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+    explicit temporal_cluster(const Range& verts,
+        AdjT adj, std::size_t size_hint = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
@@ -117,8 +115,7 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    typename EdgeT::TimeType dt = static_cast<typename EdgeT::TimeType>(1)>
+    temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster_sketch {
   public:
     using VertexType = EdgeT;
@@ -137,15 +134,16 @@ namespace dag {
         13, 14>;
 
     explicit temporal_cluster_sketch(
-        AdjT adj, std::size_t size_hint = 0, std::size_t seed = 0);
+        AdjT adj,
+        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
     temporal_cluster_sketch(
         std::initializer_list<EdgeT> verts, AdjT adj,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
     explicit temporal_cluster_sketch(const Range& verts, AdjT adj,
-        std::size_t size_hint = 0, std::size_t seed = 0);
+        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
@@ -153,13 +151,14 @@ namespace dag {
 
     void insert(const EdgeT& e);
 
-    void merge(const temporal_cluster_sketch<EdgeT, AdjT, dt>& other);
+    void merge(const temporal_cluster_sketch<EdgeT, AdjT>& other);
 
     double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
     double volume_estimate() const;
     double mass_estimate() const;
+    EdgeT::TimeType temporal_resolution() const;
 
   private:
     void insert_time_range(
@@ -167,6 +166,7 @@ namespace dag {
         typename EdgeT::TimeType start,
         typename EdgeT::TimeType end);
 
+    EdgeT::TimeType _dt;
     AdjT _adj;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType> _lifetime;
     EventSketchType _events;
@@ -176,23 +176,24 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    EdgeT::TimeType dt = static_cast<EdgeT::TimeType>(1)>
+    temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster_size_estimate {
   public:
     using VertexType = EdgeT;
     using AdjacencyType = AdjT;
 
     explicit temporal_cluster_size_estimate(
-        const temporal_cluster_sketch<EdgeT, AdjT, dt>& c);
+        const temporal_cluster_sketch<EdgeT, AdjT>& c);
 
     double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
     double volume_estimate() const;
     double mass_estimate() const;
+    EdgeT::TimeType temporal_resolution() const;
 
   private:
+    EdgeT::TimeType _dt;
     double _size_estimate;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     _lifetime;
