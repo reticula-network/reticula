@@ -189,8 +189,7 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    typename EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
   out_cluster_size_estimates(
@@ -259,8 +258,7 @@ namespace dag {
 
   template <
     temporal_edge EdgeT,
-    temporal_adjacency::temporal_adjacency AdjT,
-    typename EdgeT::TimeType dt>
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
   in_cluster_size_estimates(
