@@ -1,5 +1,5 @@
-#include <../include/dag/implicit_event_graph.hpp>
-#include <../include/dag/implicit_event_graph_components.hpp>
+#include "../include/dag/implicit_event_graph.hpp"
+#include "../include/dag/implicit_event_graph_components.hpp"
 namespace dag {
   namespace detail {
     template <temporal_edge EdgeT>
@@ -289,5 +289,14 @@ namespace dag {
     return out_cluster(
         net, adj, detail::temporal_loop<EdgeT>{}(source, t0)).covers(
           destination, t1);
+  }
+
+  template <temporal_edge EdgeT>
+  network<typename EdgeT::StaticProjectionType>
+  static_projection(const network<EdgeT>& temp) {
+    return network<typename EdgeT::StaticProjectionType>(
+        temp.edges_cause() | std::views::transform([](const auto& e){
+          return e.static_projection();
+        }), temp.vertices());
   }
 }  // namespace dag

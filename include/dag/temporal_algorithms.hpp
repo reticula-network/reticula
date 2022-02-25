@@ -254,6 +254,15 @@ namespace dag {
       typename EdgeT::TimeType t0,
       const typename EdgeT::VertexType& destination,
       typename EdgeT::TimeType t1);
+
+  /**
+    Return the static projection of the temporal network. The resulting static
+    network has the same set vertices as the temporal network and two nodes are
+    connected if there is at least one event connecting the two.
+  */
+  template <temporal_edge EdgeT>
+  network<typename EdgeT::StaticProjectionType>
+  static_projection(const network<EdgeT>& temp);
 }  // namespace dag
 
 #include "../../src/temporal_algorithms.tpp"
