@@ -320,4 +320,22 @@ namespace dag {
 
     return res;
   }
+
+  template <temporal_edge EdgeT>
+  std::vector<
+    std::pair<typename EdgeT::StaticProjectionType, std::vector<EdgeT>>>
+  link_timelines(const network<EdgeT>& net) {
+    std::unordered_map<
+      typename EdgeT::StaticProjectionType, std::vector<EdgeT>,
+      hash<typename EdgeT::StaticProjectionType>> timelines;
+
+    for (auto& event: net.edges_cause())
+      timelines[event.static_projection()].push_back(event);
+
+    return std::vector<
+      std::pair<
+          typename EdgeT::StaticProjectionType, std::vector<EdgeT>>>(
+        timelines.begin(),
+        timelines.end());
+  }
 }  // namespace dag

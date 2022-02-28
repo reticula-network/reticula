@@ -293,6 +293,29 @@ TEST_CASE("link timeline", "[dag::link_timeline]") {
         {5, 6, 1, 3}});
 
   auto tl = dag::link_timeline(network, {1, 2});
-  REQUIRE(tl == std::vector<dag::directed_delayed_temporal_edge<int, int>>{
+  REQUIRE(tl == std::vector<EdgeType>{
         {1, 2, 1, 5}, {1, 2, 5, 5}});
+}
+
+TEST_CASE("link timelines", "[dag::link_timelines]") {
+  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+  dag::network<EdgeType> network(
+      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+        {5, 6, 1, 3}});
+
+  auto tls = dag::link_timelines(network);
+
+  using S = EdgeType::StaticProjectionType;
+  for (auto& [s, v]: tls) {
+    if (s == S{1, 2})
+      REQUIRE(v == std::vector<EdgeType>{{1, 2, 1, 5}, {1, 2, 5, 5}});
+    else if (s == S{2, 1})
+      REQUIRE(v == std::vector<EdgeType>{{2, 1, 2, 3}});
+    else if (s == S{2, 3})
+      REQUIRE(v == std::vector<EdgeType>{{2, 3, 6, 7}});
+    else if (s == S{3, 4})
+      REQUIRE(v == std::vector<EdgeType>{{3, 4, 8, 9}});
+    else  // if (s == S{5, 6})
+      REQUIRE(v == std::vector<EdgeType>{{5, 6, 1, 3}});
+  }
 }
