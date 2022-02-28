@@ -26,6 +26,11 @@ namespace dag {
     static constexpr bool value = false;
   };
 
+  template<network_vertex VertT>
+  struct is_dyadic<directed_hyperedge<VertT>> {
+    static constexpr bool value = false;
+  };
+
   template <network_vertex VertT>
   class undirected_hyperedge;
 
@@ -37,6 +42,11 @@ namespace dag {
   template<network_vertex VertT>
   struct is_undirected<undirected_hyperedge<VertT>> {
     static constexpr bool value = true;
+  };
+
+  template<network_vertex VertT>
+  struct is_dyadic<undirected_hyperedge<VertT>> {
+    static constexpr bool value = false;
   };
 
 

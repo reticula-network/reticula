@@ -26,6 +26,11 @@ namespace dag {
   };
 
   template <network_vertex VertT, class TimeT>
+  struct is_dyadic<undirected_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
+  };
+
+  template <network_vertex VertT, class TimeT>
   class directed_temporal_edge;
 
   template <network_vertex VertT, class TimeT>
@@ -39,6 +44,11 @@ namespace dag {
   };
 
   template <network_vertex VertT, class TimeT>
+  struct is_dyadic<directed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
+  };
+
+  template <network_vertex VertT, class TimeT>
   class directed_delayed_temporal_edge;
 
   template <network_vertex VertT, class TimeT>
@@ -49,6 +59,11 @@ namespace dag {
   template <network_vertex VertT, class TimeT>
   struct is_undirected<directed_delayed_temporal_edge<VertT, TimeT>> {
     static constexpr bool value = false;
+  };
+
+  template <network_vertex VertT, class TimeT>
+  struct is_dyadic<directed_delayed_temporal_edge<VertT, TimeT>> {
+    static constexpr bool value = true;
   };
 
   /**

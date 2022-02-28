@@ -24,6 +24,11 @@ namespace dag {
     static constexpr bool value = false;
   };
 
+  template<network_vertex VertT>
+  struct is_dyadic<directed_edge<VertT>> {
+    static constexpr bool value = true;
+  };
+
   template <network_vertex VertT>
   class undirected_edge;
 
@@ -34,6 +39,11 @@ namespace dag {
 
   template<network_vertex VertT>
   struct is_undirected<undirected_edge<VertT>> {
+    static constexpr bool value = true;
+  };
+
+  template<network_vertex VertT>
+  struct is_dyadic<undirected_edge<VertT>> {
     static constexpr bool value = true;
   };
 

@@ -27,6 +27,11 @@ namespace dag {
   };
 
   template <network_vertex VertT, class TimeT>
+  struct is_dyadic<undirected_temporal_hyperedge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
+
+  template <network_vertex VertT, class TimeT>
   class directed_temporal_hyperedge;
 
   template <network_vertex VertT, class TimeT>
@@ -40,6 +45,11 @@ namespace dag {
   };
 
   template <network_vertex VertT, class TimeT>
+  struct is_dyadic<directed_temporal_hyperedge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
+
+  template <network_vertex VertT, class TimeT>
   class directed_delayed_temporal_hyperedge;
 
   template <network_vertex VertT, class TimeT>
@@ -49,6 +59,11 @@ namespace dag {
 
   template <network_vertex VertT, class TimeT>
   struct is_undirected<directed_delayed_temporal_hyperedge<VertT, TimeT>> {
+    static constexpr bool value = false;
+  };
+
+  template <network_vertex VertT, class TimeT>
+  struct is_dyadic<directed_delayed_temporal_hyperedge<VertT, TimeT>> {
     static constexpr bool value = false;
   };
 
