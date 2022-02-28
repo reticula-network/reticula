@@ -299,4 +299,25 @@ namespace dag {
           return e.static_projection();
         }), temp.vertices());
   }
+
+  template <temporal_edge EdgeT>
+  std::vector<EdgeT>
+  link_timeline(
+      const network<EdgeT>& net,
+      const typename EdgeT::StaticProjectionType& link) {
+    auto node = std::ranges::min(
+        link.mutator_verts(), std::ranges::less{},
+        [&net](const auto& n) { return net.out_edges(n).size(); });
+
+    std::vector<EdgeT> res;
+    res.reserve(std::min(
+          net.edges().size()*3/net.vertices().size(),
+          net.out_edges(node).size()));
+
+    for (auto& event: net.out_edges(node))
+      if (event.static_projection() == link)
+        res.push_back(event);
+
+    return res;
+  }
 }  // namespace dag

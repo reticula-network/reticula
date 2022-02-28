@@ -273,7 +273,7 @@ TEST_CASE("is reachable (temporal networks)", "[dag::is_reachable]") {
   REQUIRE_FALSE(dag::is_reachable(network, adj, 5, 0, 4, 10));
 }
 
-TEST_CASE("static projection") {
+TEST_CASE("static projection", "[dag::static_projection]") {
   using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
   dag::network<EdgeType> network(
       {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
@@ -284,4 +284,15 @@ TEST_CASE("static projection") {
   REQUIRE_THAT(sp.edges(),
       UnorderedEquals(std::vector<dag::directed_edge<int>>{
         {1, 2}, {2, 1}, {2, 3}, {3, 4}, {5, 6}}));
+}
+
+TEST_CASE("link timeline", "[dag::link_timeline]") {
+  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+  dag::network<EdgeType> network(
+      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+        {5, 6, 1, 3}});
+
+  auto tl = dag::link_timeline(network, {1, 2});
+  REQUIRE(tl == std::vector<dag::directed_delayed_temporal_edge<int, int>>{
+        {1, 2, 1, 5}, {1, 2, 5, 5}});
 }

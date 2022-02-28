@@ -263,6 +263,16 @@ namespace dag {
   template <temporal_edge EdgeT>
   network<typename EdgeT::StaticProjectionType>
   static_projection(const network<EdgeT>& temp);
+
+  /**
+    Returns a vector of unique events, sorted by cause time, that have a static
+    projection equal to the parameter `link`, i.e., the timeline of that link.
+  */
+  template <temporal_edge EdgeT>
+  std::vector<EdgeT>
+  link_timeline(
+      const network<EdgeT>& net,
+      const typename EdgeT::StaticProjectionType& link);
 }  // namespace dag
 
 #include "../../src/temporal_algorithms.tpp"

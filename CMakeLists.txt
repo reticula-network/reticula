@@ -49,7 +49,8 @@ add_executable(
   src/test/dag/networks.cpp
   src/test/dag/random_networks.cpp
   src/test/dag/components.cpp
-  src/test/dag/temporal_clusters.cpp)
+  src/test/dag/temporal_clusters.cpp
+  src/test/dag/microcanonical_reference_models.cpp)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2)
 target_compile_options(${PROJECT_NAME}_tests PRIVATE

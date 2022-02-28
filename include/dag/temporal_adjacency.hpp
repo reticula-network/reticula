@@ -1,6 +1,8 @@
 #ifndef INCLUDE_DAG_TEMPORAL_ADJACENCY_HPP_
 #define INCLUDE_DAG_TEMPORAL_ADJACENCY_HPP_
 
+#include <concepts>
+
 #include "network_concepts.hpp"
 
 namespace dag {
@@ -89,7 +91,7 @@ namespace dag {
     };
 
     template <temporal_edge EdgeT>
-    requires std::is_floating_point_v<typename EdgeT::TimeType>
+    requires std::floating_point<typename EdgeT::TimeType>
     class exponential {
     public:
       using EdgeType = EdgeT;
@@ -134,7 +136,7 @@ namespace dag {
 
 
     template <temporal_edge EdgeT>
-    requires std::is_integral_v<typename EdgeT::TimeType>
+    requires std::integral<typename EdgeT::TimeType>
     class geometric {
     public:
       using EdgeType = EdgeT;

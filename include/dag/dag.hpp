@@ -22,5 +22,6 @@ namespace dag {}
 #include "temporal_algorithms.hpp"
 #include "implicit_event_graph.hpp"
 #include "generators.hpp"
+#include "microcanonical_reference_models.hpp"
 
 #endif  // INCLUDE_DAG_DAG_HPP_
