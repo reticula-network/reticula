@@ -114,3 +114,29 @@ TEST_CASE("topology-constrained link shuffling",
   REQUIRE_THAT(dag::static_projection(g).edges(),
        Equals(dag::static_projection(shuffled).edges()));
 }
+
+TEST_CASE("timeline shuffling",
+    "[dag::microcanonical_reference_models::timeline_shuffling]") {
+  std::mt19937_64 gen(42);
+  auto g = random_uneven_temporal_network(gen);
+  auto shuffled =
+    dag::microcanonical_reference_models::timeline_shuffling(g, gen);
+
+  REQUIRE_THAT(g.vertices(), Equals(shuffled.vertices()));
+  REQUIRE(g.edges_cause().size() == shuffled.edges_cause().size());
+  REQUIRE(dag::static_projection(g).edges().size()
+      == dag::static_projection(shuffled).edges().size());
+  REQUIRE_THAT(dag::static_projection(g).edges(),
+       Equals(dag::static_projection(shuffled).edges()));
+
+  auto tls_before = dag::link_timelines(g),
+       tls_after = dag::link_timelines(shuffled);
+
+  std::ranges::sort(tls_before);
+  std::ranges::sort(tls_after);
+
+  for (std::size_t i = 0; i < tls_before.size(); i++) {
+      REQUIRE(tls_before[i].first == tls_after[i].first);
+      REQUIRE(tls_before[i].second.size() == tls_after[i].second.size());
+  }
+}

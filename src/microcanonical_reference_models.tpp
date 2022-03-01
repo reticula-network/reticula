@@ -6,10 +6,54 @@
 namespace dag {
   namespace microcanonical_reference_models {
     namespace detail {
-      /* template <std::integral TimeT> */
-      /* sample_times(TimeT start, TimeT end, std::size_t num) { */
-      /*   std::vector<TimeT> */
-      /* } */
+      template <
+        std::floating_point TimeT,
+        std::uniform_random_bit_generator Gen>
+      std::vector<TimeT>
+      sample_timestamps(TimeT t0, TimeT t1, std::size_t k, Gen& generator) {
+        std::unordered_set<TimeT> s;
+        s.reserve(k);
+
+        // uniform_real_distribution is not end-inclusive.
+        std::uniform_real_distribution<TimeT> dist(
+            t0, std::nextafter(t1, std::numeric_limits<TimeT>::infinity()));
+        while (s.size() < k)
+          s.insert(dist(generator));
+
+        return std::vector<TimeT>(s.begin(), s.end());
+      }
+
+      template <
+        std::integral TimeT,
+        std::uniform_random_bit_generator Gen>
+      std::vector<TimeT>
+      sample_timestamps(TimeT t0, TimeT t1, std::size_t k, Gen& generator) {
+        std::vector<TimeT> out;
+        out.reserve(k);
+        for (TimeT i = t0; i < t0 + static_cast<TimeT>(k); i++)
+          out.push_back(i);
+
+        double w = std::exp(
+            std::log(
+              std::uniform_real_distribution{}(
+                generator))/static_cast<double>(k));
+
+        std::size_t i = t0 + static_cast<TimeT>(k) + static_cast<std::size_t>(
+              std::log(
+                std::uniform_real_distribution{}(
+                  generator))/std::log(1-w)) + 1;
+
+        while (i <= t1) {
+          std::uniform_int_distribution<std::size_t> dist{0, k-1};
+          out[dist(generator)] = i;
+          i += static_cast<std::size_t>(
+              std::log(
+                std::uniform_real_distribution{}(
+                  generator))/std::log(1-w)) + 1;
+        }
+
+        return out;
+      }
 
       template <temporal_edge EdgeT>
       struct replace_verts {
@@ -202,6 +246,31 @@ namespace dag {
               auto& [ni, nj] = link_map.at(e.static_projection());
               return detail::replace_verts<EdgeT>{}(e, ni, nj);
             }), temp.vertices());
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator) {
+      std::vector<EdgeT> shuffled_edges;
+      shuffled_edges.reserve(temp.edges_cause().size());
+
+      auto [t0, t1] = cause_time_window(temp);
+      for (auto tls = link_timelines(temp); auto& [link, timeline]: tls) {
+        auto ts = detail::sample_timestamps(t0, t1, timeline.size(), generator);
+        for (std::size_t i = 0; i < timeline.size(); i++) {
+          auto e = timeline[i];
+          if constexpr (std::same_as<
+            EdgeT, directed_delayed_temporal_edge<
+              typename EdgeT::VertexType, typename EdgeT::TimeType>>)
+            shuffled_edges.emplace_back(e.static_projection(),
+                ts[i], ts[i] + e.effect_time() - e.cause_time());
+          else
+            shuffled_edges.emplace_back(e.static_projection(), ts[i]);
+        }
+      }
+
+      return network<EdgeT>(shuffled_edges, temp.vertices());
     }
   }  // namespace microcanonical_reference_models
 }  // namespace dag
