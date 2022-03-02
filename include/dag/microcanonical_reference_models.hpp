@@ -73,12 +73,86 @@ namespace dag {
       randomly selected link with a non-empty timeline. Equivalent to
       micocanonical reference model with the canonical name $P[\mathcal{L}, E]$.
 
-      The set of vertices, timestamps and the static projection of the temporal
-      network are conserved.
+      The set of vertices, total number of events and the static projection of
+      the temporal network are conserved.
     */
     template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator);
+
+
+    /**
+      Produces a random shuffling of the temporal network where the events are
+      shuffled by assigning new, uniformly random timetamps without changing the
+      static projection link (the vertices) each event is attributed to.
+      Equivalent to micocanonical reference model with the canonical name
+      $P[\mathbf{w}]$.
+
+      The observation window, the window where the original measurement of the
+      temporal network was made, is passed through parameters `t_start` and
+      `t_end`.
+
+      The set of vertices, cardinality of each timeline and the static
+      projection of the temporal network are conserved.
+    */
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> weight_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end);
+
+    /**
+      Produces a random shuffling of the temporal network where the events are
+      shuffled by assigning new, uniformly random timetamps without changing the
+      static projection link (the vertices) each event is attributed to.
+      Equivalent to micocanonical reference model with the canonical name
+      $P[\mathbf{w}]$.
+
+      The observation window, the window where the original measurement of the
+      temporal network was made, is derived by minimum and maximum cause time of
+      the events.
+
+      The set of vertices, cardinality of each timeline and the static
+      projection of the temporal network are conserved.
+    */
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> weight_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator);
+
+    /**
+      Produces a random shuffling of the temporal network where the events are
+      shuffled by assigning new, uniformly random timetamps without changing the
+      static projection link (the vertices) each event is attributed to. The new
+      timestamps are selected uniformly at random from first cause time to the
+      last cause time (inclusive) of each timeline. Equivalent to micocanonical
+      reference model with the canonical name
+      $P[\mathbf{w}, \mathbf{t}^1, \mathbf{t}^w]$.
+
+      The set of vertices, cardinality of each timeline and the static
+      projection of the temporal network are conserved.
+    */
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> activity_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator);
+
+    /**
+      Produces a random shuffling of the temporal network where the events are
+      shuffled by shuffling the inter-event times between them, without changing
+      the static projection link (the vertices) each event is attributed to or
+      the ordering of events in each timeline. Equivalent to micocanonical
+      reference model with the canonical name
+      $P[\mathbf{\pi}_\mathcal{L}(\mathbf{\delta \tau}), \mathbf{t}^1]$.
+
+      The set of vertices, cardinality of each timeline, the set of inter-event
+      times in each timeline and the static projection of the temporal network
+      are conserved.
+    */
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> inter_event_shuffling(
         const network<EdgeT>& temp, Gen& generator);
 
   }  // namespace microcanonical_reference_models

@@ -1,4 +1,5 @@
 #include <unordered_set>
+#include <unordered_map>
 #include <concepts>
 
 #include "../include/dag/temporal_algorithms.hpp"
@@ -251,13 +252,74 @@ namespace dag {
     template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> timeline_shuffling(
-        const network<EdgeT>& temp, Gen& generator) {
+        const network<EdgeT>& temp, Gen& generator,
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end) {
+      auto [t0, t1] = cause_time_window(temp);
+      if (t0 < t_start || t1 > t_end)
+        throw std::invalid_argument("observation window does not cover "
+            "the cause time of all the events");
+
       std::vector<EdgeT> shuffled_edges;
       shuffled_edges.reserve(temp.edges_cause().size());
 
+      auto p = static_projection(temp);
+      auto& links = p.edges();
+
+      std::unordered_map<
+        typename EdgeT::StaticProjectionType, std::vector<EdgeT>,
+        hash<typename EdgeT::StaticProjectionType>> shuffled_link;
+      std::uniform_int_distribution<std::size_t> dist(0, links.size() - 1);
+      for (auto& l: links)
+        shuffled_link[l].reserve(temp.edges().size()*2/links.size());
+
+      for (auto& e: temp.edges_cause())
+        shuffled_link[links[dist(generator)]].push_back(e);
+
+      for (auto& [l, tl]: shuffled_link) {
+        auto ts = detail::sample_timestamps(t_start, t_end,
+            tl.size(), generator);
+        for (std::size_t i = 0; i < tl.size(); i++) {
+          auto e = tl[i];
+          if constexpr (std::same_as<
+            EdgeT, directed_delayed_temporal_edge<
+              typename EdgeT::VertexType, typename EdgeT::TimeType>>)
+            shuffled_edges.emplace_back(l,
+                ts[i], ts[i] + e.effect_time() - e.cause_time());
+          else
+            shuffled_edges.emplace_back(l, ts[i]);
+        }
+      }
+
+      return network<EdgeT>(shuffled_edges, temp.vertices());
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator) {
       auto [t0, t1] = cause_time_window(temp);
+      return timeline_shuffling(temp, generator, t0, t1);
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> weight_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end) {
+      if (temp.vertices().empty() || temp.edges().empty())
+        return temp;
+
+      auto [t0, t1] = cause_time_window(temp);
+      if (t0 < t_start || t1 > t_end)
+        throw std::invalid_argument("observation window does not cover "
+            "the cause time of all the events");
+
+      std::vector<EdgeT> shuffled_edges;
+      shuffled_edges.reserve(temp.edges_cause().size());
+
       for (auto tls = link_timelines(temp); auto& [link, timeline]: tls) {
-        auto ts = detail::sample_timestamps(t0, t1, timeline.size(), generator);
+        auto ts = detail::sample_timestamps(t_start, t_end,
+            timeline.size(), generator);
         for (std::size_t i = 0; i < timeline.size(); i++) {
           auto e = timeline[i];
           if constexpr (std::same_as<
@@ -267,6 +329,80 @@ namespace dag {
                 ts[i], ts[i] + e.effect_time() - e.cause_time());
           else
             shuffled_edges.emplace_back(e.static_projection(), ts[i]);
+        }
+      }
+
+      return network<EdgeT>(shuffled_edges, temp.vertices());
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> weight_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator) {
+      auto [t0, t1] = cause_time_window(temp);
+      return weight_constrained_timeline_shuffling(temp, generator, t0, t1);
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> activity_constrained_timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator) {
+      std::vector<EdgeT> shuffled_edges;
+      shuffled_edges.reserve(temp.edges_cause().size());
+
+      for (auto tls = link_timelines(temp); auto& [link, timeline]: tls) {
+        auto t_start = timeline.front().cause_time(),
+             t_end = timeline.back().cause_time();
+        auto ts = detail::sample_timestamps(t_start, t_end,
+            timeline.size(), generator);
+        for (std::size_t i = 0; i < timeline.size(); i++) {
+          auto e = timeline[i];
+          if constexpr (std::same_as<
+            EdgeT, directed_delayed_temporal_edge<
+              typename EdgeT::VertexType, typename EdgeT::TimeType>>)
+            shuffled_edges.emplace_back(e.static_projection(),
+                ts[i], ts[i] + e.effect_time() - e.cause_time());
+          else
+            shuffled_edges.emplace_back(e.static_projection(), ts[i]);
+        }
+      }
+
+      return network<EdgeT>(shuffled_edges, temp.vertices());
+    }
+
+    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> inter_event_shuffling(
+        const network<EdgeT>& temp, Gen& generator) {
+      std::vector<EdgeT> shuffled_edges;
+      shuffled_edges.reserve(temp.edges_cause().size());
+
+      for (auto tls = link_timelines(temp); auto& [link, timeline]: tls) {
+        std::vector<typename EdgeT::TimeType> iets;
+        iets.reserve(timeline.size());
+
+        for (std::size_t i = 1; i < timeline.size(); i++)
+          iets.push_back(timeline[i].cause_time() - timeline[i-1].cause_time());
+
+        std::ranges::shuffle(iets, generator);
+        std::partial_sum(iets.begin(), iets.end(), iets.begin());
+
+        auto t_start = timeline.front().cause_time();
+        shuffled_edges.push_back(timeline.front());
+
+        for (std::size_t i = 1; i < timeline.size(); i++) {
+          auto e = timeline[i];
+          if constexpr (std::same_as<
+            EdgeT, directed_delayed_temporal_edge<
+              typename EdgeT::VertexType, typename EdgeT::TimeType>>)
+            shuffled_edges.emplace_back(
+                e.static_projection(),
+                iets[i-1] + t_start,
+                iets[i-1] + t_start + e.effect_time() - e.cause_time());
+          else
+            shuffled_edges.emplace_back(
+                e.static_projection(),
+                iets[i-1] + t_start);
         }
       }
 
