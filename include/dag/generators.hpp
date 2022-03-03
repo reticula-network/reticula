@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include "network_concepts.hpp"
+#include "networks.hpp"
 
 namespace dag {
   template <integer_vertex VertT>
