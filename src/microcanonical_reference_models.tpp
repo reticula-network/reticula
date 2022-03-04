@@ -3,6 +3,7 @@
 #include <concepts>
 
 #include "../include/dag/temporal_algorithms.hpp"
+#include "../include/dag/components.hpp"
 #include "../include/dag/algorithms.hpp"
 
 namespace dag {
@@ -195,7 +196,13 @@ namespace dag {
     network<EdgeT> connected_link_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
       auto proj = dag::static_projection(temp);
-      auto proj_ccs = dag::weakly_connected_components(proj);
+
+      std::vector<component<typename EdgeT::VertexType>> proj_ccs;
+      if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
+        proj_ccs = dag::connected_components(proj);
+      else
+        proj_ccs = dag::weakly_connected_components(proj);
+
       std::ranges::sort(proj_ccs, std::ranges::greater{}, std::ranges::size);
 
       network<EdgeT> res(std::vector<EdgeT>(), proj.vertices());
