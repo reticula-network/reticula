@@ -205,11 +205,18 @@ namespace dag {
 
       std::ranges::sort(proj_ccs, std::ranges::greater{}, std::ranges::size);
 
+      auto is_projection_connected = [](const network<EdgeT>& shuff) {
+        if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
+          return is_connected(static_projection(shuff));
+        else
+          return is_weakly_connected(static_projection(shuff));
+      };
+
       network<EdgeT> res(std::vector<EdgeT>(), proj.vertices());
       for (auto& comp: proj_ccs) {
         auto sub_temp = dag::vertex_induced_subgraph(temp, comp);
         network<EdgeT> shuff(std::vector<EdgeT>(), sub_temp.vertices());
-        while (!is_weakly_connected(static_projection(shuff)))
+        while (!is_projection_connected(shuff))
           shuff = link_shuffling(sub_temp, generator);
         res = dag::graph_union(res, shuff);
       }
