@@ -3,6 +3,7 @@
 #include <concepts>
 
 #include "../include/dag/temporal_algorithms.hpp"
+#include "../include/dag/algorithms.hpp"
 
 namespace dag {
   namespace microcanonical_reference_models {
