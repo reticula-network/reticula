@@ -2,6 +2,7 @@
 #define INCLUDE_DAG_MICROCANONICAL_REFERENCE_MODELS_HPP_
 
 #include "network_concepts.hpp"
+#include "networks.hpp"
 
 namespace dag {
   namespace microcanonical_reference_models {
