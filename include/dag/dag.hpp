@@ -16,6 +16,7 @@ namespace dag {}
 #include "temporal_edges.hpp"
 #include "temporal_hyperedges.hpp"
 #include "networks.hpp"
+#include "io.hpp"
 #include "components.hpp"
 #include "random_networks.hpp"
 #include "algorithms.hpp"

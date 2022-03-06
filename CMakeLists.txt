@@ -24,14 +24,21 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog Catch2)
 
+add_library(csv INTERFACE)
+target_include_directories(csv
+  SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/extern/csv/
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(
   ${PROJECT_NAME}
   INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog)
+target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog csv)
 
+message(${csv_SOURCE_DIR})
 
 add_executable(
   ${PROJECT_NAME}_tests
@@ -47,6 +54,7 @@ add_executable(
   src/test/dag/implicit_event_graph.cpp
   src/test/dag/implicit_event_graph_components.cpp
   src/test/dag/networks.cpp
+  src/test/dag/io.cpp
   src/test/dag/random_networks.cpp
   src/test/dag/components.cpp
   src/test/dag/temporal_clusters.cpp
@@ -63,7 +71,7 @@ target_link_options(${PROJECT_NAME}_tests PRIVATE
 
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS ${PROJECT_NAME} csv
   EXPORT ${PROJECT_NAME}_Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
