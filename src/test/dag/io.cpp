@@ -9,9 +9,9 @@ std::filesystem::path test_dir() {
   return std::filesystem::path(__FILE__).parent_path()/"io_test_files";
 }
 
-TEST_CASE("read undirected edgelist", "[dag::read_undirected_edgelist]") {
+TEST_CASE("read undirected edgelist", "[dag::read_edgelist]") {
   SECTION("reads utf-8 encoded files correctly") {
-    auto g = dag::read_undirected_edgelist<std::string>(
+    auto g = dag::read_edgelist<dag::undirected_edge<std::string>>(
         test_dir()/"utf-8.csv", ',');
     REQUIRE_THAT(g.vertices(), UnorderedEquals(
           std::vector<std::string>
@@ -22,7 +22,7 @@ TEST_CASE("read undirected edgelist", "[dag::read_undirected_edgelist]") {
   }
 
   SECTION("reads utf-8 and windows line-ending files correctly") {
-    auto g = dag::read_undirected_edgelist<std::string>(
+    auto g = dag::read_edgelist<dag::undirected_edge<std::string>>(
         test_dir()/"utf-8+windows-le.csv", ',');
     REQUIRE_THAT(g.vertices(), UnorderedEquals(
           std::vector<std::string>
@@ -33,9 +33,9 @@ TEST_CASE("read undirected edgelist", "[dag::read_undirected_edgelist]") {
   }
 }
 
-TEST_CASE("read directed edgelist", "[dag::read_directed_edgelist]") {
+TEST_CASE("read directed edgelist", "[dag::read_edgelist]") {
   SECTION("reads utf-8 encoded files correctly") {
-    auto g = dag::read_directed_edgelist<std::string>(
+    auto g = dag::read_edgelist<dag::directed_edge<std::string>>(
         test_dir()/"utf-8.csv", ',');
     REQUIRE_THAT(g.vertices(), UnorderedEquals(
           std::vector<std::string>
@@ -46,7 +46,7 @@ TEST_CASE("read directed edgelist", "[dag::read_directed_edgelist]") {
   }
 
   SECTION("reads utf-8 and windows line-ending files correctly") {
-    auto g = dag::read_directed_edgelist<std::string>(
+    auto g = dag::read_edgelist<dag::directed_edge<std::string>>(
         test_dir()/"utf-8+windows-le.csv", ',');
     REQUIRE_THAT(g.vertices(), UnorderedEquals(
           std::vector<std::string>

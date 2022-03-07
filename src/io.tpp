@@ -1,97 +1,68 @@
 #include <csv.hpp>
 
 namespace dag {
-  template <network_vertex VertT>
-  undirected_network<VertT>
-  read_undirected_edgelist(
-          std::filesystem::path path, char delimiter, char quote) {
-    csv::CSVFormat format;
-    format.delimiter(delimiter);
-    format.quote(quote);
-    format.no_header();
+  namespace detail {
+    template <network_edge EdgeT>
+    struct edge_from_edgelist_row {
+      EdgeT operator()(const csv::CSVRow& row);
+    };
 
-    csv::CSVReader reader(path.string(), format);
+    template <network_vertex VertT>
+    struct edge_from_edgelist_row<undirected_edge<VertT>> {
+      undirected_edge<VertT> operator()(const csv::CSVRow& row) {
+        return {row[0].get<VertT>(), row[1].get<VertT>()};
+      }
+    };
 
-    std::vector<undirected_edge<VertT>> edges;
-    for (auto& row: reader)
-      edges.emplace_back(row[0].get<VertT>(), row[1].get<VertT>());
+    template <network_vertex VertT>
+    struct edge_from_edgelist_row<directed_edge<VertT>> {
+      directed_edge<VertT> operator()(const csv::CSVRow& row) {
+        return {row[0].get<VertT>(), row[1].get<VertT>()};
+      }
+    };
 
-    return undirected_network<VertT>(edges);
-  }
+    template <network_vertex VertT, typename TimeT>
+    struct edge_from_edgelist_row<undirected_temporal_edge<VertT, TimeT>> {
+      undirected_temporal_edge<VertT, TimeT>
+      operator()(const csv::CSVRow& row) {
+        return {row[0].get<VertT>(), row[1].get<VertT>(), row[2].get<TimeT>()};
+      }
+    };
 
-  template <network_vertex VertT>
-  directed_network<VertT>
-  read_directed_edgelist(
-          std::filesystem::path path, char delimiter, char quote) {
-    csv::CSVFormat format;
-    format.delimiter(delimiter);
-    format.quote(quote);
-    format.no_header();
+    template <network_vertex VertT, typename TimeT>
+    struct edge_from_edgelist_row<directed_temporal_edge<VertT, TimeT>> {
+      directed_temporal_edge<VertT, TimeT>
+      operator()(const csv::CSVRow& row) {
+        return {row[0].get<VertT>(), row[1].get<VertT>(), row[2].get<TimeT>()};
+      }
+    };
 
-    csv::CSVReader reader(path.string(), format);
-
-    std::vector<directed_edge<VertT>> edges;
-    for (auto& row: reader)
-      edges.emplace_back(row[0].get<VertT>(), row[1].get<VertT>());
-
-    return directed_network<VertT>(edges);
-  }
-
-  template <network_vertex VertT, typename TimeT>
-  undirected_temporal_network<VertT, TimeT>
-  read_undirected_eventlist(
-          std::filesystem::path path, char delimiter, char quote) {
-    csv::CSVFormat format;
-    format.delimiter(delimiter);
-    format.quote(quote);
-    format.no_header();
-
-    csv::CSVReader reader(path.string(), format);
-
-    std::vector<undirected_temporal_edge<VertT, TimeT>> edges;
-    for (auto& row: reader)
-      edges.emplace_back(
-          row[0].get<VertT>(), row[1].get<VertT>(), row[2].get<TimeT>());
-
-    return undirected_temporal_network<VertT, TimeT>(edges);
-  }
-
-  template <network_vertex VertT, typename TimeT>
-  directed_temporal_network<VertT, TimeT>
-  read_directed_eventlist(
-          std::filesystem::path path, char delimiter, char quote) {
-    csv::CSVFormat format;
-    format.delimiter(delimiter);
-    format.quote(quote);
-    format.no_header();
-
-    csv::CSVReader reader(path.string(), format);
-
-    std::vector<directed_temporal_edge<VertT, TimeT>> edges;
-    for (auto& row: reader)
-      edges.emplace_back(
-          row[0].get<VertT>(), row[1].get<VertT>(), row[2].get<TimeT>());
-
-    return directed_temporal_network<VertT, TimeT>(edges);
-  }
-
-  template <network_vertex VertT, typename TimeT>
-  directed_delayed_temporal_network<VertT, TimeT>
-  read_directed_delayed_eventlist(
-          std::filesystem::path path, char delimiter, char quote) {
-    csv::CSVFormat format;
-    format.delimiter(delimiter);
-    format.quote(quote);
-    format.no_header();
-
-    csv::CSVReader reader(path.string(), format);
-
-    std::vector<directed_delayed_temporal_edge<VertT, TimeT>> edges;
-    for (auto& row: reader)
-      edges.emplace_back(
+    template <network_vertex VertT, typename TimeT>
+    struct edge_from_edgelist_row<
+        directed_delayed_temporal_edge<VertT, TimeT>> {
+      directed_delayed_temporal_edge<VertT, TimeT>
+      operator()(const csv::CSVRow& row) {
+        return {
           row[0].get<VertT>(), row[1].get<VertT>(),
-          row[2].get<TimeT>(), row[3].get<TimeT>());
+          row[2].get<TimeT>(), row[3].get<TimeT>()};
+      }
+    };
+  }  // namespace detail
 
-    return directed_delayed_temporal_network<VertT, TimeT>(edges);
+  template <network_edge EdgeT>
+  network<EdgeT> read_edgelist(
+          std::filesystem::path path, char delimiter, char quote) {
+    csv::CSVFormat format;
+    format.delimiter(delimiter);
+    format.quote(quote);
+    format.no_header();
+
+    csv::CSVReader reader(path.string(), format);
+
+    std::vector<EdgeT> edges;
+    for (auto& row: reader)
+      edges.push_back(detail::edge_from_edgelist_row<EdgeT>{}(row));
+
+    return network<EdgeT>(edges);
   }
 }  // namespace dag
