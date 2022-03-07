@@ -246,19 +246,29 @@ namespace dag {
     while (!queue.empty()) {
       auto v = queue.front();
       queue.pop();
-      std::vector<typename EdgeT::VertexType> next;
+      std::vector<EdgeT> next_edges;
       if (ignore_direction)
-        next = net.neighbours(v);
+        next_edges = net.incident_edges(v);
       else if (revert_graph)
-        next = net.predecessors(v);
+        next_edges = net.in_edges(v);
       else
-        next = net.successors(v);
-      for (auto& w: next) {
-        if (!discovered_comp.contains(w)) {
-          discovered_comp.insert(w);
-          if (!discovered(w, v))
-            return discovered_comp;
-          queue.push(w);
+        next_edges = net.out_edges(v);
+      for (auto& e: next_edges) {
+        std::vector<typename EdgeT::VertexType> next;
+        if (ignore_direction)
+          next = e.incident_verts();
+        else if (revert_graph)
+          next = e.mutator_verts();
+        else
+          next = e.mutated_verts();
+
+        for (auto& w: next) {
+          if (!discovered_comp.contains(w)) {
+            discovered_comp.insert(w);
+            if (!discovered(v, e, w))
+              return discovered_comp;
+            queue.push(w);
+          }
         }
       }
     }
@@ -435,7 +445,8 @@ namespace dag {
       const typename EdgeT::VertexType& root,
       std::size_t size_hint) {
     return breadth_first_search(dir, root,
-        [](const typename EdgeT::VertexType&,
+        [](
+          const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         false, false, size_hint);
   }
@@ -481,7 +492,7 @@ namespace dag {
       const typename EdgeT::VertexType& root,
       std::size_t size_hint) {
     return breadth_first_search(dir, root,
-        [](const typename EdgeT::VertexType&,
+        [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         true, false, size_hint);
   }
@@ -532,7 +543,7 @@ namespace dag {
   template <static_directed_edge EdgeT>
   bool is_weakly_connected(const network<EdgeT>& dir) {
     return breadth_first_search(dir, dir.vertices().front(),
-        [](const typename EdgeT::VertexType&,
+        [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         false, true, 0).size() == dir.vertices().size();
   }
@@ -544,7 +555,7 @@ namespace dag {
       const typename EdgeT::VertexType& vert,
       std::size_t size_hint) {
     return breadth_first_search(dir, vert,
-        [](const typename EdgeT::VertexType&,
+        [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         false, true, size_hint);
   }
@@ -560,7 +571,7 @@ namespace dag {
   template <static_undirected_edge EdgeT>
   bool is_connected(const network<EdgeT>& net) {
     return breadth_first_search(net, net.vertices().front(),
-        [](const typename EdgeT::VertexType&,
+        [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         false, false, 0).size() == net.vertices().size();
   }
@@ -572,7 +583,7 @@ namespace dag {
       const typename EdgeT::VertexType& vert,
       std::size_t size_hint) {
     return breadth_first_search(net, vert,
-        [](const typename EdgeT::VertexType&,
+        [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
         false, false, size_hint);
   }
@@ -584,7 +595,8 @@ namespace dag {
       const typename EdgeT::VertexType& source,
       const typename EdgeT::VertexType& destination) {
     return breadth_first_search(net, source,
-        [destination](const typename EdgeT::VertexType&,
+        [destination](
+          const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType& v){ return v != destination; },
         false, false, 0).contains(destination);
   }
@@ -799,5 +811,45 @@ namespace dag {
   double density(const directed_network<VertT>& net) {
     double n = static_cast<double>(net.vertices().size());
     return static_cast<double>(net.edges().size())/(n*(n-1));
+  }
+
+  template <static_edge EdgeT>
+  std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>>
+  shortest_path_lengths_from(
+          const network<EdgeT>& net,
+          const typename EdgeT::VertexType& vert) {
+    std::unordered_map<
+        typename EdgeT::VertexType, std::size_t,
+        hash<typename EdgeT::VertexType>> lengths{{vert, 0}};
+    breadth_first_search(net, vert,
+        [&lengths](
+          const typename EdgeT::VertexType& from, const EdgeT&,
+          const typename EdgeT::VertexType& to) {
+            lengths.try_emplace(to, lengths.at(from) + 1);
+            return true;
+        }, false, false, std::size_t{});
+    return lengths;
+  }
+
+  template <static_edge EdgeT>
+  std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>>
+  shortest_path_lengths_to(
+          const network<EdgeT>& net,
+          const typename EdgeT::VertexType& vert) {
+    std::unordered_map<
+        typename EdgeT::VertexType, std::size_t,
+        hash<typename EdgeT::VertexType>> lengths{{vert, 0}};
+    breadth_first_search(net, vert,
+        [&lengths](
+          const typename EdgeT::VertexType& from, const EdgeT&,
+          const typename EdgeT::VertexType& to) {
+            lengths.try_emplace(to, lengths.at(from) + 1);
+            return true;
+        }, true, false, std::size_t{});
+    return lengths;
   }
 }  // namespace dag

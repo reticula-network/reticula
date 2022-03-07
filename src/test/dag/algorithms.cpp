@@ -952,13 +952,31 @@ TEST_CASE("with vertices", "[dag::with_vertices]") {
 }
 
 TEST_CASE("network density", "[dag::density]") {
-    dag::undirected_network<int> ug({
-        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
-        {8, 9}});
+  dag::undirected_network<int> ug({
+      {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+      {8, 9}});
 
-    REQUIRE(dag::density(ug) == Approx(0.25));
+  REQUIRE(dag::density(ug) == Approx(0.25));
 
-    dag::directed_network<int> dg({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
-    REQUIRE(dag::density(dg) == Approx(0.2));
+  dag::directed_network<int> dg({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+  REQUIRE(dag::density(dg) == Approx(0.2));
+}
+
+TEST_CASE("shortest path from vert", "[dag::shortest_path_lengths_from]") {
+  dag::directed_network<int> dg({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+
+  REQUIRE(dag::shortest_path_lengths_from(dg, 1) ==
+      std::unordered_map<int, std::size_t, dag::hash<int>>{
+        {1, 0}, {2, 1}, {3, 2}, {5, 3}, {6, 4}, {4, 4}});
+}
+
+TEST_CASE("shortest path to vert", "[dag::shortest_path_lengths_to]") {
+  dag::directed_network<int> dg({
+      {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+
+  REQUIRE(dag::shortest_path_lengths_to(dg, 4) ==
+      std::unordered_map<int, std::size_t, dag::hash<int>>{
+        {1, 4}, {2, 3}, {3, 2}, {5, 1}, {4, 0}});
 }

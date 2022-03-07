@@ -400,6 +400,30 @@ namespace dag {
   */
   template <network_vertex VertT>
   double density(const directed_network<VertT>& net);
+
+  /**
+    Shortest-path lengths from vertex `vert` to every other vertex reachable
+    from `vert`.
+  */
+  template <static_edge EdgeT>
+  std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>>
+  shortest_path_lengths_from(
+          const network<EdgeT>& net,
+          const typename EdgeT::VertexType& vert);
+
+  /**
+    Shortest-path lengths to vertex `vert` from every other vertex that can
+    reach `vert`.
+  */
+  template <static_edge EdgeT>
+  std::unordered_map<
+      typename EdgeT::VertexType, std::size_t,
+      hash<typename EdgeT::VertexType>>
+  shortest_path_lengths_to(
+          const network<EdgeT>& net,
+          const typename EdgeT::VertexType& vert);
 }  // namespace dag
 
 #include "../../src/algorithms.tpp"
