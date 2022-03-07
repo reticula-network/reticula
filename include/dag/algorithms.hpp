@@ -5,6 +5,7 @@
 #include <ranges>
 #include <unordered_set>
 #include <optional>
+#include <ranges>
 
 #include "network_concepts.hpp"
 #include "networks.hpp"
@@ -38,6 +39,12 @@ namespace dag {
       const network<EdgeT>& net,
       const Range& verts);
 
+  template <network_edge EdgeT>
+  network<EdgeT>
+  vertex_induced_subgraph(
+      const network<EdgeT>& net,
+      const std::initializer_list<typename EdgeT::VertexType>& verts);
+
   /**
     Edge induced subgraph is a subset of the graph that includes only edges that
     are present in the provided set of edges, along with all their incident
@@ -53,6 +60,43 @@ namespace dag {
   edge_induced_subgraph(
       const network<EdgeT>& net,
       const Range& edges);
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  edge_induced_subgraph(
+      const network<EdgeT>& net,
+      const std::initializer_list<EdgeT>& edges);
+
+  /**
+    Returns a copy of the graph `g` with edge in range `edges` added to the
+    graph.
+  */
+  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
+  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  network<EdgeT>
+  with_edges(const network<EdgeT>& g, const EdgeRange& edges);
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  with_edges(
+      const network<EdgeT>& g,
+      const std::initializer_list<EdgeT>& edges);
+
+  /**
+    Returns a copy of the graph `g` with vertices in range `verts` added to the
+    graph.
+  */
+  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  requires std::convertible_to<
+      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+  network<EdgeT>
+  with_vertices(const network<EdgeT>& g, const VertRange& verts);
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  with_vertices(
+      const network<EdgeT>& g,
+      const std::initializer_list<typename EdgeT::VertexType>& verts);
 
   /**
     Returns the graph union (not the disjoint union) of the two graphs. The

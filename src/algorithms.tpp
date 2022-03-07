@@ -294,6 +294,15 @@ namespace dag {
     return network<EdgeT>(es, vs);
   }
 
+  template <network_edge EdgeT>
+  network<EdgeT>
+  vertex_induced_subgraph(
+      const network<EdgeT>& net,
+      const std::initializer_list<typename EdgeT::VertexType>& verts) {
+    return vertex_induced_subgraph(net,
+        std::vector<typename EdgeT::VertexType>(verts));
+  }
+
   template <network_edge EdgeT, std::ranges::input_range Range>
   requires std::same_as<std::ranges::range_value_t<Range>, EdgeT>
   network<EdgeT>
@@ -313,11 +322,50 @@ namespace dag {
 
   template <network_edge EdgeT>
   network<EdgeT>
+  edge_induced_subgraph(
+      const network<EdgeT>& net,
+      const std::initializer_list<EdgeT>& edges) {
+    return edge_induced_subgraph(net, std::vector<EdgeT>(edges));
+  }
+
+  template <network_edge EdgeT>
+  network<EdgeT>
   graph_union(const network<EdgeT>& g1, const network<EdgeT>& g2) {
     if (g1.vertices().size() > g2.vertices().size())
       return g1.union_with(g2);
     else
       return g2.union_with(g1);
+  }
+
+  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
+  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  network<EdgeT>
+  with_edges(const network<EdgeT>& g, const EdgeRange& edges) {
+    return graph_union(g, network<EdgeT>(edges));
+  }
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  with_edges(
+      const network<EdgeT>& g,
+      const std::initializer_list<EdgeT>& edges) {
+    return with_edges(g, std::vector<EdgeT>(edges));
+  }
+
+  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  requires std::convertible_to<
+      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+  network<EdgeT>
+  with_vertices(const network<EdgeT>& g, const VertRange& verts) {
+    return graph_union(g, network<EdgeT>(std::vector<EdgeT>{}, verts));
+  }
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  with_vertices(
+      const network<EdgeT>& g,
+      const std::initializer_list<typename EdgeT::VertexType>& verts) {
+    return with_vertices(g, std::vector<typename EdgeT::VertexType>(verts));
   }
 
   template <static_directed_edge EdgeT>

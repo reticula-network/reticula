@@ -846,16 +846,30 @@ TEST_CASE("vertex induced subgraph", "[dag::vertex_induced_subgraph]") {
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
       {{3, 4}, {4}, 8}});
 
-  dag::component<typename EdgeType::VertexType> comp({1, 2, 3, 4, 9});
-  auto res = dag::vertex_induced_subgraph(network, comp);
+  SECTION("with components") {
+    dag::component<typename EdgeType::VertexType> comp({1, 2, 3, 4, 9});
+    auto res = dag::vertex_induced_subgraph(network, comp);
 
-  REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
-        {1, 2, 3, 4}),
-      UnorderedEquals(res.vertices()));
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 3, 4}),
+        UnorderedEquals(res.vertices()));
 
-  REQUIRE_THAT(std::vector<EdgeType>({
-        {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
-      UnorderedEquals(res.edges()));
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
+        UnorderedEquals(res.edges()));
+  }
+
+  SECTION("with initializer_list") {
+    auto res = dag::vertex_induced_subgraph(network, {1, 2, 3, 4, 9});
+
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 3, 4}),
+        UnorderedEquals(res.vertices()));
+
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
+        UnorderedEquals(res.edges()));
+  }
 }
 
 TEST_CASE("edge induced subgraph", "[dag::edge_induced_subgraph]") {
@@ -864,17 +878,32 @@ TEST_CASE("edge induced subgraph", "[dag::edge_induced_subgraph]") {
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6},
       {{3, 4}, {4}, 8}});
 
-  dag::component<EdgeType> comp({
-      {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
-  auto res = dag::edge_induced_subgraph(network, comp);
+  SECTION("with component") {
+    dag::component<EdgeType> comp({
+        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
+    auto res = dag::edge_induced_subgraph(network, comp);
 
-  REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
-        {1, 2, 4, 7}),
-      UnorderedEquals(res.vertices()));
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 4, 7}),
+        UnorderedEquals(res.vertices()));
 
-  REQUIRE_THAT(std::vector<EdgeType>({
-        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
-      UnorderedEquals(res.edges()));
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
+        UnorderedEquals(res.edges()));
+  }
+
+  SECTION("with initializer_list") {
+    auto res = dag::edge_induced_subgraph(network, {
+        {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}, {{3, 4}, {4}, 10}});
+
+    REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
+          {1, 2, 4, 7}),
+        UnorderedEquals(res.vertices()));
+
+    REQUIRE_THAT(std::vector<EdgeType>({
+          {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
+        UnorderedEquals(res.edges()));
+  }
 }
 
 TEST_CASE("graph union", "[dag::graph_union]") {
@@ -894,6 +923,32 @@ TEST_CASE("graph union", "[dag::graph_union]") {
   REQUIRE(res1.vertices() == res2.vertices());
   REQUIRE_THAT(res1.vertices(), Contains(n1.vertices()));
   REQUIRE_THAT(res1.vertices(), Contains(n2.vertices()));
+}
+
+TEST_CASE("with edges", "[dag::with_edges]") {
+  using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+  dag::network<EdgeType> n1(
+      {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
+  auto res = dag::with_edges(n1, {
+      {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}});
+  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+        std::vector<typename EdgeType::VertexType>{1, 2, 3, 4, 7}));
+  REQUIRE_THAT(res.edges(), UnorderedEquals(
+        std::vector<EdgeType>{
+          {{1}, {2, 4}, 1}, {{2}, {1, 7}, 2},
+          {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}));
+}
+
+TEST_CASE("with vertices", "[dag::with_vertices]") {
+  using EdgeType = dag::directed_temporal_hyperedge<int, int>;
+  dag::network<EdgeType> n1(
+      {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
+  auto res = dag::with_vertices(n1, {3, 4, 5, 6});
+  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+        std::vector<typename EdgeType::VertexType>{1, 2, 3, 4, 5, 6, 7}));
+  REQUIRE_THAT(res.edges(), UnorderedEquals(
+        std::vector<EdgeType>{
+          {{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
 }
 
 TEST_CASE("network density", "[dag::density]") {
