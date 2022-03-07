@@ -38,8 +38,6 @@ target_include_directories(
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog csv)
 
-message(${csv_SOURCE_DIR})
-
 add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
