@@ -14,18 +14,31 @@ TEMPLATE_TEST_CASE("Random G(n, p) graph",
     std::size_t, int) {
   std::mt19937_64 gen(42);
   TestType n = 100000;
-  double p = 0.00005;
-  dag::undirected_network<TestType> r =
-    dag::random_gnp_graph<TestType>(n, p, gen);
 
-  REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
+  SECTION("empty") {
+    auto g1 = dag::random_gnp_graph(n, 0, gen);
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == static_cast<std::size_t>(n));
 
-  double mean = static_cast<double>(n)*static_cast<double>((n-1)/2)*p;
-  double sigma = std::sqrt(mean);
-  REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
-  REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+    auto g2 = dag::random_gnp_graph(0, 1, gen);
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
 
-  // TODO add uniformity test
+  SECTION("randomness") {
+    double p = 0.00005;
+    dag::undirected_network<TestType> r =
+      dag::random_gnp_graph<TestType>(n, p, gen);
+
+    REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
+
+    double mean = static_cast<double>(n)*static_cast<double>((n-1)/2)*p;
+    double sigma = std::sqrt(mean);
+    REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
+    REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+
+    // TODO add uniformity test
+  }
 }
 
 TEMPLATE_TEST_CASE("Barabasi-Albert random graph",
