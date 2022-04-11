@@ -57,7 +57,7 @@ namespace dag {
     format.quote(quote);
     format.no_header();
 
-    csv::CSVReader reader(path.string(), format);
+    csv::CSVReader reader(std::filesystem::canonical(path).string(), format);
 
     std::vector<EdgeT> edges;
     for (auto& row: reader)
