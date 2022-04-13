@@ -8,6 +8,7 @@ using Catch::Matchers::UnorderedEquals;
 #include <dag/networks.hpp>
 #include <dag/temporal_algorithms.hpp>
 #include <dag/temporal_adjacency.hpp>
+#include <dag/random_networks.hpp>
 
 TEST_CASE("time_window",
     "[dag::time_window][dag::cause_time_window][dag::effect_time_window]") {
@@ -202,61 +203,86 @@ TEST_CASE("percolation in-cluster", "[dag::in_cluster]") {
   }
 }
 
-TEST_CASE("percolation out-clusters", "[dag::out_clusters]") {
-  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
-  using AdjT = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  AdjT adj(2);
-  dag::network<EdgeType> network(
-      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
-        {5, 6, 1, 3}});
 
-  std::vector<
-    std::pair<
-      EdgeType,
-      dag::temporal_cluster<EdgeType, AdjT>>> true_oc({
-        {{1, 2, 1, 5},
-          {{{1, 2, 1, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
-        {{2, 1, 2, 3},
-          {{{2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
-        {{1, 2, 5, 5},
-          {{{1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
-        {{2, 3, 6, 7},
-          {{{2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
-        {{3, 4, 8, 9},
-          {{{3, 4, 8, 9}}, adj}},
-        {{5, 6, 1, 3},
-          {{{5, 6, 1, 3}}, adj}}});
-  REQUIRE_THAT(dag::out_clusters(network, adj), UnorderedEquals(true_oc));
+TEST_CASE("percolation out-clusters", "[dag::out_clusters]") {
+  SECTION("small example") {
+    using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+    using AdjT = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
+    AdjT adj(2);
+    dag::network<EdgeType> network(
+        {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+          {5, 6, 1, 3}});
+
+    std::vector<
+      std::pair<
+        EdgeType,
+        dag::temporal_cluster<EdgeType, AdjT>>> true_oc({
+          {{1, 2, 1, 5},
+            {{{1, 2, 1, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{2, 1, 2, 3},
+            {{{2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{1, 2, 5, 5},
+            {{{1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{2, 3, 6, 7},
+            {{{2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{3, 4, 8, 9},
+            {{{3, 4, 8, 9}}, adj}},
+          {{5, 6, 1, 3},
+            {{{5, 6, 1, 3}}, adj}}});
+    REQUIRE_THAT(dag::out_clusters(network, adj), UnorderedEquals(true_oc));
+  }
+
+  SECTION("random network") {
+    std::mt19937_64 state(42);
+    auto network =
+      dag::random_directed_fully_mixed_temporal_network<int>(
+          12, 0.03, 50, state);
+    dag::temporal_adjacency::simple<
+      dag::directed_temporal_edge<int, double>> adj;
+    REQUIRE_NOTHROW(dag::out_clusters(network, adj));
+  }
 }
 
 TEST_CASE("percolation in-clusters", "[dag::in_clusters]") {
-  using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
-  using AdjT = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
-  AdjT adj(2);
-  dag::network<EdgeType> network(
-      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
-        {5, 6, 1, 3}});
+  SECTION("small example") {
+    using EdgeType = dag::directed_delayed_temporal_edge<int, int>;
+    using AdjT = dag::temporal_adjacency::limited_waiting_time<EdgeType>;
+    AdjT adj(2);
+    dag::network<EdgeType> network(
+        {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+          {5, 6, 1, 3}});
 
-  std::vector<
-    std::pair<
-      EdgeType,
-      dag::temporal_cluster<EdgeType, AdjT>>> true_ic({
-        {{1, 2, 1, 5},
-          {{{1, 2, 1, 5}}, adj}},
-        {{2, 1, 2, 3},
-          {{{2, 1, 2, 3}}, adj}},
-        {{1, 2, 5, 5},
-          {{{1, 2, 5, 5}, {2, 1, 2, 3}}, adj}},
-        {{2, 3, 6, 7},
-          {{{2, 3, 6, 7}, {1, 2, 5, 5}, {2, 1, 2, 3}, {1, 2, 1, 5}}, adj}},
-        {{3, 4, 8, 9},
-          {{{2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {1, 2, 1, 5},
-          {3, 4, 8, 9}}, adj}},
-        {{5, 6, 1, 3},
-          {{{5, 6, 1, 3}}, adj}}});
+    std::vector<
+      std::pair<
+        EdgeType,
+        dag::temporal_cluster<EdgeType, AdjT>>> true_ic({
+          {{1, 2, 1, 5},
+            {{{1, 2, 1, 5}}, adj}},
+          {{2, 1, 2, 3},
+            {{{2, 1, 2, 3}}, adj}},
+          {{1, 2, 5, 5},
+            {{{1, 2, 5, 5}, {2, 1, 2, 3}}, adj}},
+          {{2, 3, 6, 7},
+            {{{2, 3, 6, 7}, {1, 2, 5, 5}, {2, 1, 2, 3}, {1, 2, 1, 5}}, adj}},
+          {{3, 4, 8, 9},
+            {{{2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {1, 2, 1, 5},
+            {3, 4, 8, 9}}, adj}},
+          {{5, 6, 1, 3},
+            {{{5, 6, 1, 3}}, adj}}});
 
 
-  REQUIRE_THAT(dag::in_clusters(network, adj), UnorderedEquals(true_ic));
+    REQUIRE_THAT(dag::in_clusters(network, adj), UnorderedEquals(true_ic));
+  }
+
+  SECTION("random network") {
+    std::mt19937_64 state(42);
+    auto network =
+      dag::random_directed_fully_mixed_temporal_network<int>(
+          12, 0.03, 50, state);
+    dag::temporal_adjacency::simple<
+      dag::directed_temporal_edge<int, double>> adj;
+    REQUIRE_NOTHROW(dag::in_clusters(network, adj));
+  }
 }
 
 TEST_CASE("is reachable (temporal networks)", "[dag::is_reachable]") {

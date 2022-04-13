@@ -291,8 +291,8 @@ namespace dag {
       EdgeT::VertexType v,
       EdgeT::TimeType start, EdgeT::TimeType end) {
     typename EdgeT::TimeType
-      a = std::floor(start/_dt),
-      b = std::floor(end/_dt) + 1;
+      a = static_cast<EdgeT::TimeType>(std::floor(start/_dt)),
+      b = static_cast<EdgeT::TimeType>(std::floor(end/_dt) + 1);
     for (typename EdgeT::TimeType s = a; s <= b; s++)
       if (s*_dt > start && s*_dt <= end)
         _times.insert({v, s});

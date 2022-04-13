@@ -52,6 +52,8 @@ namespace dag {
 
       std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> in_degrees;
 
+      bool reducible = is_undirected_v<EdgeT>;
+
       auto temp_edge_iter = eg.events_cause().rbegin();
       auto end = eg.events_cause().rend();
 
@@ -62,9 +64,9 @@ namespace dag {
             eg.temporal_adjacency(), temporal_resolution, 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
-            *temp_edge_iter, true);
+            *temp_edge_iter, reducible);
         std::vector<EdgeT> predecessors = eg.predecessors(
-            *temp_edge_iter, true);
+            *temp_edge_iter, reducible);
 
         in_degrees[*temp_edge_iter] = predecessors.size();
 
@@ -110,6 +112,8 @@ namespace dag {
 
       std::unordered_map<EdgeT, std::size_t, hash<EdgeT>> out_degrees;
 
+      bool reducible = is_undirected_v<EdgeT>;
+
       auto temp_edge_iter = eg.events_effect().begin();
       auto end = eg.events_effect().end();
 
@@ -120,9 +124,9 @@ namespace dag {
             eg.temporal_adjacency(), temporal_resolution, 0, seed));
 
         std::vector<EdgeT> successors = eg.successors(
-            *temp_edge_iter, true);
+            *temp_edge_iter, reducible);
         std::vector<EdgeT> predecessors = eg.predecessors(
-            *temp_edge_iter, true);
+            *temp_edge_iter, reducible);
 
         out_degrees[*temp_edge_iter] = successors.size();
 
@@ -163,6 +167,8 @@ namespace dag {
       dag::component<EdgeT> out_component({root});
       std::queue<EdgeT> search({root});
 
+      bool reducible = is_undirected_v<EdgeT>;
+
       while (!search.empty()) {
         EdgeT e = search.front();
         search.pop();
@@ -171,9 +177,9 @@ namespace dag {
         if (ignore_direction)
           next = eg.neighbours(e, true);
         else if (revert_graph)
-          next = eg.predecessors(e, true);
+          next = eg.predecessors(e, reducible);
         else
-          next = eg.successors(e, true);
+          next = eg.successors(e, reducible);
 
         for (auto&& s: next)
           if (!out_component.contains(s)) {
@@ -287,12 +293,14 @@ namespace dag {
 
     auto temp_edge_iter = eg.events_cause().begin();
 
+    bool reducible = is_undirected_v<EdgeT>;
+
     while (temp_edge_iter < eg.events_cause().end()) {
       std::size_t temp_edge_idx = static_cast<std::size_t>(
           std::distance(eg.events_cause().begin(), temp_edge_iter));
 
       for (auto&& other:
-            eg.successors(*temp_edge_iter, true)) {
+            eg.successors(*temp_edge_iter, reducible)) {
         auto other_it = std::lower_bound(
             temp_edge_iter+1,
             eg.events_cause().end(),
