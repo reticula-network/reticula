@@ -1,5 +1,6 @@
 #include <queue>
 #include <cmath>
+#include <algorithm>
 
 namespace dag {
   template <typename T>
