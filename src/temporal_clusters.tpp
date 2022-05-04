@@ -288,8 +288,8 @@ namespace dag {
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert_time_range(
-      EdgeT::VertexType v,
-      EdgeT::TimeType start, EdgeT::TimeType end) {
+      typename EdgeT::VertexType v,
+      typename EdgeT::TimeType start, typename EdgeT::TimeType end) {
     typename EdgeT::TimeType
       a = static_cast<EdgeT::TimeType>(std::floor(start/_dt)),
       b = static_cast<EdgeT::TimeType>(std::floor(end/_dt) + 1);

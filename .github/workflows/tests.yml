@@ -10,14 +10,14 @@ jobs:
     - name: Install GCC
       run: |
         sudo apt-get -qy update
-        sudo apt-get install g++-11
+        sudo apt-get install gcc-10 g++-10
     - uses: actions/checkout@v2
     - name: g++ version
-      run: g++-11 -v
+      run: g++-10 -v
     - name: cmake build
       env:
-        CC: g++-11
-        CXX: g++-11
+        CC: g++-10
+        CXX: g++-10
       run: |
         mkdir build
         cmake -Bbuild -H.
