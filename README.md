@@ -3,6 +3,9 @@
 [hypergraphs][hyper], [temporal networks][temp], [event graphs][event] and
 [reachability][out-component].
 
+Reticula (singular: reticulum) is a word with Latin origin meaning networks or
+network-like (i.e., reticulate) structures.
+
 [action-image]: https://github.com/reticula-network/reticula/workflows/Tests/badge.svg
 [action-link]: https://github.com/reticula-network/reticula/actions
 [hyper]: https://arxiv.org/abs/2006.01764
