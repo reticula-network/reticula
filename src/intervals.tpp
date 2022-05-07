@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace dag {
+namespace reticula {
   template <typename T>
   bool interval_set<T>::can_merge(std::pair<T, T> a, std::pair<T, T> b) const {
     return std::max(a.first, b.first) <= std::min(a.second, b.second);
@@ -123,4 +123,4 @@ namespace dag {
   interval_set<T>::end() const {
     return _ints.cend();
   }
-}  // namespace dag
+}  // namespace reticula

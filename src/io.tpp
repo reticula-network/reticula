@@ -1,6 +1,6 @@
 #include <csv.hpp>
 
-namespace dag {
+namespace reticula {
   namespace detail {
     template <network_edge EdgeT>
     struct edge_from_edgelist_row {
@@ -65,4 +65,4 @@ namespace dag {
 
     return network<EdgeT>(edges);
   }
-}  // namespace dag
+}  // namespace reticula

@@ -1,9 +1,9 @@
 #include <unordered_map>
 #include <ds/disjoint_set.hpp>
 
-#include "../include/dag/type_traits.hpp"
+#include "../include/reticula/type_traits.hpp"
 
-namespace dag {
+namespace reticula {
   /**
     Only enable reduced event graph (i.e. arXiv 1908.11831 appendix B) for
     undirected temporal edges
@@ -20,9 +20,9 @@ namespace dag {
 
   template <temporal_edge EdgeT>
   struct is_reducable<
-    dag::implicit_event_graph<EdgeT,
-      dag::adjacency_prob::deterministic<EdgeT>>> {
-    static constexpr bool value = dag::is_undirected_v<EdgeT>;
+    implicit_event_graph<EdgeT,
+      adjacency_prob::deterministic<EdgeT>>> {
+    static constexpr bool value = is_undirected_v<EdgeT>;
   };
 
   template <
@@ -490,4 +490,4 @@ namespace dag {
 
     return sets_vector;
   }
-}  // namespace dag
+}  // namespace reticula

@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <
     integer_vertex VertT,
     std::ranges::input_range Range,
@@ -168,4 +168,4 @@ namespace dag {
         std::ranges::iota_view{
           VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
   }
-}  // namespace dag
+}  // namespace reticula

@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <
     integer_vertex VertT,
     std::uniform_random_bit_generator Gen>
@@ -41,4 +41,4 @@ namespace dag {
 
     return undirected_network<VertT>(edges);
   }
-}  // namespace dag
+}  // namespace reticula

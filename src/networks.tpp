@@ -1,6 +1,6 @@
 #include <set>
 
-namespace dag {
+namespace reticula {
   template <network_edge EdgeT>
   network<EdgeT>::network(std::initializer_list<EdgeT> edges)
   : network(
@@ -302,4 +302,4 @@ namespace dag {
 
     return res;
   }
-}  // namespace dag
+}  // namespace reticula

@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
   random_gnp_graph(VertT n, double p, Gen& generator) {
@@ -39,4 +39,4 @@ namespace dag {
     return undirected_network<VertT>(edges,
         std::ranges::iota_view{VertT{}, n});
   }
-}  // namespace dag
+}  // namespace reticula

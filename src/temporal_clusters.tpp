@@ -1,7 +1,7 @@
 #include <limits>
 #include <cmath>
 
-namespace dag {
+namespace reticula {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
       AdjT adj, std::size_t size_hint) :
@@ -340,4 +340,4 @@ namespace dag {
   temporal_cluster_size_estimate<EdgeT, AdjT>::mass_estimate() const {
     return _mass_estimate;
   }
-}  // namespace dag
+}  // namespace reticula

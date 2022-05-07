@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
@@ -79,11 +79,11 @@ namespace dag {
 
       if (edges.size() == static_cast<std::size_t>(size*degree)/2)
         return undirected_network<VertT>(
-            std::vector<dag::undirected_edge<VertT>>(
+            std::vector<undirected_edge<VertT>>(
               edges.begin(), edges.end()),
             std::ranges::iota_view{VertT{}, size});
     }
 
     return std::nullopt;
   }
-}  // namespace dag
+}  // namespace reticula

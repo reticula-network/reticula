@@ -1,6 +1,6 @@
-#include "../include/dag/algorithms.hpp"
+#include "../include/reticula/algorithms.hpp"
 
-namespace dag {
+namespace reticula {
   template <integer_vertex VertT>
   undirected_network<VertT> square_grid_graph(
       VertT side, std::size_t dims, bool periodic) {
@@ -71,4 +71,4 @@ namespace dag {
 
     return directed_network<VertT>(edges);
   }
-}  // namespace dag
+}  // namespace reticula

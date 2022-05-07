@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <network_vertex VertT>
   component<VertT>::component(std::size_t size_hint) {
     if (size_hint > 0)
@@ -136,4 +136,4 @@ namespace dag {
   double component_size_estimate<VertT>::size_estimate() const {
     return _verts;
   }
-}  // namespace dag
+}  // namespace reticula

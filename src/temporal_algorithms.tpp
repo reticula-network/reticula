@@ -1,6 +1,7 @@
-#include "../include/dag/implicit_event_graph.hpp"
-#include "../include/dag/implicit_event_graph_components.hpp"
-namespace dag {
+#include "../include/reticula/implicit_event_graphs.hpp"
+#include "../include/reticula/implicit_event_graph_components.hpp"
+
+namespace reticula {
   namespace detail {
     template <temporal_edge EdgeT>
     struct temporal_loop {
@@ -338,4 +339,4 @@ namespace dag {
         timelines.begin(),
         timelines.end());
   }
-}  // namespace dag
+}  // namespace reticula

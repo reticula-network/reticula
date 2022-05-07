@@ -6,9 +6,9 @@
 
 #include <ds/disjoint_set.hpp>
 
-#include "../include/dag/utils.hpp"
+#include "../include/reticula/utils.hpp"
 
-namespace dag {
+namespace reticula {
   namespace detail {
     template <typename Comp>
     struct component_type_constructor {
@@ -122,7 +122,7 @@ namespace dag {
         hash<typename EdgeT::VertexType>> out_comp;
       out_comp.reserve(dir.vertices().size());
 
-      dag::component<typename EdgeT::VertexType> seen(dir.vertices().size());
+      component<typename EdgeT::VertexType> seen(dir.vertices().size());
       std::stack<
         typename EdgeT::VertexType,
         std::vector<typename EdgeT::VertexType>> scc_stack;
@@ -852,4 +852,4 @@ namespace dag {
         }, true, false, std::size_t{});
     return lengths;
   }
-}  // namespace dag
+}  // namespace reticula

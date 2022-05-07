@@ -3,7 +3,7 @@
 
 #include <ds/disjoint_set.hpp>
 
-namespace dag {
+namespace reticula {
   namespace detail {
     template <typename Comp, typename AdjT, typename TempResType>
     struct ieg_component_type_constructor {
@@ -158,13 +158,13 @@ namespace dag {
     template <
       temporal_edge EdgeT,
       temporal_adjacency::temporal_adjacency AdjT>
-    dag::component<EdgeT>
+    component<EdgeT>
     generic_out_component(
         const implicit_event_graph<EdgeT, AdjT>& eg,
         const EdgeT& root,
         bool revert_graph,
         bool ignore_direction) {
-      dag::component<EdgeT> out_component({root});
+      component<EdgeT> out_component({root});
       std::queue<EdgeT> search({root});
 
       bool reducible = is_undirected_v<EdgeT>;
@@ -336,4 +336,4 @@ namespace dag {
       const EdgeT& root) {
     return detail::generic_out_component(eg, root, false, true);
   }
-}  // namespace dag
+}  // namespace reticula

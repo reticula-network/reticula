@@ -2,11 +2,11 @@
 #include <unordered_map>
 #include <concepts>
 
-#include "../include/dag/temporal_algorithms.hpp"
-#include "../include/dag/components.hpp"
-#include "../include/dag/algorithms.hpp"
+#include "../include/reticula/temporal_algorithms.hpp"
+#include "../include/reticula/components.hpp"
+#include "../include/reticula/algorithms.hpp"
 
-namespace dag {
+namespace reticula {
   namespace microcanonical_reference_models {
     namespace detail {
       template <
@@ -195,13 +195,13 @@ namespace dag {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> connected_link_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
-      auto proj = dag::static_projection(temp);
+      auto proj = static_projection(temp);
 
       std::vector<component<typename EdgeT::VertexType>> proj_ccs;
       if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
-        proj_ccs = dag::connected_components(proj);
+        proj_ccs = connected_components(proj);
       else
-        proj_ccs = dag::weakly_connected_components(proj);
+        proj_ccs = weakly_connected_components(proj);
 
       std::ranges::sort(proj_ccs, std::ranges::greater{}, std::ranges::size);
 
@@ -214,11 +214,11 @@ namespace dag {
 
       network<EdgeT> res(std::vector<EdgeT>(), proj.vertices());
       for (auto& comp: proj_ccs) {
-        auto sub_temp = dag::vertex_induced_subgraph(temp, comp);
+        auto sub_temp = vertex_induced_subgraph(temp, comp);
         network<EdgeT> shuff(std::vector<EdgeT>(), sub_temp.vertices());
         while (!is_projection_connected(shuff))
           shuff = link_shuffling(sub_temp, generator);
-        res = dag::graph_union(res, shuff);
+        res = graph_union(res, shuff);
       }
 
       return res;
@@ -424,4 +424,4 @@ namespace dag {
       return network<EdgeT>(shuffled_edges, temp.vertices());
     }
   }  // namespace microcanonical_reference_models
-}  // namespace dag
+}  // namespace reticula

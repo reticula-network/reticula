@@ -1,6 +1,6 @@
-#include "../../include/dag/generators.hpp"
+#include "../../include/reticula/generators.hpp"
 
-namespace dag {
+namespace reticula {
   template <
     integer_vertex VertT,
     std::uniform_random_bit_generator Gen>
@@ -114,4 +114,4 @@ namespace dag {
 
     return network<EdgeT>(edges, base_net.vertices());
   }
-}  // namespace dag
+}  // namespace reticula

@@ -1,6 +1,6 @@
-#include "../include/dag/algorithms.hpp"
+#include "../include/reticula/algorithms.hpp"
 
-namespace dag {
+namespace reticula {
   template <
     integer_vertex VertT,
     std::ranges::forward_range Range,
@@ -334,4 +334,4 @@ namespace dag {
     return std::nullopt;
   }
 
-}  // namespace dag
+}  // namespace reticula

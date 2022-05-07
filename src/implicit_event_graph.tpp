@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const std::initializer_list<EdgeT>& events,
@@ -208,4 +208,4 @@ namespace dag {
     }
     return res;
   }
-}  // namespace dag
+}  // namespace reticula

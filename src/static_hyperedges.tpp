@@ -1,65 +1,68 @@
 #include <functional>
 
-#include "../include/dag/utils.hpp"
+#include "../include/reticula/utils.hpp"
 
 // Hashing rules for hyperedges
 namespace std {
-  template<dag::network_vertex VertexType>
-  struct hash<dag::directed_hyperedge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::directed_hyperedge<VertexType>> {
     std::size_t
-    operator()(const dag::directed_hyperedge<VertexType>& e) const {
+    operator()(const reticula::directed_hyperedge<VertexType>& e) const {
       std::size_t heads_hash = std::accumulate(
           e._heads.begin(), e._heads.end(), 0ul,
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
       std::size_t tails_hash = std::accumulate(
           e._tails.begin(), e._tails.end(), 0ul,
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
-      return dag::utils::combine_hash<std::size_t, dag::hash>(
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
+      return reticula::utils::combine_hash<std::size_t, reticula::hash>(
           heads_hash, tails_hash);
     }
   };
 
-  template<dag::network_vertex VertexType>
-  struct hash<dag::undirected_hyperedge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::undirected_hyperedge<VertexType>> {
     std::size_t operator()(
-        const dag::undirected_hyperedge<VertexType>& e) const {
+        const reticula::undirected_hyperedge<VertexType>& e) const {
       return std::accumulate(
           e._verts.begin(), e._verts.end(), 0ul,
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
     }
   };
 }  // namespace std
 
 // HLL hashing rules for hyperedges
 namespace hll {
-  template<dag::network_vertex VertexType>
-  struct hash<dag::directed_hyperedge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::directed_hyperedge<VertexType>> {
     uint64_t
     operator()(
-        const dag::directed_hyperedge<VertexType>& e,
+        const reticula::directed_hyperedge<VertexType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::directed_hyperedge<VertexType>>{}(e), seed);
+          std::hash<reticula::directed_hyperedge<VertexType>>{}(e), seed);
     }
   };
 
-  template<dag::network_vertex VertexType>
-  struct hash<dag::undirected_hyperedge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::undirected_hyperedge<VertexType>> {
     uint64_t
     operator()(
-        const dag::undirected_hyperedge<VertexType>& e,
+        const reticula::undirected_hyperedge<VertexType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::undirected_hyperedge<VertexType>>{}(e), seed);
+          std::hash<reticula::undirected_hyperedge<VertexType>>{}(e), seed);
     }
   };
 }  // namespace hll
 
 
-namespace dag {
+namespace reticula {
   // properties of directed hyperedge:
 
   template <network_vertex VertexType>
@@ -239,4 +242,4 @@ namespace dag {
         std::back_inserter(common));
     return common.size() > 0;
   }
-}  // namespace dag
+}  // namespace reticula

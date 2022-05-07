@@ -1,4 +1,4 @@
-namespace dag {
+namespace reticula {
   // power_law_with_specified_mean
   template <class RealType>
   power_law_with_specified_mean<RealType>::power_law_with_specified_mean(
@@ -120,7 +120,7 @@ namespace dag {
   RealType hawkes_univariate_exponential<RealType>::phi() const {
     return _phi;
   }
-}  // namespace dag
+}  // namespace reticula
 
 #include "random_networks/barabasi_albert.tpp"
 #include "random_networks/gnp.tpp"

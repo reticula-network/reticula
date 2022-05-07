@@ -2,61 +2,68 @@
 #include <istream>
 #include <ostream>
 
-#include "../include/dag/utils.hpp"
+#include "../include/reticula/utils.hpp"
 
 namespace std {
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::undirected_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::undirected_temporal_hyperedge<VertexType, TimeType>> {
     size_t
     operator()(
-        const dag::undirected_temporal_hyperedge<
+        const reticula::undirected_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t verts_hash = std::accumulate(
           e._verts.begin(), e._verts.end(), std::size_t{},
           [](std::size_t h, const VertexType& v) {
-          return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, dag::hash>(verts_hash, e._time);
+          return reticula::utils::combine_hash<
+            VertexType, reticula::hash>(h, v);});
+      return reticula::utils::combine_hash<
+        TimeType, reticula::hash>(verts_hash, e._time);
     }
   };
 
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::directed_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::directed_temporal_hyperedge<VertexType, TimeType>> {
     size_t
     operator()(
-        const dag::directed_temporal_hyperedge<
+        const reticula::directed_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t heads_hash = std::accumulate(
           e._heads.begin(), e._heads.end(), std::size_t{},
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
       std::size_t tails_hash = std::accumulate(
           e._tails.begin(), e._tails.end(), std::size_t{},
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, dag::hash>(
-          dag::utils::combine_hash<std::size_t, dag::hash>(
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
+      return reticula::utils::combine_hash<TimeType, reticula::hash>(
+          reticula::utils::combine_hash<std::size_t, reticula::hash>(
             heads_hash, tails_hash), e._time);
     }
   };
 
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::directed_delayed_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>> {
     size_t
     operator()(
         const
-        dag::directed_delayed_temporal_hyperedge<
+        reticula::directed_delayed_temporal_hyperedge<
           VertexType, TimeType>& e) const {
       std::size_t heads_hash = std::accumulate(
           e._heads.begin(), e._heads.end(), std::size_t{},
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
       std::size_t tails_hash = std::accumulate(
           e._tails.begin(), e._tails.end(), std::size_t{},
           [](std::size_t h, const VertexType& v) {
-            return dag::utils::combine_hash<VertexType, dag::hash>(h, v);});
-      return dag::utils::combine_hash<TimeType, dag::hash>(
-              dag::utils::combine_hash<TimeType, dag::hash>(
-                dag::utils::combine_hash<std::size_t, dag::hash>(
+            return reticula::utils::combine_hash<
+              VertexType, reticula::hash>(h, v);});
+      return reticula::utils::combine_hash<TimeType, reticula::hash>(
+              reticula::utils::combine_hash<TimeType, reticula::hash>(
+                reticula::utils::combine_hash<std::size_t, reticula::hash>(
                   heads_hash, tails_hash),
                 e._cause_time),
               e._effect_time);
@@ -66,48 +73,46 @@ namespace std {
 
 
 namespace hll {
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::undirected_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::undirected_temporal_hyperedge<VertexType, TimeType>> {
     size_t
     operator()(
-        const dag::undirected_temporal_hyperedge<VertexType, TimeType>& e,
+        const reticula::undirected_temporal_hyperedge<VertexType, TimeType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<
-            dag::undirected_temporal_hyperedge<VertexType, TimeType>>{}(e),
-          seed);
+          std::hash<reticula::undirected_temporal_hyperedge<
+            VertexType, TimeType>>{}(e), seed);
     }
   };
 
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::directed_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::directed_temporal_hyperedge<VertexType, TimeType>> {
     uint64_t
     operator()(
-        const dag::directed_temporal_hyperedge<VertexType, TimeType>& e,
+        const reticula::directed_temporal_hyperedge<VertexType, TimeType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<
-            dag::directed_temporal_hyperedge<VertexType, TimeType>>{}(e),
-          seed);
+          std::hash<reticula::directed_temporal_hyperedge<
+            VertexType, TimeType>>{}(e), seed);
     }
   };
 
-  template<dag::network_vertex VertexType, typename TimeType>
-  struct hash<dag::directed_delayed_temporal_hyperedge<VertexType, TimeType>> {
+  template<reticula::network_vertex VertexType, typename TimeType>
+  struct hash<reticula::directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>> {
     uint64_t
     operator()(
-        const dag::directed_delayed_temporal_hyperedge<VertexType, TimeType>& e,
+        const reticula::directed_delayed_temporal_hyperedge<
+          VertexType, TimeType>& e,
         uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<
-            dag::directed_delayed_temporal_hyperedge<
-              VertexType, TimeType>>{}(e),
-          seed);
+          std::hash<reticula::directed_delayed_temporal_hyperedge<
+              VertexType, TimeType>>{}(e), seed);
     }
   };
 }  // namespace hll
 
-namespace dag {
+namespace reticula {
   // properties of directed temporal edge:
 
   template <network_vertex VertexType, typename TimeType>
@@ -506,4 +511,4 @@ namespace dag {
       return common.size() > 0;
     }
   }
-}  // namespace dag
+}  // namespace reticula

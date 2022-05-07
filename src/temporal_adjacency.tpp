@@ -2,9 +2,9 @@
 #include <random>
 #include <limits>
 
-#include "../include/dag/utils.hpp"
+#include "../include/reticula/utils.hpp"
 
-namespace dag {
+namespace reticula {
   namespace temporal_adjacency {
     // simple adjacency
     template <temporal_edge EdgeT>
@@ -116,4 +116,4 @@ namespace dag {
       return _p;
     }
   }  // namespace temporal_adjacency
-}  // namespace dag
+}  // namespace reticula

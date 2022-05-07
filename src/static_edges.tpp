@@ -2,50 +2,52 @@
 #include <istream>
 #include <ostream>
 
-#include "../include/dag/utils.hpp"
+#include "../include/reticula/utils.hpp"
 
 // Hashing rules for edges
 namespace std {
-  template<dag::network_vertex VertexType>
-  struct hash<dag::directed_edge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::directed_edge<VertexType>> {
     size_t
-    operator()(const dag::directed_edge<VertexType>& e) const {
-      return dag::utils::combine_hash<VertexType, dag::hash>(
-          dag::hash<VertexType>{}(e._tail), e._head);
+    operator()(const reticula::directed_edge<VertexType>& e) const {
+      return reticula::utils::combine_hash<VertexType, reticula::hash>(
+          reticula::hash<VertexType>{}(e._tail), e._head);
     }
   };
 
-  template<dag::network_vertex VertexType>
-  struct hash<dag::undirected_edge<VertexType>> {
-    size_t operator()(const dag::undirected_edge<VertexType>& e) const {
-      return dag::utils::combine_hash<VertexType, dag::hash>(
-          dag::hash<VertexType>{}(e._v1), e._v2);
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::undirected_edge<VertexType>> {
+    size_t operator()(const reticula::undirected_edge<VertexType>& e) const {
+      return reticula::utils::combine_hash<VertexType, reticula::hash>(
+          reticula::hash<VertexType>{}(e._v1), e._v2);
     }
   };
 }  // namespace std
 
 // HLL hashing rules for edges
 namespace hll {
-  template<dag::network_vertex VertexType>
-  struct hash<dag::directed_edge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::directed_edge<VertexType>> {
     uint64_t
-    operator()(const dag::directed_edge<VertexType>& e, uint32_t seed) const {
+    operator()(const reticula::directed_edge<
+        VertexType>& e, uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::directed_edge<VertexType>>{}(e), seed);
+          std::hash<reticula::directed_edge<VertexType>>{}(e), seed);
     }
   };
 
-  template<dag::network_vertex VertexType>
-  struct hash<dag::undirected_edge<VertexType>> {
+  template<reticula::network_vertex VertexType>
+  struct hash<reticula::undirected_edge<VertexType>> {
     uint64_t
-    operator()(const dag::undirected_edge<VertexType>& e, uint32_t seed) const {
+    operator()(const reticula::undirected_edge<
+        VertexType>& e, uint32_t seed) const {
       return hll::hash<size_t>{}(
-          std::hash<dag::undirected_edge<VertexType>>{}(e), seed);
+          std::hash<reticula::undirected_edge<VertexType>>{}(e), seed);
     }
   };
 }  // namespace hll
 
-namespace dag {
+namespace reticula {
   // properties of directed edge:
 
   template <network_vertex VertexType>
@@ -119,14 +121,14 @@ namespace dag {
   template <network_vertex VertexType>
   std::ostream& operator<<(
       std::ostream &os,
-      const dag::directed_edge<VertexType>& e) {
+      const directed_edge<VertexType>& e) {
     return os << e._tail << " " << e._head;
   }
 
   template <network_vertex VertexType>
   std::istream& operator>>(
       std::istream &is,
-      dag::directed_edge<VertexType>& e) {
+      directed_edge<VertexType>& e) {
     return is >> e._tail >> e._head;
   }
 
@@ -204,14 +206,14 @@ namespace dag {
   requires output_streamable<VertexType>
   std::ostream& operator<<(
       std::ostream &os,
-      const dag::undirected_edge<VertexType>& e) {
+      const undirected_edge<VertexType>& e) {
     return os << e._v1 << " " << e._v2;
   }
 
   template <network_vertex VertexType>
   requires input_streamable<VertexType>
   std::istream& operator>>(std::istream &is,
-      dag::undirected_edge<VertexType>& e) {
+      undirected_edge<VertexType>& e) {
     return is >> e._v1 >> e._v2;
   }
-}  // namespace dag
+}  // namespace reticula

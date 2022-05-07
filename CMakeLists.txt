@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(dag LANGUAGES CXX VERSION 0.1)
+project(reticula LANGUAGES CXX VERSION 0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -41,22 +41,22 @@ target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog csv)
 add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
-  src/test/dag/tests.cpp
-  src/test/dag/intervals.cpp
-  src/test/dag/temporal_adjacency.cpp
-  src/test/dag/algorithms.cpp
-  src/test/dag/temporal_algorithms.cpp
-  src/test/dag/compile.cpp
-  src/test/dag/edge_tests.cpp
-  src/test/dag/generators.cpp
-  src/test/dag/implicit_event_graph.cpp
-  src/test/dag/implicit_event_graph_components.cpp
-  src/test/dag/networks.cpp
-  src/test/dag/io.cpp
-  src/test/dag/random_networks.cpp
-  src/test/dag/components.cpp
-  src/test/dag/temporal_clusters.cpp
-  src/test/dag/microcanonical_reference_models.cpp)
+  src/test/reticula/tests.cpp
+  src/test/reticula/intervals.cpp
+  src/test/reticula/temporal_adjacency.cpp
+  src/test/reticula/algorithms.cpp
+  src/test/reticula/temporal_algorithms.cpp
+  src/test/reticula/compile.cpp
+  src/test/reticula/edge_tests.cpp
+  src/test/reticula/generators.cpp
+  src/test/reticula/implicit_event_graphs.cpp
+  src/test/reticula/implicit_event_graph_components.cpp
+  src/test/reticula/networks.cpp
+  src/test/reticula/io.cpp
+  src/test/reticula/random_networks.cpp
+  src/test/reticula/components.cpp
+  src/test/reticula/temporal_clusters.cpp
+  src/test/reticula/microcanonical_reference_models.cpp)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2)
 target_compile_options(${PROJECT_NAME}_tests PRIVATE
