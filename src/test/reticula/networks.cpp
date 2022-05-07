@@ -240,7 +240,8 @@ TEST_CASE("directed networks",
             std::vector<reticula::directed_edge<int>>({{4, 2}, {1, 2}})));
       REQUIRE_THAT(graph.incident_edges(2),
           UnorderedEquals(
-            std::vector<reticula::directed_edge<int>>({{4, 2}, {1, 2}, {2, 3}})));
+            std::vector<reticula::directed_edge<int>>(
+              {{4, 2}, {1, 2}, {2, 3}})));
 
       REQUIRE(graph.out_degree(2) == 1);
       REQUIRE(graph.in_degree(2) == 2);
@@ -848,13 +849,16 @@ TEST_CASE("directed delayed temporal networks",
           UnorderedEquals(std::vector<int>({1, 3})));
 
       REQUIRE_THAT(graph.out_edges(2),
-          Equals(std::vector<reticula::directed_delayed_temporal_edge<int, int>>(
+          Equals(std::vector<
+            reticula::directed_delayed_temporal_edge<int, int>>(
               {{2, 1, 2, 3}, {2, 3, 6, 7}})));
       REQUIRE_THAT(graph.in_edges(2),
-          Equals(std::vector<reticula::directed_delayed_temporal_edge<int, int>>(
+          Equals(std::vector<
+            reticula::directed_delayed_temporal_edge<int, int>>(
               {{1, 2, 5, 8}, {1, 2, 1, 9}})));
       REQUIRE_THAT(graph.incident_edges(2),
-          Equals(std::vector<reticula::directed_delayed_temporal_edge<int, int>>(
+          Equals(std::vector<
+            reticula::directed_delayed_temporal_edge<int, int>>(
               {{1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}, {2, 3, 6, 7}})));
 
       REQUIRE(graph.out_degree(2) == 2);
@@ -974,7 +978,8 @@ TEST_CASE("directed delayed temporal hypernetworks",
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
-      std::vector<reticula::directed_delayed_temporal_hyperedge<int, int>> edges(
+      std::vector<
+        reticula::directed_delayed_temporal_hyperedge<int, int>> edges(
           {{{1}, {2}, 1, 9}, {{2}, {1}, 2, 3}, {{1}, {2}, 5, 8},
           {{2}, {3}, 6, 7}, {{3}, {4}, 8, 9}});
       std::sort(edges.begin(), edges.end());

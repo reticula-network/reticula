@@ -4,12 +4,14 @@ using Catch::Matchers::Equals;
 
 #include <reticula/implicit_event_graph_components.hpp>
 
+namespace tadg = reticula::temporal_adjacency;
+
 TEST_CASE("in-/out-/weakly connected component",
     "[reticula::implicit_event_graph][reticula::in_component]"
     "[reticula::out_component][reticula::weakly_connected_component]") {
   SECTION("undirected temporal network") {
     using EdgeType = reticula::undirected_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
     reticula::network<EdgeType> network(
         {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
     ProbType prob(2);
@@ -27,14 +29,15 @@ TEST_CASE("in-/out-/weakly connected component",
 
     SECTION("weakly connected component") {
       auto c = reticula::weakly_connected_component(eg, {2, 3, 6});
-      reticula::component<EdgeType> w({{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+      reticula::component<EdgeType> w(
+          {{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
       REQUIRE(c == w);
     }
   }
 
   SECTION("directed temporal network") {
     using EdgeType = reticula::directed_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
 
     reticula::network<EdgeType> network(
         {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
@@ -53,14 +56,15 @@ TEST_CASE("in-/out-/weakly connected component",
 
     SECTION("weakly connected component") {
       auto c = reticula::weakly_connected_component(eg, {2, 3, 6});
-      reticula::component<EdgeType> w({{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
+      reticula::component<EdgeType> w(
+          {{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
       REQUIRE(c == w);
     }
   }
 
   SECTION("directed delayed temporal network") {
     using EdgeType = reticula::directed_delayed_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
 
     reticula::network<EdgeType> network(
         {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
@@ -93,7 +97,7 @@ TEST_CASE("in-/out-/weakly connected components",
     "[reticula::out_components][reticula::weakly_connected_components]") {
   SECTION("undirected temporal network") {
     using EdgeType = reticula::undirected_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
     reticula::network<EdgeType> network(
         {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
     ProbType prob(2);
@@ -128,13 +132,14 @@ TEST_CASE("in-/out-/weakly connected components",
         {{1, 2, 1}, {2, 1, 2}},
         {{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}},
         {{5, 6, 1}}});
-      REQUIRE_THAT(reticula::weakly_connected_components(eg), UnorderedEquals(ws));
+      REQUIRE_THAT(reticula::weakly_connected_components(eg),
+          UnorderedEquals(ws));
     }
   }
 
   SECTION("directed temporal network") {
     using EdgeType = reticula::directed_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
 
     reticula::network<EdgeType> network(
         {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
@@ -170,13 +175,14 @@ TEST_CASE("in-/out-/weakly connected components",
         {{1, 2, 1}, {2, 1, 2}},
         {{2, 3, 6}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}},
         {{5, 6, 1}}});
-      REQUIRE_THAT(reticula::weakly_connected_components(eg), UnorderedEquals(ws));
+      REQUIRE_THAT(reticula::weakly_connected_components(eg),
+          UnorderedEquals(ws));
     }
   }
 
   SECTION("directed delayed temporal network") {
     using EdgeType = reticula::directed_delayed_temporal_edge<int, int>;
-    using ProbType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
+    using ProbType = tadg::limited_waiting_time<EdgeType>;
 
     reticula::network<EdgeType> network(
         {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
@@ -217,7 +223,8 @@ TEST_CASE("in-/out-/weakly connected components",
         {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7},
          {3, 4, 8, 9}},
         {{5, 6, 1, 3}}});
-      REQUIRE_THAT(reticula::weakly_connected_components(eg), UnorderedEquals(ws));
+      REQUIRE_THAT(reticula::weakly_connected_components(eg),
+          UnorderedEquals(ws));
     }
   }
 }

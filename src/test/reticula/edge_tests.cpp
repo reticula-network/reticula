@@ -508,13 +508,17 @@ TEST_CASE("directed temporal hyperedges",
   }
 
   SECTION("compare correctly") {
-    REQUIRE(reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) ==
+    REQUIRE(
+        reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) ==
         reticula::directed_temporal_hyperedge<int, int>({1, 2}, {3, 2}, 3));
-    REQUIRE(reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) !=
+    REQUIRE(
+        reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) !=
         reticula::directed_temporal_hyperedge<int, int>({2, 3}, {1, 2}, 3));
-    REQUIRE(reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) !=
+    REQUIRE(
+        reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3) !=
         reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 2));
-    REQUIRE(reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 2) <
+    REQUIRE(
+        reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 2) <
         reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3));
   }
 }
@@ -525,9 +529,12 @@ TEST_CASE("directed delayed temporal edges",
     std::istringstream s("1 2 3 4\n5 6 7 8\n9 10 11 12\n");
     reticula::directed_delayed_temporal_edge<int, int> a{}, b{}, c{};
     s >> a >> b >> c;
-    REQUIRE(a == reticula::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
-    REQUIRE(b == reticula::directed_delayed_temporal_edge<int, int>(5, 6, 7, 8));
-    REQUIRE(c == reticula::directed_delayed_temporal_edge<int, int>(9, 10, 11, 12));
+    REQUIRE(a ==
+        reticula::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
+    REQUIRE(b ==
+        reticula::directed_delayed_temporal_edge<int, int>(5, 6, 7, 8));
+    REQUIRE(c ==
+        reticula::directed_delayed_temporal_edge<int, int>(9, 10, 11, 12));
   }
 
   SECTION("comply with temporal_edge concept") {
@@ -585,7 +592,8 @@ TEST_CASE("directed delayed temporal edges",
     REQUIRE_NOTHROW(std::hash<
         reticula::directed_delayed_temporal_edge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::directed_delayed_temporal_edge<int, int>>{}(edge, uint32_t{}));
+        reticula::directed_delayed_temporal_edge<int, int>>{}(
+          edge, uint32_t{}));
   }
 
   SECTION("compare correctly") {

@@ -1,5 +1,5 @@
-#ifndef INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPH_HPP_
-#define INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPH_HPP_
+#ifndef INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPHS_HPP_
+#define INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPHS_HPP_
 
 #include <utility>
 #include <unordered_map>
@@ -155,6 +155,6 @@ namespace reticula {
 
 }  // namespace reticula
 
-#include "../../src/implicit_event_graph.tpp"
+#include "../../src/implicit_event_graphs.tpp"
 
-#endif  // INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPH_HPP_
+#endif  // INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPHS_HPP_

@@ -231,7 +231,8 @@ TEST_CASE("percolation out-clusters", "[reticula::out_clusters]") {
             {{{3, 4, 8, 9}}, adj}},
           {{5, 6, 1, 3},
             {{{5, 6, 1, 3}}, adj}}});
-    REQUIRE_THAT(reticula::out_clusters(network, adj), UnorderedEquals(true_oc));
+    REQUIRE_THAT(reticula::out_clusters(network, adj),
+        UnorderedEquals(true_oc));
   }
 
   SECTION("random network") {
