@@ -8,9 +8,13 @@
 
 namespace reticula {
   template <network_edge EdgeT>
-  network<EdgeT>
-  read_edgelist(std::filesystem::path path,
-          char delimiter = ' ', char quote = '"');
+  network<EdgeT> read_edgelist(
+      std::filesystem::path path);
+
+  template <network_edge EdgeT>
+  void write_edgelist(
+      const network<EdgeT>& network,
+      std::filesystem::path path);
 }  // namespace reticula
 
 #include "../../src/io.tpp"
