@@ -80,6 +80,7 @@ namespace reticula {
       std::string operator()(
           const undirected_temporal_edge<VertT, TimeT>& edge) {
         std::stringstream ss;
+        ss.precision(std::numeric_limits<TimeT>::max_digits10);
         auto ivs = edge.incident_verts();
         ss << ivs.front() << " " << ivs.back()
           << " " << edge.cause_time() << "\n";
@@ -92,6 +93,7 @@ namespace reticula {
       std::string operator()(
           const directed_temporal_edge<VertT, TimeT>& edge) {
         std::stringstream ss;
+        ss.precision(std::numeric_limits<TimeT>::max_digits10);
         ss << edge.tail() << " " << edge.head() <<
           " " << edge.cause_time() << "\n";
         return ss.str();
@@ -104,6 +106,7 @@ namespace reticula {
       std::string operator()(
           const directed_delayed_temporal_edge<VertT, TimeT>& edge) {
         std::stringstream ss;
+        ss.precision(std::numeric_limits<TimeT>::max_digits10);
         ss << edge.tail() << " " << edge.head() <<
           " " << edge.cause_time() << " " << edge.effect_time() << "\n";
         return ss.str();
