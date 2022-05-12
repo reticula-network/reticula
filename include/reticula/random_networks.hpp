@@ -18,7 +18,7 @@ namespace reticula {
     };  // NOLINT(readability/braces)
 
   template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
-  undirected_network<VertT> gnp_random_graph(
+  undirected_network<VertT> random_gnp_graph(
       VertT n, double p,
       Gen& generator);
 
