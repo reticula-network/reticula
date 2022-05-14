@@ -41,15 +41,15 @@ namespace reticula {
               std::uniform_real_distribution{}(
                 generator))/static_cast<double>(k));
 
-        std::size_t i = t0 + static_cast<TimeT>(k) + static_cast<std::size_t>(
+        TimeT i = t0 + static_cast<TimeT>(k) + static_cast<TimeT>(
               std::log(
                 std::uniform_real_distribution{}(
                   generator))/std::log(1-w)) + 1;
 
         while (i <= t1) {
-          std::uniform_int_distribution<std::size_t> dist{0, k-1};
+          std::uniform_int_distribution<TimeT> dist{0, k-1};
           out[dist(generator)] = i;
-          i += static_cast<std::size_t>(
+          i += static_cast<TimeT>(
               std::log(
                 std::uniform_real_distribution{}(
                   generator))/std::log(1-w)) + 1;
