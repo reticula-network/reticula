@@ -32,7 +32,7 @@ namespace reticula {
       std::vector<TimeT>
       sample_timestamps(TimeT t0, TimeT t1, std::size_t k, Gen& generator) {
         std::vector<TimeT> out;
-        out.reserve(k);
+        out.reserve(static_cast<TimeT>(k));
         for (TimeT i = t0; i < t0 + static_cast<TimeT>(k); i++)
           out.push_back(i);
 
@@ -47,7 +47,7 @@ namespace reticula {
                   generator))/std::log(1-w)) + 1;
 
         while (i <= t1) {
-          std::uniform_int_distribution<TimeT> dist{0, k-1};
+          std::uniform_int_distribution<TimeT> dist{0, static_cast<TimeT>(k)-1};
           out[dist(generator)] = i;
           i += static_cast<TimeT>(
               std::log(
