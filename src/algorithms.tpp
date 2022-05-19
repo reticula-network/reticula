@@ -541,6 +541,18 @@ namespace reticula {
   }
 
   template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
+  largest_weakly_connected_component(const network<EdgeT>& dir) {
+    auto comps = detail::generic_weakly_connected_components(dir, true);
+    if (comps.empty())
+      return component<typename EdgeT::VertexType>();
+    else
+      return *std::ranges::max_element(comps, std::ranges::less{},
+          std::size<component<typename EdgeT::VertexType>>);
+  }
+
+
+  template <static_directed_edge EdgeT>
   bool is_weakly_connected(const network<EdgeT>& dir) {
     return breadth_first_search(dir, dir.vertices().front(),
         [](const typename EdgeT::VertexType&, const EdgeT&,
@@ -566,6 +578,17 @@ namespace reticula {
       const network<EdgeT>& net,
       bool singletons) {
     return detail::generic_weakly_connected_components(net, singletons);
+  }
+
+  template <static_undirected_edge EdgeT>
+  component<typename EdgeT::VertexType>
+  largest_connected_component(const network<EdgeT>& net) {
+    auto comps = detail::generic_weakly_connected_components(net, true);
+    if (comps.empty())
+      return component<typename EdgeT::VertexType>();
+    else
+      return *std::ranges::max_element(comps, std::ranges::less{},
+          std::size<component<typename EdgeT::VertexType>>);
   }
 
   template <static_undirected_edge EdgeT>

@@ -542,6 +542,26 @@ TEST_CASE("topological ordering", "[reticula::topological_order]") {
   }
 }
 
+TEST_CASE("largest weakly connected component",
+    "[reticula::largest_weakly_connected_component]") {
+  SECTION("works for non-empty directed graph") {
+    reticula::directed_network<int> graph({
+        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+
+    reticula::component<int> weak({1, 2, 3, 4, 5, 6});
+    reticula::component<int> comp =
+      reticula::largest_weakly_connected_component(graph);
+    REQUIRE(comp == weak);
+  }
+
+  SECTION("works for non-empty directed graph") {
+    reticula::directed_network<int> graph;
+    reticula::component<int> comp =
+      reticula::largest_weakly_connected_component(graph);
+    REQUIRE(comp.empty());
+  }
+}
+
 TEST_CASE("weakly connected components",
     "[reticula::weakly_connected_components]") {
   SECTION("works for directed graph") {
@@ -624,6 +644,28 @@ TEST_CASE("weakly connected component",
     }
   }
 }
+
+TEST_CASE("largest connected component",
+    "[reticula::largest_connected_component]") {
+  SECTION("works for non-empty undirected graph") {
+    reticula::undirected_network<int> graph({
+        {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8},
+        {8, 9}});
+
+    reticula::component<int> lcc({1, 2, 3, 4, 5, 6});
+    reticula::component<int> comp =
+      reticula::largest_connected_component(graph);
+    REQUIRE(comp == lcc);
+  }
+
+  SECTION("works for non-empty undirected graph") {
+    reticula::undirected_network<int> graph;
+    reticula::component<int> comp =
+      reticula::largest_connected_component(graph);
+    REQUIRE(comp.empty());
+  }
+}
+
 
 TEST_CASE("connected components", "[reticula::connected_components]") {
   SECTION("works for undirected graph") {

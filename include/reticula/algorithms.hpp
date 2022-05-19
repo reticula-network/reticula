@@ -290,6 +290,18 @@ namespace reticula {
       bool singletons = true);
 
   /**
+    Returns the largest weakly connected components of `dir` by number of
+    vertices. If multiple components of the maximum size exist, one of the is
+    arbitrary selected. For empty network, an empty component is returned.
+
+    @param dir Directed network in question
+  */
+  template <static_directed_edge EdgeT>
+  component<typename EdgeT::VertexType>
+  largest_weakly_connected_components(const network<EdgeT>& dir);
+
+
+  /**
     Returns true if all vertices in `dir` belong to the same weakly connected
     component.
 
@@ -322,6 +334,18 @@ namespace reticula {
   connected_components(
       const network<EdgeT>& net,
       bool singletons = true);
+
+  /**
+    Returns the largest connected components of `dir` by number of vertices. If
+    multiple components of the maximum size exist, one of the is arbitrary
+    selected. For empty network, an empty component is returned.
+
+    @param net An undirected Network
+  */
+  template <static_undirected_edge EdgeT>
+  component<typename EdgeT::VertexType>
+  largest_connected_component(const network<EdgeT>& net);
+
 
   /**
     Returns true if all all vertices in `net` belong to a single connected
