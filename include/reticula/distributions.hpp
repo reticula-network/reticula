@@ -71,7 +71,7 @@ namespace reticula {
   public:
     using result_type = ResultType;
 
-    delta_distribution(ResultType mean);
+    explicit delta_distribution(ResultType mean);
 
     template <std::uniform_random_bit_generator Generator>
     ResultType operator()(Generator& g);

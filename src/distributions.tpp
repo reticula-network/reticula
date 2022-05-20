@@ -133,4 +133,10 @@ namespace reticula {
   ResultType delta_distribution<ResultType>::operator()(Generator& /* g */) {
     return _mean;
   }
+
+  template <typename ResultType>
+  requires std::integral<ResultType> || std::floating_point<ResultType>
+  ResultType delta_distribution<ResultType>::mean() const {
+    return _mean;
+  }
 }  // namespace reticula
