@@ -54,6 +54,7 @@ add_executable(
   src/test/reticula/networks.cpp
   src/test/reticula/io.cpp
   src/test/reticula/random_networks.cpp
+  src/test/reticula/distributions.cpp
   src/test/reticula/components.cpp
   src/test/reticula/temporal_clusters.cpp
   src/test/reticula/microcanonical_reference_models.cpp)

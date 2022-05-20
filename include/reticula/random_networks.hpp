@@ -1,22 +1,15 @@
 #ifndef INCLUDE_RETICULA_RANDOM_NETWORKS_HPP_
 #define INCLUDE_RETICULA_RANDOM_NETWORKS_HPP_
 
-#include <random>
 #include <concepts>
 #include <optional>
 #include <numeric>
 
+#include "distributions.hpp"
 #include "network_concepts.hpp"
 #include "networks.hpp"
 
 namespace reticula {
-  template <typename T>
-  concept random_number_distribution =
-    std::is_arithmetic_v<typename T::result_type> &&
-    requires(T dist, std::mt19937_64& gen) {
-      { dist(gen) } -> std::convertible_to<typename T::result_type>;
-    };  // NOLINT(readability/braces)
-
   template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> random_gnp_graph(
       VertT n, double p,
@@ -285,59 +278,6 @@ namespace reticula {
       ActivationF&& inter_event_time_edge_activation,
       Gen& generator,
       std::size_t size_hint);
-
-  template <class RealType = double>
-  class power_law_with_specified_mean {
-  public:
-    using result_type = RealType;
-
-    power_law_with_specified_mean(RealType exponent, RealType mean);
-
-    template <class Generator>
-    RealType operator()(Generator& g) const;
-
-    RealType x_min() const;
-    RealType exponent() const;
-    RealType mean() const;
-  private:
-    RealType _x_min, _exponent, _mean;
-  };
-
-  template <class RealType = double>
-  class residual_power_law_with_specified_mean {
-  public:
-    using result_type = RealType;
-
-    residual_power_law_with_specified_mean(RealType exponent, RealType mean);
-
-    template <class Generator>
-    RealType operator()(Generator& g) const;
-
-    RealType x_min() const;
-    RealType exponent() const;
-    RealType mean() const;
-  private:
-    RealType _x_min, _exponent, _mean;
-  };
-
-  template <class RealType = double>
-  class hawkes_univariate_exponential {
-  public:
-    using result_type = RealType;
-
-    hawkes_univariate_exponential(
-        RealType mu, RealType alpha, RealType theta, RealType phi = {});
-
-    template <class Generator>
-    RealType operator()(Generator& g);
-
-    RealType mu() const;
-    RealType alpha() const;
-    RealType theta() const;
-    RealType phi() const;
-  private:
-    RealType _mu, _alpha, _theta, _phi;
-  };
 }  // namespace reticula
 
 #include "../../src/random_networks.tpp"

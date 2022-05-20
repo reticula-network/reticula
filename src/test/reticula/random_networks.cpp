@@ -435,21 +435,3 @@ TEST_CASE("random directed fully-mixed temporal network",
                 static_cast<double>(count) < per_event_mean + 4*sigma;
         }));
 }
-
-TEST_CASE("power-law with secified mean",
-    "[reticula::power_law_with_specified_mean]") {
-  REQUIRE(reticula::random_number_distribution<
-      reticula::power_law_with_specified_mean<>>);
-}
-
-TEST_CASE("residual power-law with specified mean",
-    "[reticula::residual_power_law_with_specified_mean]") {
-  REQUIRE(reticula::random_number_distribution<
-      reticula::residual_power_law_with_specified_mean<>>);
-}
-
-TEST_CASE("hawkes univariate exponential",
-    "[reticula::hawkes_univariate_exponential]") {
-  REQUIRE(reticula::random_number_distribution<
-      reticula::hawkes_univariate_exponential<>>);
-}
