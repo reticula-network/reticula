@@ -234,7 +234,7 @@ namespace reticula {
         ActivationF,
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
-  random_activation_temporal_network(
+  random_link_activation_temporal_network(
       network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,
@@ -272,7 +272,7 @@ namespace reticula {
         ActivationF,
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
-  random_activation_temporal_network(
+  random_link_activation_temporal_network(
       network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,

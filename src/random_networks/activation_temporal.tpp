@@ -7,7 +7,7 @@ namespace reticula {
   undirected_temporal_network<VertT, double>
   random_fully_mixed_temporal_network(
       VertT size, double rate, double max_t, Gen& generator) {
-    return random_activation_temporal_network<
+    return random_link_activation_temporal_network<
       undirected_temporal_edge<VertT, double>>(
         complete_graph(size),
         max_t,
@@ -25,7 +25,7 @@ namespace reticula {
   directed_temporal_network<VertT, double>
   random_directed_fully_mixed_temporal_network(
       VertT size, double rate, double max_t, Gen& generator) {
-    return random_activation_temporal_network<
+    return random_link_activation_temporal_network<
       directed_temporal_edge<VertT, double>>(
         complete_directed_graph(size),
         max_t,
@@ -61,7 +61,7 @@ namespace reticula {
         ActivationF,
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
-  random_activation_temporal_network(
+  random_link_activation_temporal_network(
       network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,
@@ -96,7 +96,7 @@ namespace reticula {
         ActivationF,
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
-  random_activation_temporal_network(
+  random_link_activation_temporal_network(
       network<typename EdgeT::StaticProjectionType> base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,
