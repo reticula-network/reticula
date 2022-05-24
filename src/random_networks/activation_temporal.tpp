@@ -11,10 +11,8 @@ namespace reticula {
       undirected_temporal_edge<VertT, double>>(
         complete_graph(size),
         max_t,
-        [rate](const auto&) {
-          return std::exponential_distribution<double>(rate); },
-        [rate](const auto&) {
-          return std::exponential_distribution<double>(rate); },
+        std::exponential_distribution<double>(rate),
+        std::exponential_distribution<double>(rate),
         generator,
         static_cast<std::size_t>(max_t*rate + 6*std::sqrt(max_t*rate)));
   }
@@ -29,88 +27,62 @@ namespace reticula {
       directed_temporal_edge<VertT, double>>(
         complete_directed_graph(size),
         max_t,
-        [rate](const auto&) {
-          return std::exponential_distribution<double>(rate); },
-        [rate](const auto&) {
-          return std::exponential_distribution<double>(rate); },
+        std::exponential_distribution<double>(rate),
+        std::exponential_distribution<double>(rate),
         generator,
         static_cast<std::size_t>(max_t*rate + 6*std::sqrt(max_t*rate)));
   }
 
   template <
     temporal_edge EdgeT,
-    typename ActivationF,
-    typename ResActivationF,
+    random_number_distribution IETDist,
+    random_number_distribution ResDist,
     std::uniform_random_bit_generator Gen>
   requires
-    random_number_distribution<std::invoke_result_t<
-      ActivationF, typename EdgeT::StaticProjectionType>> &&
-    random_number_distribution<std::invoke_result_t<
-      ResActivationF, typename EdgeT::StaticProjectionType>> &&
     std::same_as<
-      typename std::invoke_result_t<
-        ResActivationF,
-        typename EdgeT::StaticProjectionType>::result_type,
-      typename std::invoke_result_t<
-        ActivationF,
-        typename EdgeT::StaticProjectionType>::result_type> &&
-    std::constructible_from<
-      EdgeT,
-      typename EdgeT::StaticProjectionType,
-      typename std::invoke_result_t<
-        ActivationF,
-        typename EdgeT::StaticProjectionType>::result_type>
+      typename IETDist::result_type, typename ResDist::result_type> &&
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
   network<EdgeT>
   random_link_activation_temporal_network(
       const network<typename EdgeT::StaticProjectionType>& base_net,
       typename EdgeT::TimeType max_t,
-      ActivationF&& inter_event_time_edge_activation,
-      ResActivationF&& residual_time_edge_activation,
+      IETDist iet_dist,
+      ResDist res_dist,
       Gen& generator,
       std::size_t size_hint) {
     std::vector<EdgeT> edges;
     if (size_hint > 0)
       edges.reserve(size_hint);
 
-    for (const auto& e: base_net.edges()) {
-      auto res_dist = residual_time_edge_activation(e);
-      auto iet_dist = inter_event_time_edge_activation(e);
+    for (const auto& e: base_net.edges())
       for (auto t = res_dist(generator); t < max_t; t += iet_dist(generator))
         edges.emplace_back(e, t);
-    }
 
     return network<EdgeT>(edges, base_net.vertices());
   }
 
   template <
     temporal_edge EdgeT,
-    typename ActivationF,
+    random_number_distribution IETDist,
     std::uniform_random_bit_generator Gen>
   requires
-    random_number_distribution<std::invoke_result_t<
-      ActivationF, typename EdgeT::StaticProjectionType>> &&
-    std::constructible_from<
-      EdgeT,
-      typename EdgeT::StaticProjectionType,
-      typename std::invoke_result_t<
-        ActivationF,
-        typename EdgeT::StaticProjectionType>::result_type>
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
   network<EdgeT>
   random_link_activation_temporal_network(
       const network<typename EdgeT::StaticProjectionType>& base_net,
       typename EdgeT::TimeType max_t,
-      ActivationF&& inter_event_time_edge_activation,
+      IETDist iet_dist,
       Gen& generator,
       std::size_t size_hint) {
     std::vector<EdgeT> edges;
     if (size_hint > 0)
       edges.reserve(size_hint);
 
-    for (const auto& e: base_net.edges()) {
-      auto iet_dist = inter_event_time_edge_activation(e);
+    for (const auto& e: base_net.edges())
       for (auto t = 0; t < max_t*2; t += iet_dist(generator))
         if (t >= max_t) edges.emplace_back(e, t - max_t);
-    }
 
     return network<EdgeT>(edges, base_net.vertices());
   }
