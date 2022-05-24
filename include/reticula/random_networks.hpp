@@ -258,26 +258,26 @@ namespace reticula {
     @param generator A uniform random bit generator
     @param size_hint Estimated number of edges in the final temporal network.
   */
-  template <
-    temporal_edge EdgeT,
-    typename ActivationF,
-    std::uniform_random_bit_generator Gen>
-  requires
-    random_number_distribution<std::invoke_result_t<
-      ActivationF, typename EdgeT::StaticProjectionType>> &&
-    std::constructible_from<
-      EdgeT,
-      typename EdgeT::StaticProjectionType,
-      typename std::invoke_result_t<
-        ActivationF,
-        typename EdgeT::StaticProjectionType>::result_type>
-  network<EdgeT>
-  random_link_activation_temporal_network(
-      const network<typename EdgeT::StaticProjectionType>& base_net,
-      typename EdgeT::TimeType max_t,
-      ActivationF&& inter_event_time_edge_activation,
-      Gen& generator,
-      std::size_t size_hint);
+  /* template < */
+  /*   temporal_edge EdgeT, */
+  /*   typename ActivationF, */
+  /*   std::uniform_random_bit_generator Gen> */
+  /* requires */
+  /*   random_number_distribution<std::invoke_result_t< */
+  /*     ActivationF, typename EdgeT::StaticProjectionType>> && */
+  /*   std::constructible_from< */
+  /*     EdgeT, */
+  /*     typename EdgeT::StaticProjectionType, */
+  /*     typename std::invoke_result_t< */
+  /*       ActivationF, */
+  /*       typename EdgeT::StaticProjectionType>::result_type> */
+  /* network<EdgeT> */
+  /* random_link_activation_temporal_network( */
+  /*     const network<typename EdgeT::StaticProjectionType>& base_net, */
+  /*     typename EdgeT::TimeType max_t, */
+  /*     ActivationF&& inter_event_time_edge_activation, */
+  /*     Gen& generator, */
+  /*     std::size_t size_hint); */
 }  // namespace reticula
 
 #include "../../src/random_networks.tpp"

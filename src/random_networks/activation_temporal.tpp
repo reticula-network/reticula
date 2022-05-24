@@ -82,36 +82,36 @@ namespace reticula {
     return network<EdgeT>(edges, base_net.vertices());
   }
 
-  template <
-    temporal_edge EdgeT,
-    typename ActivationF,
-    std::uniform_random_bit_generator Gen>
-  requires
-    random_number_distribution<std::invoke_result_t<
-      ActivationF, typename EdgeT::StaticProjectionType>> &&
-    std::constructible_from<
-      EdgeT,
-      typename EdgeT::StaticProjectionType,
-      typename std::invoke_result_t<
-        ActivationF,
-        typename EdgeT::StaticProjectionType>::result_type>
-  network<EdgeT>
-  random_link_activation_temporal_network(
-      const network<typename EdgeT::StaticProjectionType>& base_net,
-      typename EdgeT::TimeType max_t,
-      ActivationF&& inter_event_time_edge_activation,
-      Gen& generator,
-      std::size_t size_hint) {
-    std::vector<EdgeT> edges;
-    if (size_hint > 0)
-      edges.reserve(size_hint);
+  /* template < */
+  /*   temporal_edge EdgeT, */
+  /*   typename ActivationF, */
+  /*   std::uniform_random_bit_generator Gen> */
+  /* requires */
+  /*   random_number_distribution<std::invoke_result_t< */
+  /*     ActivationF, typename EdgeT::StaticProjectionType>> && */
+  /*   std::constructible_from< */
+  /*     EdgeT, */
+  /*     typename EdgeT::StaticProjectionType, */
+  /*     typename std::invoke_result_t< */
+  /*       ActivationF, */
+  /*       typename EdgeT::StaticProjectionType>::result_type> */
+  /* network<EdgeT> */
+  /* random_link_activation_temporal_network( */
+  /*     const network<typename EdgeT::StaticProjectionType>& base_net, */
+  /*     typename EdgeT::TimeType max_t, */
+  /*     ActivationF&& inter_event_time_edge_activation, */
+  /*     Gen& generator, */
+  /*     std::size_t size_hint) { */
+  /*   std::vector<EdgeT> edges; */
+  /*   if (size_hint > 0) */
+  /*     edges.reserve(size_hint); */
 
-    for (const auto& e: base_net.edges()) {
-      auto iet_dist = inter_event_time_edge_activation(e);
-      for (auto t = 0; t < max_t*2; t += iet_dist(generator))
-        if (t >= max_t) edges.emplace_back(e, t - max_t);
-    }
+  /*   for (const auto& e: base_net.edges()) { */
+  /*     auto iet_dist = inter_event_time_edge_activation(e); */
+  /*     for (auto t = 0; t < max_t*2; t += iet_dist(generator)) */
+  /*       if (t >= max_t) edges.emplace_back(e, t - max_t); */
+  /*   } */
 
-    return network<EdgeT>(edges, base_net.vertices());
-  }
+  /*   return network<EdgeT>(edges, base_net.vertices()); */
+  /* } */
 }  // namespace reticula
