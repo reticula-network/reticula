@@ -81,7 +81,7 @@ namespace reticula {
       edges.reserve(size_hint);
 
     for (const auto& e: base_net.edges())
-      for (auto t = 0; t < max_t*2; t += iet_dist(generator))
+      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator))
         if (t >= max_t) edges.emplace_back(e, t - max_t);
 
     return network<EdgeT>(edges, base_net.vertices());
