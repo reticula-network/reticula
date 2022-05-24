@@ -62,7 +62,7 @@ namespace reticula {
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
   random_link_activation_temporal_network(
-      network<typename EdgeT::StaticProjectionType> base_net,
+      const network<typename EdgeT::StaticProjectionType>& base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,
       ResActivationF&& residual_time_edge_activation,
@@ -97,7 +97,7 @@ namespace reticula {
         typename EdgeT::StaticProjectionType>::result_type>
   network<EdgeT>
   random_link_activation_temporal_network(
-      network<typename EdgeT::StaticProjectionType> base_net,
+      const network<typename EdgeT::StaticProjectionType>& base_net,
       typename EdgeT::TimeType max_t,
       ActivationF&& inter_event_time_edge_activation,
       Gen& generator,
