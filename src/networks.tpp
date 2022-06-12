@@ -18,7 +18,7 @@ namespace reticula {
   template <network_edge EdgeT>
   template <std::ranges::input_range EdgeRange>
   requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
-  network<EdgeT>::network(const EdgeRange& edges)
+  network<EdgeT>::network(EdgeRange&& edges)
   : network(edges, std::vector<typename EdgeT::VertexType>()) {}
 
   template <network_edge EdgeT>
@@ -29,7 +29,7 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
     std::convertible_to<
       std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
-  network<EdgeT>::network(const EdgeRange& edges, const VertRange& verts) {
+  network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
     if constexpr (std::ranges::sized_range<EdgeRange>)
       _edges_cause.reserve(std::ranges::size(edges));
     std::ranges::copy(edges, std::back_inserter(_edges_cause));

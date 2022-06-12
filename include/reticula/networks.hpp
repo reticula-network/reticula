@@ -59,9 +59,10 @@ namespace reticula {
     /**
       Create a network from a range of edges.
      */
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeType>
-    explicit network(const Range& edges);
+    template <std::ranges::input_range EdgeRange>
+    requires std::convertible_to<
+      std::ranges::range_value_t<EdgeRange>, EdgeType>
+    explicit network(EdgeRange&& edges);
 
     /**
       Create a network from a range of edges and a supplementary range of
@@ -78,7 +79,7 @@ namespace reticula {
     requires
       std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeType> &&
       std::convertible_to<std::ranges::range_value_t<VertRange>, VertexType>
-    explicit network(const EdgeRange& edges, const VertRange& verts);
+    explicit network(EdgeRange&& edges, VertRange&& verts);
 
     /**
       list of unique vertices participating at least in one event in the

@@ -13,6 +13,20 @@ using Catch::Matchers::UnorderedEquals;
 
 #include <iostream>
 
+TEST_CASE("constructing networks from views", "[reticula::network]") {
+  int n = 5;
+  auto verts = std::views::iota(0, n);
+  auto edges = verts | std::views::transform([n](int v) {
+        return reticula::directed_edge(v, (v+1)%n);
+      });
+  auto graph = reticula::directed_network<int>(edges, verts);
+  REQUIRE_THAT(graph.vertices(),
+      UnorderedEquals(std::vector<int>({0, 1, 2, 3, 4})));
+  REQUIRE_THAT(graph.edges(),
+      UnorderedEquals(std::vector<reticula::directed_edge<int>>({
+          {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}})));
+}
+
 TEST_CASE("undirected networks",
         "[reticula::undirected_network][reticula::network]") {
   SECTION("when given one") {
