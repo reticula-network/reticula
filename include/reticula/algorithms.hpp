@@ -99,6 +99,37 @@ namespace reticula {
       const std::initializer_list<typename EdgeT::VertexType>& verts);
 
   /**
+    Returns a copy of the graph `g` with edge in range `edges` removed from the
+    graph.
+  */
+  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
+  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  network<EdgeT>
+  without_edges(const network<EdgeT>& g, const EdgeRange& edges);
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  without_edges(
+      const network<EdgeT>& g,
+      const std::initializer_list<EdgeT>& edges);
+
+  /**
+    Returns a copy of the graph `g` with vertices in range `verts` removed from
+    the graph.
+  */
+  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  requires std::convertible_to<
+      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+  network<EdgeT>
+  without_vertices(const network<EdgeT>& g, const VertRange& verts);
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  without_vertices(
+      const network<EdgeT>& g,
+      const std::initializer_list<typename EdgeT::VertexType>& verts);
+
+  /**
     Returns the graph union (not the disjoint union) of the two graphs. The
     union of two graphs consists of union of the two graph's vertices connected
     through the union of their edges.

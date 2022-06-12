@@ -378,6 +378,66 @@ namespace reticula {
     return with_vertices(g, std::vector<typename EdgeT::VertexType>(verts));
   }
 
+
+  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
+  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  network<EdgeT>
+  without_edges(const network<EdgeT>& g, const EdgeRange& edges) {
+    std::vector<EdgeT> edges_v;
+    if constexpr (std::ranges::sized_range<EdgeRange>)
+      edges_v.reserve(std::ranges::size(edges));
+    std::ranges::copy(edges, std::back_inserter(edges_v));
+    std::ranges::sort(edges_v);
+
+    std::vector<EdgeT> remaining;
+    if (edges_v.size() < g.edges().size())
+      // probably everything in edges_v is already in g.edges()
+      // (i.e. its a subset of g.edges())
+      remaining.reserve(g.edges().size() - edges_v.size());
+
+    std::ranges::set_difference(
+        g.edges(), edges_v, std::back_inserter(remaining));
+    return network<EdgeT>(remaining, g.vertices());
+  }
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  without_edges(
+      const network<EdgeT>& g,
+      const std::initializer_list<EdgeT>& edges) {
+    return without_edges(g, std::vector<EdgeT>(edges));
+  }
+
+
+  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  requires std::convertible_to<
+      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+  network<EdgeT>
+  without_vertices(const network<EdgeT>& g, const VertRange& verts) {
+    component<typename EdgeT::VertexType> verts_comp(verts);
+    auto edges_view = g.edges() | std::views::filter(
+          [&verts_comp](const EdgeT& e) {
+            for (auto& v: e.incident_verts())
+              if (verts_comp.contains(v))
+                return false;
+            return true;
+          });
+    auto graph_verts = g.vertices();
+    auto verts_view = graph_verts | std::views::filter(
+          [&verts_comp](const typename EdgeT::VertexType& v) {
+            return !verts_comp.contains(v);
+          });
+    return network<EdgeT>(edges_view, verts_view);
+  }
+
+  template <network_edge EdgeT>
+  network<EdgeT>
+  without_vertices(
+      const network<EdgeT>& g,
+      const std::initializer_list<typename EdgeT::VertexType>& verts) {
+    return without_vertices(g, component<typename EdgeT::VertexType>(verts));
+  }
+
   template <static_directed_edge EdgeT>
   std::optional<std::vector<typename EdgeT::VertexType>>
   try_topological_order(const network<EdgeT>& dir) {
