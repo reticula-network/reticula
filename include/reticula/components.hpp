@@ -44,13 +44,13 @@ namespace reticula {
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
     explicit component(
-        const Range& verts,
+        Range&& verts,
         std::size_t size_hint = 0);
 
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-    void insert(const Range& verts);
+    void insert(Range&& verts);
 
     void insert(const VertexType& v);
 
@@ -98,12 +98,12 @@ namespace reticula {
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertexType>
     explicit component_sketch(
-        const Range& verts,
+        Range&& verts,
         std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-    void insert(const Range& verts);
+    void insert(Range&& verts);
 
     void insert(const VertexType& v);
 

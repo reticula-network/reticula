@@ -15,7 +15,7 @@ namespace reticula {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component<VertT>::component(
-      const Range& verts,
+      Range&& verts,
       std::size_t size_hint) {
     if (size_hint == 0) {
       if constexpr (std::ranges::sized_range<Range>)
@@ -24,7 +24,7 @@ namespace reticula {
       _verts.reserve(size_hint);
     }
 
-    for (auto& v: verts)
+    for (auto&& v: verts)
       _verts.insert(v);
   }
 
@@ -38,8 +38,8 @@ namespace reticula {
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-  void component<VertT>::insert(const Range& verts) {
-    for (auto& v: verts)
+  void component<VertT>::insert(Range&& verts) {
+    for (auto&& v: verts)
       _verts.insert(v);
   }
 
@@ -89,9 +89,9 @@ namespace reticula {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component_sketch<VertT>::component_sketch(
-      const Range& verts, std::size_t seed) :
+      Range&& verts, std::size_t seed) :
     _verts(true, static_cast<uint32_t>(seed)) {
-    for (auto& v: verts)
+    for (auto&& v: verts)
       _verts.insert(v);
   }
 
@@ -103,7 +103,7 @@ namespace reticula {
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
-  void component_sketch<VertT>::insert(const Range& verts) {
+  void component_sketch<VertT>::insert(Range&& verts) {
     for (auto& v: verts)
       _verts.insert(v);
   }
