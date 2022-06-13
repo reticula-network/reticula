@@ -6,6 +6,7 @@
 #include <vector>
 #include <istream>
 #include <ostream>
+#include <iterator>
 
 #include "type_traits.hpp"
 
@@ -139,6 +140,22 @@ namespace reticula {
       std::tuple_element_t<0, std::ranges::range_value_t<Range>>> &&
     std::is_arithmetic_v<
       std::tuple_element_t<0, std::ranges::range_value_t<Range>>>;
+
+  /**
+    Mappings are ways to provide algorithms with extra information for each
+    vertex or edge. `std::map` and `std::unordered_map` both satisfy this
+    concept.
+  */
+  template <typename T, typename KeyT, typename ValueT>
+  concept mapping =
+    std::indirectly_readable<typename T::iterator> &&
+    requires(T map) {
+      { map.end() } -> std::sentinel_for<typename T::iterator>;
+    } && requires(T map, KeyT k) {
+      { map.contains(k) } -> std::convertible_to<bool>;
+      { map.find(k) } -> std::convertible_to<typename T::iterator>;
+      { map.at(k) } -> std::convertible_to<ValueT>;
+    };  // NOLINT(readability/braces)
 }  // namespace reticula
 
 #endif  // INCLUDE_RETICULA_NETWORK_CONCEPTS_HPP_
