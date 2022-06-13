@@ -283,7 +283,7 @@ namespace reticula {
   network<EdgeT>
   vertex_induced_subgraph(
       const network<EdgeT>& net,
-      const Range& verts) {
+      Range&& verts) {
     component<typename EdgeT::VertexType> verts_comp(verts);
 
     std::vector<EdgeT> es;
@@ -318,7 +318,7 @@ namespace reticula {
   network<EdgeT>
   edge_induced_subgraph(
       const network<EdgeT>& net,
-      const Range& edges) {
+      Range&& edges) {
     component<EdgeT> edge_comp(edges);
 
     std::vector<EdgeT> es;
@@ -350,7 +350,7 @@ namespace reticula {
   template <network_edge EdgeT, std::ranges::input_range EdgeRange>
   requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
-  with_edges(const network<EdgeT>& g, const EdgeRange& edges) {
+  with_edges(const network<EdgeT>& g, EdgeRange&& edges) {
     return graph_union(g, network<EdgeT>(edges));
   }
 
@@ -366,7 +366,7 @@ namespace reticula {
   requires std::convertible_to<
       std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
-  with_vertices(const network<EdgeT>& g, const VertRange& verts) {
+  with_vertices(const network<EdgeT>& g, VertRange&& verts) {
     return graph_union(g, network<EdgeT>(std::vector<EdgeT>{}, verts));
   }
 
@@ -382,7 +382,7 @@ namespace reticula {
   template <network_edge EdgeT, std::ranges::input_range EdgeRange>
   requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
-  without_edges(const network<EdgeT>& g, const EdgeRange& edges) {
+  without_edges(const network<EdgeT>& g, EdgeRange&& edges) {
     std::vector<EdgeT> edges_v;
     if constexpr (std::ranges::sized_range<EdgeRange>)
       edges_v.reserve(std::ranges::size(edges));
@@ -413,7 +413,7 @@ namespace reticula {
   requires std::convertible_to<
       std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
-  without_vertices(const network<EdgeT>& g, const VertRange& verts) {
+  without_vertices(const network<EdgeT>& g, VertRange&& verts) {
     component<typename EdgeT::VertexType> verts_comp(verts);
     auto edges_view = g.edges() | std::views::filter(
           [&verts_comp](const EdgeT& e) {
@@ -437,6 +437,112 @@ namespace reticula {
       const std::initializer_list<typename EdgeT::VertexType>& verts) {
     return without_vertices(g, component<typename EdgeT::VertexType>(verts));
   }
+
+
+
+  template <
+    network_edge EdgeT,
+    std::invocable<const EdgeT&> ProbFun,
+    std::uniform_random_bit_generator Gen>
+  requires std::convertible_to<
+    std::invoke_result_t<ProbFun, const EdgeT&>, double>
+  network<EdgeT>
+  occupy_edges(
+      const network<EdgeT>& g,
+      ProbFun&& occupation_prob,
+      Gen& gen) {
+    auto edges = g.edges() | std::views::filter(
+          [&occupation_prob, &gen](const EdgeT& e) {
+            return std::bernoulli_distribution{1.0-occupation_prob(e)}(gen);
+        });
+    return without_edges(g, edges);
+  }
+
+  template <
+    network_edge EdgeT,
+    mapping<EdgeT, double> ProbMapT,
+    std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  occupy_edges(
+      const network<EdgeT>& g,
+      const ProbMapT& prob_map,
+      Gen& gen,
+      double default_prob) {
+    return occupy_edges(g,
+        [&prob_map, default_prob](const EdgeT& e) {
+          auto it = prob_map.find(e);
+          if (it == prob_map.end())
+            return default_prob;
+          else
+            return it->second;
+        }, gen);
+  }
+
+  template <network_edge EdgeT, std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  uniformly_occupy_edges(
+      const network<EdgeT>& g,
+      double occupation_prob,
+      Gen& gen) {
+    return occupy_edges(g,
+        [occupation_prob](const EdgeT&) {
+            return occupation_prob;
+        }, gen);
+  }
+
+
+  template <
+    network_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> ProbFun,
+    std::uniform_random_bit_generator Gen>
+  requires std::convertible_to<
+    std::invoke_result_t<ProbFun, const typename EdgeT::VertexType&>, double>
+  network<EdgeT>
+  occupy_vertices(
+      const network<EdgeT>& g,
+      ProbFun&& occupation_prob,
+      Gen& gen) {
+    auto graph_verts = g.vertices();
+    auto verts = graph_verts | std::views::filter(
+          [&occupation_prob, &gen](const typename EdgeT::VertexType& v) {
+            return std::bernoulli_distribution{1.0-occupation_prob(v)}(gen);
+        });
+    return without_vertices(g, verts);
+  }
+
+
+  template <
+    network_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> ProbMapT,
+    std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  occupy_vertices(
+      const network<EdgeT>& g,
+      const ProbMapT& prob_map,
+      Gen& gen,
+      double default_prob) {
+    return occupy_vertices(g,
+        [&prob_map, default_prob](const typename EdgeT::VertexType& v) {
+          auto it = prob_map.find(v);
+          if (it == prob_map.end())
+            return default_prob;
+          else
+            return it->second;
+        }, gen);
+  }
+
+  template <network_edge EdgeT, std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  uniformly_occupy_vertices(
+      const network<EdgeT>& g,
+      double default_prob,
+      Gen& gen) {
+    return occupy_vertices(g,
+        [default_prob](const typename EdgeT::VertexType&) {
+            return default_prob;
+        }, gen);
+  }
+
 
   template <static_directed_edge EdgeT>
   std::optional<std::vector<typename EdgeT::VertexType>>
@@ -737,7 +843,7 @@ namespace reticula {
 
   template <std::ranges::forward_range Range>
   requires degree_range<Range>
-  bool is_graphic(const Range& sequence) {
+  bool is_graphic(Range&& sequence) {
     std::size_t num_degrees = 0;
     std::size_t max_deg = std::numeric_limits<std::size_t>::min();
     std::size_t min_deg = std::numeric_limits<std::size_t>::max();
@@ -800,7 +906,7 @@ namespace reticula {
   template <std::ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
   bool is_digraphic(
-      const PairRange& in_out_sequence) {
+      PairRange&& in_out_sequence) {
     using InType = std::tuple_element_t<0,
           std::ranges::range_value_t<PairRange>>;
     using OutType = std::tuple_element_t<1,

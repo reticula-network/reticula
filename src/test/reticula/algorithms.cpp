@@ -9,6 +9,7 @@ using Catch::Matchers::Equals;
 #include <reticula/temporal_edges.hpp>
 #include <reticula/networks.hpp>
 #include <reticula/algorithms.hpp>
+#include <reticula/generators.hpp>
 
 TEST_CASE("out component", "[reticula::out_component]") {
   SECTION("gives correct answer on a cyclic graph") {
@@ -1017,6 +1018,83 @@ TEST_CASE("without vertices", "[reticula::without_vertices]") {
         std::vector<typename EdgeType::VertexType>{1, 2, 7}));
   REQUIRE_THAT(res.edges(), UnorderedEquals(
         std::vector<EdgeType>{{{7, 1}, {2}, 5}, {{2}, {1, 7}, 2}}));
+}
+
+TEST_CASE("mapping", "[reticula::mapping]") {
+  STATIC_REQUIRE(reticula::mapping<std::unordered_map<int, double>,
+      int, double>);
+  STATIC_REQUIRE(reticula::mapping<std::map<int, double>,
+      int, double>);
+}
+
+TEST_CASE("occupy edges", "[reticula::occupy_edges]") {
+  using EdgeType = reticula::directed_temporal_hyperedge<int, int>;
+  std::mt19937 gen(42);
+  std::unordered_map<EdgeType, double, reticula::hash<EdgeType>> probs = {
+    {{{1}, {2, 4}, 1}, 0.0}, {{{2}, {1, 7}, 2}, 1.0}};
+  reticula::network<EdgeType> n1(
+    {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
+  auto g1 = reticula::occupy_edges(n1, [&probs](const EdgeType& e) {
+      return probs.contains(e) ? probs.at(e) : 0.0;
+    }, gen);
+  auto g2 = reticula::occupy_edges(n1, probs, gen, 0.0);
+  REQUIRE_THAT(n1.vertices(), UnorderedEquals(g1.vertices()));
+  REQUIRE_THAT(n1.vertices(), UnorderedEquals(g2.vertices()));
+
+  REQUIRE_THAT(g1.edges(),
+      UnorderedEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
+  REQUIRE_THAT(g2.edges(),
+      UnorderedEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
+}
+
+TEST_CASE("uniformly occupy edges", "[reticula::uniformly_occupy_edges]") {
+  std::size_t n = 512;
+  double p = 0.5;
+  auto g = reticula::complete_graph(n);
+  std::mt19937_64 gen(42);
+  auto g2 = reticula::uniformly_occupy_edges(g, p, gen);
+  double mean = static_cast<double>(n)*static_cast<double>((n-1)/2)*p;
+  double sigma = std::sqrt(mean);
+  REQUIRE(g2.vertices().size() == n);
+  REQUIRE(static_cast<double>(g2.edges().size()) > mean - 3*sigma);
+  REQUIRE(static_cast<double>(g2.edges().size()) < mean + 3*sigma);
+}
+
+TEST_CASE("occupy vertices", "[reticula::occupy_vertices]") {
+  using EdgeType = reticula::directed_temporal_hyperedge<int, int>;
+  std::mt19937 gen(42);
+  std::unordered_map<int, double> probs = {
+    {1, 1.0}, {2, 1.0}, {7, 1.0}};
+  reticula::network<EdgeType> n1(
+    {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
+  auto g1 = reticula::occupy_vertices(n1, [&probs](int v) {
+      return probs.contains(v) ? probs.at(v) : 0.0;
+    }, gen);
+  auto g2 = reticula::occupy_vertices(n1, probs, gen, 0.0);
+  REQUIRE_THAT(g1.vertices(), UnorderedEquals(std::vector<int>{1, 2, 7}));
+  REQUIRE_THAT(g2.vertices(), UnorderedEquals(std::vector<int>{1, 2, 7}));
+
+  REQUIRE_THAT(g1.edges(),
+      UnorderedEquals(std::vector<EdgeType>{
+        {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
+  REQUIRE_THAT(g2.edges(),
+      UnorderedEquals(std::vector<EdgeType>{
+        {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
+}
+
+TEST_CASE("uniformly occupy vertices",
+    "[reticula::uniformly_occupy_vertices]") {
+  std::size_t n = 512;
+  double p = 0.5;
+  auto g = reticula::complete_graph(n);
+  std::mt19937_64 gen(42);
+  auto g2 = reticula::uniformly_occupy_vertices(g, p, gen);
+  double mean = static_cast<double>(n)*p;
+  double sigma = std::sqrt(mean);
+  REQUIRE(static_cast<double>(g2.vertices().size()) > mean - 3*sigma);
+  REQUIRE(static_cast<double>(g2.vertices().size()) < mean + 3*sigma);
+  REQUIRE(g2.edges().size() ==
+      (g2.vertices().size()*(g2.vertices().size()-1))/2);
 }
 
 TEST_CASE("network density", "[reticula::density]") {

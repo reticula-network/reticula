@@ -37,7 +37,7 @@ namespace reticula {
   network<EdgeT>
   vertex_induced_subgraph(
       const network<EdgeT>& net,
-      const Range& verts);
+      Range&& verts);
 
   template <network_edge EdgeT>
   network<EdgeT>
@@ -59,7 +59,7 @@ namespace reticula {
   network<EdgeT>
   edge_induced_subgraph(
       const network<EdgeT>& net,
-      const Range& edges);
+      Range&& edges);
 
   template <network_edge EdgeT>
   network<EdgeT>
@@ -74,7 +74,7 @@ namespace reticula {
   template <network_edge EdgeT, std::ranges::input_range EdgeRange>
   requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
-  with_edges(const network<EdgeT>& g, const EdgeRange& edges);
+  with_edges(const network<EdgeT>& g, EdgeRange&& edges);
 
   template <network_edge EdgeT>
   network<EdgeT>
@@ -90,7 +90,7 @@ namespace reticula {
   requires std::convertible_to<
       std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
-  with_vertices(const network<EdgeT>& g, const VertRange& verts);
+  with_vertices(const network<EdgeT>& g, VertRange&& verts);
 
   template <network_edge EdgeT>
   network<EdgeT>
@@ -105,7 +105,7 @@ namespace reticula {
   template <network_edge EdgeT, std::ranges::input_range EdgeRange>
   requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
-  without_edges(const network<EdgeT>& g, const EdgeRange& edges);
+  without_edges(const network<EdgeT>& g, EdgeRange&& edges);
 
   template <network_edge EdgeT>
   network<EdgeT>
@@ -121,13 +121,98 @@ namespace reticula {
   requires std::convertible_to<
       std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
-  without_vertices(const network<EdgeT>& g, const VertRange& verts);
+  without_vertices(const network<EdgeT>& g, VertRange&& verts);
 
   template <network_edge EdgeT>
   network<EdgeT>
   without_vertices(
       const network<EdgeT>& g,
       const std::initializer_list<typename EdgeT::VertexType>& verts);
+
+  /**
+    Randomly occupy edges with each edge's probability of occupation determined
+    by running the function ``occupation_prob`.
+  */
+  template <
+    network_edge EdgeT,
+    std::invocable<const EdgeT&> ProbFun,
+    std::uniform_random_bit_generator Gen>
+  requires std::convertible_to<
+    std::invoke_result_t<ProbFun, const EdgeT&>, double>
+  network<EdgeT>
+  occupy_edges(
+      const network<EdgeT>& g,
+      ProbFun&& occupation_prob,
+      Gen& gen);
+
+  /**
+    Randomly occupy edges with each edge's probability of occupation determined
+    by the (ordered or unordered) map `prob_map`, with missing keys using the
+    value `default_prob`.
+  */
+  template <
+    network_edge EdgeT,
+    mapping<EdgeT, double> ProbMapT,
+    std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  occupy_edges(
+      const network<EdgeT>& g,
+      const ProbMapT& prob_map,
+      Gen& gen,
+      double default_prob = 0.0);
+
+  /**
+    Randomly occupy edges with the uniform probability `occupation_prob`.
+  */
+  template <network_edge EdgeT, std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  uniformly_occupy_edges(
+      const network<EdgeT>& g,
+      double occupation_prob,
+      Gen& gen);
+
+  /**
+    Randomly occupy vertices with each vetex having a probability of occupation
+    determined by running the function ``occupation_prob`.
+  */
+  template <
+    network_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> ProbFun,
+    std::uniform_random_bit_generator Gen>
+  requires std::convertible_to<
+    std::invoke_result_t<ProbFun, const typename EdgeT::VertexType&>, double>
+  network<EdgeT>
+  occupy_vertices(
+      const network<EdgeT>& g,
+      ProbFun&& occupation_prob,
+      Gen& gen);
+
+  /**
+    Randomly occupy vertices with each vertex having a probability of occupation
+    determined by the (ordered or unordered) map `prob_map`, with missing keys
+    using the value `default_prob`.
+  */
+  template <
+    network_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> ProbMapT,
+    std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  occupy_vertices(
+      const network<EdgeT>& g,
+      const ProbMapT& prob_map,
+      Gen& gen,
+      double default_prob = 0.0);
+
+  /**
+    Randomly occupy edges with the uniform probability `occupation_prob`.
+  */
+  template <network_edge EdgeT, std::uniform_random_bit_generator Gen>
+  network<EdgeT>
+  uniformly_occupy_vertices(
+      const network<EdgeT>& g,
+      double occupation_prob,
+      Gen& gen);
+
 
   /**
     Returns the graph union (not the disjoint union) of the two graphs. The
@@ -423,7 +508,7 @@ namespace reticula {
   */
   template <std::ranges::forward_range Range>
   requires degree_range<Range>
-  bool is_graphic(const Range& degree_sequence);
+  bool is_graphic(Range&& degree_sequence);
 
   /**
     Checks if the sequence can be the degree sequence of a valid directed graph,
@@ -438,7 +523,7 @@ namespace reticula {
   */
   template <std::ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
-  bool is_digraphic(const PairRange& in_out_degree_sequence);
+  bool is_digraphic(PairRange&& in_out_degree_sequence);
 
 
   /**
