@@ -22,7 +22,7 @@ namespace reticula {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
-      const Range& events, AdjT adj, std::size_t size_hint) :
+      Range&& events, AdjT adj, std::size_t size_hint) :
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
@@ -33,7 +33,7 @@ namespace reticula {
       _events.reserve(size_hint);
     }
 
-    for (auto& e: events)
+    for (auto&& e: events)
       insert(e);
   }
 
@@ -59,8 +59,8 @@ namespace reticula {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-  void temporal_cluster<EdgeT, AdjT>::insert(const Range& events) {
-    for (auto& e: events)
+  void temporal_cluster<EdgeT, AdjT>::insert(Range&& events) {
+    for (auto&& e: events)
       insert(e);
   }
 
@@ -203,7 +203,7 @@ namespace reticula {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
-      const Range& events, AdjT adj,
+      Range&& events, AdjT adj,
       EdgeT::TimeType temporal_resolution, std::size_t seed) :
       _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
@@ -211,7 +211,7 @@ namespace reticula {
       _events(true, static_cast<uint32_t>(seed)),
       _verts(true, static_cast<uint32_t>(seed)),
       _times(true, static_cast<uint32_t>(seed)) {
-    for (auto& e: events)
+    for (auto&& e: events)
       insert(e);
   }
 
@@ -238,8 +238,8 @@ namespace reticula {
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-  void temporal_cluster_sketch<EdgeT, AdjT>::insert(const Range& events) {
-    for (auto& e: events)
+  void temporal_cluster_sketch<EdgeT, AdjT>::insert(Range&& events) {
+    for (auto&& e: events)
       insert(e);
   }
 

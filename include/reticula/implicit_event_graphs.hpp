@@ -74,7 +74,7 @@ namespace reticula {
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeType>
     implicit_event_graph(
-        const Range& events,
+        Range&& events,
         const AdjT& prob);
 
     /**
@@ -95,8 +95,8 @@ namespace reticula {
       std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeType> &&
       std::convertible_to<std::ranges::range_value_t<VertRange>, VertexType>
     implicit_event_graph(
-        const EdgeRange& events,
-        const VertRange& verts,
+        EdgeRange&& events,
+        VertRange&& verts,
         const AdjT& adj);
 
     /**

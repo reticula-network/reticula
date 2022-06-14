@@ -14,7 +14,7 @@ namespace reticula {
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
-      const Range& events,
+      Range&& events,
       const AdjT& adj) : _temp(events), _adj(adj) {}
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
@@ -26,8 +26,8 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<VertRange>,
       typename EdgeT::VertexType>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
-      const EdgeRange& events,
-      const VertRange& verts,
+      EdgeRange&& events,
+      VertRange&& verts,
       const AdjT& adj) : _temp(events, verts), _adj(adj) {}
 
   template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>

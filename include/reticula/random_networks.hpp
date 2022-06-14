@@ -45,7 +45,7 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   undirected_network<VertT>
   random_degree_sequence_graph(
-      const Range& degree_sequence,
+      Range&& degree_sequence,
       Gen& generator);
 
   template <
@@ -57,7 +57,7 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   std::optional<undirected_network<VertT>>
   try_random_degree_sequence_graph(
-      const Range& degree_sequence,
+      Range&& degree_sequence,
       Gen& generator,
       std::size_t max_tries);
 
@@ -71,7 +71,7 @@ namespace reticula {
     is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
   directed_network<VertT>
   random_directed_degree_sequence_graph(
-      const PairRange& in_out_degree_sequence,
+      PairRange&& in_out_degree_sequence,
       Gen& generator);
 
   template <
@@ -83,7 +83,7 @@ namespace reticula {
     is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
   std::optional<directed_network<VertT>>
   try_random_directed_degree_sequence_graph(
-      const PairRange& in_out_degree_sequence,
+      PairRange&& in_out_degree_sequence,
       Gen& generator,
       std::size_t max_tries);
 
@@ -113,7 +113,7 @@ namespace reticula {
   requires weight_range<Range>
   undirected_network<VertT>
   random_expected_degree_sequence_graph(
-      const Range& degree_sequence,
+      Range&& degree_sequence,
       Gen& generator,
       bool self_loops = false);
 
@@ -151,7 +151,7 @@ namespace reticula {
   requires weight_pair_range<PairRange>
   directed_network<VertT>
   random_directed_expected_degree_sequence_graph(
-      const PairRange& in_out_degree_sequence,
+      PairRange&& in_out_degree_sequence,
       Gen& generator,
       bool self_loops = false);
 

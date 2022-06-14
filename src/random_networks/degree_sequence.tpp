@@ -10,7 +10,7 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   undirected_network<VertT>
   random_degree_sequence_graph(
-      const Range& degree_sequence,
+      Range&& degree_sequence,
       Gen& gen) {
     std::optional<undirected_network<VertT>> maybe_g = std::nullopt;
     while (!maybe_g) maybe_g = try_random_degree_sequence_graph<VertT>(
@@ -27,7 +27,7 @@ namespace reticula {
     std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   std::optional<undirected_network<VertT>>
   try_random_degree_sequence_graph(
-      const Range& degree_sequence,
+      Range&& degree_sequence,
       Gen& gen,
       std::size_t max_tries) {
     if (!is_graphic(degree_sequence))
@@ -163,7 +163,7 @@ namespace reticula {
     is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
   directed_network<VertT>
   random_directed_degree_sequence_graph(
-      const PairRange& in_out_degree_sequence,
+      PairRange&& in_out_degree_sequence,
       Gen& gen) {
     std::optional<directed_network<VertT>> maybe_g = std::nullopt;
     while (!maybe_g) maybe_g = try_random_directed_degree_sequence_graph<VertT>(
@@ -180,7 +180,7 @@ namespace reticula {
     is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
   std::optional<directed_network<VertT>>
   try_random_directed_degree_sequence_graph(
-      const PairRange& in_out_degree_sequence,
+      PairRange&& in_out_degree_sequence,
       Gen& gen,
       std::size_t max_tries) {
     // TODO: pass a lazy zip_view of in_degrees and out_degrees instead of

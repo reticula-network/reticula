@@ -47,12 +47,12 @@ namespace reticula {
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    explicit temporal_cluster(const Range& verts,
+    explicit temporal_cluster(Range&& verts,
         AdjT adj, std::size_t size_hint = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    void insert(const Range& events);
+    void insert(Range&& events);
 
     void insert(const EdgeT& e);
 
@@ -142,12 +142,12 @@ namespace reticula {
 
     template<std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    explicit temporal_cluster_sketch(const Range& verts, AdjT adj,
+    explicit temporal_cluster_sketch(Range&& verts, AdjT adj,
         EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
     template <std::ranges::input_range Range>
     requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
-    void insert(const Range& events);
+    void insert(Range&& events);
 
     void insert(const EdgeT& e);
 

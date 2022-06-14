@@ -6,7 +6,7 @@ namespace reticula {
   requires weight_range<Range>
   undirected_network<VertT>
   random_expected_degree_sequence_graph(
-      const Range& weight_sequence,
+      Range&& weight_sequence,
       Gen& generator,
       bool self_loops) {
     std::vector<std::pair<double, VertT>> weight_node_pairs;
@@ -77,7 +77,7 @@ namespace reticula {
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<PairRange>
   directed_network<VertT> random_directed_expected_degree_sequence_graph(
-      const PairRange& in_out_weight_sequence,
+      PairRange&& in_out_weight_sequence,
       Gen& generator,
       bool self_loops) {
     std::vector<std::pair<double, VertT>>
