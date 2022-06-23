@@ -86,7 +86,7 @@ namespace reticula {
       network sorted by operator<.
      */
     [[nodiscard]]
-    std::vector<VertexType> vertices() const;
+    const std::vector<VertexType>& vertices() const;
 
     /**
       List of unique edges in the network sorted by operator<.
@@ -197,9 +197,19 @@ namespace reticula {
     [[nodiscard]]
     network<EdgeT> union_with(const network<EdgeT>& other) const;
 
+    /**
+      Two networks are equal if their set of vertices and edges are equal.
+    */
+    [[nodiscard]]
+    bool operator==(const network<EdgeT>& other) const;
+
+    [[nodiscard]]
+    bool operator!=(const network<EdgeT>& other) const = default;
+
   private:
     std::vector<EdgeType> _edges_cause;
     std::vector<EdgeType> _edges_effect;
+    std::vector<VertexType> _verts;
     std::unordered_map<
       VertexType, std::vector<EdgeType>,
       hash<VertexType>> _in_edges;

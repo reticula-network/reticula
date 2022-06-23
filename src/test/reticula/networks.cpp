@@ -56,6 +56,15 @@ TEST_CASE("undirected networks",
       REQUIRE(graph.in_degree(3) == 2);
       REQUIRE(graph.degree(3) == 2);
 
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::undirected_network<int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::undirected_network<int>(
+            std::vector<reticula::undirected_edge<int>>{{1, 2}},
+            graph.vertices()));
+      REQUIRE(graph != reticula::undirected_network<int>(
+            graph.edges(), std::vector<int>{15}));
+
       std::vector<reticula::undirected_edge<int>> edges({
           {1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6}});
       std::sort(edges.begin(), edges.end());
@@ -160,6 +169,15 @@ TEST_CASE("undirected hypernetworks",
       REQUIRE(graph.in_degree(3) == 2);
       REQUIRE(graph.degree(3) == 2);
 
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::undirected_hypernetwork<int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::undirected_hypernetwork<int>(
+            std::vector<reticula::undirected_hyperedge<int>>{{1, 2}},
+            graph.vertices()));
+      REQUIRE(graph != reticula::undirected_hypernetwork<int>(
+            graph.edges(), std::vector<int>{15}));
+
       std::vector<reticula::undirected_hyperedge<int>> edges({
           U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3, 7}, U{4, 6}});
       std::sort(edges.begin(), edges.end());
@@ -260,6 +278,15 @@ TEST_CASE("directed networks",
       REQUIRE(graph.out_degree(2) == 1);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 3);
+
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::directed_network<int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::directed_network<int>(
+            std::vector<reticula::directed_edge<int>>{{1, 2}, {2, 3}},
+            graph.vertices()));
+      REQUIRE(graph != reticula::directed_network<int>(
+            graph.edges(), std::vector<int>{15}));
 
       std::vector<reticula::directed_edge<int>> edges(
           {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
@@ -364,6 +391,16 @@ TEST_CASE("directed hypernetworks",
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::directed_hypernetwork<int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::directed_hypernetwork<int>(
+            std::vector<reticula::directed_hyperedge<int>>{
+              {{1}, {2}}, {{2}, {3}}},
+            graph.vertices()));
+      REQUIRE(graph != reticula::directed_hypernetwork<int>(
+            graph.edges(), std::vector<int>{15}));
+
       std::vector<reticula::directed_hyperedge<int>> edges(
           {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3}}, {{3}, {5}}, {{5}, {6}},
           {{5}, {4}}, {{4}, {2}}});
@@ -466,6 +503,15 @@ TEST_CASE("undirected temporal networks",
       REQUIRE(graph.in_degree(2) == 4);
       REQUIRE(graph.degree(2) == 4);
 
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::undirected_temporal_network<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::undirected_temporal_network<int, int>(
+            std::vector<reticula::undirected_temporal_edge<int, int>>{
+              {1, 2, 1}}, graph.vertices()));
+      REQUIRE(graph != reticula::undirected_temporal_network<int, int>(
+            graph.edges(), std::vector<int>{15}));
+
       REQUIRE_THAT(graph.edges(),
           Equals(
             std::vector<reticula::undirected_temporal_edge<int, int>>(
@@ -566,6 +612,15 @@ TEST_CASE("undirected temporal hypernetworks",
       REQUIRE(graph.out_degree(2) == 4);
       REQUIRE(graph.in_degree(2) == 4);
       REQUIRE(graph.degree(2) == 4);
+
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::undirected_temporal_hypernetwork<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::undirected_temporal_hypernetwork<int, int>(
+            std::vector<reticula::undirected_temporal_hyperedge<int, int>>{
+              {{1, 2}, 1}}, graph.vertices()));
+      REQUIRE(graph != reticula::undirected_temporal_hypernetwork<int, int>(
+            graph.edges(), std::vector<int>{15}));
 
       REQUIRE_THAT(graph.edges(),
           Equals(
@@ -671,6 +726,15 @@ TEST_CASE("directed temporal networks",
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
 
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::directed_temporal_network<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::directed_temporal_network<int, int>(
+            std::vector<reticula::directed_temporal_edge<int, int>>{
+              {{1, 2}, 1}}, graph.vertices()));
+      REQUIRE(graph != reticula::directed_temporal_network<int, int>(
+            graph.edges(), std::vector<int>{15}));
+
       std::vector<reticula::directed_temporal_edge<int, int>> edges(
           {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}});
       std::sort(edges.begin(), edges.end());
@@ -771,6 +835,15 @@ TEST_CASE("directed temporal hypernetworks",
       REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
+
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::directed_temporal_hypernetwork<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::directed_temporal_hypernetwork<int, int>(
+            std::vector<reticula::directed_temporal_hyperedge<int, int>>{
+              {{1}, {2}, 1}}, graph.vertices()));
+      REQUIRE(graph != reticula::directed_temporal_hypernetwork<int, int>(
+            graph.edges(), std::vector<int>{15}));
 
       std::vector<reticula::directed_temporal_hyperedge<int, int>> edges(
           {{{1}, {2}, 1}, {{2}, {1}, 2}, {{1}, {2}, 5}, {{2}, {3}, 6},
@@ -878,6 +951,15 @@ TEST_CASE("directed delayed temporal networks",
       REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
+
+      REQUIRE(graph == graph);
+      REQUIRE(graph == reticula::directed_delayed_temporal_network<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph != reticula::directed_delayed_temporal_network<int, int>(
+            std::vector<reticula::directed_delayed_temporal_edge<int, int>>{
+              {1, 2, 1, 9}}, graph.vertices()));
+      REQUIRE(graph != reticula::directed_delayed_temporal_network<int, int>(
+            graph.edges(), std::vector<int>{15}));
 
       std::vector<reticula::directed_delayed_temporal_edge<int, int>> edges(
           {{1, 2, 1, 9}, {2, 1, 2, 3}, {1, 2, 5, 8}, {2, 3, 6, 7},
@@ -991,6 +1073,19 @@ TEST_CASE("directed delayed temporal hypernetworks",
       REQUIRE(graph.out_degree(2) == 2);
       REQUIRE(graph.in_degree(2) == 2);
       REQUIRE(graph.degree(2) == 4);
+
+      REQUIRE(graph == graph);
+      REQUIRE(graph ==
+          reticula::directed_delayed_temporal_hypernetwork<int, int>(
+            graph.edges(), graph.vertices()));
+      REQUIRE(graph !=
+          reticula::directed_delayed_temporal_hypernetwork<int, int>(
+            std::vector<
+              reticula::directed_delayed_temporal_hyperedge<int, int>>{
+                {{1}, {2}, 1, 9}}, graph.vertices()));
+      REQUIRE(graph !=
+          reticula::directed_delayed_temporal_hypernetwork<int, int>(
+            graph.edges(), std::vector<int>{15}));
 
       std::vector<
         reticula::directed_delayed_temporal_hyperedge<int, int>> edges(

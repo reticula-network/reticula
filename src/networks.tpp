@@ -1,4 +1,5 @@
-#include <set>
+#include <unordered_set>
+#include <iostream>
 
 namespace reticula {
   template <network_edge EdgeT>
@@ -44,20 +45,29 @@ namespace reticula {
             [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
     }
 
+    std::unordered_set<typename EdgeT::VertexType,
+      hash<typename EdgeT::VertexType>> verts_set;
     for (const auto& e: _edges_cause) {
-      for (auto&& v: e.mutator_verts())
+      for (auto&& v: e.mutator_verts()) {
         _out_edges[v].push_back(e);
-      if (!instantaneous_undirected)
-        for (auto&& v: e.mutated_verts())
+        verts_set.insert(v);
+      }
+
+      if (!instantaneous_undirected) {
+        for (auto&& v: e.mutated_verts()) {
           _in_edges[v].push_back(e);
+          verts_set.insert(v);
+        }
+      }
     }
 
     // adding the supplemental set of verts
-    for (const auto& v: verts) {
-      _out_edges.try_emplace(v);
-      if (!instantaneous_undirected)
-        _in_edges.try_emplace(v);
-    }
+    for (const auto& v: verts)
+      verts_set.insert(v);
+
+    _verts = std::vector<typename EdgeT::VertexType>(
+        verts_set.begin(), verts_set.end());
+    std::ranges::sort(_verts);
 
     if (!instantaneous_undirected) {
       for (auto&& [v, e_list]: _in_edges) {
@@ -233,15 +243,9 @@ namespace reticula {
   }
 
   template <network_edge EdgeT>
-  std::vector<typename EdgeT::VertexType>
+  const std::vector<typename EdgeT::VertexType>&
   network<EdgeT>::vertices() const {
-    std::set<network<EdgeT>::VertexType> verts;
-    if (!instantaneous_undirected)
-      for (const auto &p: _in_edges)
-        verts.insert(p.first);
-    for (const auto &p: _out_edges)
-      verts.insert(p.first);
-    return std::vector<typename EdgeT::VertexType>(verts.begin(), verts.end());
+    return _verts;
   }
 
   template <network_edge EdgeT>
@@ -300,6 +304,22 @@ namespace reticula {
     auto to_erase_cause = std::ranges::unique(res._edges_cause);
     res._edges_cause.erase(to_erase_cause.begin(), to_erase_cause.end());
 
+    auto mid_verts = res._verts.insert(
+        res._verts.end(),
+        other._verts.begin(),
+        other._verts.end());
+    std::inplace_merge(
+        res._verts.begin(),
+        mid_verts,
+        res._verts.end());
+    auto to_erase_verts = std::ranges::unique(res._verts);
+    res._verts.erase(to_erase_verts.begin(), to_erase_verts.end());
+
     return res;
+  }
+
+  template <network_edge EdgeT>
+  bool network<EdgeT>::operator==(const network<EdgeT>& other) const {
+    return _edges_cause == other._edges_cause && _verts == other._verts;
   }
 }  // namespace reticula
