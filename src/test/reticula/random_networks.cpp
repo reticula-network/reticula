@@ -368,6 +368,157 @@ TEST_CASE("random directed expected degree sequence graph",
   }
 }
 
+TEST_CASE("random expected degree sequence hypergraph",
+    "[reticula::random_expected_degree_sequence_hypergraph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = reticula::random_expected_degree_sequence_hypergraph<int>(
+        std::vector<double>(n, 0.0), std::vector<double>(), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = reticula::random_expected_degree_sequence_hypergraph<int>(
+        std::vector<double>(), std::vector<double>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("node and edge degree probability") {
+    std::size_t ens = 1000;
+    std::size_t n = 200;
+
+    std::unordered_map<int, std::size_t> node_degrees;
+    std::unordered_map<std::size_t, std::size_t> edge_degrees;
+    std::vector<double> weights;
+    for (std::size_t i{}; i < n; i++)
+      weights.push_back(4.0+static_cast<double>(i%25));
+
+    for (std::size_t i{}; i < ens; i++) {
+      auto g = reticula::random_expected_degree_sequence_hypergraph<int>(
+          weights, weights, gen);
+
+      for (auto&& v: g.vertices())
+        node_degrees[v] += g.degree(v);
+
+      for (auto&& e: g.edges())
+        edge_degrees[e.incident_verts().size()]++;
+    }
+
+    REQUIRE(std::ranges::all_of(node_degrees,
+          [n, ens, &weights](const std::pair<int, std::size_t>& kv) {
+            auto& [v, d] = kv;
+            double mean = static_cast<double>(ens)*weights[v];
+            double sigma = std::sqrt(mean);
+
+            return static_cast<double>(d) >= mean - 3*sigma &&
+                    static_cast<double>(d) <= mean + 3*sigma;
+          }));
+
+
+    std::unordered_map<std::size_t, std::size_t> edge_degree_means;
+    for (auto&& w: weights)
+      edge_degree_means[static_cast<std::size_t>(w)] += ens;
+    std::size_t max_d = std::max(
+        std::ranges::max(
+          edge_degree_means | std::views::transform([](
+              const auto& kv){ return kv.first; })),
+        std::ranges::max(
+          edge_degrees | std::views::transform([](
+              const auto& kv){ return kv.first; })));
+
+    double sum_theo = 0.0, sum_exp = 0.0;
+    for (std::size_t i {}; i <= max_d; i++) {
+      sum_theo += static_cast<double>(edge_degree_means[i]);
+      sum_exp += static_cast<double>(edge_degrees[i]);
+    }
+
+    double curr_theo = 0.0, curr_exp = 0.0;
+    double max_diff = 0.0;
+    for (std::size_t i {}; i <= max_d; i++) {
+      curr_theo += static_cast<double>(edge_degree_means[i]);
+      curr_exp += static_cast<double>(edge_degrees[i]);
+      max_diff = std::max(max_diff,
+          curr_theo/sum_theo - curr_exp/sum_exp);
+    }
+    REQUIRE(max_diff < 0.1);  // TODO: do a proper Kolmogorov-Smirnov test
+  }
+}
+
+TEST_CASE("random directed expected degree sequence hypergraph",
+    "[reticula::random_directed_expected_degree_sequence_hypergraph]") {
+  std::mt19937_64 gen(42);
+
+  SECTION("deals well with empty or zero weights") {
+    std::size_t n = 20;
+
+    auto g1 = reticula::
+            random_directed_expected_degree_sequence_hypergraph<int>(
+         std::vector<std::pair<double, double>>(n, {0.0, 0.0}),
+        std::vector<std::pair<double, double>>(), gen);
+
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == n);
+
+    auto g2 = reticula::
+            random_directed_expected_degree_sequence_hypergraph<int>(
+        std::vector<std::pair<double, double>>(),
+        std::vector<std::pair<double, double>>(), gen);
+
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("edge existance probability") {
+    std::size_t ens = 4000;
+    std::size_t n = 100;
+
+    std::vector<std::pair<double, double>> weights;
+    weights.reserve(n);
+    for (std::size_t i{}; i < n; i++)
+      weights.emplace_back(
+          4.0+static_cast<double>(i%25),
+          4.0+static_cast<double>(24 - (i%25)));
+
+    std::unordered_map<int, std::pair<std::size_t, std::size_t>> node_degrees;
+
+    for (std::size_t i{}; i < ens; i++) {
+      auto g = reticula::
+            random_directed_expected_degree_sequence_hypergraph<int>(
+          weights, weights, gen);
+
+      for (auto&& v: g.vertices()) {
+        node_degrees[v].first += g.in_degree(v);
+        node_degrees[v].second += g.out_degree(v);
+      }
+    }
+
+    REQUIRE(std::ranges::all_of(node_degrees,
+          [n, ens, &weights](
+              const std::pair<int, std::pair<std::size_t, std::size_t>>& kv) {
+            auto& [v, ds] = kv;
+            auto& [in_d, out_d] = ds;
+
+            double mean_in = static_cast<double>(ens)*weights[v].first;
+            double sigma_in = std::sqrt(mean_in);
+
+            double mean_out = static_cast<double>(ens)*weights[v].second;
+            double sigma_out = std::sqrt(mean_out);
+
+            return static_cast<double>(in_d) >= mean_in - 3*sigma_in &&
+                    static_cast<double>(in_d) <= mean_in + 3*sigma_in &&
+                    static_cast<double>(out_d) >= mean_out - 3*sigma_out &&
+                    static_cast<double>(out_d) <= mean_out + 3*sigma_out;
+          }));
+
+    // TODO: do a proper Kolmogorov-Smirnov test on edge size distribution
+  }
+}
+
 TEST_CASE("random fully-mixed temporal network",
     "[reticula::random_fully_mixed_temporal_network]") {
   std::mt19937_64 gen(42);

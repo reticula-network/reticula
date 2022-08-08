@@ -113,7 +113,7 @@ namespace reticula {
   requires weight_range<Range>
   undirected_network<VertT>
   random_expected_degree_sequence_graph(
-      Range&& degree_sequence,
+      Range&& weight_sequence,
       Gen& generator,
       bool self_loops = false);
 
@@ -151,9 +151,35 @@ namespace reticula {
   requires weight_pair_range<PairRange>
   directed_network<VertT>
   random_directed_expected_degree_sequence_graph(
-      PairRange&& in_out_degree_sequence,
+      PairRange&& in_out_weight_sequence,
       Gen& generator,
       bool self_loops = false);
+
+
+  template <
+    integer_vertex VertT,
+    std::ranges::input_range VertRange,
+    std::ranges::input_range EdgeRange,
+    std::uniform_random_bit_generator Gen>
+  requires weight_range<VertRange> && weight_range<EdgeRange>
+  undirected_hypernetwork<VertT>
+  random_expected_degree_sequence_hypergraph(
+      VertRange&& vertex_weight_sequence,
+      EdgeRange&& edge_weight_sequence,
+      Gen& generator);
+
+  template <
+    integer_vertex VertT,
+    std::ranges::input_range VertPairRange,
+    std::ranges::input_range EdgePairRange,
+    std::uniform_random_bit_generator Gen>
+  requires weight_pair_range<VertPairRange> &&
+    weight_pair_range<EdgePairRange>
+  directed_hypernetwork<VertT>
+  random_directed_expected_degree_sequence_hypergraph(
+      VertPairRange&& vertex_in_out_weight_sequence,
+      EdgePairRange&& edge_in_out_weight_sequence,
+      Gen& generator);
 
 
   /**
