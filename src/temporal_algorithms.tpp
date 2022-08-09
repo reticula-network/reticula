@@ -86,6 +86,9 @@ namespace reticula {
   template <temporal_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   time_window(const network<EdgeT>& temp) {
+    if (temp.edges_cause().empty())
+      throw std::invalid_argument(
+          "time window of a temporal network with no events is undefined.");
     return {
       temp.edges_cause().front().cause_time(),
       temp.edges_effect().back().effect_time()};
@@ -94,6 +97,9 @@ namespace reticula {
   template <temporal_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   cause_time_window(const network<EdgeT>& temp) {
+    if (temp.edges_cause().empty())
+      throw std::invalid_argument(
+          "time window of a temporal network with no events is undefined.");
     return {
       temp.edges_cause().front().cause_time(),
       temp.edges_cause().back().cause_time()};
@@ -102,6 +108,9 @@ namespace reticula {
   template <temporal_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   effect_time_window(const network<EdgeT>& temp) {
+    if (temp.edges_effect().empty())
+      throw std::invalid_argument(
+          "time window of a temporal network with no events is undefined.");
     return {
       temp.edges_effect().front().effect_time(),
       temp.edges_effect().back().effect_time()};

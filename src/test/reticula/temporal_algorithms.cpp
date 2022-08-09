@@ -20,6 +20,14 @@ TEST_CASE("time_window",
   REQUIRE(reticula::cause_time_window(network) == std::make_pair(1, 8));
   REQUIRE(reticula::effect_time_window(network) == std::make_pair(3, 9));
   REQUIRE(reticula::time_window(network) == std::make_pair(1, 9));
+
+  reticula::network<EdgeType> empty_network;
+  REQUIRE_THROWS_AS(reticula::cause_time_window(empty_network),
+      std::invalid_argument);
+  REQUIRE_THROWS_AS(reticula::effect_time_window(empty_network),
+      std::invalid_argument);
+  REQUIRE_THROWS_AS(reticula::time_window(empty_network),
+      std::invalid_argument);
 }
 
 TEST_CASE("event graph", "[reticula::event_graph]") {
