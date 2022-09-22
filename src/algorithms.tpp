@@ -7,6 +7,7 @@
 #include <ds/disjoint_set.hpp>
 
 #include "../include/reticula/utils.hpp"
+#include "../include/reticula/stats.hpp"
 
 namespace reticula {
   namespace detail {
@@ -1040,5 +1041,142 @@ namespace reticula {
             return true;
         }, true, false, std::size_t{});
     return lengths;
+  }
+
+  template <
+    static_undirected_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun>
+  requires std::convertible_to<
+      std::invoke_result_t<AttrFun, const typename EdgeT::VertexType&>, double>
+  double attribute_assortativity(
+      const network<EdgeT>& net, AttrFun&& attr_fun){
+    std::vector<std::pair<double, double>> f;
+    f.reserve(net.edges().size());
+    for (auto& e: net.edges())
+      for (auto& i: e.mutator_verts())
+        for (auto& j: e.mutated_verts())
+          if (i != j)
+            f.emplace_back(attr_fun(i), attr_fun(j));
+
+    return pearson_correlation_coefficient(f);
+  }
+
+
+  template <
+    static_undirected_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> MapT>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      const MapT& attribute_map,
+      double default_value) {
+    return attribute_assortativity(net,
+        [&net, &attribute_map, default_value](
+          const typename EdgeT::VertexType& v) -> double {
+            auto it = attribute_map.find(v);
+            if (it == attribute_map.end())
+              return default_value;
+            else
+              return it->second;
+        });
+  }
+
+
+  template <static_undirected_edge EdgeT>
+  double degree_assortativity(const network<EdgeT>& net) {
+    return attribute_assortativity(net,
+        [&net](const typename EdgeT::VertexType& v) { return net.degree(v); });
+  }
+
+  template <
+    static_directed_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun1,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun2>
+  requires
+    std::convertible_to<
+      std::invoke_result_t<
+        AttrFun1, const typename EdgeT::VertexType&>, double> &&
+    std::convertible_to<
+      std::invoke_result_t<
+        AttrFun2, const typename EdgeT::VertexType&>, double>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      AttrFun1&& mutator_attr_fun,
+      AttrFun2&& mutated_attr_fun) {
+    std::vector<std::pair<double, double>> f;
+    f.reserve(net.edges().size());
+    for (auto& e: net.edges())
+      for (auto& i: e.mutator_verts())
+        for (auto& j: e.mutated_verts())
+          f.emplace_back(mutator_attr_fun(i), mutated_attr_fun(j));
+
+    return pearson_correlation_coefficient(f);
+  }
+
+  template <
+    static_directed_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> MapT1,
+    mapping<typename EdgeT::VertexType, double> MapT2>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      const MapT1& mutator_attribute_map,
+      const MapT2& mutated_attribute_map,
+      double mutator_default_value,
+      double mutated_default_value) {
+    return attribute_assortativity(net,
+        [&net, &mutator_attribute_map, mutator_default_value](
+          const typename EdgeT::VertexType& v) -> double {
+            auto it = mutator_attribute_map.find(v);
+            if (it == mutator_attribute_map.end())
+              return mutator_default_value;
+            else
+              return it->second;
+        }, [&net, &mutated_attribute_map, mutated_default_value](
+          const typename EdgeT::VertexType& v) -> double {
+            auto it = mutated_attribute_map.find(v);
+            if (it == mutated_attribute_map.end())
+              return mutated_default_value;
+            else
+              return it->second;
+        });
+  }
+
+  template <static_directed_edge EdgeT>
+  double in_in_degree_assortativity(const network<EdgeT>& net) {
+    return attribute_assortativity(net,
+        [&net](const typename EdgeT::VertexType& v) {
+          return net.in_degree(v);
+        }, [&net](const typename EdgeT::VertexType& v) {
+          return net.in_degree(v);
+        });
+  }
+
+  template <static_directed_edge EdgeT>
+  double in_out_degree_assortativity(const network<EdgeT>& net) {
+    return attribute_assortativity(net,
+        [&net](const typename EdgeT::VertexType& v) {
+          return net.in_degree(v);
+        }, [&net](const typename EdgeT::VertexType& v) {
+          return net.out_degree(v);
+        });
+  }
+
+  template <static_directed_edge EdgeT>
+  double out_in_degree_assortativity(const network<EdgeT>& net) {
+    return attribute_assortativity(net,
+        [&net](const typename EdgeT::VertexType& v) {
+          return net.out_degree(v);
+        }, [&net](const typename EdgeT::VertexType& v) {
+          return net.in_degree(v);
+        });
+  }
+
+  template <static_directed_edge EdgeT>
+  double out_out_degree_assortativity(const network<EdgeT>& net) {
+    return attribute_assortativity(net,
+        [&net](const typename EdgeT::VertexType& v) {
+          return net.out_degree(v);
+        }, [&net](const typename EdgeT::VertexType& v) {
+          return net.out_degree(v);
+        });
   }
 }  // namespace reticula

@@ -565,7 +565,100 @@ namespace reticula {
   shortest_path_lengths_to(
           const network<EdgeT>& net,
           const typename EdgeT::VertexType& vert);
+
+  /**
+    Calculate degree assortativity on undirected networks.
+  */
+  template <static_undirected_edge EdgeT>
+  double degree_assortativity(const network<EdgeT>& net);
+
+  /**
+    Calculate attribute assortativity on undirected networks. Function
+    attribute_fun returns a number given a vertex.
+  */
+  template <
+    static_undirected_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun>
+  requires std::convertible_to<
+      std::invoke_result_t<AttrFun, const typename EdgeT::VertexType&>, double>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      AttrFun&& attribute_fun);
+
+  /**
+    Calculate attribute assortativity on undirected networks. Mapping
+    attribute_mapping contains a number for each vertex.
+  */
+  template <
+    static_undirected_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> MapT>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      const MapT& attribute_map,
+      double default_value);
+
+  /**
+    Calculate attribute assortativity on directed networks. Function
+    mutator_attribute_fun returns a number given each tail vertex, whereas
+    mutated_attribute_fun returns a number given each head vertex.
+  */
+  template <
+    static_directed_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun1,
+    std::invocable<const typename EdgeT::VertexType&> AttrFun2>
+  requires
+    std::convertible_to<
+      std::invoke_result_t<
+        AttrFun1, const typename EdgeT::VertexType&>, double> &&
+    std::convertible_to<
+      std::invoke_result_t<
+        AttrFun2, const typename EdgeT::VertexType&>, double>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      AttrFun1&& mutator_attr_fun,
+      AttrFun2&& mutated_attr_fun);
+
+  /**
+    Calculate attribute assortativity on undirected networks. Mapping
+    mutator_attribute_mapping contains a number for each tail vertex, whereas
+    mutated_attribute_mapping contains a number for each head vertex,
+  */
+  template <
+    static_directed_edge EdgeT,
+    mapping<typename EdgeT::VertexType, double> MapT1,
+    mapping<typename EdgeT::VertexType, double> MapT2>
+  double attribute_assortativity(
+      const network<EdgeT>& net,
+      const MapT1& mutator_attribute_map,
+      const MapT2& mutated_attribute_map,
+      double mutator_default_value,
+      double mutated_default_value);
+
+  /**
+    Calculate in-degree in-degree assortativity on directed networks.
+  */
+  template <static_directed_edge EdgeT>
+  double in_in_degree_assortativity(const network<EdgeT>& net);
+
+  /**
+    Calculate in-degree out-degree assortativity on directed networks.
+  */
+  template <static_directed_edge EdgeT>
+  double in_out_degree_assortativity(const network<EdgeT>& net);
+
+  /**
+    Calculate out-degree in-degree assortativity on directed networks.
+  */
+  template <static_directed_edge EdgeT>
+  double out_in_degree_assortativity(const network<EdgeT>& net);
+
+  /**
+    Calculate out-degree out-degree assortativity on directed networks.
+  */
+  template <static_directed_edge EdgeT>
+  double out_out_degree_assortativity(const network<EdgeT>& net);
 }  // namespace reticula
+
 
 #include "../../src/algorithms.tpp"
 

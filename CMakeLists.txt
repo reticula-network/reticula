@@ -42,6 +42,7 @@ add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
   src/test/reticula/tests.cpp
+  src/test/reticula/stats.cpp
   src/test/reticula/intervals.cpp
   src/test/reticula/temporal_adjacency.cpp
   src/test/reticula/algorithms.cpp

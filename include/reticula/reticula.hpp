@@ -7,6 +7,7 @@
 namespace reticula {}
 
 #include "utils.hpp"
+#include "stats.hpp"
 #include "type_traits.hpp"
 #include "intervals.hpp"
 #include "network_concepts.hpp"
