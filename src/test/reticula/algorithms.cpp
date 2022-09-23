@@ -1240,5 +1240,42 @@ TEST_CASE("attribute assortativity", "[reticula::attribute_assortativity]") {
   }
 
   SECTION("directed") {
+    reticula::directed_network<int> net({{0, 1}, {2, 3}, {0, 3}});
+    reticula::directed_network<int> net2({{0, 2}, {3, 1}, {0, 3}});
+
+    SECTION("with function") {
+      REQUIRE(reticula::attribute_assortativity(net,
+            [](int v){ return v < 2 ? 1 : 2; },
+            [](int v){ return v < 2 ? 2 : 3; }) == Approx(0.5));
+
+      REQUIRE(reticula::attribute_assortativity(net2,
+            [](int v){ return v < 2 ? 1 : 2; },
+            [](int v){ return v < 2 ? 2 : 3; }) == Approx(-1.0));
+
+      REQUIRE(reticula::attribute_assortativity(net,
+            [](int v){ return v; },
+            [](int v){ return v + 1; }) == Approx(0.5));
+      REQUIRE(reticula::attribute_assortativity(net2,
+            [](int v){ return v; },
+            [](int v){ return v + 1; }) == Approx(-std::sqrt(3)/2));
+    }
+
+    SECTION("with mapping") {
+      std::unordered_map<int, double> m_in{{1, 1}, {2, 2}, {3, 2}};
+      std::unordered_map<int, double> m_out{{1, 2}, {2, 3}, {3, 3}};
+      REQUIRE(reticula::attribute_assortativity(net, m_in, m_out, 1.0, 2.0) ==
+          Approx(0.5));
+
+      REQUIRE(reticula::attribute_assortativity(net2, m_in, m_out, 1.0, 2.0) ==
+          Approx(-1.0));
+
+      std::unordered_map<int, double> m2_in{{1, 1}, {2, 2}, {3, 3}};
+      std::unordered_map<int, double> m2_out{{1, 2}, {2, 3}, {3, 4}};
+      REQUIRE(reticula::attribute_assortativity(
+            net, m2_in, m2_out, 0.0, 1.0) == Approx(0.5));
+
+      REQUIRE(reticula::attribute_assortativity(
+            net2, m2_in, m2_out, 0.0, 1.0) == Approx(-std::sqrt(3)/2));
+    }
   }
 }
