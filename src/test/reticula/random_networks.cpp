@@ -292,6 +292,20 @@ TEST_CASE("random directed expected degree sequence graph",
           }));
   }
 
+  SECTION("works with almost equal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_NOTHROW(
+        reticula::random_directed_expected_degree_sequence_graph<int>(
+          std::vector<std::pair<double, double>>(n, {2.99, 3.01}), gen, false));
+  }
+
+  SECTION("throws with unequal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_THROWS(
+        reticula::random_directed_expected_degree_sequence_graph<int>(
+          std::vector<std::pair<double, double>>(n, {2.0, 3.0}), gen, false));
+  }
+
   SECTION("edge existance probability") {
     std::size_t ens = 20'000;
     std::size_t n = 20;
@@ -388,6 +402,20 @@ TEST_CASE("random expected degree sequence hypergraph",
     REQUIRE(g2.vertices().size() == 0);
   }
 
+  SECTION("works with almost equal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_NOTHROW(
+        reticula::random_expected_degree_sequence_hypergraph<int>(
+          std::vector<double>(n, 2.99), std::vector<double>(n, 3.01), gen));
+  }
+
+  SECTION("throws with unequal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_THROWS(
+        reticula::random_expected_degree_sequence_hypergraph<int>(
+          std::vector<double>(n, 2.00), std::vector<double>(n, 3.00), gen));
+  }
+
   SECTION("node and edge degree probability") {
     std::size_t ens = 1000;
     std::size_t n = 200;
@@ -471,6 +499,22 @@ TEST_CASE("random directed expected degree sequence hypergraph",
 
     REQUIRE(g2.edges().size() == 0);
     REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("works with almost equal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_NOTHROW(
+        reticula::random_directed_expected_degree_sequence_hypergraph<int>(
+          std::vector<std::pair<double, double>>(n, {2.99, 3.00}),
+          std::vector<std::pair<double, double>>(n, {3.01, 2.98}), gen));
+  }
+
+  SECTION("throws with unequal weight sequences") {
+    std::size_t n = 20;
+    REQUIRE_THROWS(
+        reticula::random_directed_expected_degree_sequence_hypergraph<int>(
+          std::vector<std::pair<double, double>>(n, {2.00, 4.00}),
+          std::vector<std::pair<double, double>>(n, {3.00, 5.00}), gen));
   }
 
   SECTION("edge existance probability") {

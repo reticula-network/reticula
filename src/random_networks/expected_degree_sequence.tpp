@@ -125,9 +125,9 @@ namespace reticula {
           return total+p.first;
         });
 
-    if (s_out != s_in)
+    if (s_out > s_in*1.05 || s_out < s_in*0.95)
       throw std::invalid_argument(
-          "in- and out-weight sequences should have equal sums");
+          "in- and out-weight sequences should have (almost) equal sums");
 
     std::vector<directed_edge<VertT>> edges;
     edges.reserve(static_cast<std::size_t>(s_in + 4.0*std::sqrt(s_in)));
@@ -212,9 +212,9 @@ namespace reticula {
           return total+p.first;
         });
 
-    if (s != s_edge)
+    if (s > s_edge*1.05 || s < s_edge*0.95)
       throw std::invalid_argument(
-          "vertex and edge weight sequences should have equal sums");
+          "vertex and edge weight sequences should have (almost) equal sums");
 
     if (weight_node_pairs.empty())
       return undirected_hypernetwork<VertT>();
@@ -305,10 +305,10 @@ namespace reticula {
           return total+p.first;
         });
 
-    if (s_out != s_in)
+    if (s_out > s_in*1.05 || s_out < s_in*0.95)
       throw std::invalid_argument(
           "vertex and edge in- and out-weight "
-          "sequences should have equal sums");
+          "sequences should have (almost) equal sums");
 
     std::ranges::sort(in_weight_node_pairs, std::ranges::greater());
     std::ranges::sort(out_weight_node_pairs, std::ranges::greater());
@@ -345,10 +345,11 @@ namespace reticula {
           return total+p.first;
         });
 
-    if (s_in != s_edge_in || s_in != s_edge_out)
+    if (s_in > s_edge_in*1.05 || s_in < s_edge_in*0.95
+        || s_in > s_edge_out*1.05 || s_out < s_edge_out*0.95)
       throw std::invalid_argument(
           "vertex and edge in- and out-weight "
-          "sequences should have equal sums");
+          "sequences should have (almost) equal sums");
 
     if (in_weight_node_pairs.front().first == 0.0)
       return directed_hypernetwork<VertT>(
