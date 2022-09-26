@@ -1130,6 +1130,9 @@ TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
 
 TEST_CASE("degree assortativity", "[reticula::degree_assortativity]") {
   SECTION("undirected") {
+    auto g = reticula::complete_graph(10);
+    REQUIRE(std::isnan(reticula::degree_assortativity(g)));
+
     std::vector<int> vert_degs(10000), edge_degs(5000);
     std::ranges::fill(vert_degs, 4);
     std::ranges::fill(edge_degs, 8);
@@ -1176,6 +1179,9 @@ TEST_CASE("degree assortativity", "[reticula::degree_assortativity]") {
   }
 
   SECTION("directed") {
+    auto g = reticula::complete_directed_graph(10);
+    REQUIRE(std::isnan(reticula::out_in_degree_assortativity(g)));
+
     reticula::directed_network<int> rhesus_macaques({
         {1, 2}, {1, 3}, {4, 2}, {5, 6}, {5, 7}, {5, 8}, {5, 3}, {5, 9}, {5, 10},
         {5, 11}, {5, 12}, {5, 13}, {5, 14}, {6, 1}, {6, 5}, {6, 8}, {6, 3},

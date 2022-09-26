@@ -106,5 +106,13 @@ TEST_CASE("pearson correlation coeafficient",
   SECTION("constant variable") {
     std::vector<std::pair<double, double>> f{{0, 1}, {0, 0}, {0, 3}};
     REQUIRE(std::isnan(reticula::pearson_correlation_coefficient(f)));
+
+    std::vector<std::pair<double, double>> f2(13, {9.0, 9.0});
+    REQUIRE(std::isnan(reticula::pearson_correlation_coefficient(f2)));
+  }
+
+  SECTION("small vectors") {
+    std::vector<std::pair<double, double>> f{{2.0, 1.0}};
+    REQUIRE(std::isnan(reticula::pearson_correlation_coefficient(f)));
   }
 }
