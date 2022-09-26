@@ -1,6 +1,3 @@
-#include <sstream>
-#include <string>
-
 #include <catch2/catch.hpp>
 using Catch::Matchers::Equals;
 using Catch::Matchers::Contains;
@@ -10,8 +7,6 @@ using Catch::Matchers::UnorderedEquals;
 #include <reticula/temporal_edges.hpp>
 
 #include <reticula/networks.hpp>
-
-#include <iostream>
 
 TEST_CASE("constructing networks from views", "[reticula::network]") {
   int n = 5;

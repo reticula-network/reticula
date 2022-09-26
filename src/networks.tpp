@@ -1,5 +1,4 @@
 #include <unordered_set>
-#include <iostream>
 
 namespace reticula {
   template <network_edge EdgeT>
