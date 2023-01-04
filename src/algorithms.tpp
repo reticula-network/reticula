@@ -1071,6 +1071,63 @@ namespace reticula {
     return net.degree(vert);
   }
 
+
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  in_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.vertices().size());
+    for (auto&& v: net.vertices())
+      seq.push_back(in_degree(net, v));
+
+    return seq;
+  }
+
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  out_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.vertices().size());
+    for (auto&& v: net.vertices())
+      seq.push_back(out_degree(net, v));
+
+    return seq;
+  }
+
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  incident_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.vertices().size());
+    for (auto&& v: net.vertices())
+      seq.push_back(incident_degree(net, v));
+
+    return seq;
+  }
+
+  template <directed_network_edge EdgeT>
+  std::vector<std::pair<std::size_t, std::size_t>>
+  in_out_degree_pair_sequence(const network<EdgeT>& net) {
+    std::vector<std::pair<std::size_t, std::size_t>> seq;
+    seq.reserve(net.vertices().size());
+    for (auto&& v: net.vertices())
+      seq.emplace_back(in_degree(net, v), out_degree(net, v));
+
+    return seq;
+  }
+
+  template <undirected_network_edge EdgeT>
+  std::vector<std::size_t>
+  degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.vertices().size());
+    for (auto&& v: net.vertices())
+      seq.push_back(degree(net, v));
+
+    return seq;
+  }
+
+
   template <
     undirected_static_network_edge EdgeT,
     std::invocable<const typename EdgeT::VertexType&> AttrFun>

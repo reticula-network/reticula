@@ -600,6 +600,42 @@ namespace reticula {
       const typename EdgeT::VertexType& vert);
 
   /**
+    Returns the in-degree sequence of a network
+  */
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  in_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the out-degree sequence of a network
+  */
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  out_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the degree sequence of a network
+  */
+  template <directed_network_edge EdgeT>
+  std::vector<std::size_t>
+  incident_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the (in-, out-) degree-pair sequence of a network
+  */
+  template <directed_network_edge EdgeT>
+  std::vector<std::pair<std::size_t, std::size_t>>
+  in_out_degree_pair_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the degree sequence of a network
+  */
+  template <undirected_network_edge EdgeT>
+  std::vector<std::size_t>
+  degree_sequence(const network<EdgeT>& net);
+
+
+  /**
     Calculate degree assortativity on undirected networks.
   */
   template <undirected_static_network_edge EdgeT>

@@ -1140,6 +1140,9 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::degree(graph, 2) == 3);
     REQUIRE(reticula::degree(graph, 1) == 2);
     REQUIRE(reticula::degree(graph, 0) == 0);
+
+    REQUIRE(reticula::degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1});
   }
 
   SECTION("when given an undirected hypergraph") {
@@ -1152,6 +1155,9 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::degree(graph, 2) == 3);
     REQUIRE(reticula::degree(graph, 1) == 2);
     REQUIRE(reticula::degree(graph, 0) == 0);
+
+    REQUIRE(reticula::degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1, 1});
   }
 
   SECTION("when given an undirected temporal network") {
@@ -1163,6 +1169,9 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::degree(graph, 2) == 4);
     REQUIRE(reticula::degree(graph, 1) == 3);
     REQUIRE(reticula::degree(graph, 0) == 0);
+
+    REQUIRE(reticula::degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 3, 4, 2, 1});
   }
 
   SECTION("when given a directed network") {
@@ -1185,6 +1194,13 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
+
+    REQUIRE(reticula::incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 1, 3, 2, 2, 3, 1});
+    REQUIRE(reticula::out_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 1, 1, 1, 1, 2, 0});
+    REQUIRE(reticula::in_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 0, 2, 1, 1, 1, 1});
   }
 
   SECTION("when given a directed hypernetwork") {
@@ -1207,6 +1223,13 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
+
+    REQUIRE(reticula::incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 1, 4, 3, 2, 3, 1, 1});
+    REQUIRE(reticula::out_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 1, 2, 1, 1, 2, 0, 0});
+    REQUIRE(reticula::in_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 0, 2, 2, 1, 1, 1, 1});
   }
 
   SECTION("when given an directed temporal network") {
@@ -1229,6 +1252,13 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
+
+    REQUIRE(reticula::incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 3, 4, 2, 1});
+    REQUIRE(reticula::out_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 2, 2, 1, 0});
+    REQUIRE(reticula::in_degree_sequence(graph) ==
+        std::vector<std::size_t>{0, 1, 2, 1, 1});
   }
 }
 
