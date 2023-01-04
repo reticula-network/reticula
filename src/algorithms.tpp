@@ -1043,6 +1043,27 @@ namespace reticula {
     return lengths;
   }
 
+  template <network_edge EdgeT>
+  std::size_t in_degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert) {
+    return net.in_degree(vert);
+  }
+
+  template <network_edge EdgeT>
+  std::size_t out_degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert) {
+    return net.out_degree(vert);
+  }
+
+  template <network_edge EdgeT>
+  std::size_t degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert) {
+    return net.degree(vert);
+  }
+
   template <
     static_undirected_edge EdgeT,
     std::invocable<const typename EdgeT::VertexType&> AttrFun>

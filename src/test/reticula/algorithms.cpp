@@ -1128,6 +1128,142 @@ TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
         {1, 4}, {2, 3}, {3, 2}, {5, 1}, {4, 0}});
 }
 
+TEST_CASE("degree functions",
+    "[reticula::in_degree][reticula::out_degree][reticula::degree]") {
+  SECTION("when given an undirected network") {
+    reticula::undirected_network<int> graph(
+        {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6},
+         {1, 2}, {2, 1}, {5, 2}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::in_degree(graph, 3) == 2);
+    REQUIRE(reticula::out_degree(graph, 3) == 2);
+
+    REQUIRE(reticula::degree(graph, 2) == 3);
+    REQUIRE(reticula::in_degree(graph, 2) == 3);
+    REQUIRE(reticula::out_degree(graph, 2) == 3);
+
+    REQUIRE(reticula::degree(graph, 1) == 2);
+    REQUIRE(reticula::in_degree(graph, 1) == 2);
+    REQUIRE(reticula::out_degree(graph, 1) == 2);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+  }
+
+  SECTION("when given an undirected hypergraph") {
+    using U = reticula::undirected_hyperedge<int>;
+    reticula::undirected_hypernetwork<int> graph(
+        {U{1, 2}, U{1, 5}, U{5, 2}, U{4, 5}, U{3, 2}, U{4, 3, 7}, U{4, 6},
+         U{1, 2}, U{2, 1}, U{5, 2}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::in_degree(graph, 3) == 2);
+    REQUIRE(reticula::out_degree(graph, 3) == 2);
+
+    REQUIRE(reticula::degree(graph, 2) == 3);
+    REQUIRE(reticula::in_degree(graph, 2) == 3);
+    REQUIRE(reticula::out_degree(graph, 2) == 3);
+
+    REQUIRE(reticula::degree(graph, 1) == 2);
+    REQUIRE(reticula::in_degree(graph, 1) == 2);
+    REQUIRE(reticula::out_degree(graph, 1) == 2);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+  }
+
+  SECTION("when given an undirected temporal network") {
+    reticula::undirected_temporal_network<int, int> graph(
+        {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
+         {2, 1, 2}, {2, 1, 2}, {1, 2, 5}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::in_degree(graph, 3) == 2);
+    REQUIRE(reticula::out_degree(graph, 3) == 2);
+
+    REQUIRE(reticula::degree(graph, 2) == 4);
+    REQUIRE(reticula::in_degree(graph, 2) == 4);
+    REQUIRE(reticula::out_degree(graph, 2) == 4);
+
+    REQUIRE(reticula::degree(graph, 1) == 3);
+    REQUIRE(reticula::in_degree(graph, 1) == 3);
+    REQUIRE(reticula::out_degree(graph, 1) == 3);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+  }
+
+  SECTION("when given a directed network") {
+    reticula::directed_network<int> graph(
+        {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2},
+         {1, 2}, {2, 3}, {3, 5}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::out_degree(graph, 3) == 1);
+    REQUIRE(reticula::in_degree(graph, 3) == 1);
+
+    REQUIRE(reticula::degree(graph, 2) == 3);
+    REQUIRE(reticula::out_degree(graph, 2) == 1);
+    REQUIRE(reticula::in_degree(graph, 2) == 2);
+
+    REQUIRE(reticula::degree(graph, 1) == 1);
+    REQUIRE(reticula::out_degree(graph, 1) == 1);
+    REQUIRE(reticula::in_degree(graph, 1) == 0);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+  }
+
+  SECTION("when given a directed hypernetwork") {
+    reticula::directed_hypernetwork<int> graph(
+        {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3, 7}}, {{3}, {5}}, {{5}, {6}},
+        {{5}, {4}}, {{4}, {2}}, {{1}, {2}}, {{2}, {3}}, {{3}, {5}}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 3);
+    REQUIRE(reticula::out_degree(graph, 3) == 1);
+    REQUIRE(reticula::in_degree(graph, 3) == 2);
+
+    REQUIRE(reticula::degree(graph, 2) == 4);
+    REQUIRE(reticula::out_degree(graph, 2) == 2);
+    REQUIRE(reticula::in_degree(graph, 2) == 2);
+
+    REQUIRE(reticula::degree(graph, 1) == 1);
+    REQUIRE(reticula::out_degree(graph, 1) == 1);
+    REQUIRE(reticula::in_degree(graph, 1) == 0);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+  }
+
+  SECTION("when given an directed temporal network") {
+    reticula::directed_temporal_network<int, int> graph(
+        {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
+         {2, 1, 2}, {2, 1, 2}, {1, 2, 5}}, {0});
+
+    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::out_degree(graph, 3) == 1);
+    REQUIRE(reticula::in_degree(graph, 3) == 1);
+
+    REQUIRE(reticula::degree(graph, 2) == 4);
+    REQUIRE(reticula::out_degree(graph, 2) == 2);
+    REQUIRE(reticula::in_degree(graph, 2) == 2);
+
+    REQUIRE(reticula::degree(graph, 1) == 3);
+    REQUIRE(reticula::out_degree(graph, 1) == 2);
+    REQUIRE(reticula::in_degree(graph, 1) == 1);
+
+    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::out_degree(graph, 0) == 0);
+    REQUIRE(reticula::in_degree(graph, 0) == 0);
+  }
+}
+
 TEST_CASE("degree assortativity", "[reticula::degree_assortativity]") {
   SECTION("undirected") {
     auto g = reticula::complete_graph(10);

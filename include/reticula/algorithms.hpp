@@ -566,6 +566,31 @@ namespace reticula {
           const network<EdgeT>& net,
           const typename EdgeT::VertexType& vert);
 
+
+  /**
+    Calculate in-degree of a vertex in a directed network
+  */
+  template <network_edge EdgeT>
+  std::size_t in_degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert);
+
+  /**
+    Calculate out-degree of a vertex in a directed network
+  */
+  template <network_edge EdgeT>
+  std::size_t out_degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert);
+
+  /**
+    Calculate degree of a vertex in a undirected network
+  */
+  template <network_edge EdgeT>
+  std::size_t degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert);
+
   /**
     Calculate degree assortativity on undirected networks.
   */
