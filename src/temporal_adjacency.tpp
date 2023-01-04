@@ -7,14 +7,14 @@
 namespace reticula {
   namespace temporal_adjacency {
     // simple adjacency
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     simple<EdgeT>::linger(
         const EdgeT&, const typename EdgeT::VertexType& v) const {
       return maximum_linger(v);
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     simple<EdgeT>::maximum_linger(
         const typename EdgeT::VertexType&) const {
@@ -23,25 +23,25 @@ namespace reticula {
 
 
     // limited waiting-time adjacency
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     limited_waiting_time<EdgeT>::limited_waiting_time(
         typename EdgeT::TimeType dt) : _dt(dt) {}
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     limited_waiting_time<EdgeT>::linger(
         const EdgeT&, const typename EdgeT::VertexType&) const {
       return _dt;
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     limited_waiting_time<EdgeT>::maximum_linger(
         const typename EdgeT::VertexType&) const {
       return _dt;
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     limited_waiting_time<EdgeT>::dt() const {
       return _dt;
@@ -49,13 +49,13 @@ namespace reticula {
 
 
     // exponential adjacency
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
     exponential<EdgeT>::exponential(
         typename EdgeT::TimeType rate, std::size_t seed) :
       _rate(rate), _seed(seed) {}
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
     typename EdgeT::TimeType
     exponential<EdgeT>::linger(
@@ -67,7 +67,7 @@ namespace reticula {
       return dist(gen);
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
     typename EdgeT::TimeType
     exponential<EdgeT>::maximum_linger(
@@ -76,7 +76,7 @@ namespace reticula {
       return dist.max();
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
     typename EdgeT::TimeType exponential<EdgeT>::rate() const {
       return _rate;
@@ -84,12 +84,12 @@ namespace reticula {
 
 
     // geometric adjacency
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::integral<typename EdgeT::TimeType>
     geometric<EdgeT>::geometric(double p, std::size_t seed) :
       _p(p), _seed(seed) {}
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::integral<typename EdgeT::TimeType>
     typename EdgeT::TimeType
     geometric<EdgeT>::linger(
@@ -101,7 +101,7 @@ namespace reticula {
       return dist(gen);
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::integral<typename EdgeT::TimeType>
     typename EdgeT::TimeType
     geometric<EdgeT>::maximum_linger(
@@ -110,7 +110,7 @@ namespace reticula {
       return dist.max();
     }
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::integral<typename EdgeT::TimeType>
     double geometric<EdgeT>::p() const {
       return _p;

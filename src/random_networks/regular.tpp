@@ -1,5 +1,5 @@
 namespace reticula {
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> random_regular_graph(
       VertT size, VertT degree,
       Gen& gen) {
@@ -9,7 +9,7 @@ namespace reticula {
     return *maybe_g;
   }
 
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   std::optional<undirected_network<VertT>>
   try_random_regular_graph(
       VertT size, VertT degree,

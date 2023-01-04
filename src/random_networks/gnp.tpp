@@ -1,5 +1,5 @@
 namespace reticula {
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
   random_gnp_graph(VertT n, double p, Gen& generator) {
     if (n < 0)

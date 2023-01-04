@@ -3,7 +3,7 @@
 
 namespace reticula {
   namespace detail {
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     struct temporal_loop {
       EdgeT
       operator()(typename EdgeT::VertexType v, typename EdgeT::TimeType t);
@@ -83,7 +83,7 @@ namespace reticula {
     };
   }  // namespace detail
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   time_window(const network<EdgeT>& temp) {
     if (temp.edges_cause().empty())
@@ -94,7 +94,7 @@ namespace reticula {
       temp.edges_effect().back().effect_time()};
   }
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   cause_time_window(const network<EdgeT>& temp) {
     if (temp.edges_cause().empty())
@@ -105,7 +105,7 @@ namespace reticula {
       temp.edges_cause().back().cause_time()};
   }
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   effect_time_window(const network<EdgeT>& temp) {
     if (temp.edges_effect().empty())
@@ -117,7 +117,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   directed_network<EdgeT>
   event_graph(
@@ -146,7 +146,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   out_cluster(
@@ -158,7 +158,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   out_cluster(
@@ -170,7 +170,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   out_clusters(
@@ -184,7 +184,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   out_cluster_sizes(
@@ -198,7 +198,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
@@ -215,7 +215,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   in_cluster(
@@ -227,7 +227,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   in_cluster(
@@ -239,7 +239,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   in_clusters(
@@ -253,7 +253,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   in_cluster_sizes(
@@ -267,7 +267,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
@@ -284,7 +284,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   bool is_reachable(
       const network<EdgeT>& net,
@@ -301,7 +301,7 @@ namespace reticula {
           destination, t1);
   }
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   network<typename EdgeT::StaticProjectionType>
   static_projection(const network<EdgeT>& temp) {
     return network<typename EdgeT::StaticProjectionType>(
@@ -310,7 +310,7 @@ namespace reticula {
         }), temp.vertices());
   }
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::vector<EdgeT>
   link_timeline(
       const network<EdgeT>& net,
@@ -331,7 +331,7 @@ namespace reticula {
     return res;
   }
 
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::vector<
     std::pair<typename EdgeT::StaticProjectionType, std::vector<EdgeT>>>
   link_timelines(const network<EdgeT>& net) {

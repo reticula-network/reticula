@@ -2,7 +2,9 @@
 #include <cmath>
 
 namespace reticula {
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
       AdjT adj, std::size_t size_hint) :
     _adj(adj), _lifetime(
@@ -12,13 +14,17 @@ namespace reticula {
       _events.reserve(size_hint);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
       std::initializer_list<EdgeT> events, AdjT adj,
       std::size_t size_hint) :
     temporal_cluster(std::vector(events), adj, size_hint) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
@@ -37,7 +43,9 @@ namespace reticula {
       insert(e);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster<EdgeT, AdjT>::insert(const EdgeT& e) {
     _events.insert(e);
     typename EdgeT::TimeType max =
@@ -56,7 +64,9 @@ namespace reticula {
     }
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   void temporal_cluster<EdgeT, AdjT>::insert(Range&& events) {
@@ -64,7 +74,9 @@ namespace reticula {
       insert(e);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster<EdgeT, AdjT>::merge(
       const temporal_cluster<EdgeT, AdjT>& c) {
     _events.insert(c.begin(), c.end());
@@ -78,24 +90,32 @@ namespace reticula {
   }
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   bool temporal_cluster<EdgeT, AdjT>::operator==(
       const temporal_cluster<EdgeT, AdjT>& c) const {
     return _events == c._events &&  _ints == c._ints;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::size_t temporal_cluster<EdgeT, AdjT>::size() const {
     return _events.size();
   }
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   bool temporal_cluster<EdgeT, AdjT>::contains(const EdgeT& e) const {
     return _events.contains(e);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   bool temporal_cluster<EdgeT, AdjT>::covers(
       typename EdgeT::VertexType v, typename EdgeT::TimeType t) const {
     if (_ints.contains(v))
@@ -104,24 +124,32 @@ namespace reticula {
       return false;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   bool temporal_cluster<EdgeT, AdjT>::empty() const {
     return _events.empty();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::IteratorType
   temporal_cluster<EdgeT, AdjT>::begin() const {
     return _events.begin();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>::IteratorType
   temporal_cluster<EdgeT, AdjT>::end() const {
     return _events.end();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   const std::unordered_map<
     typename EdgeT::VertexType,
     interval_set<typename EdgeT::TimeType>,
@@ -130,18 +158,24 @@ namespace reticula {
     return _ints;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   temporal_cluster<EdgeT, AdjT>::lifetime() const {
     return _lifetime;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::size_t temporal_cluster<EdgeT, AdjT>::volume() const {
     return _ints.size();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   typename EdgeT::TimeType temporal_cluster<EdgeT, AdjT>::mass() const {
     typename EdgeT::TimeType total {};
 
@@ -152,37 +186,49 @@ namespace reticula {
   }
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_size<EdgeT, AdjT>::temporal_cluster_size(
       const temporal_cluster<EdgeT, AdjT>& c) :
     _size(c.size()), _lifetime(c.lifetime()),
     _mass(c.mass()), _volume(c.volume()) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::size_t temporal_cluster_size<EdgeT, AdjT>::size() const {
     return _size;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   temporal_cluster_size<EdgeT, AdjT>::lifetime() const {
     return _lifetime;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::size_t
   temporal_cluster_size<EdgeT, AdjT>::volume() const {
     return _volume;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   typename EdgeT::TimeType
   temporal_cluster_size<EdgeT, AdjT>::mass() const {
     return _mass;
   }
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       AdjT adj, EdgeT::TimeType temporal_resolution, std::size_t seed) :
       _dt(temporal_resolution), _adj(adj), _lifetime(
@@ -192,14 +238,18 @@ namespace reticula {
       _verts(true, static_cast<uint32_t>(seed)),
       _times(true, static_cast<uint32_t>(seed)) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       std::initializer_list<EdgeT> events, AdjT adj,
       EdgeT::TimeType temporal_resolution, std::size_t seed) :
     temporal_cluster_sketch(
         std::vector(events), adj, temporal_resolution, seed) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
@@ -215,7 +265,9 @@ namespace reticula {
       insert(e);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert(const EdgeT& e) {
     _events.insert(e);
     typename EdgeT::TimeType max =
@@ -235,7 +287,9 @@ namespace reticula {
     }
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert(Range&& events) {
@@ -243,7 +297,9 @@ namespace reticula {
       insert(e);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster_sketch<EdgeT, AdjT>::merge(
       const temporal_cluster_sketch<EdgeT, AdjT>& c) {
     if (_dt != c._dt)
@@ -260,7 +316,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   temporal_cluster_sketch<EdgeT, AdjT>::lifetime() const {
@@ -268,25 +324,29 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double temporal_cluster_sketch<EdgeT, AdjT>::size_estimate() const {
     return _events.estimate();
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double temporal_cluster_sketch<EdgeT, AdjT>::volume_estimate() const {
     return _verts.estimate();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   double temporal_cluster_sketch<EdgeT, AdjT>::mass_estimate() const {
     return _times.estimate()*static_cast<double>(_dt);
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert_time_range(
       typename EdgeT::VertexType v,
       typename EdgeT::TimeType start, typename EdgeT::TimeType end) {
@@ -300,7 +360,9 @@ namespace reticula {
 
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_size_estimate<EdgeT, AdjT>::
   temporal_cluster_size_estimate(
       const temporal_cluster_sketch<EdgeT, AdjT>& c) :
@@ -310,7 +372,7 @@ namespace reticula {
     _mass_estimate(c.mass_estimate()) {}
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   temporal_cluster_size_estimate<EdgeT, AdjT>::lifetime() const {
@@ -318,7 +380,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double
   temporal_cluster_size_estimate<EdgeT, AdjT>::size_estimate() const {
@@ -326,7 +388,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double
   temporal_cluster_size_estimate<EdgeT, AdjT>::volume_estimate() const {
@@ -334,7 +396,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double
   temporal_cluster_size_estimate<EdgeT, AdjT>::mass_estimate() const {

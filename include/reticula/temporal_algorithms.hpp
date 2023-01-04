@@ -15,7 +15,7 @@ namespace reticula {
     different cause and effect times (i.e. they have delays) this would be
     equivalent to minimum cause time and maximum effect time.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   time_window(const network<EdgeT>& temp);
 
@@ -24,7 +24,7 @@ namespace reticula {
     don't haver different cause and effect times (i.e. they are not delayed)
     this would be equivalent to time_window.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   cause_time_window(const network<EdgeT>& temp);
 
@@ -33,7 +33,7 @@ namespace reticula {
     have don't haver different cause and effect times (i.e. they are not
     delayed) this would be equivalent to time_window.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   effect_time_window(const network<EdgeT>& temp);
 
@@ -46,7 +46,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   directed_network<EdgeT>
   event_graph(
@@ -65,7 +65,7 @@ namespace reticula {
     @param t Starting time of the spreading process
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   out_cluster(
@@ -84,7 +84,7 @@ namespace reticula {
     @param e Initial spreading vector event
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   out_cluster(
@@ -101,7 +101,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   out_clusters(
@@ -117,7 +117,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   out_cluster_sizes(
@@ -134,7 +134,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
@@ -155,7 +155,7 @@ namespace reticula {
     @param t Destination time
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   in_cluster(
@@ -174,7 +174,7 @@ namespace reticula {
     @param e Initial spreading vector event
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster<EdgeT, AdjT>
   in_cluster(
@@ -191,7 +191,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster<EdgeT, AdjT>>>
   in_clusters(
@@ -207,7 +207,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, temporal_cluster_size<EdgeT, AdjT>>>
   in_cluster_sizes(
@@ -223,7 +223,7 @@ namespace reticula {
     between two otherwise adjacent events.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<
     std::pair<EdgeT, temporal_cluster_size_estimate<EdgeT, AdjT>>>
@@ -245,7 +245,7 @@ namespace reticula {
     @param t1 The end time of the reachability query
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   bool is_reachable(
       const network<EdgeT>& net,
@@ -260,7 +260,7 @@ namespace reticula {
     network has the same set vertices as the temporal network and two nodes are
     connected if there is at least one event connecting the two.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   network<typename EdgeT::StaticProjectionType>
   static_projection(const network<EdgeT>& temp);
 
@@ -268,7 +268,7 @@ namespace reticula {
     Returns a vector of unique events, sorted by cause time, that have a static
     projection equal to the parameter `link`, i.e., the timeline of that link.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::vector<EdgeT>
   link_timeline(
       const network<EdgeT>& net,
@@ -278,7 +278,7 @@ namespace reticula {
     Returns the sorted vector or events, or the timeline, for each edge of the
     static projection of the temporal networks.
   */
-  template <temporal_edge EdgeT>
+  template <temporal_network_edge EdgeT>
   std::vector<
     std::pair<typename EdgeT::StaticProjectionType, std::vector<EdgeT>>>
   link_timelines(const network<EdgeT>& net);

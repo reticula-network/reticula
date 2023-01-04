@@ -1129,27 +1129,17 @@ TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
 }
 
 TEST_CASE("degree functions",
-    "[reticula::in_degree][reticula::out_degree][reticula::degree]") {
+    "[reticula::in_degree][reticula::out_degree]"
+    "[reticula::incident_degree][reticula::degree]") {
   SECTION("when given an undirected network") {
     reticula::undirected_network<int> graph(
         {{1, 2}, {1, 5}, {5, 2}, {4, 5}, {3, 2}, {4, 3}, {4, 6},
          {1, 2}, {2, 1}, {5, 2}}, {0});
 
     REQUIRE(reticula::degree(graph, 3) == 2);
-    REQUIRE(reticula::in_degree(graph, 3) == 2);
-    REQUIRE(reticula::out_degree(graph, 3) == 2);
-
     REQUIRE(reticula::degree(graph, 2) == 3);
-    REQUIRE(reticula::in_degree(graph, 2) == 3);
-    REQUIRE(reticula::out_degree(graph, 2) == 3);
-
     REQUIRE(reticula::degree(graph, 1) == 2);
-    REQUIRE(reticula::in_degree(graph, 1) == 2);
-    REQUIRE(reticula::out_degree(graph, 1) == 2);
-
     REQUIRE(reticula::degree(graph, 0) == 0);
-    REQUIRE(reticula::in_degree(graph, 0) == 0);
-    REQUIRE(reticula::out_degree(graph, 0) == 0);
   }
 
   SECTION("when given an undirected hypergraph") {
@@ -1159,20 +1149,9 @@ TEST_CASE("degree functions",
          U{1, 2}, U{2, 1}, U{5, 2}}, {0});
 
     REQUIRE(reticula::degree(graph, 3) == 2);
-    REQUIRE(reticula::in_degree(graph, 3) == 2);
-    REQUIRE(reticula::out_degree(graph, 3) == 2);
-
     REQUIRE(reticula::degree(graph, 2) == 3);
-    REQUIRE(reticula::in_degree(graph, 2) == 3);
-    REQUIRE(reticula::out_degree(graph, 2) == 3);
-
     REQUIRE(reticula::degree(graph, 1) == 2);
-    REQUIRE(reticula::in_degree(graph, 1) == 2);
-    REQUIRE(reticula::out_degree(graph, 1) == 2);
-
     REQUIRE(reticula::degree(graph, 0) == 0);
-    REQUIRE(reticula::in_degree(graph, 0) == 0);
-    REQUIRE(reticula::out_degree(graph, 0) == 0);
   }
 
   SECTION("when given an undirected temporal network") {
@@ -1181,20 +1160,9 @@ TEST_CASE("degree functions",
          {2, 1, 2}, {2, 1, 2}, {1, 2, 5}}, {0});
 
     REQUIRE(reticula::degree(graph, 3) == 2);
-    REQUIRE(reticula::in_degree(graph, 3) == 2);
-    REQUIRE(reticula::out_degree(graph, 3) == 2);
-
     REQUIRE(reticula::degree(graph, 2) == 4);
-    REQUIRE(reticula::in_degree(graph, 2) == 4);
-    REQUIRE(reticula::out_degree(graph, 2) == 4);
-
     REQUIRE(reticula::degree(graph, 1) == 3);
-    REQUIRE(reticula::in_degree(graph, 1) == 3);
-    REQUIRE(reticula::out_degree(graph, 1) == 3);
-
     REQUIRE(reticula::degree(graph, 0) == 0);
-    REQUIRE(reticula::in_degree(graph, 0) == 0);
-    REQUIRE(reticula::out_degree(graph, 0) == 0);
   }
 
   SECTION("when given a directed network") {
@@ -1202,19 +1170,19 @@ TEST_CASE("degree functions",
         {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2},
          {1, 2}, {2, 3}, {3, 5}}, {0});
 
-    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::incident_degree(graph, 3) == 2);
     REQUIRE(reticula::out_degree(graph, 3) == 1);
     REQUIRE(reticula::in_degree(graph, 3) == 1);
 
-    REQUIRE(reticula::degree(graph, 2) == 3);
+    REQUIRE(reticula::incident_degree(graph, 2) == 3);
     REQUIRE(reticula::out_degree(graph, 2) == 1);
     REQUIRE(reticula::in_degree(graph, 2) == 2);
 
-    REQUIRE(reticula::degree(graph, 1) == 1);
+    REQUIRE(reticula::incident_degree(graph, 1) == 1);
     REQUIRE(reticula::out_degree(graph, 1) == 1);
     REQUIRE(reticula::in_degree(graph, 1) == 0);
 
-    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
   }
@@ -1224,19 +1192,19 @@ TEST_CASE("degree functions",
         {{{1}, {2}}, {{2}, {3, 7}}, {{2}, {3, 7}}, {{3}, {5}}, {{5}, {6}},
         {{5}, {4}}, {{4}, {2}}, {{1}, {2}}, {{2}, {3}}, {{3}, {5}}}, {0});
 
-    REQUIRE(reticula::degree(graph, 3) == 3);
+    REQUIRE(reticula::incident_degree(graph, 3) == 3);
     REQUIRE(reticula::out_degree(graph, 3) == 1);
     REQUIRE(reticula::in_degree(graph, 3) == 2);
 
-    REQUIRE(reticula::degree(graph, 2) == 4);
+    REQUIRE(reticula::incident_degree(graph, 2) == 4);
     REQUIRE(reticula::out_degree(graph, 2) == 2);
     REQUIRE(reticula::in_degree(graph, 2) == 2);
 
-    REQUIRE(reticula::degree(graph, 1) == 1);
+    REQUIRE(reticula::incident_degree(graph, 1) == 1);
     REQUIRE(reticula::out_degree(graph, 1) == 1);
     REQUIRE(reticula::in_degree(graph, 1) == 0);
 
-    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
   }
@@ -1246,19 +1214,19 @@ TEST_CASE("degree functions",
         {{2, 3, 6}, {2, 3, 6}, {3, 4, 8}, {1, 2, 1},
          {2, 1, 2}, {2, 1, 2}, {1, 2, 5}}, {0});
 
-    REQUIRE(reticula::degree(graph, 3) == 2);
+    REQUIRE(reticula::incident_degree(graph, 3) == 2);
     REQUIRE(reticula::out_degree(graph, 3) == 1);
     REQUIRE(reticula::in_degree(graph, 3) == 1);
 
-    REQUIRE(reticula::degree(graph, 2) == 4);
+    REQUIRE(reticula::incident_degree(graph, 2) == 4);
     REQUIRE(reticula::out_degree(graph, 2) == 2);
     REQUIRE(reticula::in_degree(graph, 2) == 2);
 
-    REQUIRE(reticula::degree(graph, 1) == 3);
+    REQUIRE(reticula::incident_degree(graph, 1) == 3);
     REQUIRE(reticula::out_degree(graph, 1) == 2);
     REQUIRE(reticula::in_degree(graph, 1) == 1);
 
-    REQUIRE(reticula::degree(graph, 0) == 0);
+    REQUIRE(reticula::incident_degree(graph, 0) == 0);
     REQUIRE(reticula::out_degree(graph, 0) == 0);
     REQUIRE(reticula::in_degree(graph, 0) == 0);
   }

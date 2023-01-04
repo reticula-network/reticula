@@ -2,7 +2,7 @@
 
 namespace reticula {
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::uniform_random_bit_generator Gen>
   undirected_temporal_network<VertT, double>
   random_fully_mixed_temporal_network(
@@ -18,7 +18,7 @@ namespace reticula {
   }
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::uniform_random_bit_generator Gen>
   directed_temporal_network<VertT, double>
   random_directed_fully_mixed_temporal_network(
@@ -34,7 +34,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     random_number_distribution IETDist,
     random_number_distribution ResDist,
     std::uniform_random_bit_generator Gen>
@@ -63,7 +63,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     random_number_distribution IETDist,
     std::uniform_random_bit_generator Gen>
   requires

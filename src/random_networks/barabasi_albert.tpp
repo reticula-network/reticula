@@ -1,6 +1,6 @@
 namespace reticula {
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
   random_barabasi_albert_graph(

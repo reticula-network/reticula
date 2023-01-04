@@ -2,7 +2,7 @@
 
 namespace reticula {
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
@@ -19,7 +19,7 @@ namespace reticula {
   }
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
@@ -155,7 +155,7 @@ namespace reticula {
 
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
@@ -172,7 +172,7 @@ namespace reticula {
   }
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires

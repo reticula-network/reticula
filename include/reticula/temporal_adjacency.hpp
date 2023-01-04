@@ -9,7 +9,7 @@ namespace reticula {
   namespace temporal_adjacency {
     template <typename T>
     concept temporal_adjacency =
-      temporal_edge<typename T::EdgeType> &&
+      temporal_network_edge<typename T::EdgeType> &&
       requires(
           T a,
           typename T::EdgeType e,
@@ -20,7 +20,7 @@ namespace reticula {
           typename T::EdgeType::TimeType>;
       };  // NOLINT(readability/braces)
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     class simple {
     public:
       using EdgeType = EdgeT;
@@ -52,7 +52,7 @@ namespace reticula {
       maximum_linger(const VertexType& v) const;
     };
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     class limited_waiting_time {
     public:
       using EdgeType = EdgeT;
@@ -90,7 +90,7 @@ namespace reticula {
       typename EdgeType::TimeType _dt;
     };
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
     class exponential {
     public:
@@ -135,7 +135,7 @@ namespace reticula {
     };
 
 
-    template <temporal_edge EdgeT>
+    template <temporal_network_edge EdgeT>
     requires std::integral<typename EdgeT::TimeType>
     class geometric {
     public:

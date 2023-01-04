@@ -1,23 +1,31 @@
 namespace reticula {
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const std::initializer_list<EdgeT>& events,
       const AdjT& adj) : _temp(events), _adj(adj) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const std::initializer_list<EdgeT>& events,
       const std::initializer_list<typename EdgeT::VertexType>& verts,
       const AdjT& adj) : _temp(events, verts), _adj(adj) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       Range&& events,
       const AdjT& adj) : _temp(events), _adj(adj) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   template <
     std::ranges::input_range EdgeRange,
     std::ranges::input_range VertRange>
@@ -30,36 +38,48 @@ namespace reticula {
       VertRange&& verts,
       const AdjT& adj) : _temp(events, verts), _adj(adj) {}
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       const network<EdgeT>& temp,
       const AdjT& adj) : _temp(temp), _adj(adj) {}
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   AdjT implicit_event_graph<EdgeT, AdjT>::temporal_adjacency() const {
     return _adj;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjT>::events_cause() const {
     return _temp.edges_cause();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   const std::vector<EdgeT>&
   implicit_event_graph<EdgeT, AdjT>::events_effect() const {
     return _temp.edges_effect();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<typename EdgeT::VertexType>
   implicit_event_graph<EdgeT, AdjT>::temporal_net_vertices() const {
     return _temp.vertices();
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
   implicit_event_graph<EdgeT, AdjT>::time_window() const {
     if (_temp.edges().empty())
@@ -70,7 +90,9 @@ namespace reticula {
           _temp.edges().back().cause_time());
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::predecessors(
       const EdgeT& e, bool just_first) const {
@@ -96,7 +118,9 @@ namespace reticula {
     return pred;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::successors(
       const EdgeT& e, bool just_first) const {
@@ -123,7 +147,9 @@ namespace reticula {
   }
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::neighbours(
       const EdgeT& e, bool just_first) const {
@@ -137,7 +163,9 @@ namespace reticula {
     return inc;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::successors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {
@@ -172,7 +200,9 @@ namespace reticula {
     return res;
   }
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   std::vector<EdgeT>
   implicit_event_graph<EdgeT, AdjT>::predecessors_vert(
       const EdgeT& e, VertexType v, bool just_first) const {

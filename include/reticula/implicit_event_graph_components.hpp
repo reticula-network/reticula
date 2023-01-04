@@ -13,21 +13,21 @@
 namespace reticula {
   // Event graph in-components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component<EdgeT>>>
   in_components(
       const implicit_event_graph<EdgeT, AdjT>& eg);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size<EdgeT>>>
   in_component_sizes(
       const implicit_event_graph<EdgeT, AdjT>& eg);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size_estimate<EdgeT>>>
   in_component_size_estimates(
@@ -35,7 +35,7 @@ namespace reticula {
       std::size_t estimator_seed = 0);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   in_component(
@@ -44,21 +44,21 @@ namespace reticula {
 
   // Event graph out-components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component<EdgeT>>>
   out_components(
       const implicit_event_graph<EdgeT, AdjT>& eg);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size<EdgeT>>>
   out_component_sizes(
       const implicit_event_graph<EdgeT, AdjT>& eg);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size_estimate<EdgeT>>>
   out_component_size_estimates(
@@ -66,7 +66,7 @@ namespace reticula {
       std::size_t estimator_seed);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   out_component(
@@ -76,7 +76,7 @@ namespace reticula {
 
   // event graph weekly connected components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<component<EdgeT>>
   weakly_connected_components(
@@ -84,7 +84,7 @@ namespace reticula {
       bool singletons = true);
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   weakly_connected_component(

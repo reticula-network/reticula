@@ -12,7 +12,7 @@
 #include "components.hpp"
 
 namespace reticula {
-  template <static_edge EdgeT, typename DiscoveryF>
+  template <static_network_edge EdgeT, typename DiscoveryF>
   component<typename EdgeT::VertexType>
   breadth_first_search(
       const network<EdgeT>& net,
@@ -231,7 +231,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   bool is_acyclic(
       const network<EdgeT>& dir);
 
@@ -243,7 +243,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::optional<std::vector<typename EdgeT::VertexType>>
   try_topological_order(
       const network<EdgeT>& dir);
@@ -256,7 +256,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   topological_order(
       const network<EdgeT>& dir);
@@ -272,7 +272,7 @@ namespace reticula {
     @param dir Directed network in question
     @param root The destination vert
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   out_component(
       const network<EdgeT>& dir,
@@ -285,7 +285,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component<typename EdgeT::VertexType>>>
@@ -298,7 +298,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component_size<typename EdgeT::VertexType>>>
@@ -312,7 +312,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component_size_estimate<typename EdgeT::VertexType>>>
@@ -331,7 +331,7 @@ namespace reticula {
     @param dir Directed network in question
     @param root The destination vert
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   in_component(
       const network<EdgeT>& dir,
@@ -345,7 +345,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component<typename EdgeT::VertexType>>>
@@ -358,7 +358,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component_size<typename EdgeT::VertexType>>>
@@ -372,7 +372,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<std::pair<
     typename EdgeT::VertexType,
     component_size_estimate<typename EdgeT::VertexType>>>
@@ -386,7 +386,7 @@ namespace reticula {
     @param dir Directed network in question
     @param `vert` A vertex that belongs to the returned component.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   weakly_connected_component(
       const network<EdgeT>& dir,
@@ -399,7 +399,7 @@ namespace reticula {
     @param dir Directed network in question
     @param singletons If true, also returns components with only one members.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   std::vector<component<typename EdgeT::VertexType>>
   weakly_connected_components(
       const network<EdgeT>& dir,
@@ -412,7 +412,7 @@ namespace reticula {
 
     @param dir Directed network in question
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   largest_weakly_connected_components(const network<EdgeT>& dir);
 
@@ -423,7 +423,7 @@ namespace reticula {
 
     @param dir A directed network
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   bool is_weakly_connected(const network<EdgeT>& dir);
 
   /**
@@ -432,7 +432,7 @@ namespace reticula {
     @param net An undirected Network
     @param vert A vertex that will belong to the final component
   */
-  template <static_undirected_edge EdgeT>
+  template <undirected_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   connected_component(
       const network<EdgeT>& net,
@@ -445,7 +445,7 @@ namespace reticula {
     @param net An undirected Network
     @param singletons If true, also returns components with only one members.
   */
-  template <static_undirected_edge EdgeT>
+  template <undirected_static_network_edge EdgeT>
   std::vector<component<typename EdgeT::VertexType>>
   connected_components(
       const network<EdgeT>& net,
@@ -458,7 +458,7 @@ namespace reticula {
 
     @param net An undirected Network
   */
-  template <static_undirected_edge EdgeT>
+  template <undirected_static_network_edge EdgeT>
   component<typename EdgeT::VertexType>
   largest_connected_component(const network<EdgeT>& net);
 
@@ -469,7 +469,7 @@ namespace reticula {
 
     @param net An undirected Network
   */
-  template <static_undirected_edge EdgeT>
+  template <undirected_static_network_edge EdgeT>
   bool is_connected(const network<EdgeT>& net);
 
   /**
@@ -480,7 +480,7 @@ namespace reticula {
     @param source The starting point of the reachability query
     @param destination The end point of the reachability query
   */
-  template <static_edge EdgeT>
+  template <static_network_edge EdgeT>
   bool is_reachable(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& source,
@@ -492,7 +492,7 @@ namespace reticula {
       const undirected_network<VertT1>& g1,
       const undirected_network<VertT2>& g2);
 
-  template <integer_vertex OutVertT, network_vertex InVertT>
+  template <integer_network_vertex OutVertT, network_vertex InVertT>
   undirected_network<OutVertT>
   relabel_nodes(const undirected_network<InVertT>& g);
 
@@ -546,7 +546,7 @@ namespace reticula {
     Shortest-path lengths from vertex `vert` to every other vertex reachable
     from `vert`.
   */
-  template <static_edge EdgeT>
+  template <static_network_edge EdgeT>
   std::unordered_map<
       typename EdgeT::VertexType, std::size_t,
       hash<typename EdgeT::VertexType>>
@@ -558,7 +558,7 @@ namespace reticula {
     Shortest-path lengths to vertex `vert` from every other vertex that can
     reach `vert`.
   */
-  template <static_edge EdgeT>
+  template <static_network_edge EdgeT>
   std::unordered_map<
       typename EdgeT::VertexType, std::size_t,
       hash<typename EdgeT::VertexType>>
@@ -568,25 +568,33 @@ namespace reticula {
 
 
   /**
-    Calculate in-degree of a vertex in a directed network
+    Calculate in-degree of a vertex in a network
   */
-  template <network_edge EdgeT>
+  template <directed_network_edge EdgeT>
   std::size_t in_degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert);
 
   /**
-    Calculate out-degree of a vertex in a directed network
+    Calculate out-degree of a vertex in a network
   */
-  template <network_edge EdgeT>
+  template <directed_network_edge EdgeT>
   std::size_t out_degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert);
 
   /**
-    Calculate degree of a vertex in a undirected network
+    Calculate out-degree of a vertex in a network
   */
-  template <network_edge EdgeT>
+  template <directed_network_edge EdgeT>
+  std::size_t incident_degree(
+      const network<EdgeT>& net,
+      const typename EdgeT::VertexType& vert);
+
+  /**
+    Calculate degree of a vertex in a network
+  */
+  template <undirected_network_edge EdgeT>
   std::size_t degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert);
@@ -594,7 +602,7 @@ namespace reticula {
   /**
     Calculate degree assortativity on undirected networks.
   */
-  template <static_undirected_edge EdgeT>
+  template <undirected_static_network_edge EdgeT>
   double degree_assortativity(const network<EdgeT>& net);
 
   /**
@@ -602,7 +610,7 @@ namespace reticula {
     attribute_fun returns a number given a vertex.
   */
   template <
-    static_undirected_edge EdgeT,
+    undirected_static_network_edge EdgeT,
     std::invocable<const typename EdgeT::VertexType&> AttrFun>
   requires std::convertible_to<
       std::invoke_result_t<AttrFun, const typename EdgeT::VertexType&>, double>
@@ -615,7 +623,7 @@ namespace reticula {
     attribute_mapping contains a number for each vertex.
   */
   template <
-    static_undirected_edge EdgeT,
+    undirected_static_network_edge EdgeT,
     mapping<typename EdgeT::VertexType, double> MapT>
   double attribute_assortativity(
       const network<EdgeT>& net,
@@ -628,7 +636,7 @@ namespace reticula {
     mutated_attribute_fun returns a number given each head vertex.
   */
   template <
-    static_directed_edge EdgeT,
+    directed_static_network_edge EdgeT,
     std::invocable<const typename EdgeT::VertexType&> AttrFun1,
     std::invocable<const typename EdgeT::VertexType&> AttrFun2>
   requires
@@ -649,7 +657,7 @@ namespace reticula {
     mutated_attribute_mapping contains a number for each head vertex,
   */
   template <
-    static_directed_edge EdgeT,
+    directed_static_network_edge EdgeT,
     mapping<typename EdgeT::VertexType, double> MapT1,
     mapping<typename EdgeT::VertexType, double> MapT2>
   double attribute_assortativity(
@@ -662,25 +670,25 @@ namespace reticula {
   /**
     Calculate in-degree in-degree assortativity on directed networks.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   double in_in_degree_assortativity(const network<EdgeT>& net);
 
   /**
     Calculate in-degree out-degree assortativity on directed networks.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   double in_out_degree_assortativity(const network<EdgeT>& net);
 
   /**
     Calculate out-degree in-degree assortativity on directed networks.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   double out_in_degree_assortativity(const network<EdgeT>& net);
 
   /**
     Calculate out-degree out-degree assortativity on directed networks.
   */
-  template <static_directed_edge EdgeT>
+  template <directed_static_network_edge EdgeT>
   double out_out_degree_assortativity(const network<EdgeT>& net);
 }  // namespace reticula
 

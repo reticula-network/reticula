@@ -19,9 +19,10 @@ TEST_CASE("undirected edges", "[reticula::undirected_edge]") {
     REQUIRE(c == reticula::undirected_edge<int>(5, 6));
   }
 
-  SECTION("comply with static_edge concept") {
-    STATIC_REQUIRE(reticula::static_edge<reticula::undirected_edge<int>>);
-    STATIC_REQUIRE(reticula::static_edge<
+  SECTION("comply with static_network_edge concept") {
+    STATIC_REQUIRE(reticula::static_network_edge<
+        reticula::undirected_edge<int>>);
+    STATIC_REQUIRE(reticula::static_network_edge<
         reticula::undirected_edge<std::size_t>>);
   }
 
@@ -63,9 +64,10 @@ TEST_CASE("undirected edges", "[reticula::undirected_edge]") {
 }
 
 TEST_CASE("undirected hyperedges", "[reticula::undirected_hyperedge]") {
-  SECTION("comply with static_edge concept") {
-    STATIC_REQUIRE(reticula::static_edge<reticula::undirected_hyperedge<int>>);
-    STATIC_REQUIRE(reticula::static_edge<
+  SECTION("comply with static_network_edge concept") {
+    STATIC_REQUIRE(reticula::static_network_edge<
+        reticula::undirected_hyperedge<int>>);
+    STATIC_REQUIRE(reticula::static_network_edge<
         reticula::undirected_hyperedge<std::size_t>>);
   }
 
@@ -122,9 +124,11 @@ TEST_CASE("directed edges", "[reticula::directed_edge]") {
     REQUIRE(c == reticula::directed_edge<int>(5, 6));
   }
 
-  SECTION("comply with static_edge concept") {
-    STATIC_REQUIRE(reticula::static_edge<reticula::directed_edge<int>>);
-    STATIC_REQUIRE(reticula::static_edge<reticula::directed_edge<std::size_t>>);
+  SECTION("comply with static_network_edge concept") {
+    STATIC_REQUIRE(reticula::static_network_edge<
+        reticula::directed_edge<int>>);
+    STATIC_REQUIRE(reticula::static_network_edge<
+        reticula::directed_edge<std::size_t>>);
   }
 
   SECTION("have correct properties") {
@@ -171,9 +175,10 @@ TEST_CASE("directed edges", "[reticula::directed_edge]") {
 }
 
 TEST_CASE("directed hyperedges", "[reticula::directed_hyperedge]") {
-  SECTION("comply with static_edge concept") {
-    STATIC_REQUIRE(reticula::static_edge<reticula::directed_hyperedge<int>>);
-    STATIC_REQUIRE(reticula::static_edge<
+  SECTION("comply with static_network_edge concept") {
+    STATIC_REQUIRE(reticula::static_network_edge<
+        reticula::directed_hyperedge<int>>);
+    STATIC_REQUIRE(reticula::static_network_edge<
         reticula::directed_hyperedge<std::size_t>>);
   }
 
@@ -249,12 +254,12 @@ TEST_CASE("undirected temporal edges",
     REQUIRE(c == reticula::undirected_temporal_edge<int, int>(7, 8, 9));
   }
 
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_edge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_edge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_edge<std::size_t, double>>);
   }
 
@@ -309,12 +314,12 @@ TEST_CASE("undirected temporal edges",
 
 TEST_CASE("undirected temporal hyperedges",
     "[reticula::undirected_temporal_hyperedge]") {
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_hyperedge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_hyperedge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_hyperedge<std::size_t, double>>);
   }
 
@@ -392,12 +397,12 @@ TEST_CASE("directed temporal edges", "[reticula::directed_temporal_edge]") {
     REQUIRE(c == reticula::directed_temporal_edge<int, int>(7, 8, 9));
   }
 
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_edge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_edge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_edge<std::size_t, double>>);
   }
 
@@ -455,12 +460,12 @@ TEST_CASE("directed temporal edges", "[reticula::directed_temporal_edge]") {
 
 TEST_CASE("directed temporal hyperedges",
     "[reticula::directed_temporal_hyperedge]") {
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_hyperedge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_hyperedge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_hyperedge<std::size_t, double>>);
   }
 
@@ -537,12 +542,12 @@ TEST_CASE("directed delayed temporal edges",
         reticula::directed_delayed_temporal_edge<int, int>(9, 10, 11, 12));
   }
 
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_edge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_edge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_edge<std::size_t, double>>);
   }
 
@@ -614,12 +619,12 @@ TEST_CASE("directed delayed temporal edges",
 
 TEST_CASE("directed delayed temporal hyperedges",
     "[reticula::directed_delayed_temporal_hyperedge]") {
-  SECTION("comply with temporal_edge concept") {
-    STATIC_REQUIRE(reticula::temporal_edge<
+  SECTION("comply with temporal_network_edge concept") {
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_hyperedge<int, int>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_hyperedge<std::size_t, std::size_t>>);
-    STATIC_REQUIRE(reticula::temporal_edge<
+    STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_hyperedge<std::size_t, double>>);
   }
 

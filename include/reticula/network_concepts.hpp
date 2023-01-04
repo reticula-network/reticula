@@ -24,7 +24,7 @@ namespace reticula {
     hashable_with<T, hash>;
 
   template <typename T>
-  concept integer_vertex =
+  concept integer_network_vertex =
     network_vertex<T> && std::numeric_limits<T>::is_integer;
 
   template <typename T>
@@ -60,31 +60,47 @@ namespace reticula {
     };  // NOLINT(readability/braces)
 
   template <typename T>
-  concept static_edge = network_edge<T> &&
+  concept static_network_edge = network_edge<T> &&
     !requires(const T& a) {  // it has to be more specialized than network_edge
       a.effect_time();
     };  // NOLINT(readability/braces)
 
 
   template <typename T>
-  concept static_directed_edge =
-    static_edge<T> && !is_undirected_v<T>;
+  concept directed_network_edge =
+    network_edge<T> && !is_undirected_v<T>;
 
   template <typename T>
-  concept static_undirected_edge =
-    static_edge<T> && is_undirected_v<T>;
+  concept undirected_network_edge =
+    network_edge<T> && is_undirected_v<T>;
 
   template <typename T>
-  concept temporal_edge =
+  concept directed_static_network_edge =
+    static_network_edge<T> && directed_network_edge<T>;
+
+  template <typename T>
+  concept undirected_static_network_edge =
+    static_network_edge<T> && undirected_network_edge<T>;
+
+  template <typename T>
+  concept temporal_network_edge =
     network_edge<T> &&
     std::is_arithmetic_v<typename T::TimeType> &&
-    static_edge<typename T::StaticProjectionType> &&
+    static_network_edge<typename T::StaticProjectionType> &&
     requires(const T& a) {
       { a.cause_time() } -> std::convertible_to<typename T::TimeType>;
       { a.effect_time() } -> std::convertible_to<typename T::TimeType>;
       { a.static_projection() } -> std::convertible_to<
         typename T::StaticProjectionType>;
     };  // NOLINT(readability/braces)
+
+  template <typename T>
+  concept directed_temporal_network_edge =
+    temporal_network_edge<T> && directed_network_edge<T>;
+
+  template <typename T>
+  concept undirected_temporal_network_edge =
+    temporal_network_edge<T> && undirected_network_edge<T>;
 
 
   /**

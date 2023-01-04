@@ -23,7 +23,9 @@ namespace reticula {
     adjacent events are actually adjacent, i.e. that an effect transmitted in
     the first event is also tranmitted in the second event.
    */
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   class implicit_event_graph {
   public:
     using EdgeType = EdgeT;

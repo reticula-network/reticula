@@ -29,7 +29,7 @@ random_uneven_temporal_network(Gen& gen) {
         std::size_t{}, static_cast<std::size_t>(1024)));
 }
 
-template <reticula::temporal_edge EdgeT>
+template <reticula::temporal_network_edge EdgeT>
 std::vector<std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>>
 timestamps(const std::vector<EdgeT>& edge_list) {
   std::vector<std::pair<

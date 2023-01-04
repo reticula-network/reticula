@@ -10,25 +10,25 @@
 #include "networks.hpp"
 
 namespace reticula {
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> random_gnp_graph(
       VertT n, double p,
       Gen& generator);
 
 
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT> random_barabasi_albert_graph(
       VertT n, VertT m,
       Gen& generator);
 
 
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
   random_regular_graph(
       VertT size, VertT degree,
       Gen& generator);
 
-  template <integer_vertex VertT, std::uniform_random_bit_generator Gen>
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   std::optional<undirected_network<VertT>>
   try_random_regular_graph(
       VertT size, VertT degree,
@@ -37,7 +37,7 @@ namespace reticula {
 
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
@@ -49,7 +49,7 @@ namespace reticula {
       Gen& generator);
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
@@ -63,7 +63,7 @@ namespace reticula {
 
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
@@ -75,7 +75,7 @@ namespace reticula {
       Gen& generator);
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
@@ -107,7 +107,7 @@ namespace reticula {
     the Web-Graph. Springer, Berlin, Heidelberg, 2011.
   */
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::input_range Range,
     std::uniform_random_bit_generator Gen>
   requires weight_range<Range>
@@ -145,7 +145,7 @@ namespace reticula {
     the Web-Graph. Springer, Berlin, Heidelberg, 2011.
   */
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::input_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<PairRange>
@@ -157,7 +157,7 @@ namespace reticula {
 
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::input_range VertRange,
     std::ranges::input_range EdgeRange,
     std::uniform_random_bit_generator Gen>
@@ -169,7 +169,7 @@ namespace reticula {
       Gen& generator);
 
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::ranges::input_range VertPairRange,
     std::ranges::input_range EdgePairRange,
     std::uniform_random_bit_generator Gen>
@@ -193,7 +193,7 @@ namespace reticula {
     @param max_t The end of observation window.
   */
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::uniform_random_bit_generator Gen>
   undirected_temporal_network<VertT, double>
   random_fully_mixed_temporal_network(
@@ -211,7 +211,7 @@ namespace reticula {
     @param generator A uniform random bit generator
   */
   template <
-    integer_vertex VertT,
+    integer_network_vertex VertT,
     std::uniform_random_bit_generator Gen>
   directed_temporal_network<VertT, double>
   random_directed_fully_mixed_temporal_network(
@@ -233,7 +233,7 @@ namespace reticula {
     @param size_hint Estimated number of edges in the final temporal network.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     random_number_distribution IETDist,
     random_number_distribution ResDist,
     std::uniform_random_bit_generator Gen>
@@ -266,7 +266,7 @@ namespace reticula {
     @param size_hint Estimated number of edges in the final temporal network.
   */
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     random_number_distribution IETDist,
     std::uniform_random_bit_generator Gen>
   requires

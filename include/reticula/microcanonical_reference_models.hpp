@@ -14,7 +14,9 @@ namespace reticula {
 
       The set of vertices, timestamps and the number of events are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> instant_event_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -28,7 +30,9 @@ namespace reticula {
       The set of vertices, timestamps, the number of events and the multiset
       of timelines are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> link_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -48,7 +52,9 @@ namespace reticula {
       vertices, timestamps, the number of events and the multiset of timelines
       of the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> connected_link_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -62,7 +68,9 @@ namespace reticula {
       The set of vertices, timestamps, the set of timeline cardinalities and the
       static projection of the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> topology_constrained_link_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -77,7 +85,9 @@ namespace reticula {
       The set of vertices, total number of events and the static projection of
       the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -97,7 +107,9 @@ namespace reticula {
       The set of vertices, cardinality of each timeline and the static
       projection of the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> weight_constrained_timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator,
@@ -117,7 +129,9 @@ namespace reticula {
       The set of vertices, cardinality of each timeline and the static
       projection of the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> weight_constrained_timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -134,7 +148,9 @@ namespace reticula {
       The set of vertices, cardinality of each timeline and the static
       projection of the temporal network are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> activity_constrained_timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator);
@@ -151,7 +167,9 @@ namespace reticula {
       times in each timeline and the static projection of the temporal network
       are conserved.
     */
-    template <temporal_edge EdgeT, std::uniform_random_bit_generator Gen>
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
     requires is_dyadic_v<EdgeT>
     network<EdgeT> inter_event_shuffling(
         const network<EdgeT>& temp, Gen& generator);

@@ -14,7 +14,7 @@
 namespace reticula {
   template <typename T>
   concept network_temporal_cluster =
-    temporal_edge<typename T::VertexType> &&
+    temporal_network_edge<typename T::VertexType> &&
     requires(T a, const T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
@@ -31,7 +31,9 @@ namespace reticula {
       { a.contains(v) } -> std::convertible_to<bool>;
     };  // NOLINT(readability/braces)
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster {
   public:
     using VertexType = EdgeT;
@@ -92,7 +94,9 @@ namespace reticula {
   };
 
 
-  template <temporal_edge EdgeT, temporal_adjacency::temporal_adjacency AdjT>
+  template <
+    temporal_network_edge EdgeT,
+    temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster_size {
   public:
     using VertexType = EdgeT;
@@ -114,7 +118,7 @@ namespace reticula {
   };
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster_sketch {
   public:
@@ -175,7 +179,7 @@ namespace reticula {
   };
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   class temporal_cluster_size_estimate {
   public:

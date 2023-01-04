@@ -35,7 +35,7 @@ namespace reticula {
     };
 
     template <
-      temporal_edge EdgeT,
+      temporal_network_edge EdgeT,
       temporal_adjacency::temporal_adjacency AdjT,
       typename IntermComponent,
       typename OutputComponent>
@@ -95,7 +95,7 @@ namespace reticula {
     }
 
     template <
-      temporal_edge EdgeT,
+      temporal_network_edge EdgeT,
       temporal_adjacency::temporal_adjacency AdjT,
       typename IntermComponent,
       typename OutputComponent>
@@ -156,7 +156,7 @@ namespace reticula {
     }
 
     template <
-      temporal_edge EdgeT,
+      temporal_network_edge EdgeT,
       temporal_adjacency::temporal_adjacency AdjT>
     component<EdgeT>
     generic_out_component(
@@ -194,7 +194,7 @@ namespace reticula {
 
   // in-components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component<EdgeT>>>
   in_components(
@@ -204,7 +204,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size<EdgeT>>>
   in_component_sizes(
@@ -214,7 +214,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size_estimate<EdgeT>>>
   in_component_size_estimates(
@@ -227,7 +227,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   in_component(
@@ -239,7 +239,7 @@ namespace reticula {
 
   // out-components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component<EdgeT>>>
   out_components(
@@ -249,7 +249,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size<EdgeT>>>
   out_component_sizes(
@@ -259,7 +259,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<std::pair<EdgeT, component_size_estimate<EdgeT>>>
   out_component_size_estimates(
@@ -272,7 +272,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   out_component(
@@ -283,7 +283,7 @@ namespace reticula {
 
   // weakly connected components
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   std::vector<component<EdgeT>>
   weakly_connected_components(
@@ -328,7 +328,7 @@ namespace reticula {
   }
 
   template <
-    temporal_edge EdgeT,
+    temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   component<EdgeT>
   weakly_connected_component(
