@@ -3,6 +3,9 @@ namespace reticula {
   requires is_pairlike_of<
       std::ranges::range_value_t<AttrPairRange>, double, double>
   double pearson_correlation_coefficient(AttrPairRange&& f) {
+    if (f.size() < 2)
+      return std::numeric_limits<double>::quiet_NaN();
+
     double mean_x = 0.0, mean_y = 0.0;
     double length = static_cast<double>(f.size());
     auto& [first_x, first_y] = *std::begin(f);
