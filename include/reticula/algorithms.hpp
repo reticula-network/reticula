@@ -592,7 +592,7 @@ namespace reticula {
       const typename EdgeT::VertexType& vert);
 
   /**
-    Calculate degree of a vertex in a network
+    Calculate degree of a vertex in an undirected network
   */
   template <undirected_network_edge EdgeT>
   std::size_t degree(
@@ -628,7 +628,7 @@ namespace reticula {
   in_out_degree_pair_sequence(const network<EdgeT>& net);
 
   /**
-    Returns the degree sequence of a network
+    Returns the degree sequence of an undirected network
   */
   template <undirected_network_edge EdgeT>
   std::vector<std::size_t>
