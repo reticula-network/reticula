@@ -1043,21 +1043,21 @@ namespace reticula {
     return lengths;
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::size_t in_degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert) {
     return net.in_degree(vert);
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::size_t out_degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert) {
     return net.out_degree(vert);
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::size_t incident_degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert) {
@@ -1072,7 +1072,7 @@ namespace reticula {
   }
 
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::vector<std::size_t>
   in_degree_sequence(const network<EdgeT>& net) {
     std::vector<std::size_t> seq;
@@ -1083,7 +1083,7 @@ namespace reticula {
     return seq;
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::vector<std::size_t>
   out_degree_sequence(const network<EdgeT>& net) {
     std::vector<std::size_t> seq;
@@ -1094,7 +1094,7 @@ namespace reticula {
     return seq;
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::vector<std::size_t>
   incident_degree_sequence(const network<EdgeT>& net) {
     std::vector<std::size_t> seq;
@@ -1105,7 +1105,7 @@ namespace reticula {
     return seq;
   }
 
-  template <directed_network_edge EdgeT>
+  template <network_edge EdgeT>
   std::vector<std::pair<std::size_t, std::size_t>>
   in_out_degree_pair_sequence(const network<EdgeT>& net) {
     std::vector<std::pair<std::size_t, std::size_t>> seq;
