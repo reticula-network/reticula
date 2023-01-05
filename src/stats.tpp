@@ -1,3 +1,5 @@
+#include <limits>
+
 namespace reticula {
   template <ranges::forward_range AttrPairRange>
   requires is_pairlike_of<
