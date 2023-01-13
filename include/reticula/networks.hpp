@@ -61,7 +61,7 @@ namespace reticula {
      */
     template <std::ranges::input_range EdgeRange>
     requires std::convertible_to<
-      std::ranges::range_value_t<EdgeRange>, EdgeType>
+      std::ranges::range_value_t<EdgeRange>, EdgeT>
     explicit network(EdgeRange&& edges);
 
     /**
@@ -77,8 +77,10 @@ namespace reticula {
       std::ranges::input_range EdgeRange,
       std::ranges::input_range VertRange>
     requires
-      std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeType> &&
-      std::convertible_to<std::ranges::range_value_t<VertRange>, VertexType>
+      std::convertible_to<
+        std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+      std::convertible_to<
+        std::ranges::range_value_t<VertRange>, typename Edget::VertexType>
     explicit network(EdgeRange&& edges, VertRange&& verts);
 
     /**
