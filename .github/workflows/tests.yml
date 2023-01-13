@@ -32,7 +32,7 @@ jobs:
       run: |
         mkdir build
         cmake -Bbuild -S.
-        cmake --build build/ --target hyperloglog_tests
+        cmake --build build/ --target reticula_tests
 
     - name: Run tests
       working-directory: build
