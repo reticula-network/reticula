@@ -80,7 +80,7 @@ namespace reticula {
       std::convertible_to<
         std::ranges::range_value_t<EdgeRange>, EdgeT> &&
       std::convertible_to<
-        std::ranges::range_value_t<VertRange>, typename Edget::VertexType>
+        std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
     explicit network(EdgeRange&& edges, VertRange&& verts);
 
     /**
