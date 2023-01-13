@@ -68,10 +68,9 @@ target_link_libraries(${PROJECT_NAME}_tests
 if(NOT MSVC)
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
     -Werror -Wall -Wextra -Wconversion -Wsign-conversion
-    -fconcepts-diagnostics-depth=3 -g
-    -fsanitize=address,undefined,leak)
+    -fsanitize=address,undefined -g)
   target_link_options(${PROJECT_NAME}_tests PRIVATE
-    -fsanitize=address,undefined,leak)
+    -fsanitize=address,undefined)
 endif()
 
 include(CTest)
