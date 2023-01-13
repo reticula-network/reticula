@@ -3,24 +3,37 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: Tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-12]
 
     steps:
-    - name: Install GCC
+    - name: Install Pre-requisits on ubuntu
+      if: ${{ startsWith(matrix.os, 'ubuntu') }}
       run: |
         sudo apt-get -qy update
-        sudo apt-get install gcc-10 g++-10
-    - uses: actions/checkout@v2
-    - name: g++ version
-      run: g++-10 -v
+        sudo apt-get install g++ ninja-build cmake
+        ninja --version
+        cmake --version
+        g++ --version
+
+    - name: Install dependencies on windows
+      if: ${{ startsWith(matrix.os, 'windows') }}
+      run: |
+        choco install ninja cmake
+        cmake --version
+
+    - uses: actions/checkout@v3
     - name: cmake build
-      env:
-        CC: g++-10
-        CXX: g++-10
       run: |
         mkdir build
-        cmake -Bbuild -H.
-        cmake --build build/ --target reticula_tests -j 2
+        cmake -Bbuild -S.
+        cmake --build build/ --target hyperloglog_tests
+
     - name: Run tests
-      run: build/reticula_tests
+      working-directory: build
+      run: ctest -C Debug --output-on-failure
