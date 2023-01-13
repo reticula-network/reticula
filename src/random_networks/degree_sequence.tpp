@@ -55,8 +55,8 @@ namespace reticula {
         if (size == 0) {
           return false;
         } else {
-          for (std::size_t i = 0; i < size; i++)
-            for (std::size_t j = 0; j < i; j++)
+          for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(size); i++)
+            for (std::ptrdiff_t j = 0; j < i; j++)
               if (!edges.contains({
                     static_cast<VertT>(*(nodes_begin+i)),
                     static_cast<VertT>(*(nodes_begin+j))}))
@@ -74,15 +74,15 @@ namespace reticula {
 
       VertT stubs_sum = degree_sum;
 
-      std::vector<std::size_t> nodes;
+      std::vector<VertT> nodes;
       nodes.reserve(degrees.size());
-      std::vector<std::size_t> stubs;
+      std::vector<VertT> stubs;
       stubs.reserve(degrees.size());
 
-      for (std::size_t i = 0; i < degrees.size(); i++) {
-        if (degrees[i] > 0) {
+      for (VertT i = 0; i < static_cast<VertT>(degrees.size()); i++) {
+        if (degrees[static_cast<std::size_t>(i)] > 0) {
           nodes.push_back(i);
-          stubs.push_back(degrees[i]);
+          stubs.push_back(degrees[static_cast<std::size_t>(i)]);
         }
       }
 
@@ -96,13 +96,14 @@ namespace reticula {
         std::size_t i = d(gen), j = d(gen);
         while (i == j) j = d(gen);
 
-        std::size_t u = nodes[i], v = nodes[j];
+        VertT u = nodes[i], v = nodes[j];
 
         double puv =
-          static_cast<double>(degrees[u]*degrees[v])/
+          static_cast<double>(
+              degrees[static_cast<std::size_t>(u)]*
+              degrees[static_cast<std::size_t>(v)])/
             (2.0*static_cast<double>(degree_sum));
-        if (undirected_edge<VertT> new_edge(
-              static_cast<VertT>(u), static_cast<VertT>(v));
+        if (undirected_edge<VertT> new_edge(u, v);
             !edges.contains(new_edge) &&
               std::uniform_real_distribution{}(gen) > puv) {
           edges.insert(new_edge);
@@ -241,22 +242,22 @@ namespace reticula {
 
       VertT in_stubs_sum = in_degree_sum;
 
-      std::vector<std::size_t> in_nodes, in_stubs;
+      std::vector<VertT> in_nodes, in_stubs;
       in_nodes.reserve(in_degrees.size());
       in_stubs.reserve(in_degrees.size());
 
-      std::vector<std::size_t> out_nodes, out_stubs;
+      std::vector<VertT> out_nodes, out_stubs;
       out_nodes.reserve(in_degrees.size());
       out_stubs.reserve(in_degrees.size());
 
-      for (std::size_t i = 0; i < in_degrees.size(); i++) {
-        if (in_degrees[i] > 0) {
+      for (VertT i = 0; i < static_cast<VertT>(in_degrees.size()); i++) {
+        if (in_degrees[static_cast<std::size_t>(i)] > 0) {
           in_nodes.push_back(i);
-          in_stubs.push_back(in_degrees[i]);
+          in_stubs.push_back(in_degrees[static_cast<std::size_t>(i)]);
         }
-        if (out_degrees[i] > 0) {
+        if (out_degrees[static_cast<std::size_t>(i)] > 0) {
           out_nodes.push_back(i);
-          out_stubs.push_back(out_degrees[i]);
+          out_stubs.push_back(out_degrees[static_cast<std::size_t>(i)]);
         }
       }
 
@@ -277,10 +278,12 @@ namespace reticula {
         std::size_t i = in_d(gen), j = out_d(gen);
         while (in_nodes[i] == out_nodes[j]) j = out_d(gen);
 
-        std::size_t u = in_nodes[i], v = out_nodes[j];
+        VertT u = in_nodes[i], v = out_nodes[j];
 
         double puv =
-          static_cast<double>(in_degrees[u]*out_degrees[v])/
+          static_cast<double>(
+              in_degrees[static_cast<std::size_t>(u)]*
+              out_degrees[static_cast<std::size_t>(v)])/
             (2.0*static_cast<double>(in_degree_sum));
         if (directed_edge<VertT> new_edge(
               static_cast<VertT>(u), static_cast<VertT>(v));

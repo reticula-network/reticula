@@ -7,7 +7,7 @@
 namespace std {
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::undirected_temporal_hyperedge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::undirected_temporal_hyperedge<
           VertexType, TimeType>& e) const {
@@ -23,7 +23,7 @@ namespace std {
 
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_temporal_hyperedge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::directed_temporal_hyperedge<
           VertexType, TimeType>& e) const {
@@ -46,7 +46,7 @@ namespace std {
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_delayed_temporal_hyperedge<
       VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const
         reticula::directed_delayed_temporal_hyperedge<
@@ -75,10 +75,10 @@ namespace std {
 namespace hll {
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::undirected_temporal_hyperedge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::undirected_temporal_hyperedge<VertexType, TimeType>& e,
-        uint32_t seed) const {
+        std::uint64_t seed) const {
       return hll::hash<size_t>{}(
           std::hash<reticula::undirected_temporal_hyperedge<
             VertexType, TimeType>>{}(e), seed);
@@ -90,7 +90,7 @@ namespace hll {
     uint64_t
     operator()(
         const reticula::directed_temporal_hyperedge<VertexType, TimeType>& e,
-        uint32_t seed) const {
+        std::uint64_t seed) const {
       return hll::hash<size_t>{}(
           std::hash<reticula::directed_temporal_hyperedge<
             VertexType, TimeType>>{}(e), seed);
@@ -104,7 +104,7 @@ namespace hll {
     operator()(
         const reticula::directed_delayed_temporal_hyperedge<
           VertexType, TimeType>& e,
-        uint32_t seed) const {
+        std::uint64_t seed) const {
       return hll::hash<size_t>{}(
           std::hash<reticula::directed_delayed_temporal_hyperedge<
               VertexType, TimeType>>{}(e), seed);

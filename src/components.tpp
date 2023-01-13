@@ -76,21 +76,21 @@ namespace reticula {
   }
 
   template <network_vertex VertT>
-  component_sketch<VertT>::component_sketch(std::size_t seed) :
-    _verts(true, static_cast<uint32_t>(seed)) {}
+  component_sketch<VertT>::component_sketch(std::uint64_t seed) :
+    _verts(true, seed) {}
 
   template <network_vertex VertT>
   component_sketch<VertT>::component_sketch(
       std::initializer_list<VertT> verts,
-      std::size_t seed) :
+      std::uint64_t seed) :
     component_sketch(std::vector(verts), seed) {}
 
   template <network_vertex VertT>
   template <std::ranges::input_range Range>
   requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
   component_sketch<VertT>::component_sketch(
-      Range&& verts, std::size_t seed) :
-    _verts(true, static_cast<uint32_t>(seed)) {
+      Range&& verts, std::uint64_t seed) :
+    _verts(true, seed) {
     for (auto&& v: verts)
       _verts.insert(v);
   }

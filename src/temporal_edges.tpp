@@ -7,7 +7,7 @@
 namespace std {
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::undirected_temporal_edge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::undirected_temporal_edge<
           VertexType, TimeType>& e) const {
@@ -19,7 +19,7 @@ namespace std {
 
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_temporal_edge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::directed_temporal_edge<
           VertexType, TimeType>& e) const {
@@ -31,7 +31,7 @@ namespace std {
 
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_delayed_temporal_edge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::directed_delayed_temporal_edge<
           VertexType, TimeType>& e) const {
@@ -49,11 +49,11 @@ namespace std {
 namespace hll {
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::undirected_temporal_edge<VertexType, TimeType>> {
-    size_t
+    std::size_t
     operator()(
         const reticula::undirected_temporal_edge<VertexType, TimeType>& e,
-        uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::undirected_temporal_edge<
             VertexType, TimeType>>{}(e), seed);
     }
@@ -61,11 +61,11 @@ namespace hll {
 
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_temporal_edge<VertexType, TimeType>> {
-    uint64_t
+    std::uint64_t
     operator()(
         const reticula::directed_temporal_edge<VertexType, TimeType>& e,
-        uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::directed_temporal_edge<
             VertexType, TimeType>>{}(e), seed);
     }
@@ -73,11 +73,11 @@ namespace hll {
 
   template<reticula::network_vertex VertexType, typename TimeType>
   struct hash<reticula::directed_delayed_temporal_edge<VertexType, TimeType>> {
-    uint64_t
+    std::uint64_t
     operator()(
         const reticula::directed_delayed_temporal_edge<VertexType, TimeType>& e,
-        uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<
             reticula::directed_delayed_temporal_edge<
               VertexType, TimeType>>{}(e), seed);

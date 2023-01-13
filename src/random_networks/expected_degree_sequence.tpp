@@ -146,8 +146,10 @@ namespace reticula {
                 std::uniform_real_distribution{}(generator))/std::log(1-p));
 
           if (!self_loops)
-            if (node_index_in_in_weight_pair[i] >= v &&
-                node_index_in_in_weight_pair[i] <= v+delta)
+            if (node_index_in_in_weight_pair[
+                  static_cast<std::size_t>(i)] >= v &&
+                node_index_in_in_weight_pair[
+                  static_cast<std::size_t>(i)] <= v+delta)
               delta++;
           v += delta;
         }

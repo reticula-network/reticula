@@ -1,11 +1,12 @@
 #include <filesystem>
 #include <cstdio>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
+using Catch::Matchers::UnorderedEquals;
 
 #include <reticula/io.hpp>
 #include <reticula/generators.hpp>
-using Catch::Matchers::UnorderedEquals;
 
 std::filesystem::path test_dir() {
   return std::filesystem::path(__FILE__).parent_path()/"io_test_files";

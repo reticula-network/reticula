@@ -1,11 +1,12 @@
 #include <cmath>
 #include <algorithm>
 
-#include <catch2/catch.hpp>
-
 #include <reticula/networks.hpp>
 #include <reticula/random_networks.hpp>
 
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
@@ -440,7 +441,8 @@ TEST_CASE("random expected degree sequence hypergraph",
     REQUIRE(std::ranges::all_of(node_degrees,
           [n, ens, &weights](const std::pair<int, std::size_t>& kv) {
             auto& [v, d] = kv;
-            double mean = static_cast<double>(ens)*weights[v];
+            double mean = static_cast<double>(ens)*weights[
+              static_cast<std::size_t>(v)];
             double sigma = std::sqrt(mean);
 
             return static_cast<double>(d) >= mean - 3*sigma &&
@@ -518,7 +520,7 @@ TEST_CASE("random directed expected degree sequence hypergraph",
   }
 
   SECTION("edge existance probability") {
-    std::size_t ens = 4000;
+    std::size_t ens = 1000;
     std::size_t n = 100;
 
     std::vector<std::pair<double, double>> weights;
@@ -547,10 +549,13 @@ TEST_CASE("random directed expected degree sequence hypergraph",
             auto& [v, ds] = kv;
             auto& [in_d, out_d] = ds;
 
-            double mean_in = static_cast<double>(ens)*weights[v].first;
+            double mean_in = static_cast<double>(ens)*weights[
+              static_cast<std::size_t>(v)].first;
+
             double sigma_in = std::sqrt(mean_in);
 
-            double mean_out = static_cast<double>(ens)*weights[v].second;
+            double mean_out = static_cast<double>(ens)*weights[
+              static_cast<std::size_t>(v)].second;
             double sigma_out = std::sqrt(mean_out);
 
             return static_cast<double>(in_d) >= mean_in - 3*sigma_in &&

@@ -8,7 +8,7 @@
 namespace std {
   template<reticula::network_vertex VertexType>
   struct hash<reticula::directed_edge<VertexType>> {
-    size_t
+    std::size_t
     operator()(const reticula::directed_edge<VertexType>& e) const {
       return reticula::utils::combine_hash<VertexType, reticula::hash>(
           reticula::hash<VertexType>{}(e._tail), e._head);
@@ -17,7 +17,7 @@ namespace std {
 
   template<reticula::network_vertex VertexType>
   struct hash<reticula::undirected_edge<VertexType>> {
-    size_t operator()(const reticula::undirected_edge<VertexType>& e) const {
+    std::size_t operator()(const reticula::undirected_edge<VertexType>& e) const {
       return reticula::utils::combine_hash<VertexType, reticula::hash>(
           reticula::hash<VertexType>{}(e._v1), e._v2);
     }
@@ -30,8 +30,8 @@ namespace hll {
   struct hash<reticula::directed_edge<VertexType>> {
     uint64_t
     operator()(const reticula::directed_edge<
-        VertexType>& e, uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        VertexType>& e, std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::directed_edge<VertexType>>{}(e), seed);
     }
   };
@@ -40,8 +40,8 @@ namespace hll {
   struct hash<reticula::undirected_edge<VertexType>> {
     uint64_t
     operator()(const reticula::undirected_edge<
-        VertexType>& e, uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        VertexType>& e, std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::undirected_edge<VertexType>>{}(e), seed);
     }
   };

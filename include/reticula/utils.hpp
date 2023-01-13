@@ -21,7 +21,7 @@ namespace reticula {
 
       @code{.cpp}
       std::pair<int, int> p(12, 13);
-      size_t p_hash =
+      std::size_t p_hash =
         reticula::utils::combine_hash(std::hash<int>{}(p.first), p.second);
       @endcode
 
@@ -29,7 +29,7 @@ namespace reticula {
       @param other Value that would be hashed and mixed with `seed` 
      */
     template <class T, template<typename> class HashStruct>
-    inline size_t combine_hash(const size_t seed, const T& other) {
+    inline std::size_t combine_hash(const std::size_t seed, const T& other) {
       return seed ^ (HashStruct<T>{}(other) +
           RETICULA_UTIL_GOLDEN_RATIO + (seed << 6) + (seed >> 2));
     }
@@ -44,8 +44,8 @@ namespace reticula {
       @endcode
      */
     template <class T1, class T2, template<typename> class HashStruct>
-    inline size_t unordered_hash(const T1& t1, const T2& t2) {
-      size_t h1, h2;
+    inline std::size_t unordered_hash(const T1& t1, const T2& t2) {
+      std::size_t h1, h2;
       std::tie(h1, h2) = std::minmax(
           HashStruct<T1>{}(t1), HashStruct<T2>{}(t2));
       return h1 ^ (h2 + RETICULA_UTIL_GOLDEN_RATIO + (h1 << 6) + (h1 >> 2));
@@ -102,8 +102,8 @@ namespace hll {
   template <typename T1, typename T2>
   struct hash<std::pair<T1, T2>> {
     std::size_t operator()(
-        const std::pair<T1, T2>& p, uint32_t seed) const noexcept {
-      return hll::hash<size_t>{}(
+        const std::pair<T1, T2>& p, std::uint64_t seed) const noexcept {
+      return hll::hash<std::size_t>{}(
           reticula::hash<std::pair<T1, T2>>{}(p), seed);
     }
   };

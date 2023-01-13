@@ -1,7 +1,7 @@
 #include <cmath>
 #include <limits>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <reticula/temporal_edges.hpp>
 #include <reticula/temporal_adjacency.hpp>

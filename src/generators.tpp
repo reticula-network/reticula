@@ -51,7 +51,8 @@ namespace reticula {
   template <integer_network_vertex VertT>
   undirected_network<VertT> complete_graph(VertT size) {
     std::vector<undirected_edge<VertT>> edges;
-    edges.reserve((size*(size-1))/2);
+    if (size > 0)
+      edges.reserve(static_cast<std::size_t>((size*(size-1))/2));
 
     for (VertT i = {}; i < size; i++)
       for (VertT j = {}; j < i; j++)
@@ -63,7 +64,8 @@ namespace reticula {
   template <integer_network_vertex VertT>
   directed_network<VertT> complete_directed_graph(VertT size) {
     std::vector<directed_edge<VertT>> edges;
-    edges.reserve((size*(size-1)));
+    if (size > 0)
+      edges.reserve(static_cast<std::size_t>(size*(size-1)));
 
     for (VertT i = {}; i < size; i++)
       for (VertT j = {}; j < size; j++)

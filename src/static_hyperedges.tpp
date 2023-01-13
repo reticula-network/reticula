@@ -43,8 +43,8 @@ namespace hll {
     uint64_t
     operator()(
         const reticula::directed_hyperedge<VertexType>& e,
-        uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::directed_hyperedge<VertexType>>{}(e), seed);
     }
   };
@@ -54,8 +54,8 @@ namespace hll {
     uint64_t
     operator()(
         const reticula::undirected_hyperedge<VertexType>& e,
-        uint32_t seed) const {
-      return hll::hash<size_t>{}(
+        std::uint64_t seed) const {
+      return hll::hash<std::size_t>{}(
           std::hash<reticula::undirected_hyperedge<VertexType>>{}(e), seed);
     }
   };

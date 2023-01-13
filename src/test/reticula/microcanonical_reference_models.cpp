@@ -3,7 +3,10 @@
 #include <utility>
 #include <random>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/catch_approx.hpp>
+using Catch::Approx;
 using Catch::Matchers::UnorderedEquals;
 using Catch::Matchers::Equals;
 

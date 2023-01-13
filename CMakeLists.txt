@@ -11,18 +11,18 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
-  GIT_TAG e0a5d01)
+  GIT_TAG 4e9a4fc)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
-  GIT_TAG 153c69d)
+  GIT_TAG d220af2)
 
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v2.13.7)
+  GIT_TAG v3.2.1)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog Catch2)
+FetchContent_MakeAvailable(disjoint_set hyperloglog)
 
 add_library(csv INTERFACE)
 target_include_directories(csv
@@ -38,10 +38,12 @@ target_include_directories(
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog csv)
 
+FetchContent_MakeAvailable(Catch2)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+
 add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
-  src/test/reticula/tests.cpp
   src/test/reticula/stats.cpp
   src/test/reticula/intervals.cpp
   src/test/reticula/temporal_adjacency.cpp
@@ -59,8 +61,10 @@ add_executable(
   src/test/reticula/components.cpp
   src/test/reticula/temporal_clusters.cpp
   src/test/reticula/microcanonical_reference_models.cpp)
-target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2)
+add_dependencies(${PROJECT_NAME}_tests
+  hyperloglog_tests disjoint_set_tests)  # TODO: ctest shouldn't need these
+target_link_libraries(${PROJECT_NAME}_tests
+  PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
 target_compile_options(${PROJECT_NAME}_tests PRIVATE
   -Werror -Wall -Wextra -Wconversion -Wsign-conversion
   -fconcepts-diagnostics-depth=3 -g)
@@ -69,6 +73,9 @@ target_compile_options(${PROJECT_NAME}_tests PRIVATE
 target_link_options(${PROJECT_NAME}_tests PRIVATE
   -fsanitize=address,undefined,leak)
 
+include(CTest)
+include(Catch)
+catch_discover_tests(${PROJECT_NAME}_tests)
 
 install(
   TARGETS ${PROJECT_NAME} csv

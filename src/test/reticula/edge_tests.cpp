@@ -1,7 +1,8 @@
 #include <sstream>
 #include <string>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
 using Catch::Matchers::Equals;
 using Catch::Matchers::UnorderedEquals;
 
@@ -50,7 +51,7 @@ TEST_CASE("undirected edges", "[reticula::undirected_edge]") {
     REQUIRE_NOTHROW(reticula::hash<reticula::undirected_edge<int>>{}(edge));
     REQUIRE_NOTHROW(std::hash<reticula::undirected_edge<int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::undirected_edge<int>>{}(edge, uint32_t{}));
+        reticula::undirected_edge<int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -100,7 +101,7 @@ TEST_CASE("undirected hyperedges", "[reticula::undirected_hyperedge]") {
     REQUIRE_NOTHROW(std::hash<
         reticula::undirected_hyperedge<int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::undirected_hyperedge<int>>{}(edge, uint32_t{}));
+        reticula::undirected_hyperedge<int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -161,7 +162,7 @@ TEST_CASE("directed edges", "[reticula::directed_edge]") {
     REQUIRE_NOTHROW(std::hash<
         reticula::directed_edge<int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::directed_edge<int>>{}(edge, uint32_t{}));
+        reticula::directed_edge<int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -220,7 +221,7 @@ TEST_CASE("directed hyperedges", "[reticula::directed_hyperedge]") {
     REQUIRE_NOTHROW(std::hash<
         reticula::directed_hyperedge<int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::directed_hyperedge<int>>{}(edge, uint32_t{}));
+        reticula::directed_hyperedge<int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -297,7 +298,7 @@ TEST_CASE("undirected temporal edges",
     REQUIRE_NOTHROW(std::hash<
         reticula::undirected_temporal_edge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::undirected_temporal_edge<int, int>>{}(edge, uint32_t{}));
+        reticula::undirected_temporal_edge<int, int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -356,7 +357,8 @@ TEST_CASE("undirected temporal hyperedges",
     REQUIRE_NOTHROW(std::hash<
         reticula::undirected_temporal_hyperedge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::undirected_temporal_hyperedge<int, int>>{}(edge, uint32_t{}));
+        reticula::undirected_temporal_hyperedge<int, int>>{}(
+            edge, std::uint64_t{}));
 
     reticula::undirected_temporal_hyperedge<std::string, int>
       edge2({"hello", "world", "!!"}, 2);
@@ -368,7 +370,7 @@ TEST_CASE("undirected temporal hyperedges",
           std::string, int>>{}(edge2));
     REQUIRE_NOTHROW(hll::hash<
         reticula::undirected_temporal_hyperedge<
-          std::string, int>>{}(edge2, uint32_t{}));
+          std::string, int>>{}(edge2, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -443,7 +445,7 @@ TEST_CASE("directed temporal edges", "[reticula::directed_temporal_edge]") {
     REQUIRE_NOTHROW(std::hash<
         reticula::directed_temporal_edge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::directed_temporal_edge<int, int>>{}(edge, uint32_t{}));
+        reticula::directed_temporal_edge<int, int>>{}(edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -509,7 +511,8 @@ TEST_CASE("directed temporal hyperedges",
     REQUIRE_NOTHROW(std::hash<
         reticula::directed_temporal_hyperedge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
-        reticula::directed_temporal_hyperedge<int, int>>{}(edge, uint32_t{}));
+        reticula::directed_temporal_hyperedge<int, int>>{}(
+            edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -598,7 +601,7 @@ TEST_CASE("directed delayed temporal edges",
         reticula::directed_delayed_temporal_edge<int, int>>{}(edge));
     REQUIRE_NOTHROW(hll::hash<
         reticula::directed_delayed_temporal_edge<int, int>>{}(
-          edge, uint32_t{}));
+          edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -686,7 +689,7 @@ TEST_CASE("directed delayed temporal hyperedges",
           edge));
     REQUIRE_NOTHROW(hll::hash<
         reticula::directed_delayed_temporal_hyperedge<int, int>>{}(
-          edge, uint32_t{}));
+          edge, std::uint64_t{}));
   }
 
   SECTION("compare correctly") {
@@ -717,7 +720,7 @@ TEST_CASE("directed delayed temporal hyperedges",
   }
 }
 
-TEST_CASE("higher-order edges", "[]") {
+TEST_CASE("higher-order edges", "[reticula::directed_edge]") {
   using HyperEventGraphEdge =
     reticula::directed_edge<
       reticula::directed_temporal_hyperedge<int, float>>;
@@ -727,5 +730,5 @@ TEST_CASE("higher-order edges", "[]") {
   REQUIRE_NOTHROW(std::hash<HyperEventGraphEdge>{}(
         HyperEventGraphEdge({{}, {}})));
   REQUIRE_NOTHROW(hll::hash<HyperEventGraphEdge>{}(
-        HyperEventGraphEdge({{}, {}}), uint32_t{}));
+        HyperEventGraphEdge({{}, {}}), std::uint64_t{}));
 }
