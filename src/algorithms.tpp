@@ -1169,7 +1169,9 @@ namespace reticula {
   template <undirected_static_network_edge EdgeT>
   double degree_assortativity(const network<EdgeT>& net) {
     return attribute_assortativity(net,
-        [&net](const typename EdgeT::VertexType& v) { return net.degree(v); });
+        [&net](const typename EdgeT::VertexType& v) {
+          return static_cast<double>(net.degree(v));
+        });
   }
 
   template <
