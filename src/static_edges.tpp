@@ -17,7 +17,8 @@ namespace std {
 
   template<reticula::network_vertex VertexType>
   struct hash<reticula::undirected_edge<VertexType>> {
-    std::size_t operator()(const reticula::undirected_edge<VertexType>& e) const {
+    std::size_t operator()(
+        const reticula::undirected_edge<VertexType>& e) const {
       return reticula::utils::combine_hash<VertexType, reticula::hash>(
           reticula::hash<VertexType>{}(e._v1), e._v2);
     }
