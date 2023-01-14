@@ -212,11 +212,8 @@ namespace reticula {
       return res;
 
     auto other = std::lower_bound(
-        in_edges_it->second.begin(), in_edges_it->second.end(), e,
-        [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e1, e2); });
-
-    if (other > in_edges_it->second.begin())
-      other--;
+        in_edges_it->second.rbegin(), in_edges_it->second.rend(), e,
+        [](const EdgeT& e1, const EdgeT& e2) { return effect_lt(e2, e1); });
 
     typename EdgeT::TimeType cutoff = _adj.maximum_linger(v);
     if (just_first)
@@ -224,8 +221,9 @@ namespace reticula {
     else
       res.reserve(std::min<std::size_t>(
             32, static_cast<std::size_t>(
-            other - in_edges_it->second.begin())));
-    while (other >= in_edges_it->second.begin() &&
+            other - in_edges_it->second.rend())));
+
+    while (other < in_edges_it->second.rend() &&
         e.cause_time() - other->effect_time() <= cutoff) {
       if (adjacent(*other, e)) {
         if (just_first && !res.empty() &&
@@ -234,7 +232,7 @@ namespace reticula {
         else
           res.push_back(*other);
       }
-      other--;
+      other++;
     }
     return res;
   }

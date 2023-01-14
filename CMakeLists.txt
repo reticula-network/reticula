@@ -65,7 +65,10 @@ add_dependencies(${PROJECT_NAME}_tests
   hyperloglog_tests disjoint_set_tests)  # TODO: ctest shouldn't need these
 target_link_libraries(${PROJECT_NAME}_tests
   PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-if(NOT MSVC)
+if(MSVC)
+  target_compile_options(${PROJECT_NAME}_tests PRIVATE
+    /W4 /bigobj)
+else()
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
     -Werror -Wall -Wextra -Wconversion -Wsign-conversion
     -fsanitize=address,undefined -g)
