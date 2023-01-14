@@ -11,11 +11,11 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
-  GIT_TAG 4e9a4fc)
+  GIT_TAG f5ba242)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
-  GIT_TAG d220af2)
+  GIT_TAG 18aa052)
 
 FetchContent_Declare(
   Catch2
@@ -61,8 +61,6 @@ add_executable(
   src/test/reticula/components.cpp
   src/test/reticula/temporal_clusters.cpp
   src/test/reticula/microcanonical_reference_models.cpp)
-add_dependencies(${PROJECT_NAME}_tests
-  hyperloglog_tests disjoint_set_tests)  # TODO: ctest shouldn't need these
 target_link_libraries(${PROJECT_NAME}_tests
   PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
 if(MSVC)
