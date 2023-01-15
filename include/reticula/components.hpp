@@ -13,7 +13,7 @@ namespace reticula {
   template <typename T>
   concept network_component =
     network_vertex<typename T::VertexType> &&
-    requires(T a, const T::VertexType& v) {
+    requires(T a, const typename T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
       a.merge(b);
@@ -25,7 +25,7 @@ namespace reticula {
     ranges::forward_range<T> &&
     ranges::sized_range<T> &&
     std::equality_comparable<T> &&
-    requires(const T& a, const T::VertexType& v) {
+    requires(const T& a, const typename T::VertexType& v) {
       { a.contains(v) } -> std::convertible_to<bool>;
     };  // NOLINT(readability/braces)
 

@@ -64,19 +64,19 @@ namespace reticula {
   }
 
   template <network_vertex VertT>
-  component<VertT>::IteratorType
+  typename component<VertT>::IteratorType
   component<VertT>::begin() const {
     return _verts.begin();
   }
 
   template <network_vertex VertT>
-  component<VertT>::IteratorType
+  typename component<VertT>::IteratorType
   component<VertT>::end() const {
     return _verts.end();
   }
 
   template <network_vertex VertT>
-  component_sketch<VertT>::component_sketch(std::uint64_t seed) :
+  component_sketch<VertT>::component_sketch(std::size_t seed) :
     _verts(true, seed) {}
 
   template <network_vertex VertT>
