@@ -1,12 +1,7 @@
+#ifndef INCLUDE_RETICULA_RANGES_HPP_
+#define INCLUDE_RETICULA_RANGES_HPP_
+
 #ifdef RETICULA_SHIM_RANGES
-
-#include <ranges>
-namespace reticula {
-  namespace ranges = std::ranges;
-  namespace views = std::ranges::views;
-}  // namespace reticula
-
-#else
 
 #include <range/v3/all.hpp>
 namespace reticula {
@@ -14,4 +9,14 @@ namespace reticula {
   namespace views = ::ranges::cpp20::views;
 }  // namespace reticula
 
-#endif
+#else
+
+#include <ranges>
+namespace reticula {
+  namespace ranges = std::ranges;
+  namespace views = std::ranges::views;
+}  // namespace reticula
+
+#endif  // RETICULA_SHIM_RANGES
+
+#endif  // INCLUDE_RETICULA_RANGES_HPP_

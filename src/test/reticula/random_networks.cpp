@@ -235,7 +235,8 @@ TEST_CASE("random expected degree sequence graph",
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = reticula::random_expected_degree_sequence_graph<int>(
-            reticula::ranges::iota_view{int{}, static_cast<int>(n)}, gen, false);
+            reticula::ranges::iota_view{int{}, static_cast<int>(n)},
+            gen, false);
         for (auto v: g.vertices())
           for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
