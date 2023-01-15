@@ -4,6 +4,7 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <compare>
 #include <initializer_list>
 
 #include <hll/hyperloglog.hpp>
