@@ -207,7 +207,8 @@ TEST_CASE("random expected degree sequence graph",
     SECTION("with self-loops") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = reticula::random_expected_degree_sequence_graph<int>(
-            reticula::ranges::iota_view{int{}, static_cast<int>(n)}, gen, true);
+            reticula::views::iota(int{}, static_cast<int>(n)),
+            gen, true);
         for (auto v: g.vertices())
           for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
@@ -235,7 +236,7 @@ TEST_CASE("random expected degree sequence graph",
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = reticula::random_expected_degree_sequence_graph<int>(
-            reticula::ranges::iota_view{int{}, static_cast<int>(n)},
+            reticula::views::iota(int{}, static_cast<int>(n)),
             gen, false);
         for (auto v: g.vertices())
           for (auto u: g.neighbours(v))
@@ -321,9 +322,9 @@ TEST_CASE("random directed expected degree sequence graph",
     std::vector<std::pair<double, double>> weights;
     weights.reserve(n);
     reticula::ranges::transform(
-        reticula::ranges::iota_view{int{}, static_cast<int>(n)},
-        reticula::ranges::iota_view{
-          int{}, static_cast<int>(n)} | reticula::views::reverse,
+        reticula::views::iota(int{}, static_cast<int>(n)),
+        reticula::views::iota(int{}, static_cast<int>(n))
+          | reticula::views::reverse,
         std::back_inserter(weights),
         [](int i, int j) { return std::make_pair(i, j);});
 

@@ -146,10 +146,8 @@ namespace reticula {
 
       if (stubs_sum == 0)
         return undirected_network<VertT>(edges,
-            ranges::iota_view{
-              VertT{},
-              static_cast<VertT>(degrees.size())
-            });
+            views::iota(
+              VertT{}, static_cast<VertT>(degrees.size())));
     }
     return std::nullopt;
   }
@@ -329,10 +327,8 @@ namespace reticula {
 
       if (in_stubs_sum == 0)
         return directed_network<VertT>(edges,
-            ranges::iota_view{
-              VertT{},
-              static_cast<VertT>(in_degrees.size())
-            });
+            views::iota(
+              VertT{}, static_cast<VertT>(in_degrees.size())));
     }
     return std::nullopt;
   }

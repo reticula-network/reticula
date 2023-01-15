@@ -81,7 +81,7 @@ namespace reticula {
         return undirected_network<VertT>(
             std::vector<undirected_edge<VertT>>(
               edges.begin(), edges.end()),
-            ranges::iota_view{VertT{}, size});
+            views::iota(VertT{}, size));
     }
 
     return std::nullopt;

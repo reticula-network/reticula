@@ -37,6 +37,6 @@ namespace reticula {
     }
 
     return undirected_network<VertT>(edges,
-        ranges::iota_view{VertT{}, n});
+        views::iota(VertT{}, n));
   }
 }  // namespace reticula

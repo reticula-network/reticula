@@ -24,8 +24,8 @@ namespace reticula {
     if (weight_node_pairs.front().first == 0.0)
       return undirected_network<VertT>(
           ranges::empty_view<undirected_edge<VertT>>{},
-          ranges::iota_view{
-            VertT{}, static_cast<VertT>(weight_node_pairs.size())});
+          views::iota(
+            VertT{}, static_cast<VertT>(weight_node_pairs.size())));
 
     double s = std::accumulate(
         weight_node_pairs.begin(),
@@ -67,8 +67,8 @@ namespace reticula {
     }
 
     return undirected_network<VertT>(edges,
-        ranges::iota_view{
-          VertT{}, static_cast<VertT>(weight_node_pairs.size())});
+        views::iota(
+          VertT{}, static_cast<VertT>(weight_node_pairs.size())));
   }
 
   template <
@@ -108,8 +108,8 @@ namespace reticula {
         out_weight_node_pairs.front().first == 0.0)
       return directed_network<VertT>(
           ranges::empty_view<directed_edge<VertT>>{},
-          ranges::iota_view{
-            VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
+          views::iota(
+            VertT{}, static_cast<VertT>(in_weight_node_pairs.size())));
 
     double s_in = std::accumulate(
         in_weight_node_pairs.begin(),
@@ -166,8 +166,8 @@ namespace reticula {
     }
 
     return directed_network<VertT>(edges,
-        ranges::iota_view{
-          VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
+        views::iota(
+          VertT{}, static_cast<VertT>(in_weight_node_pairs.size())));
   }
 
   template <
@@ -224,8 +224,8 @@ namespace reticula {
     if (weight_node_pairs.front().first == 0.0)
       return undirected_hypernetwork<VertT>(
           ranges::empty_view<undirected_hyperedge<VertT>>{},
-          ranges::iota_view{
-            VertT{}, static_cast<VertT>(weight_node_pairs.size())});
+          views::iota(
+            VertT{}, static_cast<VertT>(weight_node_pairs.size())));
 
     std::vector<undirected_hyperedge<VertT>> edges;
     edges.reserve(weight_edge_pairs.size());
@@ -259,8 +259,8 @@ namespace reticula {
     }
 
     return undirected_hypernetwork<VertT>(edges,
-        ranges::iota_view{
-          VertT{}, static_cast<VertT>(weight_node_pairs.size())});
+        views::iota(
+          VertT{}, static_cast<VertT>(weight_node_pairs.size())));
   }
 
   template <
@@ -356,8 +356,8 @@ namespace reticula {
     if (in_weight_node_pairs.front().first == 0.0)
       return directed_hypernetwork<VertT>(
           ranges::empty_view<directed_hyperedge<VertT>>{},
-          ranges::iota_view{
-            VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
+          views::iota(
+            VertT{}, static_cast<VertT>(in_weight_node_pairs.size())));
 
     std::vector<std::pair<std::size_t, std::vector<VertT>>> edges_out_inc;
     edges_out_inc.reserve(out_weight_edge_pairs.size());
@@ -436,8 +436,8 @@ namespace reticula {
       edges.emplace_back(edges_in_inc[i].second, edges_out_inc[i].second);
 
     return directed_hypernetwork<VertT>(edges,
-        ranges::iota_view{
-          VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
+        views::iota(
+          VertT{}, static_cast<VertT>(in_weight_node_pairs.size())));
   }
 
 }  // namespace reticula
