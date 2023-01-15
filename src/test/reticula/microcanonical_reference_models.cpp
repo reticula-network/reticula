@@ -1,4 +1,3 @@
-#include <ranges>
 #include <vector>
 #include <utility>
 #include <random>
@@ -10,6 +9,7 @@ using Catch::Approx;
 using Catch::Matchers::UnorderedEquals;
 using Catch::Matchers::Equals;
 
+#include <reticula/ranges.hpp>
 #include <reticula/network_concepts.hpp>
 #include <reticula/random_networks.hpp>
 #include <reticula/temporal_algorithms.hpp>
@@ -28,7 +28,7 @@ random_uneven_temporal_network(Gen& gen) {
   auto g1 = reticula::random_directed_fully_mixed_temporal_network(
       static_cast<std::size_t>(2), 1, 1024, gen);
   return reticula::directed_temporal_network<std::size_t, double>(
-      g1.edges_cause(), std::views::iota(
+      g1.edges_cause(), reticula::views::iota(
         std::size_t{}, static_cast<std::size_t>(1024)));
 }
 
@@ -38,7 +38,7 @@ timestamps(const std::vector<EdgeT>& edge_list) {
   std::vector<std::pair<
     typename EdgeT::TimeType,
     typename EdgeT::TimeType>> times;
-  times.reserve(std::ranges::size(edge_list));
+  times.reserve(reticula::ranges::size(edge_list));
   for (auto& e: edge_list)
     times.emplace_back(e.cause_time(), e.effect_time());
 
@@ -107,7 +107,7 @@ TEST_CASE("connected link shuffling",
       auto g1 = reticula::random_fully_mixed_temporal_network(
           static_cast<std::size_t>(2), 1, 1024, gen);
       reticula::undirected_temporal_network<std::size_t, double> g(
-          g1.edges_cause(), std::views::iota(
+          g1.edges_cause(), reticula::views::iota(
             std::size_t{}, static_cast<std::size_t>(1024)));
 
       g = reticula::graph_union(g, {{1, 3, 0}, {5, 6, 12}, {20, 25, 1}});
@@ -184,8 +184,8 @@ TEST_CASE("weight-constrained timeline shuffling",
   auto tls_before = reticula::link_timelines(g),
        tls_after = reticula::link_timelines(shuffled);
 
-  std::ranges::sort(tls_before);
-  std::ranges::sort(tls_after);
+  reticula::ranges::sort(tls_before);
+  reticula::ranges::sort(tls_after);
 
   for (std::size_t i = 0; i < tls_before.size(); i++) {
       REQUIRE(tls_before[i].first == tls_after[i].first);
@@ -210,8 +210,8 @@ TEST_CASE("activity-constrained timeline shuffling",
   auto tls_before = reticula::link_timelines(g),
        tls_after = reticula::link_timelines(shuffled);
 
-  std::ranges::sort(tls_before);
-  std::ranges::sort(tls_after);
+  reticula::ranges::sort(tls_before);
+  reticula::ranges::sort(tls_after);
 
   for (std::size_t i = 0; i < tls_before.size(); i++) {
       REQUIRE(tls_before[i].first == tls_after[i].first);
@@ -240,8 +240,8 @@ TEST_CASE("inter-event shuffling",
   auto tls_before = reticula::link_timelines(g),
        tls_after = reticula::link_timelines(shuffled);
 
-  std::ranges::sort(tls_before);
-  std::ranges::sort(tls_after);
+  reticula::ranges::sort(tls_before);
+  reticula::ranges::sort(tls_after);
 
   using EdgeT = decltype(g)::EdgeType;
 
@@ -262,11 +262,11 @@ TEST_CASE("inter-event shuffling",
         iets_after.push_back(tls_after[i].second[j].cause_time() -
                 tls_after[i].second[j-1].cause_time());
 
-      std::ranges::sort(iets_before);
-      std::ranges::sort(iets_after);
+      reticula::ranges::sort(iets_before);
+      reticula::ranges::sort(iets_after);
       REQUIRE(
-        std::ranges::all_of(
-          std::views::iota(std::size_t{}, iets_before.size()),
+        reticula::ranges::all_of(
+          reticula::views::iota(std::size_t{}, iets_before.size()),
           [&iets_before, &iets_after](std::size_t i) {
             return iets_before[i] == Approx(iets_after[i]);
         }));

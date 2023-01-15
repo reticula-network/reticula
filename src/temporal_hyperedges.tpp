@@ -126,28 +126,28 @@ namespace reticula {
         std::vector<VertexType>(heads), time) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::input_range R1, std::ranges::input_range R2>
+  template <ranges::input_range R1, ranges::input_range R2>
   requires
-    std::convertible_to<std::ranges::range_value_t<R1>, VertexType> &&
-    std::convertible_to<std::ranges::range_value_t<R2>, VertexType>
+    std::convertible_to<ranges::range_value_t<R1>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<R2>, VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::
     directed_temporal_hyperedge(
       const R1& tails, const R2& heads, TimeType time) : _time(time) {
-    if constexpr (std::ranges::sized_range<R1>)
-      _heads.reserve(std::ranges::size(heads));
-    std::ranges::copy(heads, std::back_inserter(_heads));
+    if constexpr (ranges::sized_range<R1>)
+      _heads.reserve(ranges::size(heads));
+    ranges::copy(heads, std::back_inserter(_heads));
 
-    if constexpr (std::ranges::sized_range<R2>)
-      _tails.reserve(std::ranges::size(tails));
-    std::ranges::copy(tails, std::back_inserter(_tails));
+    if constexpr (ranges::sized_range<R2>)
+      _tails.reserve(ranges::size(tails));
+    ranges::copy(tails, std::back_inserter(_tails));
 
-    std::ranges::sort(_heads);
-    auto [hfirst, hlast] = std::ranges::unique(_heads);
+    ranges::sort(_heads);
+    auto [hfirst, hlast] = ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
     _heads.shrink_to_fit();
 
-    std::ranges::sort(_tails);
-    auto [tfirst, tlast] = std::ranges::unique(_tails);
+    ranges::sort(_tails);
+    auto [tfirst, tlast] = ranges::unique(_tails);
     _tails.erase(tfirst, tlast);
     _tails.shrink_to_fit();
   }
@@ -179,13 +179,13 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_hyperedge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return std::ranges::binary_search(_tails, vert);
+    return ranges::binary_search(_tails, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_hyperedge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return std::ranges::binary_search(_heads, vert);
+    return ranges::binary_search(_heads, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -211,7 +211,7 @@ namespace reticula {
   directed_temporal_hyperedge<VertexType, TimeType>::incident_verts() const {
     std::vector<VertexType> res;
     res.reserve(_heads.size() + _tails.size());
-    std::ranges::set_union(_tails, _heads, std::back_inserter(res));
+    ranges::set_union(_tails, _heads, std::back_inserter(res));
     return res;
   }
 
@@ -242,7 +242,7 @@ namespace reticula {
       return false;
     } else {
       std::vector<VertexType> common;
-      std::ranges::set_intersection(a._heads, b._tails,
+      ranges::set_intersection(a._heads, b._tails,
           std::back_inserter(common));
       return common.size() > 0;
     }
@@ -262,10 +262,10 @@ namespace reticula {
         cause_time, effect_time) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::input_range R1, std::ranges::input_range R2>
+  template <ranges::input_range R1, ranges::input_range R2>
   requires
-    std::convertible_to<std::ranges::range_value_t<R1>, VertexType> &&
-    std::convertible_to<std::ranges::range_value_t<R2>, VertexType>
+    std::convertible_to<ranges::range_value_t<R1>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<R2>, VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
     directed_delayed_temporal_hyperedge(
       const R1& tails, const R2& heads,
@@ -275,21 +275,21 @@ namespace reticula {
       throw std::invalid_argument("directed_delayed_temporal_hyperedge cannot"
           " have a cause_time larger than effect_time");
 
-    if constexpr (std::ranges::sized_range<R1>)
-      _heads.reserve(std::ranges::size(heads));
-    std::ranges::copy(heads, std::back_inserter(_heads));
+    if constexpr (ranges::sized_range<R1>)
+      _heads.reserve(ranges::size(heads));
+    ranges::copy(heads, std::back_inserter(_heads));
 
-    if constexpr (std::ranges::sized_range<R2>)
-      _tails.reserve(std::ranges::size(tails));
-    std::ranges::copy(tails, std::back_inserter(_tails));
+    if constexpr (ranges::sized_range<R2>)
+      _tails.reserve(ranges::size(tails));
+    ranges::copy(tails, std::back_inserter(_tails));
 
-    std::ranges::sort(_heads);
-    auto [hfirst, hlast] = std::ranges::unique(_heads);
+    ranges::sort(_heads);
+    auto [hfirst, hlast] = ranges::unique(_heads);
     _heads.erase(hfirst, hlast);
     _heads.shrink_to_fit();
 
-    std::ranges::sort(_tails);
-    auto [tfirst, tlast] = std::ranges::unique(_tails);
+    ranges::sort(_tails);
+    auto [tfirst, tlast] = ranges::unique(_tails);
     _tails.erase(tfirst, tlast);
     _tails.shrink_to_fit();
   }
@@ -331,13 +331,13 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       is_out_incident(const VertexType& vert) const {
-    return std::ranges::binary_search(_tails, vert);
+    return ranges::binary_search(_tails, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       is_in_incident(const VertexType& vert) const {
-    return std::ranges::binary_search(_heads, vert);
+    return ranges::binary_search(_heads, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -380,7 +380,7 @@ namespace reticula {
       incident_verts() const {
     std::vector<VertexType> res;
     res.reserve(_heads.size() + _tails.size());
-    std::ranges::set_union(_tails, _heads, std::back_inserter(res));
+    ranges::set_union(_tails, _heads, std::back_inserter(res));
     return res;
   }
 
@@ -400,7 +400,7 @@ namespace reticula {
       return false;
     } else {
       std::vector<VertexType> common;
-      std::ranges::set_intersection(a._heads, b._tails,
+      ranges::set_intersection(a._heads, b._tails,
           std::back_inserter(common));
       return common.size() > 0;
     }
@@ -415,16 +415,16 @@ namespace reticula {
     undirected_temporal_hyperedge(std::vector<VertexType>(verts), time) {}
 
   template <network_vertex VertexType, typename TimeType>
-  template <std::ranges::input_range R>
-  requires std::convertible_to<std::ranges::range_value_t<R>, VertexType>
+  template <ranges::input_range R>
+  requires std::convertible_to<ranges::range_value_t<R>, VertexType>
   undirected_temporal_hyperedge<VertexType, TimeType>::
     undirected_temporal_hyperedge(
       const R& verts, const TimeType time) : _time(time) {
-    if constexpr (std::ranges::sized_range<R>)
-      _verts.reserve(std::ranges::size(verts));
-    std::ranges::copy(verts, std::back_inserter(_verts));
-    std::ranges::sort(_verts);
-    auto [first, last] = std::ranges::unique(_verts);
+    if constexpr (ranges::sized_range<R>)
+      _verts.reserve(ranges::size(verts));
+    ranges::copy(verts, std::back_inserter(_verts));
+    ranges::sort(_verts);
+    auto [first, last] = ranges::unique(_verts);
     _verts.erase(first, last);
     _verts.shrink_to_fit();
   }
@@ -458,19 +458,19 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_incident(const VertexType& vert) const {
-    return std::ranges::binary_search(_verts, vert);
+    return ranges::binary_search(_verts, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_in_incident(const VertexType& vert) const {
-    return std::ranges::binary_search(_verts, vert);
+    return ranges::binary_search(_verts, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_out_incident(const VertexType& vert) const {
-    return std::ranges::binary_search(_verts, vert);
+    return ranges::binary_search(_verts, vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -506,7 +506,7 @@ namespace reticula {
       return false;
     } else {
       std::vector<VertexType> common;
-      std::ranges::set_intersection(a._verts, b._verts,
+      ranges::set_intersection(a._verts, b._verts,
           std::back_inserter(common));
       return common.size() > 0;
     }

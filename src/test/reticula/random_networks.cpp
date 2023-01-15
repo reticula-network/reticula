@@ -1,6 +1,7 @@
 #include <cmath>
 #include <algorithm>
 
+#include <reticula/ranges.hpp>
 #include <reticula/networks.hpp>
 #include <reticula/random_networks.hpp>
 
@@ -109,7 +110,7 @@ TEST_CASE("random directed degree sequence graph",
 
     REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
 
-    REQUIRE(std::ranges::none_of(g.edges(),
+    REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
             return e.head() == e.tail();
           }));
@@ -153,7 +154,7 @@ TEST_CASE("random degree sequence graph",
 
     REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
 
-    REQUIRE(std::ranges::none_of(g.edges(),
+    REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
             return e.incident_verts().size() == 1;
           }));
@@ -188,7 +189,7 @@ TEST_CASE("random expected degree sequence graph",
 
     auto g = reticula::random_expected_degree_sequence_graph<int>(
         std::vector<double>(n, w), gen, false);
-    REQUIRE(std::ranges::none_of(g.edges(),
+    REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
             return e.incident_verts().size() == 1;
           }));
@@ -206,14 +207,14 @@ TEST_CASE("random expected degree sequence graph",
     SECTION("with self-loops") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = reticula::random_expected_degree_sequence_graph<int>(
-            std::ranges::iota_view{int{}, static_cast<int>(n)}, gen, true);
+            reticula::ranges::iota_view{int{}, static_cast<int>(n)}, gen, true);
         for (auto v: g.vertices())
           for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
-      REQUIRE(std::ranges::all_of(p,
+      REQUIRE(reticula::ranges::all_of(p,
             [n, ens](const std::pair<
               std::pair<int, int>,
               std::size_t>& kv) {
@@ -234,14 +235,14 @@ TEST_CASE("random expected degree sequence graph",
     SECTION("without self-loop") {
       for (std::size_t i = 0; i < ens; i++) {
         auto g = reticula::random_expected_degree_sequence_graph<int>(
-            std::ranges::iota_view{int{}, static_cast<int>(n)}, gen, false);
+            reticula::ranges::iota_view{int{}, static_cast<int>(n)}, gen, false);
         for (auto v: g.vertices())
           for (auto u: g.neighbours(v))
             p[std::make_pair(u, v)]++;
       }
 
       // Three-sigma test with normal approximation of binomial distribution
-      REQUIRE(std::ranges::all_of(p,
+      REQUIRE(reticula::ranges::all_of(p,
             [n, ens](const std::pair<
               std::pair<int, int>,
               std::size_t>& kv) {
@@ -287,7 +288,7 @@ TEST_CASE("random directed expected degree sequence graph",
 
     auto g = reticula::random_directed_expected_degree_sequence_graph<int>(
         std::vector<std::pair<double, double>>(n, {w, w}), gen, false);
-    REQUIRE(std::ranges::none_of(g.edges(),
+    REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
             return e.head() == e.tail();
           }));
@@ -318,10 +319,10 @@ TEST_CASE("random directed expected degree sequence graph",
 
     std::vector<std::pair<double, double>> weights;
     weights.reserve(n);
-    std::ranges::transform(
-        std::ranges::iota_view{int{}, static_cast<int>(n)},
-        std::ranges::iota_view{
-          int{}, static_cast<int>(n)} | std::views::reverse,
+    reticula::ranges::transform(
+        reticula::ranges::iota_view{int{}, static_cast<int>(n)},
+        reticula::ranges::iota_view{
+          int{}, static_cast<int>(n)} | reticula::views::reverse,
         std::back_inserter(weights),
         [](int i, int j) { return std::make_pair(i, j);});
 
@@ -335,7 +336,7 @@ TEST_CASE("random directed expected degree sequence graph",
       }
 
       // Three-sigma test with normal approximation of binomial distribution
-      REQUIRE(std::ranges::all_of(p,
+      REQUIRE(reticula::ranges::all_of(p,
             [n, ens](const std::pair<
               std::pair<int, int>,
               std::size_t>& kv) {
@@ -363,7 +364,7 @@ TEST_CASE("random directed expected degree sequence graph",
       }
 
       // Three-sigma test with normal approximation of binomial distribution
-      REQUIRE(std::ranges::all_of(p,
+      REQUIRE(reticula::ranges::all_of(p,
             [n, ens](const std::pair<
               std::pair<int, int>,
               std::size_t>& kv) {
@@ -438,7 +439,7 @@ TEST_CASE("random expected degree sequence hypergraph",
         edge_degrees[e.incident_verts().size()]++;
     }
 
-    REQUIRE(std::ranges::all_of(node_degrees,
+    REQUIRE(reticula::ranges::all_of(node_degrees,
           [n, ens, &weights](const std::pair<int, std::size_t>& kv) {
             auto& [v, d] = kv;
             double mean = static_cast<double>(ens)*weights[
@@ -454,11 +455,11 @@ TEST_CASE("random expected degree sequence hypergraph",
     for (auto&& w: weights)
       edge_degree_means[static_cast<std::size_t>(w)] += ens;
     std::size_t max_d = std::max(
-        std::ranges::max(
-          edge_degree_means | std::views::transform([](
+        reticula::ranges::max(
+          edge_degree_means | reticula::views::transform([](
               const auto& kv){ return kv.first; })),
-        std::ranges::max(
-          edge_degrees | std::views::transform([](
+        reticula::ranges::max(
+          edge_degrees | reticula::views::transform([](
               const auto& kv){ return kv.first; })));
 
     double sum_theo = 0.0, sum_exp = 0.0;
@@ -543,7 +544,7 @@ TEST_CASE("random directed expected degree sequence hypergraph",
       }
     }
 
-    REQUIRE(std::ranges::all_of(node_degrees,
+    REQUIRE(reticula::ranges::all_of(node_degrees,
           [n, ens, &weights](
               const std::pair<int, std::pair<std::size_t, std::size_t>>& kv) {
             auto& [v, ds] = kv;
@@ -591,7 +592,7 @@ TEST_CASE("random fully-mixed temporal network",
   for (auto&& e: g.edges())
     counts[e.static_projection()]++;
 
-  REQUIRE(std::ranges::all_of(counts,
+  REQUIRE(reticula::ranges::all_of(counts,
         [per_event_mean](
             std::pair<reticula::undirected_edge<std::size_t>, std::size_t> kv) {
           auto& [k, count] = kv;
@@ -626,7 +627,7 @@ TEST_CASE("random directed fully-mixed temporal network",
   for (auto&& e: g.edges())
     counts[e.static_projection()]++;
 
-  REQUIRE(std::ranges::all_of(counts,
+  REQUIRE(reticula::ranges::all_of(counts,
         [per_event_mean](
             std::pair<reticula::directed_edge<std::size_t>, std::size_t> kv) {
           auto& [k, count] = kv;

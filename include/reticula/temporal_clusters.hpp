@@ -1,11 +1,11 @@
 #ifndef INCLUDE_RETICULA_TEMPORAL_CLUSTERS_HPP_
 #define INCLUDE_RETICULA_TEMPORAL_CLUSTERS_HPP_
 
-#include <ranges>
 #include <unordered_set>
 
 #include <hll/hyperloglog.hpp>
 
+#include "ranges.hpp"
 #include "network_concepts.hpp"
 #include "temporal_adjacency.hpp"
 #include "intervals.hpp"
@@ -24,8 +24,8 @@ namespace reticula {
   template <typename T>
   concept exact_temporal_cluster =
     network_temporal_cluster<T> &&
-    std::ranges::forward_range<T> &&
-    std::ranges::sized_range<T> &&
+    ranges::forward_range<T> &&
+    ranges::sized_range<T> &&
     std::equality_comparable<T> &&
     requires(const T& a, const T::VertexType& v) {
       { a.contains(v) } -> std::convertible_to<bool>;
@@ -47,13 +47,13 @@ namespace reticula {
         std::initializer_list<EdgeT> verts,
         AdjT adj, std::size_t size_hint = 0);
 
-    template<std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    template<ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     explicit temporal_cluster(Range&& verts,
         AdjT adj, std::size_t size_hint = 0);
 
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    template <ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     void insert(Range&& events);
 
     void insert(const EdgeT& e);
@@ -144,13 +144,13 @@ namespace reticula {
         std::initializer_list<EdgeT> verts, AdjT adj,
         EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
-    template<std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    template<ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     explicit temporal_cluster_sketch(Range&& verts, AdjT adj,
         EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    template <ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     void insert(Range&& events);
 
     void insert(const EdgeT& e);

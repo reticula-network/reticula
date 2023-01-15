@@ -16,6 +16,10 @@ FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
   GIT_TAG 18aa052)
+FetchContent_Declare(
+  Range-v3
+  GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
+  GIT_TAG 0.12.0)
 
 FetchContent_Declare(
   Catch2
@@ -36,7 +40,14 @@ target_include_directories(
   INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(${PROJECT_NAME} INTERFACE disjoint_set hyperloglog csv)
+target_link_libraries(${PROJECT_NAME} INTERFACE
+  disjoint_set hyperloglog csv)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  FetchContent_MakeAvailable(range-v3)
+  target_link_libraries(${PROJECT_NAME} INTERFACE range-v3)
+  target_compile_definitions(${PROJECT_NAME} INTERFACE RETICULA_SHIM_RANGES)
+endif()
+
 
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
@@ -63,9 +74,9 @@ add_executable(
   src/test/reticula/microcanonical_reference_models.cpp)
 target_link_libraries(${PROJECT_NAME}_tests
   PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    /W4 /bigobj)
+    /W4 /bigobj /permissive-)
 else()
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
     -Werror -Wall -Wextra -Wconversion -Wsign-conversion

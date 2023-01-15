@@ -1,7 +1,7 @@
 namespace reticula {
-  template <std::ranges::forward_range AttrPairRange>
+  template <ranges::forward_range AttrPairRange>
   requires is_pairlike_of<
-      std::ranges::range_value_t<AttrPairRange>, double, double>
+      ranges::range_value_t<AttrPairRange>, double, double>
   double pearson_correlation_coefficient(AttrPairRange&& f) {
     if (f.size() < 2)
       return std::numeric_limits<double>::quiet_NaN();

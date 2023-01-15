@@ -2,8 +2,8 @@
 #define INCLUDE_RETICULA_STATS_HPP_
 
 #include <cmath>
-#include <ranges>
 
+#include "ranges.hpp"
 #include "network_concepts.hpp"
 
 namespace reticula {
@@ -11,9 +11,9 @@ namespace reticula {
     Calculates Pearson's correlation coeafficient of the two variables in the
     vector f.
   */
-  template <std::ranges::forward_range AttrPairRange>
+  template <ranges::forward_range AttrPairRange>
   requires is_pairlike_of<
-      std::ranges::range_value_t<AttrPairRange>, double, double>
+      ranges::range_value_t<AttrPairRange>, double, double>
   double pearson_correlation_coefficient(AttrPairRange&& f);
 }  // namespace reticula
 

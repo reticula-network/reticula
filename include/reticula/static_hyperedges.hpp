@@ -4,11 +4,11 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
-#include <ranges>
 #include <initializer_list>
 
 #include <hll/hyperloglog.hpp>
 
+#include "ranges.hpp"
 #include "type_traits.hpp"
 #include "network_concepts.hpp"
 
@@ -91,10 +91,10 @@ namespace reticula {
       @param heads The set of vertices at the head end of the hyperedge, often
       the receiving end of an effect.
      */
-    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    template <ranges::input_range R1, ranges::input_range R2>
     requires
-      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
-      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
+      std::convertible_to<ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<ranges::range_value_t<R2>, VertT>
     directed_hyperedge(const R1& tails, const R2& heads);
 
 
@@ -223,8 +223,8 @@ namespace reticula {
     /**
       Create an undirected hyperedge. Order of the vertices is arbitrary.
      */
-    template <std::ranges::input_range R>
-    requires std::convertible_to<std::ranges::range_value_t<R>, VertT>
+    template <ranges::input_range R>
+    requires std::convertible_to<ranges::range_value_t<R>, VertT>
     explicit undirected_hyperedge(const R& verts);
 
     /**

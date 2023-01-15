@@ -1,5 +1,4 @@
 #include <vector>
-#include <ranges>
 #include <functional>
 #include <cmath>
 
@@ -7,22 +6,23 @@
 #include <catch2/catch_approx.hpp>
 using Catch::Approx;
 
+#include <reticula/ranges.hpp>
 #include <reticula/stats.hpp>
 
 
 // Up until we get a real zip_view in C++23
 template <
-  std::ranges::forward_range Range1,
-  std::ranges::forward_range Range2>
+  reticula::ranges::forward_range Range1,
+  reticula::ranges::forward_range Range2>
 std::vector<
   std::pair<
-    std::ranges::range_value_t<Range1>,
-    std::ranges::range_value_t<Range2>>>
+    reticula::ranges::range_value_t<Range1>,
+    reticula::ranges::range_value_t<Range2>>>
 zip(Range1&& r1, Range2&& r2) {
   std::vector<
     std::pair<
-      std::ranges::range_value_t<Range1>,
-      std::ranges::range_value_t<Range2>>> f;
+      reticula::ranges::range_value_t<Range1>,
+      reticula::ranges::range_value_t<Range2>>> f;
   auto i1 = std::begin(r1);
   auto i2 = std::begin(r2);
   while (i1 != std::end(r1) && i2 != std::end(r2))
@@ -51,10 +51,10 @@ TEST_CASE("pearson correlation coeafficient",
 
   SECTION("basic stability") {
     REQUIRE(reticula::pearson_correlation_coefficient(
-          zip(x, x | std::views::transform(std::negate<double>{}))) ==
+          zip(x, x | reticula::views::transform(std::negate<double>{}))) ==
         Approx(-1.0));
     REQUIRE(reticula::pearson_correlation_coefficient(
-          zip(x | std::views::transform(std::negate<double>{}), x)) ==
+          zip(x | reticula::views::transform(std::negate<double>{}), x)) ==
         Approx(-1.0));
 
     REQUIRE(

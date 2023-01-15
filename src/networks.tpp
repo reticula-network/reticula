@@ -16,23 +16,23 @@ namespace reticula {
       std::vector<typename EdgeT::VertexType>(verts)) {}
 
   template <network_edge EdgeT>
-  template <std::ranges::input_range EdgeRange>
-  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  template <ranges::input_range EdgeRange>
+  requires std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>::network(EdgeRange&& edges)
   : network(edges, std::vector<typename EdgeT::VertexType>()) {}
 
   template <network_edge EdgeT>
   template <
-    std::ranges::input_range EdgeRange,
-    std::ranges::input_range VertRange>
+    ranges::input_range EdgeRange,
+    ranges::input_range VertRange>
   requires
-    std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+    std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT> &&
     std::convertible_to<
-      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+      ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
-    if constexpr (std::ranges::sized_range<EdgeRange>)
-      _edges_cause.reserve(std::ranges::size(edges));
-    std::ranges::copy(edges, std::back_inserter(_edges_cause));
+    if constexpr (ranges::sized_range<EdgeRange>)
+      _edges_cause.reserve(ranges::size(edges));
+    ranges::copy(edges, std::back_inserter(_edges_cause));
     std::sort(_edges_cause.begin(), _edges_cause.end());
     _edges_cause.erase(std::unique(_edges_cause.begin(), _edges_cause.end()),
         _edges_cause.end());
@@ -66,7 +66,7 @@ namespace reticula {
 
     _verts = std::vector<typename EdgeT::VertexType>(
         verts_set.begin(), verts_set.end());
-    std::ranges::sort(_verts);
+    ranges::sort(_verts);
 
     if (!instantaneous_undirected) {
       for (auto&& [v, e_list]: _in_edges) {
@@ -260,7 +260,7 @@ namespace reticula {
               res_edges.begin(),
               mid, res_edges.end(),
               [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-          auto to_erase = std::ranges::unique(res_edges);
+          auto to_erase = ranges::unique(res_edges);
           res_edges.erase(to_erase.begin(), to_erase.end());
         }
       }
@@ -273,7 +273,7 @@ namespace reticula {
         std::inplace_merge(
             res_edges.begin(),
             mid, res_edges.end());
-        auto to_erase = std::ranges::unique(res_edges);
+        auto to_erase = ranges::unique(res_edges);
         res_edges.erase(to_erase.begin(), to_erase.end());
       }
     }
@@ -288,7 +288,7 @@ namespace reticula {
           mid_effect,
           res._edges_effect.end(),
           [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
-      auto to_erase_effect = std::ranges::unique(res._edges_effect);
+      auto to_erase_effect = ranges::unique(res._edges_effect);
       res._edges_effect.erase(to_erase_effect.begin(), to_erase_effect.end());
     }
 
@@ -300,7 +300,7 @@ namespace reticula {
         res._edges_cause.begin(),
         mid_cause,
         res._edges_cause.end());
-    auto to_erase_cause = std::ranges::unique(res._edges_cause);
+    auto to_erase_cause = ranges::unique(res._edges_cause);
     res._edges_cause.erase(to_erase_cause.begin(), to_erase_cause.end());
 
     auto mid_verts = res._verts.insert(
@@ -311,7 +311,7 @@ namespace reticula {
         res._verts.begin(),
         mid_verts,
         res._verts.end());
-    auto to_erase_verts = std::ranges::unique(res._verts);
+    auto to_erase_verts = ranges::unique(res._verts);
     res._verts.erase(to_erase_verts.begin(), to_erase_verts.end());
 
     return res;

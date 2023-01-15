@@ -3,11 +3,11 @@
 namespace reticula {
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range Range,
+    ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
     degree_range<Range> &&
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    std::convertible_to<ranges::range_value_t<Range>, VertT>
   undirected_network<VertT>
   random_degree_sequence_graph(
       Range&& degree_sequence,
@@ -20,11 +20,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range Range,
+    ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
     degree_range<Range> &&
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    std::convertible_to<ranges::range_value_t<Range>, VertT>
   std::optional<undirected_network<VertT>>
   try_random_degree_sequence_graph(
       Range&& degree_sequence,
@@ -34,7 +34,7 @@ namespace reticula {
       throw std::invalid_argument("degree_sequence is not graphical");
 
     std::vector<VertT> degrees;
-    if constexpr (std::ranges::sized_range<Range>)
+    if constexpr (ranges::sized_range<Range>)
       degrees.reserve(std::size(degree_sequence));
 
     for (auto d: degree_sequence)
@@ -146,7 +146,7 @@ namespace reticula {
 
       if (stubs_sum == 0)
         return undirected_network<VertT>(edges,
-            std::ranges::iota_view{
+            ranges::iota_view{
               VertT{},
               static_cast<VertT>(degrees.size())
             });
@@ -157,11 +157,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range PairRange,
+    ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
     degree_pair_range<PairRange> &&
-    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+    is_pairlike_of<ranges::range_value_t<PairRange>, VertT, VertT>
   directed_network<VertT>
   random_directed_degree_sequence_graph(
       PairRange&& in_out_degree_sequence,
@@ -174,11 +174,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range PairRange,
+    ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
     degree_pair_range<PairRange> &&
-    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+    is_pairlike_of<ranges::range_value_t<PairRange>, VertT, VertT>
   std::optional<directed_network<VertT>>
   try_random_directed_degree_sequence_graph(
       PairRange&& in_out_degree_sequence,
@@ -191,9 +191,9 @@ namespace reticula {
       throw std::invalid_argument("degree_sequence is not digraphical");
 
     std::vector<VertT> in_degrees, out_degrees;
-    if constexpr (std::ranges::sized_range<PairRange>) {
-      in_degrees.reserve(std::ranges::size(in_out_degree_sequence));
-      out_degrees.reserve(std::ranges::size(in_out_degree_sequence));
+    if constexpr (ranges::sized_range<PairRange>) {
+      in_degrees.reserve(ranges::size(in_out_degree_sequence));
+      out_degrees.reserve(ranges::size(in_out_degree_sequence));
     }
 
     for (auto [in, out]: in_out_degree_sequence) {
@@ -329,7 +329,7 @@ namespace reticula {
 
       if (in_stubs_sum == 0)
         return directed_network<VertT>(edges,
-            std::ranges::iota_view{
+            ranges::iota_view{
               VertT{},
               static_cast<VertT>(in_degrees.size())
             });

@@ -8,6 +8,7 @@
 #include <ostream>
 #include <iterator>
 
+#include "ranges.hpp"
 #include "type_traits.hpp"
 
 namespace reticula {
@@ -108,9 +109,9 @@ namespace reticula {
   */
   template <typename Range>
   concept degree_range =
-    std::ranges::range<Range> &&
+    ranges::range<Range> &&
     std::numeric_limits<
-      std::ranges::range_value_t<Range>>::is_integer;
+      ranges::range_value_t<Range>>::is_integer;
 
   template <typename T, typename V1, typename V2>
   concept is_pairlike_of =
@@ -127,12 +128,12 @@ namespace reticula {
   */
   template <typename Range>
   concept degree_pair_range =
-    std::ranges::range<Range> &&
-    is_pairlike_of<std::ranges::range_value_t<Range>,
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>,
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>> &&
+    ranges::range<Range> &&
+    is_pairlike_of<ranges::range_value_t<Range>,
+      std::tuple_element_t<0, ranges::range_value_t<Range>>,
+      std::tuple_element_t<0, ranges::range_value_t<Range>>> &&
     std::numeric_limits<
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>>::is_integer;
+      std::tuple_element_t<0, ranges::range_value_t<Range>>>::is_integer;
 
 
   /**
@@ -140,9 +141,9 @@ namespace reticula {
   */
   template <typename Range>
   concept weight_range =
-    std::ranges::range<Range> &&
+    ranges::range<Range> &&
     std::is_arithmetic_v<
-      std::ranges::range_value_t<Range>>;
+      ranges::range_value_t<Range>>;
 
   /**
     Weight pair ranges are sequences of integer or floating point numbers of the
@@ -150,12 +151,12 @@ namespace reticula {
   */
   template <typename Range>
   concept weight_pair_range =
-    std::ranges::range<Range> &&
-    is_pairlike_of<std::ranges::range_value_t<Range>,
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>,
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>> &&
+    ranges::range<Range> &&
+    is_pairlike_of<ranges::range_value_t<Range>,
+      std::tuple_element_t<0, ranges::range_value_t<Range>>,
+      std::tuple_element_t<0, ranges::range_value_t<Range>>> &&
     std::is_arithmetic_v<
-      std::tuple_element_t<0, std::ranges::range_value_t<Range>>>;
+      std::tuple_element_t<0, ranges::range_value_t<Range>>>;
 
   /**
     Mappings are ways to provide algorithms with extra information for each

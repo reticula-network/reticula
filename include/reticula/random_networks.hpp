@@ -5,6 +5,7 @@
 #include <optional>
 #include <numeric>
 
+#include "ranges.hpp"
 #include "distributions.hpp"
 #include "network_concepts.hpp"
 #include "networks.hpp"
@@ -38,11 +39,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range Range,
+    ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
     degree_range<Range> &&
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    std::convertible_to<ranges::range_value_t<Range>, VertT>
   undirected_network<VertT>
   random_degree_sequence_graph(
       Range&& degree_sequence,
@@ -50,11 +51,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range Range,
+    ranges::forward_range Range,
     std::uniform_random_bit_generator Gen>
   requires
     degree_range<Range> &&
-    std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    std::convertible_to<ranges::range_value_t<Range>, VertT>
   std::optional<undirected_network<VertT>>
   try_random_degree_sequence_graph(
       Range&& degree_sequence,
@@ -64,11 +65,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range PairRange,
+    ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
     degree_pair_range<PairRange> &&
-    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+    is_pairlike_of<ranges::range_value_t<PairRange>, VertT, VertT>
   directed_network<VertT>
   random_directed_degree_sequence_graph(
       PairRange&& in_out_degree_sequence,
@@ -76,11 +77,11 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::forward_range PairRange,
+    ranges::forward_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires
     degree_pair_range<PairRange> &&
-    is_pairlike_of<std::ranges::range_value_t<PairRange>, VertT, VertT>
+    is_pairlike_of<ranges::range_value_t<PairRange>, VertT, VertT>
   std::optional<directed_network<VertT>>
   try_random_directed_degree_sequence_graph(
       PairRange&& in_out_degree_sequence,
@@ -108,7 +109,7 @@ namespace reticula {
   */
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range Range,
+    ranges::input_range Range,
     std::uniform_random_bit_generator Gen>
   requires weight_range<Range>
   undirected_network<VertT>
@@ -146,7 +147,7 @@ namespace reticula {
   */
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range PairRange,
+    ranges::input_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<PairRange>
   directed_network<VertT>
@@ -158,8 +159,8 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range VertRange,
-    std::ranges::input_range EdgeRange,
+    ranges::input_range VertRange,
+    ranges::input_range EdgeRange,
     std::uniform_random_bit_generator Gen>
   requires weight_range<VertRange> && weight_range<EdgeRange>
   undirected_hypernetwork<VertT>
@@ -170,8 +171,8 @@ namespace reticula {
 
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range VertPairRange,
-    std::ranges::input_range EdgePairRange,
+    ranges::input_range VertPairRange,
+    ranges::input_range EdgePairRange,
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<VertPairRange> &&
     weight_pair_range<EdgePairRange>

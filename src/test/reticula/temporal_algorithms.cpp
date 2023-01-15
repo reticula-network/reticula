@@ -4,6 +4,7 @@
 #include <catch2/matchers/catch_matchers_vector.hpp>
 using Catch::Matchers::UnorderedEquals;
 
+#include <reticula/ranges.hpp>
 #include <reticula/utils.hpp>
 #include <reticula/temporal_edges.hpp>
 #include <reticula/networks.hpp>
@@ -150,7 +151,7 @@ TEST_CASE("percolation out-cluster", "[reticula::out_cluster]") {
             {{{3, 4, 8, 9}}, adj}},
           {{5, 6, 1, 3},
             {{{5, 6, 1, 3}}, adj}}});
-    REQUIRE(std::ranges::all_of(true_oc,
+    REQUIRE(reticula::ranges::all_of(true_oc,
           [&network, &adj](const auto& p) {
             return reticula::out_cluster(network, adj, p.first) == p.second;
           }));
@@ -194,7 +195,7 @@ TEST_CASE("percolation in-cluster", "[reticula::in_cluster]") {
             {3, 4, 8, 9}}, adj}},
           {{5, 6, 1, 3},
             {{{5, 6, 1, 3}}, adj}}});
-    REQUIRE(std::ranges::all_of(true_ic,
+    REQUIRE(reticula::ranges::all_of(true_ic,
           [&network, &adj](const auto& p) {
             return reticula::in_cluster(network, adj, p.first) == p.second;
           }));

@@ -58,7 +58,7 @@ namespace reticula {
         hash<typename EdgeT::VertexType>> in_counts;
 
       if (!revert_graph)
-        std::ranges::reverse(topo);
+        ranges::reverse(topo);
 
       for (auto& vert: topo) {
         Comp comp = detail::component_type_constructor<Comp>{}(0, seed);
@@ -159,7 +159,7 @@ namespace reticula {
             comp.insert(succs);
             comp.insert(v);
             out_comp.emplace(v, comp);
-            if (auto child = std::ranges::find_if(succs, not_preordered);
+            if (auto child = ranges::find_if(succs, not_preordered);
                 child != succs.end()) {
               stack.push(*child);
             } else {
@@ -277,9 +277,9 @@ namespace reticula {
     return discovered_comp;
   }
 
-  template <network_edge EdgeT, std::ranges::input_range Range>
+  template <network_edge EdgeT, ranges::input_range Range>
   requires std::same_as<
-            std::ranges::range_value_t<Range>,
+            ranges::range_value_t<Range>,
             typename EdgeT::VertexType>
   network<EdgeT>
   vertex_induced_subgraph(
@@ -288,7 +288,7 @@ namespace reticula {
     component<typename EdgeT::VertexType> verts_comp(verts);
 
     std::vector<EdgeT> es;
-    std::ranges::copy_if(net.edges(), std::back_inserter(es),
+    ranges::copy_if(net.edges(), std::back_inserter(es),
         [&verts_comp](const EdgeT& e) {
           for (auto& v: e.incident_verts())
             if (!verts_comp.contains(v))
@@ -297,7 +297,7 @@ namespace reticula {
         });
 
     std::vector<typename EdgeT::VertexType> vs;
-    std::ranges::copy_if(net.vertices(), std::back_inserter(vs),
+    ranges::copy_if(net.vertices(), std::back_inserter(vs),
         [&verts_comp](const typename EdgeT::VertexType& v) {
           return verts_comp.contains(v);
         });
@@ -314,8 +314,8 @@ namespace reticula {
         std::vector<typename EdgeT::VertexType>(verts));
   }
 
-  template <network_edge EdgeT, std::ranges::input_range Range>
-  requires std::same_as<std::ranges::range_value_t<Range>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range Range>
+  requires std::same_as<ranges::range_value_t<Range>, EdgeT>
   network<EdgeT>
   edge_induced_subgraph(
       const network<EdgeT>& net,
@@ -323,7 +323,7 @@ namespace reticula {
     component<EdgeT> edge_comp(edges);
 
     std::vector<EdgeT> es;
-    std::ranges::copy_if(net.edges(), std::back_inserter(es),
+    ranges::copy_if(net.edges(), std::back_inserter(es),
         [&edge_comp](const EdgeT& e) {
           return edge_comp.contains(e);
         });
@@ -348,8 +348,8 @@ namespace reticula {
       return g2.union_with(g1);
   }
 
-  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
-  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range EdgeRange>
+  requires std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
   with_edges(const network<EdgeT>& g, EdgeRange&& edges) {
     return graph_union(g, network<EdgeT>(edges));
@@ -363,9 +363,9 @@ namespace reticula {
     return with_edges(g, std::vector<EdgeT>(edges));
   }
 
-  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  template <network_edge EdgeT, ranges::input_range VertRange>
   requires std::convertible_to<
-      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+      ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
   with_vertices(const network<EdgeT>& g, VertRange&& verts) {
     return graph_union(g, network<EdgeT>(std::vector<EdgeT>{}, verts));
@@ -380,15 +380,15 @@ namespace reticula {
   }
 
 
-  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
-  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range EdgeRange>
+  requires std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
   without_edges(const network<EdgeT>& g, EdgeRange&& edges) {
     std::vector<EdgeT> edges_v;
-    if constexpr (std::ranges::sized_range<EdgeRange>)
-      edges_v.reserve(std::ranges::size(edges));
-    std::ranges::copy(edges, std::back_inserter(edges_v));
-    std::ranges::sort(edges_v);
+    if constexpr (ranges::sized_range<EdgeRange>)
+      edges_v.reserve(ranges::size(edges));
+    ranges::copy(edges, std::back_inserter(edges_v));
+    ranges::sort(edges_v);
 
     std::vector<EdgeT> remaining;
     if (edges_v.size() < g.edges().size())
@@ -396,7 +396,7 @@ namespace reticula {
       // (i.e. its a subset of g.edges())
       remaining.reserve(g.edges().size() - edges_v.size());
 
-    std::ranges::set_difference(
+    ranges::set_difference(
         g.edges(), edges_v, std::back_inserter(remaining));
     return network<EdgeT>(remaining, g.vertices());
   }
@@ -410,13 +410,13 @@ namespace reticula {
   }
 
 
-  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  template <network_edge EdgeT, ranges::input_range VertRange>
   requires std::convertible_to<
-      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+      ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
   without_vertices(const network<EdgeT>& g, VertRange&& verts) {
     component<typename EdgeT::VertexType> verts_comp(verts);
-    auto edges_view = g.edges() | std::views::filter(
+    auto edges_view = g.edges() | views::filter(
           [&verts_comp](const EdgeT& e) {
             for (auto& v: e.incident_verts())
               if (verts_comp.contains(v))
@@ -424,7 +424,7 @@ namespace reticula {
             return true;
           });
     auto graph_verts = g.vertices();
-    auto verts_view = graph_verts | std::views::filter(
+    auto verts_view = graph_verts | views::filter(
           [&verts_comp](const typename EdgeT::VertexType& v) {
             return !verts_comp.contains(v);
           });
@@ -452,7 +452,7 @@ namespace reticula {
       const network<EdgeT>& g,
       ProbFun&& occupation_prob,
       Gen& gen) {
-    auto edges = g.edges() | std::views::filter(
+    auto edges = g.edges() | views::filter(
           [&occupation_prob, &gen](const EdgeT& e) {
             return std::bernoulli_distribution{1.0-occupation_prob(e)}(gen);
         });
@@ -504,7 +504,7 @@ namespace reticula {
       ProbFun&& occupation_prob,
       Gen& gen) {
     auto graph_verts = g.vertices();
-    auto verts = graph_verts | std::views::filter(
+    auto verts = graph_verts | views::filter(
           [&occupation_prob, &gen](const typename EdgeT::VertexType& v) {
             return std::bernoulli_distribution{1.0-occupation_prob(v)}(gen);
         });
@@ -714,7 +714,7 @@ namespace reticula {
     if (comps.empty())
       return component<typename EdgeT::VertexType>();
     else
-      return *std::ranges::max_element(comps, std::ranges::less{},
+      return *ranges::max_element(comps, ranges::less{},
           std::size<component<typename EdgeT::VertexType>>);
   }
 
@@ -754,7 +754,7 @@ namespace reticula {
     if (comps.empty())
       return component<typename EdgeT::VertexType>();
     else
-      return *std::ranges::max_element(comps, std::ranges::less{},
+      return *ranges::max_element(comps, ranges::less{},
           std::size<component<typename EdgeT::VertexType>>);
   }
 
@@ -842,7 +842,7 @@ namespace reticula {
     return undirected_network<OutVertT>(edges);
   }
 
-  template <std::ranges::forward_range Range>
+  template <ranges::forward_range Range>
   requires degree_range<Range>
   bool is_graphic(Range&& sequence) {
     std::size_t num_degrees = 0;
@@ -904,14 +904,14 @@ namespace reticula {
     return true;
   }
 
-  template <std::ranges::input_range PairRange>
+  template <ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
   bool is_digraphic(
       PairRange&& in_out_sequence) {
     using InType = std::tuple_element_t<0,
-          std::ranges::range_value_t<PairRange>>;
+          ranges::range_value_t<PairRange>>;
     using OutType = std::tuple_element_t<1,
-          std::ranges::range_value_t<PairRange>>;
+          ranges::range_value_t<PairRange>>;
 
     InType sum_in{}, max_in{};
     OutType sum_out{};
@@ -934,14 +934,14 @@ namespace reticula {
     if (sum_in != sum_out)
       return false;
 
-    std::ranges::make_heap(zero_heap);
-    std::ranges::make_heap(nonzero_heap);
+    ranges::make_heap(zero_heap);
+    ranges::make_heap(nonzero_heap);
 
     std::vector<std::pair<OutType, InType>> modified_stubs;
     modified_stubs.reserve(static_cast<std::size_t>(max_in));
 
     while (!nonzero_heap.empty()) {
-      std::ranges::pop_heap(nonzero_heap);
+      ranges::pop_heap(nonzero_heap);
       auto [out, in] = nonzero_heap.back();
       nonzero_heap.pop_back();
 
@@ -954,11 +954,11 @@ namespace reticula {
         if (!zero_heap.empty() &&
             (nonzero_heap.empty() ||
              nonzero_heap.front() < zero_heap.front())) {
-          std::ranges::pop_heap(zero_heap);
+          ranges::pop_heap(zero_heap);
           std::tie(stub_out, stub_in) = zero_heap.back();
           zero_heap.pop_back();
         } else {
-          std::ranges::pop_heap(nonzero_heap);
+          ranges::pop_heap(nonzero_heap);
           std::tie(stub_out, stub_in) = nonzero_heap.back();
           nonzero_heap.pop_back();
         }
@@ -973,10 +973,10 @@ namespace reticula {
         auto [mout, min] = modified_stubs.back();
         if (min > 0) {
           nonzero_heap.emplace_back(mout, min);
-          std::ranges::push_heap(nonzero_heap);
+          ranges::push_heap(nonzero_heap);
         } else {
           zero_heap.emplace_back(mout, min);
-          std::ranges::push_heap(zero_heap);
+          ranges::push_heap(zero_heap);
         }
 
         modified_stubs.pop_back();
@@ -984,7 +984,7 @@ namespace reticula {
 
       if (out > 0) {
         zero_heap.emplace_back(out, 0);
-        std::ranges::push_heap(zero_heap);
+        ranges::push_heap(zero_heap);
       }
     }
 

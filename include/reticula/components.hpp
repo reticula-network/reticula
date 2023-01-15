@@ -1,11 +1,11 @@
 #ifndef INCLUDE_RETICULA_COMPONENTS_HPP_
 #define INCLUDE_RETICULA_COMPONENTS_HPP_
 
-#include <ranges>
 #include <unordered_set>
 
 #include <hll/hyperloglog.hpp>
 
+#include "ranges.hpp"
 #include "network_concepts.hpp"
 #include "type_traits.hpp"
 
@@ -22,8 +22,8 @@ namespace reticula {
   template <typename T>
   concept exact_component =
     network_component<T> &&
-    std::ranges::forward_range<T> &&
-    std::ranges::sized_range<T> &&
+    ranges::forward_range<T> &&
+    ranges::sized_range<T> &&
     std::equality_comparable<T> &&
     requires(const T& a, const T::VertexType& v) {
       { a.contains(v) } -> std::convertible_to<bool>;
@@ -41,15 +41,15 @@ namespace reticula {
         std::initializer_list<VertexType> verts,
         std::size_t size_hint = 0);
 
-    template<std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    template<ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, VertT>
     explicit component(
         Range&& verts,
         std::size_t size_hint = 0);
 
 
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    template <ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, VertT>
     void insert(Range&& verts);
 
     void insert(const VertexType& v);
@@ -95,14 +95,14 @@ namespace reticula {
         std::initializer_list<VertexType> verts,
         std::size_t seed = 0);
 
-    template<std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    template<ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, VertT>
     explicit component_sketch(
         Range&& verts,
         std::size_t seed = 0);
 
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, VertT>
+    template <ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, VertT>
     void insert(Range&& verts);
 
     void insert(const VertexType& v);

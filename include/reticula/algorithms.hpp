@@ -2,11 +2,10 @@
 #define INCLUDE_RETICULA_ALGORITHMS_HPP_
 
 #include <vector>
-#include <ranges>
 #include <unordered_set>
 #include <optional>
-#include <ranges>
 
+#include "ranges.hpp"
 #include "network_concepts.hpp"
 #include "networks.hpp"
 #include "components.hpp"
@@ -30,9 +29,9 @@ namespace reticula {
     that conforms to the input_range concept, for example a vector or a set of
     vertices.
   */
-  template <network_edge EdgeT, std::ranges::input_range Range>
+  template <network_edge EdgeT, ranges::input_range Range>
   requires std::same_as<
-            std::ranges::range_value_t<Range>,
+            ranges::range_value_t<Range>,
             typename EdgeT::VertexType>
   network<EdgeT>
   vertex_induced_subgraph(
@@ -54,8 +53,8 @@ namespace reticula {
     @param edges The set of edges. You can pass any type that conforms to the
     input_range concept, for example a vector or a set of edges.
   */
-  template <network_edge EdgeT, std::ranges::input_range Range>
-  requires std::same_as<std::ranges::range_value_t<Range>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range Range>
+  requires std::same_as<ranges::range_value_t<Range>, EdgeT>
   network<EdgeT>
   edge_induced_subgraph(
       const network<EdgeT>& net,
@@ -71,8 +70,8 @@ namespace reticula {
     Returns a copy of the graph `g` with edge in range `edges` added to the
     graph.
   */
-  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
-  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range EdgeRange>
+  requires std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
   with_edges(const network<EdgeT>& g, EdgeRange&& edges);
 
@@ -86,9 +85,9 @@ namespace reticula {
     Returns a copy of the graph `g` with vertices in range `verts` added to the
     graph.
   */
-  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  template <network_edge EdgeT, ranges::input_range VertRange>
   requires std::convertible_to<
-      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+      ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
   with_vertices(const network<EdgeT>& g, VertRange&& verts);
 
@@ -102,8 +101,8 @@ namespace reticula {
     Returns a copy of the graph `g` with edge in range `edges` removed from the
     graph.
   */
-  template <network_edge EdgeT, std::ranges::input_range EdgeRange>
-  requires std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT>
+  template <network_edge EdgeT, ranges::input_range EdgeRange>
+  requires std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT>
   network<EdgeT>
   without_edges(const network<EdgeT>& g, EdgeRange&& edges);
 
@@ -117,9 +116,9 @@ namespace reticula {
     Returns a copy of the graph `g` with vertices in range `verts` removed from
     the graph.
   */
-  template <network_edge EdgeT, std::ranges::input_range VertRange>
+  template <network_edge EdgeT, ranges::input_range VertRange>
   requires std::convertible_to<
-      std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+      ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
   network<EdgeT>
   without_vertices(const network<EdgeT>& g, VertRange&& verts);
 
@@ -506,7 +505,7 @@ namespace reticula {
 
     @param sequence The sequence in question, a forward range of VertT values.
   */
-  template <std::ranges::forward_range Range>
+  template <ranges::forward_range Range>
   requires degree_range<Range>
   bool is_graphic(Range&& degree_sequence);
 
@@ -521,7 +520,7 @@ namespace reticula {
 
     @param sequence The sequence in question, a forward range of VertT values.
   */
-  template <std::ranges::input_range PairRange>
+  template <ranges::input_range PairRange>
   requires degree_pair_range<PairRange>
   bool is_digraphic(PairRange&& in_out_degree_sequence);
 

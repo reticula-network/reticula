@@ -8,6 +8,7 @@
 
 #include <hll/hyperloglog.hpp>
 
+#include "ranges.hpp"
 #include "type_traits.hpp"
 #include "network_concepts.hpp"
 #include "static_hyperedges.hpp"
@@ -123,10 +124,10 @@ namespace reticula {
       the receiving end of an effect.
       @param time Timestamp at which the event "happened".
      */
-    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    template <ranges::input_range R1, ranges::input_range R2>
     requires
-      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
-      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
+      std::convertible_to<ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<ranges::range_value_t<R2>, VertT>
     directed_temporal_hyperedge(
         const R1& tails, const R2& heads, TimeType time);
 
@@ -337,10 +338,10 @@ namespace reticula {
       @param cause_time Timestamp at which the event "happened".
       @param effect_time Timestamp at which the event was "received".
      */
-    template <std::ranges::input_range R1, std::ranges::input_range R2>
+    template <ranges::input_range R1, ranges::input_range R2>
     requires
-      std::convertible_to<std::ranges::range_value_t<R1>, VertT> &&
-      std::convertible_to<std::ranges::range_value_t<R2>, VertT>
+      std::convertible_to<ranges::range_value_t<R1>, VertT> &&
+      std::convertible_to<ranges::range_value_t<R2>, VertT>
     directed_delayed_temporal_hyperedge(
         const R1& tails, const R2& heads,
         TimeType cause_time, TimeType effect_time);
@@ -526,8 +527,8 @@ namespace reticula {
       @param verts The set of vertices involved in the hyperedge.
       @param time Timestamp at which the event "happened".
      */
-    template <std::ranges::input_range R>
-    requires std::convertible_to<std::ranges::range_value_t<R>, VertT>
+    template <ranges::input_range R>
+    requires std::convertible_to<ranges::range_value_t<R>, VertT>
     undirected_temporal_hyperedge(const R& verts, TimeType time);
 
     /**

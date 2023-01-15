@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "ranges.hpp"
 #include "network_concepts.hpp"
 #include "static_edges.hpp"
 #include "temporal_edges.hpp"
@@ -59,9 +60,9 @@ namespace reticula {
     /**
       Create a network from a range of edges.
      */
-    template <std::ranges::input_range EdgeRange>
+    template <ranges::input_range EdgeRange>
     requires std::convertible_to<
-      std::ranges::range_value_t<EdgeRange>, EdgeT>
+      ranges::range_value_t<EdgeRange>, EdgeT>
     explicit network(EdgeRange&& edges);
 
     /**
@@ -74,13 +75,13 @@ namespace reticula {
       vertices that have no incident edges.
      */
     template <
-      std::ranges::input_range EdgeRange,
-      std::ranges::input_range VertRange>
+      ranges::input_range EdgeRange,
+      ranges::input_range VertRange>
     requires
       std::convertible_to<
-        std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+        ranges::range_value_t<EdgeRange>, EdgeT> &&
       std::convertible_to<
-        std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+        ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
     explicit network(EdgeRange&& edges, VertRange&& verts);
 
     /**

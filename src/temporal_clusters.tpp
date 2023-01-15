@@ -25,16 +25,16 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  template <std::ranges::input_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  template <ranges::input_range Range>
+  requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   temporal_cluster<EdgeT, AdjT>::temporal_cluster(
       Range&& events, AdjT adj, std::size_t size_hint) :
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
     if (size_hint == 0) {
-      if constexpr (std::ranges::sized_range<Range>)
-        _events.reserve(std::ranges::size(events));
+      if constexpr (ranges::sized_range<Range>)
+        _events.reserve(ranges::size(events));
     } else {
       _events.reserve(size_hint);
     }
@@ -67,8 +67,8 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  template <std::ranges::input_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  template <ranges::input_range Range>
+  requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   void temporal_cluster<EdgeT, AdjT>::insert(Range&& events) {
     for (auto&& e: events)
       insert(e);
@@ -250,8 +250,8 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  template <std::ranges::input_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  template <ranges::input_range Range>
+  requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       Range&& events, AdjT adj,
       EdgeT::TimeType temporal_resolution, std::size_t seed) :
@@ -290,8 +290,8 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  template <std::ranges::input_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  template <ranges::input_range Range>
+  requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert(Range&& events) {
     for (auto&& e: events)
       insert(e);

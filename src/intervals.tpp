@@ -25,8 +25,8 @@ namespace reticula {
               can_merge(current, _ints.front()))
       ostart = _ints.begin();
     else
-      ostart = std::ranges::lower_bound(
-          _ints, current.first, std::ranges::less{},
+      ostart = ranges::lower_bound(
+          _ints, current.first, ranges::less{},
           [](auto& p) { return p.second; });
     auto oend = ostart;
 
@@ -95,8 +95,8 @@ namespace reticula {
 
   template <typename T>
   bool interval_set<T>::covers(T time) const {
-    auto lower = std::ranges::lower_bound(
-        _ints, time, std::ranges::less{}, [](auto& p) { return p.second; });
+    auto lower = ranges::lower_bound(
+        _ints, time, ranges::less{}, [](auto& p) { return p.second; });
     if (lower != _ints.end() &&
         lower->first < time && time <= lower->second)
       return true;

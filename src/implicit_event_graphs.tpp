@@ -17,8 +17,8 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  template <std::ranges::input_range Range>
-  requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+  template <ranges::input_range Range>
+  requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       Range&& events,
       const AdjT& adj) : _temp(events), _adj(adj) {}
@@ -27,11 +27,11 @@ namespace reticula {
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   template <
-    std::ranges::input_range EdgeRange,
-    std::ranges::input_range VertRange>
+    ranges::input_range EdgeRange,
+    ranges::input_range VertRange>
   requires
-    std::convertible_to<std::ranges::range_value_t<EdgeRange>, EdgeT> &&
-    std::convertible_to<std::ranges::range_value_t<VertRange>,
+    std::convertible_to<ranges::range_value_t<EdgeRange>, EdgeT> &&
+    std::convertible_to<ranges::range_value_t<VertRange>,
       typename EdgeT::VertexType>
   implicit_event_graph<EdgeT, AdjT>::implicit_event_graph(
       EdgeRange&& events,

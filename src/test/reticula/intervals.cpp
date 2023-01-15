@@ -1,8 +1,8 @@
-#include <ranges>
 #include <algorithm>
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <reticula/ranges.hpp>
 #include <reticula/intervals.hpp>
 
 TEST_CASE("interval set", "[reticula::interval_set]") {
@@ -12,10 +12,10 @@ TEST_CASE("interval set", "[reticula::interval_set]") {
     is.insert(8, 10);
     is.insert(3, 9);
 
-    REQUIRE(std::ranges::is_sorted(is));
-    REQUIRE(std::ranges::is_sorted(is, std::ranges::less{},
+    REQUIRE(reticula::ranges::is_sorted(is));
+    REQUIRE(reticula::ranges::is_sorted(is, reticula::ranges::less{},
           [](auto p){ return p.second; }));
-    REQUIRE(std::ranges::size(is) == 1);
+    REQUIRE(reticula::ranges::size(is) == 1);
   }
 
   SECTION("insert 2") {
@@ -30,7 +30,7 @@ TEST_CASE("interval set", "[reticula::interval_set]") {
     is.insert(-3, -2);
 
     REQUIRE(is.cover() == 9);
-    REQUIRE(std::ranges::is_sorted(is));
+    REQUIRE(reticula::ranges::is_sorted(is));
 
     REQUIRE_FALSE(is.covers(-4));
     REQUIRE_FALSE(is.covers(0));
@@ -63,14 +63,14 @@ TEST_CASE("interval set", "[reticula::interval_set]") {
       reticula::interval_set<int> is3;
       is1.merge(is3);
       REQUIRE(is1 == is2);
-      REQUIRE(std::ranges::is_sorted(is1));
+      REQUIRE(reticula::ranges::is_sorted(is1));
     }
 
     SECTION("identical") {
       reticula::interval_set<int> is2(is1);
       is1.merge(is2);
       REQUIRE(is1 == is2);
-      REQUIRE(std::ranges::is_sorted(is1));
+      REQUIRE(reticula::ranges::is_sorted(is1));
     }
 
     SECTION("overlapping") {
@@ -81,8 +81,8 @@ TEST_CASE("interval set", "[reticula::interval_set]") {
 
       reticula::interval_set<int> original_is2(is2);
       is2.merge(is1);
-      REQUIRE(std::ranges::is_sorted(is2));
-      REQUIRE(std::ranges::all_of(std::views::iota(-10, 20),
+      REQUIRE(reticula::ranges::is_sorted(is2));
+      REQUIRE(reticula::ranges::all_of(reticula::views::iota(-10, 20),
             [&is1, &is2, &original_is2](int i) {
               return (is1.covers(i) | original_is2.covers(i)) ==
                 (is2.covers(i));

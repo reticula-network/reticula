@@ -11,8 +11,8 @@ namespace reticula {
 
     if (n == 0 || p == 0)
       return undirected_network<VertT>(
-          std::ranges::empty_view<undirected_edge<VertT>>(),
-          std::views::iota(VertT{}, n));
+          ranges::empty_view<undirected_edge<VertT>>(),
+          views::iota(VertT{}, n));
 
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(static_cast<std::size_t>(
@@ -37,6 +37,6 @@ namespace reticula {
     }
 
     return undirected_network<VertT>(edges,
-        std::ranges::iota_view{VertT{}, n});
+        ranges::iota_view{VertT{}, n});
   }
 }  // namespace reticula

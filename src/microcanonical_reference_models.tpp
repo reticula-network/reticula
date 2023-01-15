@@ -176,7 +176,7 @@ namespace reticula {
           typename EdgeT::VertexType,
           typename EdgeT::VertexType>> new_links_v(
               new_links.begin(), new_links.end());
-      std::ranges::shuffle(new_links_v, generator);
+      ranges::shuffle(new_links_v, generator);
 
       std::unordered_map<
         typename EdgeT::StaticProjectionType,
@@ -188,7 +188,7 @@ namespace reticula {
         link_map.emplace(proj.edges()[i], new_links_v[i]);
 
       return network<EdgeT>(
-          temp.edges_cause() | std::views::transform(
+          temp.edges_cause() | views::transform(
             [&link_map](const auto& e){
               auto& [ni, nj] = link_map.at(e.static_projection());
               return detail::replace_verts<EdgeT>{}(e, ni, nj);
@@ -209,7 +209,7 @@ namespace reticula {
       else
         proj_ccs = weakly_connected_components(proj);
 
-      std::ranges::sort(proj_ccs, std::ranges::greater{}, std::ranges::size);
+      ranges::sort(proj_ccs, ranges::greater{}, ranges::size);
 
       auto is_projection_connected = [](const network<EdgeT>& shuff) {
         if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
@@ -241,7 +241,7 @@ namespace reticula {
 
       auto proj = static_projection(temp);
       auto shuffled_links = proj.edges();
-      std::ranges::shuffle(shuffled_links, generator);
+      ranges::shuffle(shuffled_links, generator);
 
       std::vector<EdgeT> shuffled_edges;
       shuffled_edges.reserve(temp.edges_cause().size());
@@ -265,7 +265,7 @@ namespace reticula {
       }
 
       return network<EdgeT>(
-          temp.edges_cause() | std::views::transform(
+          temp.edges_cause() | views::transform(
             [&link_map](const auto& e){
               auto& [ni, nj] = link_map.at(e.static_projection());
               return detail::replace_verts<EdgeT>{}(e, ni, nj);
@@ -419,7 +419,7 @@ namespace reticula {
         for (std::size_t i = 1; i < timeline.size(); i++)
           iets.push_back(timeline[i].cause_time() - timeline[i-1].cause_time());
 
-        std::ranges::shuffle(iets, generator);
+        ranges::shuffle(iets, generator);
         std::partial_sum(iets.begin(), iets.end(), iets.begin());
 
         auto t_start = timeline.front().cause_time();

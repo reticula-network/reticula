@@ -4,6 +4,7 @@
 #include <utility>
 #include <unordered_map>
 
+#include "ranges.hpp"
 #include "temporal_edges.hpp"
 #include "networks.hpp"
 #include "network_concepts.hpp"
@@ -73,8 +74,8 @@ namespace reticula {
        @param adj AdjT instance determinimg whether two events are adjacent or
        not based on the events and the time delta.
      */
-    template <std::ranges::input_range Range>
-    requires std::convertible_to<std::ranges::range_value_t<Range>, EdgeT>
+    template <ranges::input_range Range>
+    requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     implicit_event_graph(
         Range&& events,
         const AdjT& prob);
@@ -91,13 +92,13 @@ namespace reticula {
        not based on the events and the time delta.
      */
     template <
-      std::ranges::input_range EdgeRange,
-      std::ranges::input_range VertRange>
+      ranges::input_range EdgeRange,
+      ranges::input_range VertRange>
     requires
       std::convertible_to<
-        std::ranges::range_value_t<EdgeRange>, EdgeT> &&
+        ranges::range_value_t<EdgeRange>, EdgeT> &&
       std::convertible_to<
-        std::ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
+        ranges::range_value_t<VertRange>, typename EdgeT::VertexType>
     implicit_event_graph(
         EdgeRange&& events,
         VertRange&& verts,

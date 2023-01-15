@@ -1,7 +1,7 @@
 namespace reticula {
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range Range,
+    ranges::input_range Range,
     std::uniform_random_bit_generator Gen>
   requires weight_range<Range>
   undirected_network<VertT>
@@ -10,21 +10,21 @@ namespace reticula {
       Gen& generator,
       bool self_loops) {
     std::vector<std::pair<double, VertT>> weight_node_pairs;
-    if constexpr (std::ranges::sized_range<Range>)
+    if constexpr (ranges::sized_range<Range>)
       weight_node_pairs.reserve(std::size(weight_sequence));
 
     for (VertT i{}; auto&& w: weight_sequence)
       weight_node_pairs.emplace_back(static_cast<double>(w), i++);
 
-    std::ranges::sort(weight_node_pairs, std::ranges::greater());
+    ranges::sort(weight_node_pairs, ranges::greater());
 
     if (weight_node_pairs.empty())
       return undirected_network<VertT>();
 
     if (weight_node_pairs.front().first == 0.0)
       return undirected_network<VertT>(
-          std::ranges::empty_view<undirected_edge<VertT>>{},
-          std::ranges::iota_view{
+          ranges::empty_view<undirected_edge<VertT>>{},
+          ranges::iota_view{
             VertT{}, static_cast<VertT>(weight_node_pairs.size())});
 
     double s = std::accumulate(
@@ -67,13 +67,13 @@ namespace reticula {
     }
 
     return undirected_network<VertT>(edges,
-        std::ranges::iota_view{
+        ranges::iota_view{
           VertT{}, static_cast<VertT>(weight_node_pairs.size())});
   }
 
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range PairRange,
+    ranges::input_range PairRange,
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<PairRange>
   directed_network<VertT> random_directed_expected_degree_sequence_graph(
@@ -83,9 +83,9 @@ namespace reticula {
     std::vector<std::pair<double, VertT>>
       in_weight_node_pairs, out_weight_node_pairs;
 
-    if constexpr (std::ranges::sized_range<PairRange>) {
-      in_weight_node_pairs.reserve(std::ranges::size(in_out_weight_sequence));
-      out_weight_node_pairs.reserve(std::ranges::size(in_out_weight_sequence));
+    if constexpr (ranges::sized_range<PairRange>) {
+      in_weight_node_pairs.reserve(ranges::size(in_out_weight_sequence));
+      out_weight_node_pairs.reserve(ranges::size(in_out_weight_sequence));
     }
 
     for (VertT i{}; auto& [w_in, w_out]: in_out_weight_sequence) {
@@ -93,8 +93,8 @@ namespace reticula {
       out_weight_node_pairs.emplace_back(static_cast<double>(w_out), i++);
     }
 
-    std::ranges::sort(in_weight_node_pairs, std::ranges::greater());
-    std::ranges::sort(out_weight_node_pairs, std::ranges::greater());
+    ranges::sort(in_weight_node_pairs, ranges::greater());
+    ranges::sort(out_weight_node_pairs, ranges::greater());
 
     std::vector<std::size_t> node_index_in_in_weight_pair(
         in_weight_node_pairs.size(), 0);
@@ -107,8 +107,8 @@ namespace reticula {
     if (in_weight_node_pairs.front().first == 0.0 &&
         out_weight_node_pairs.front().first == 0.0)
       return directed_network<VertT>(
-          std::ranges::empty_view<directed_edge<VertT>>{},
-          std::ranges::iota_view{
+          ranges::empty_view<directed_edge<VertT>>{},
+          ranges::iota_view{
             VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
 
     double s_in = std::accumulate(
@@ -166,14 +166,14 @@ namespace reticula {
     }
 
     return directed_network<VertT>(edges,
-        std::ranges::iota_view{
+        ranges::iota_view{
           VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
   }
 
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range VertRange,
-    std::ranges::input_range EdgeRange,
+    ranges::input_range VertRange,
+    ranges::input_range EdgeRange,
     std::uniform_random_bit_generator Gen>
   requires weight_range<VertRange> && weight_range<EdgeRange>
   undirected_hypernetwork<VertT>
@@ -182,13 +182,13 @@ namespace reticula {
       EdgeRange&& edge_weight_sequence,
       Gen& generator) {
     std::vector<std::pair<double, VertT>> weight_node_pairs;
-    if constexpr (std::ranges::sized_range<VertRange>)
+    if constexpr (ranges::sized_range<VertRange>)
       weight_node_pairs.reserve(std::size(vertex_weight_sequence));
 
     for (VertT i{}; auto&& w: vertex_weight_sequence)
       weight_node_pairs.emplace_back(static_cast<double>(w), i++);
 
-    std::ranges::sort(weight_node_pairs, std::ranges::greater());
+    ranges::sort(weight_node_pairs, ranges::greater());
 
     double s = std::accumulate(
         weight_node_pairs.begin(),
@@ -199,13 +199,13 @@ namespace reticula {
 
 
     std::vector<std::pair<double, std::size_t>> weight_edge_pairs;
-    if constexpr (std::ranges::sized_range<EdgeRange>)
+    if constexpr (ranges::sized_range<EdgeRange>)
       weight_edge_pairs.reserve(std::size(edge_weight_sequence));
 
     for (std::size_t i{}; auto&& w: edge_weight_sequence)
       weight_edge_pairs.emplace_back(static_cast<double>(w), i++);
 
-    std::ranges::sort(weight_node_pairs, std::ranges::greater());
+    ranges::sort(weight_node_pairs, ranges::greater());
 
     double s_edge = std::accumulate(
         weight_edge_pairs.begin(),
@@ -223,8 +223,8 @@ namespace reticula {
 
     if (weight_node_pairs.front().first == 0.0)
       return undirected_hypernetwork<VertT>(
-          std::ranges::empty_view<undirected_hyperedge<VertT>>{},
-          std::ranges::iota_view{
+          ranges::empty_view<undirected_hyperedge<VertT>>{},
+          ranges::iota_view{
             VertT{}, static_cast<VertT>(weight_node_pairs.size())});
 
     std::vector<undirected_hyperedge<VertT>> edges;
@@ -259,14 +259,14 @@ namespace reticula {
     }
 
     return undirected_hypernetwork<VertT>(edges,
-        std::ranges::iota_view{
+        ranges::iota_view{
           VertT{}, static_cast<VertT>(weight_node_pairs.size())});
   }
 
   template <
     integer_network_vertex VertT,
-    std::ranges::input_range VertPairRange,
-    std::ranges::input_range EdgePairRange,
+    ranges::input_range VertPairRange,
+    ranges::input_range EdgePairRange,
     std::uniform_random_bit_generator Gen>
   requires weight_pair_range<VertPairRange> &&
     weight_pair_range<EdgePairRange>
@@ -278,11 +278,11 @@ namespace reticula {
     std::vector<std::pair<double, VertT>>
       in_weight_node_pairs, out_weight_node_pairs;
 
-    if constexpr (std::ranges::sized_range<VertPairRange>) {
+    if constexpr (ranges::sized_range<VertPairRange>) {
       in_weight_node_pairs.reserve(
-          std::ranges::size(vertex_in_out_weight_sequence));
+          ranges::size(vertex_in_out_weight_sequence));
       out_weight_node_pairs.reserve(
-          std::ranges::size(vertex_in_out_weight_sequence));
+          ranges::size(vertex_in_out_weight_sequence));
     }
 
     for (VertT i{}; auto& [w_in, w_out]: vertex_in_out_weight_sequence) {
@@ -312,17 +312,17 @@ namespace reticula {
           "vertex and edge in- and out-weight "
           "sequences should have (almost) equal sums");
 
-    std::ranges::sort(in_weight_node_pairs, std::ranges::greater());
-    std::ranges::sort(out_weight_node_pairs, std::ranges::greater());
+    ranges::sort(in_weight_node_pairs, ranges::greater());
+    ranges::sort(out_weight_node_pairs, ranges::greater());
 
     std::vector<std::pair<double, std::size_t>>
       in_weight_edge_pairs, out_weight_edge_pairs;
 
-    if constexpr (std::ranges::sized_range<EdgePairRange>) {
+    if constexpr (ranges::sized_range<EdgePairRange>) {
       in_weight_node_pairs.reserve(
-          std::ranges::size(edge_in_out_weight_sequence));
+          ranges::size(edge_in_out_weight_sequence));
       out_weight_node_pairs.reserve(
-          std::ranges::size(edge_in_out_weight_sequence));
+          ranges::size(edge_in_out_weight_sequence));
     }
 
     for (std::size_t i{}; auto& [w_in, w_out]: edge_in_out_weight_sequence) {
@@ -330,8 +330,8 @@ namespace reticula {
       out_weight_edge_pairs.emplace_back(static_cast<double>(w_out), i++);
     }
 
-    std::ranges::sort(in_weight_edge_pairs, std::ranges::greater());
-    std::ranges::sort(out_weight_edge_pairs, std::ranges::greater());
+    ranges::sort(in_weight_edge_pairs, ranges::greater());
+    ranges::sort(out_weight_edge_pairs, ranges::greater());
 
     double s_edge_in = std::accumulate(
         in_weight_edge_pairs.begin(),
@@ -355,8 +355,8 @@ namespace reticula {
 
     if (in_weight_node_pairs.front().first == 0.0)
       return directed_hypernetwork<VertT>(
-          std::ranges::empty_view<directed_hyperedge<VertT>>{},
-          std::ranges::iota_view{
+          ranges::empty_view<directed_hyperedge<VertT>>{},
+          ranges::iota_view{
             VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
 
     std::vector<std::pair<std::size_t, std::vector<VertT>>> edges_out_inc;
@@ -427,8 +427,8 @@ namespace reticula {
       edges_in_inc.emplace_back(i, in_incidents);
     }
 
-    std::ranges::sort(edges_in_inc);
-    std::ranges::sort(edges_out_inc);
+    ranges::sort(edges_in_inc);
+    ranges::sort(edges_out_inc);
 
     std::vector<directed_hyperedge<VertT>> edges;
     edges.reserve(edges_in_inc.size());
@@ -436,7 +436,7 @@ namespace reticula {
       edges.emplace_back(edges_in_inc[i].second, edges_out_inc[i].second);
 
     return directed_hypernetwork<VertT>(edges,
-        std::ranges::iota_view{
+        ranges::iota_view{
           VertT{}, static_cast<VertT>(in_weight_node_pairs.size())});
   }
 

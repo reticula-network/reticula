@@ -9,6 +9,7 @@ using Catch::Matchers::UnorderedEquals;
 using Catch::Matchers::Contains;
 using Catch::Matchers::Equals;
 
+#include <reticula/ranges.hpp>
 #include <reticula/utils.hpp>
 #include <reticula/temporal_edges.hpp>
 #include <reticula/networks.hpp>
@@ -491,7 +492,7 @@ TEST_CASE("try topological ordering", "[reticula::try_topological_order]") {
     for (std::size_t pos = 0; auto i: *maybe_topo)
       topo_pos[i] = pos++;
 
-    REQUIRE(std::ranges::all_of(graph.edges(),
+    REQUIRE(reticula::ranges::all_of(graph.edges(),
           [&topo_pos](const auto e) {
             for (auto in: e.mutator_verts())
               for (auto out: e.mutated_verts())
@@ -537,7 +538,7 @@ TEST_CASE("topological ordering", "[reticula::topological_order]") {
     for (std::size_t pos = 0; auto i: topo)
       topo_pos[i] = pos++;
 
-    REQUIRE(std::ranges::all_of(graph.edges(),
+    REQUIRE(reticula::ranges::all_of(graph.edges(),
           [&topo_pos](const auto e) {
             for (auto in: e.mutator_verts())
               for (auto out: e.mutated_verts())
@@ -1353,8 +1354,8 @@ TEST_CASE("degree assortativity", "[reticula::degree_assortativity]") {
     REQUIRE(std::isnan(reticula::degree_assortativity(g)));
 
     std::vector<int> vert_degs(10000), edge_degs(5000);
-    std::ranges::fill(vert_degs, 4);
-    std::ranges::fill(edge_degs, 8);
+    reticula::ranges::fill(vert_degs, 4);
+    reticula::ranges::fill(edge_degs, 8);
     std::mt19937 gen(42);
 
     auto net = reticula::random_expected_degree_sequence_hypergraph<int>(

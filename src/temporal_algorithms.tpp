@@ -305,7 +305,7 @@ namespace reticula {
   network<typename EdgeT::StaticProjectionType>
   static_projection(const network<EdgeT>& temp) {
     return network<typename EdgeT::StaticProjectionType>(
-        temp.edges_cause() | std::views::transform([](const auto& e){
+        temp.edges_cause() | views::transform([](const auto& e){
           return e.static_projection();
         }), temp.vertices());
   }
@@ -315,8 +315,8 @@ namespace reticula {
   link_timeline(
       const network<EdgeT>& net,
       const typename EdgeT::StaticProjectionType& link) {
-    auto node = std::ranges::min(
-        link.mutator_verts(), std::ranges::less{},
+    auto node = ranges::min(
+        link.mutator_verts(), ranges::less{},
         [&net](const auto& n) { return net.out_edges(n).size(); });
 
     std::vector<EdgeT> res;
