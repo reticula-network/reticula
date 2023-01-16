@@ -120,13 +120,13 @@ namespace reticula {
   template <network_vertex VertexType>
   bool directed_edge<VertexType>::operator>(
       const directed_edge<VertexType>& o) const noexcept {
-    return std::tie(_tail, _head) > std::tie(o._tail, o._head);
+    return std::tie(_tails, _head) > std::tie(o._tails, o._head);
   }
 
   template <network_vertex VertexType>
   bool directed_edge<VertexType>::operator>=(
       const directed_edge<VertexType>& o) const noexcept {
-    return std::tie(_tail, _head) >= std::tie(o._tail, o._head);
+    return std::tie(_tails, _head) >= std::tie(o._tails, o._head);
   }
 #endif
 
