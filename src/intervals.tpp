@@ -2,6 +2,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "../include/reticula/ranges.hpp"
+
 namespace reticula {
   template <typename T>
   bool interval_set<T>::can_merge(std::pair<T, T> a, std::pair<T, T> b) const {
