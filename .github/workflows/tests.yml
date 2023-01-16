@@ -36,15 +36,15 @@ jobs:
         CXX: g++-11
       run: |
         mkdir build
-        cmake -Bbuild -S.
-        cmake --build build/ --target reticula_tests -j 2
+        cmake -Bbuild -S. --verbose
+        cmake --build build/ --target reticula_tests -j 3 --verbose
 
     - name: cmake build
       if: ${{ !startsWith(matrix.os, 'macos') }}
       run: |
         mkdir build
-        cmake -Bbuild -S.
-        cmake --build build/ --target reticula_tests -j 2
+        cmake -Bbuild -S. --verbose
+        cmake --build build/ --target reticula_tests -j 2 --verbose
 
     - name: Run tests
       working-directory: build
