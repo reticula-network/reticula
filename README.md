@@ -1,5 +1,5 @@
 # Reticula [![Actions Status][action-image]][action-link]
-*Retucla* is a general-purpose complex network analysis tool with focus on
+*Reticula* is a general-purpose complex network analysis tool with focus on
 [hypergraphs][hyper], [temporal networks][temp], [event graphs][event] and
 [reachability][out-component].
 
