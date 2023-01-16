@@ -172,6 +172,36 @@ namespace reticula {
     return ((b._time > a._time) && (a._head == b._tail));
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_temporal_edge<VertexType, TimeType>::operator<(
+      const directed_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _tail, _head) <
+      std::tie(o._time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_temporal_edge<VertexType, TimeType>::operator<=(
+      const directed_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _tail, _head) <=
+      std::tie(o._time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_temporal_edge<VertexType, TimeType>::operator>(
+      const directed_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _tail, _head) >
+      std::tie(o._time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_temporal_edge<VertexType, TimeType>::operator>=(
+      const directed_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _tail, _head) >=
+      std::tie(o._time, o._tail, o._head);
+  }
+#endif
+
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_temporal_edge<VertexType, TimeType>& a,
@@ -296,6 +326,40 @@ namespace reticula {
     return (b._cause_time > a._effect_time) && (a._head == b._tail);
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_delayed_temporal_edge<VertexType, TimeType>::operator<(
+      const directed_delayed_temporal_edge<
+        VertexType, TimeType>& o) const noexcept {
+    return std::tie(_cause_time, _effect_time, _tail, _head) <
+      std::tie(o._cause_time, o._effect_time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_delayed_temporal_edge<VertexType, TimeType>::operator<=(
+      const directed_delayed_temporal_edge<
+        VertexType, TimeType>& o) const noexcept {
+    return std::tie(_cause_time, _effect_time, _tail, _head) <=
+      std::tie(o._cause_time, o._effect_time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_delayed_temporal_edge<VertexType, TimeType>::operator>(
+      const directed_delayed_temporal_edge<
+        VertexType, TimeType>& o) const noexcept {
+    return std::tie(_cause_time, _effect_time, _tail, _head) >
+      std::tie(o._cause_time, o._effect_time, o._tail, o._head);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool directed_delayed_temporal_edge<VertexType, TimeType>::operator>=(
+      const directed_delayed_temporal_edge<
+        VertexType, TimeType>& o) const noexcept {
+    return std::tie(_cause_time, _effect_time, _tail, _head) >=
+      std::tie(o._cause_time, o._effect_time, o._tail, o._head);
+  }
+#endif
+
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
@@ -411,6 +475,36 @@ namespace reticula {
                 a._v2 == b._v1 ||
                 a._v2 == b._v2));
   }
+
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  bool undirected_temporal_edge<VertexType, TimeType>::operator<(
+      const undirected_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _v1, _v2) <
+      std::tie(o._time, o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool undirected_temporal_edge<VertexType, TimeType>::operator<=(
+      const undirected_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _v1, _v2) <=
+      std::tie(o._time, o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool undirected_temporal_edge<VertexType, TimeType>::operator>(
+      const undirected_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _v1, _v2) >
+      std::tie(o._time, o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  bool undirected_temporal_edge<VertexType, TimeType>::operator>=(
+      const undirected_temporal_edge<VertexType, TimeType>& o) const noexcept {
+    return std::tie(_time, _v1, _v2) >=
+      std::tie(o._time, o._v1, o._v2);
+  }
+#endif
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
