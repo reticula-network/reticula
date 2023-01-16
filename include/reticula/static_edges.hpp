@@ -144,14 +144,6 @@ namespace reticula {
      */
     auto operator<=>(const directed_edge<VertexType>& other) const = default;
 
-#if (_LIBCPP_VERSION)
-    bool operator==(const directed_edge<VertexType>&) const = default;
-    bool operator<(const directed_edge<VertexType>& o) const noexcept;
-    bool operator<=(const directed_edge<VertexType>& o) const noexcept;
-    bool operator>(const directed_edge<VertexType>& o) const noexcept;
-    bool operator>=(const directed_edge<VertexType>& o) const noexcept;
-#endif
-
     /**
       Defines a strong lexicographic ordering along with `operator==` where head
       vertices compared before tail vertices.
@@ -270,14 +262,6 @@ namespace reticula {
       Defines a arbitrary strong ordering.
      */
     auto operator<=>(const undirected_edge<VertexType>&) const = default;
-
-#if (_LIBCPP_VERSION)
-    bool operator==(const undirected_edge<VertexType>&) const = default;
-    bool operator<(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator<=(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator>(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator>=(const undirected_edge<VertexType>& o) const noexcept;
-#endif
 
     /**
       Exactly the same as `operator<`.
