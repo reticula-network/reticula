@@ -80,7 +80,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 else()
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
     -Werror -Wall -Wextra -Wconversion -Wsign-conversion
-    -fsanitize=address,undefined -g)
+    -fsanitize=address,undefined -g
+    -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp 
   target_link_options(${PROJECT_NAME}_tests PRIVATE
     -fsanitize=address,undefined)
 endif()
