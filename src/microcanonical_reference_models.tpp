@@ -4,7 +4,7 @@
 
 #include "../include/reticula/components.hpp"
 #include "../include/reticula/temporal_algorithms.hpp"
-#include "../include/reticula/algoithms.hpp"
+#include "../include/reticula/algorithms.hpp"
 #include "../include/reticula/operations.hpp"
 
 namespace reticula {
