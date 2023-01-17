@@ -49,12 +49,6 @@ target_include_directories(
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE
   disjoint_set hyperloglog csv)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  FetchContent_MakeAvailable(range-v3)
-  target_link_libraries(${PROJECT_NAME} INTERFACE range-v3)
-  target_compile_definitions(${PROJECT_NAME} INTERFACE RETICULA_SHIM_RANGES)
-endif()
-
 
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
@@ -89,9 +83,9 @@ else()
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
     -Werror -Wall -Wextra -Wconversion -Wsign-conversion
     -fsanitize=address,undefined -g
-    -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp 
+    -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp
   target_link_options(${PROJECT_NAME}_tests PRIVATE
-    -fsanitize=address,undefined)
+    -fsanitize=address,undefined -lstdc++)
 endif()
 
 
