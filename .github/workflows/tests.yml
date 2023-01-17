@@ -31,9 +31,6 @@ jobs:
 
     - name: cmake build (macos)
       if: ${{ startsWith(matrix.os, 'macos') }}
-      env:
-        CC: gcc-11
-        CXX: g++-11
       run: |
         mkdir build
         sudo xcode-select -s "/Applications/Xcode_14.2.app"
