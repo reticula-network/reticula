@@ -4,7 +4,7 @@
 
 #include "../include/reticula/temporal_algorithms.hpp"
 #include "../include/reticula/components.hpp"
-#include "../include/reticula/algorithms.hpp"
+#include "../include/reticula/operations.hpp"
 
 namespace reticula {
   namespace microcanonical_reference_models {
