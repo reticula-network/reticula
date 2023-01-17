@@ -1,4 +1,4 @@
-#include "../include/reticula/algorithms.hpp"
+#include "../include/reticula/operations.hpp"
 
 namespace reticula {
   template <integer_network_vertex VertT>

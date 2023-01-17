@@ -21,6 +21,7 @@ namespace reticula {}
 #include "components.hpp"
 #include "distributions.hpp"
 #include "random_networks.hpp"
+#include "operations.hpp"
 #include "algorithms.hpp"
 #include "temporal_algorithms.hpp"
 #include "implicit_event_graphs.hpp"

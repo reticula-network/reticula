@@ -65,6 +65,7 @@ add_executable(
   src/test/reticula/stats.cpp
   src/test/reticula/intervals.cpp
   src/test/reticula/temporal_adjacency.cpp
+  src/test/reticula/operations.cpp
   src/test/reticula/algorithms.cpp
   src/test/reticula/temporal_algorithms.cpp
   src/test/reticula/compile.cpp
