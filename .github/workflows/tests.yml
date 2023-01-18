@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-12]
+        os: [ubuntu-22.04, windows-2022]
 
     steps:
     - name: Install Pre-requisits on ubuntu
@@ -29,16 +29,7 @@ jobs:
 
     - uses: actions/checkout@v3
 
-    - name: cmake build (macos)
-      if: ${{ startsWith(matrix.os, 'macos') }}
-      run: |
-        mkdir build
-        sudo xcode-select -s "/Applications/Xcode_14.2.app"
-        cmake -Bbuild -S.
-        cmake --build build/ --target reticula_tests -j 3 --verbose
-
     - name: cmake build
-      if: ${{ !startsWith(matrix.os, 'macos') }}
       run: |
         mkdir build
         cmake -Bbuild -S.

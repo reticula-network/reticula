@@ -85,7 +85,7 @@ else()
     -fsanitize=address,undefined -g
     -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp
   target_link_options(${PROJECT_NAME}_tests PRIVATE
-    -fsanitize=address,undefined -lstdc++)
+    -fsanitize=address,undefined)
 endif()
 
 
