@@ -234,9 +234,9 @@ namespace reticula {
       _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
-      _events(true, static_cast<std::uint64_t>(seed)),
-      _verts(true, static_cast<std::uint64_t>(seed)),
-      _times(true, static_cast<std::uint64_t>(seed)) {}
+      _events(true, seed),
+      _verts(true, seed),
+      _times(true, seed) {}
 
   template <
     temporal_network_edge EdgeT,
@@ -258,9 +258,9 @@ namespace reticula {
       _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
-      _events(true, static_cast<std::uint64_t>(seed)),
-      _verts(true, static_cast<std::uint64_t>(seed)),
-      _times(true, static_cast<std::uint64_t>(seed)) {
+      _events(true, seed),
+      _verts(true, seed),
+      _times(true, seed) {
     for (auto&& e: events)
       insert(e);
   }

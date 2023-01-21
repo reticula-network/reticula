@@ -912,9 +912,9 @@ namespace reticula {
   double in_in_degree_assortativity(const network<EdgeT>& net) {
     return attribute_assortativity(net,
         [&net](const typename EdgeT::VertexType& v) {
-          return net.in_degree(v);
+          return static_cast<double>(net.in_degree(v));
         }, [&net](const typename EdgeT::VertexType& v) {
-          return net.in_degree(v);
+          return static_cast<double>(net.in_degree(v));
         });
   }
 
@@ -922,9 +922,9 @@ namespace reticula {
   double in_out_degree_assortativity(const network<EdgeT>& net) {
     return attribute_assortativity(net,
         [&net](const typename EdgeT::VertexType& v) {
-          return net.in_degree(v);
+          return static_cast<double>(net.in_degree(v));
         }, [&net](const typename EdgeT::VertexType& v) {
-          return net.out_degree(v);
+          return static_cast<double>(net.out_degree(v));
         });
   }
 
@@ -932,9 +932,9 @@ namespace reticula {
   double out_in_degree_assortativity(const network<EdgeT>& net) {
     return attribute_assortativity(net,
         [&net](const typename EdgeT::VertexType& v) {
-          return net.out_degree(v);
+          return static_cast<double>(net.out_degree(v));
         }, [&net](const typename EdgeT::VertexType& v) {
-          return net.in_degree(v);
+          return static_cast<double>(net.in_degree(v));
         });
   }
 
@@ -942,9 +942,9 @@ namespace reticula {
   double out_out_degree_assortativity(const network<EdgeT>& net) {
     return attribute_assortativity(net,
         [&net](const typename EdgeT::VertexType& v) {
-          return net.out_degree(v);
+          return static_cast<double>(net.out_degree(v));
         }, [&net](const typename EdgeT::VertexType& v) {
-          return net.out_degree(v);
+          return static_cast<double>(net.out_degree(v));
         });
   }
 }  // namespace reticula

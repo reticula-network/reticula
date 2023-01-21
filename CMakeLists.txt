@@ -18,7 +18,7 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
-  GIT_TAG 22f39d0)
+  GIT_TAG 157d515)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
@@ -78,12 +78,20 @@ target_link_libraries(${PROJECT_NAME}_tests
   PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    /W4 /bigobj /permissive-)
+    /bigobj
+    /W4 /permissive- /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296
+    /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826
+    /w14905 /w14906 /w14928)
 else()
   target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    -Werror -Wall -Wextra -Wconversion -Wsign-conversion
-    -fsanitize=address,undefined -g
-    -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp
+    -g -fsanitize=address,undefined
+    -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wnull-dereference
+    -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused
+    -Woverloaded-virtual -Wpedantic -Wimplicit-fallthrough
+    # GCC options
+    -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches
+    -Wlogical-op -Wuseless-cast
+    ) # std::tmpnam in tests/io.cpp
   target_link_options(${PROJECT_NAME}_tests PRIVATE
     -fsanitize=address,undefined)
 endif()
