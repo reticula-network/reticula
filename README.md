@@ -1,4 +1,5 @@
-# Reticula [![Actions Status][action-image]][action-link]
+# Reticula [![Actions Status][action-image]][action-link] [![Documentations][docs-badge]][docs-website] [![Paper][paper-badge]][paper-link]
+
 *Reticula* is a general-purpose complex network analysis tool with focus on
 [hypergraphs][hyper], [temporal networks][temp], [event graphs][event] and
 [reachability][out-component].
@@ -12,9 +13,20 @@ network-like (i.e., reticulate) structures.
 [temp]: https://arxiv.org/abs/1108.1780
 [event]: https://arxiv.org/abs/1709.05647
 [out-component]: https://arxiv.org/abs/1908.11831
+[docs-badge]: https://img.shields.io/badge/Docs-docs.reticula.network-success
+[docs-website]: https://docs.reticula.network
+[paper-badge]: https://img.shields.io/badge/Paper-SoftwareX-informational
+[paper-link]: https://www.sciencedirect.com/science/article/pii/S2352711022002199
 
 
 ## Getting Started
+
+### Documentation
+
+The documentation is available at [reticula.network][website]
+
+[website]: https://reticula.network
+
 ### Requirements
 
 Reticular relies heavily on certain C++20 features, such as concepts and ranges.
@@ -46,9 +58,6 @@ separatly for each content.
 
 
 [FetchContent]: https://cmake.org/cmake/help/latest/module/FetchContent.html
-
-### Documentation
-
 
 ## Development
 ### Running the test suit
