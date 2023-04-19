@@ -53,6 +53,8 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
