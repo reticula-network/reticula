@@ -34,7 +34,39 @@ TEMPLATE_TEST_CASE("Random G(n, p) graph",
 
     REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
 
-    double mean = static_cast<double>(n)*static_cast<double>((n-1)/2)*p;
+    double mean = static_cast<double>(n)*static_cast<double>(n-1)/2*p;
+    double sigma = std::sqrt(mean);
+    REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
+    REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+
+    // TODO add uniformity test
+  }
+}
+
+TEMPLATE_TEST_CASE("Random directed G(n, p) graph",
+    "[reticula::random_directed_gnp_graph]",
+    std::size_t, int) {
+  std::mt19937_64 gen(42);
+  TestType n = 100000;
+
+  SECTION("empty") {
+    auto g1 = reticula::random_directed_gnp_graph(n, 0, gen);
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == static_cast<std::size_t>(n));
+
+    auto g2 = reticula::random_directed_gnp_graph(0, 1, gen);
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("randomness") {
+    double p = 0.00005;
+    reticula::directed_network<TestType> r =
+      reticula::random_directed_gnp_graph<TestType>(n, p, gen);
+
+    REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
+
+    double mean = static_cast<double>(n)*static_cast<double>(n-1)*p;
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
@@ -442,7 +474,7 @@ TEST_CASE("random expected degree sequence hypergraph",
     }
 
     REQUIRE(reticula::ranges::all_of(node_degrees,
-          [n, ens, &weights](const std::pair<int, std::size_t>& kv) {
+          [ens, &weights](const std::pair<int, std::size_t>& kv) {
             auto& [v, d] = kv;
             double mean = static_cast<double>(ens)*weights[
               static_cast<std::size_t>(v)];
@@ -547,7 +579,7 @@ TEST_CASE("random directed expected degree sequence hypergraph",
     }
 
     REQUIRE(reticula::ranges::all_of(node_degrees,
-          [n, ens, &weights](
+          [ens, &weights](
               const std::pair<int, std::pair<std::size_t, std::size_t>>& kv) {
             auto& [v, ds] = kv;
             auto& [in_d, out_d] = ds;
@@ -581,7 +613,7 @@ TEST_CASE("random fully-mixed temporal network",
   auto g = reticula::random_fully_mixed_temporal_network(n, rate, max_t, gen);
 
   double per_event_mean = max_t*rate;
-  double edges = static_cast<double>(n*(n-1)/2);
+  double edges = static_cast<double>(n)*static_cast<double>(n-1)/2;
 
   REQUIRE(static_cast<double>(g.edges().size()) >
       edges*per_event_mean - 3*std::sqrt(edges*per_event_mean));
