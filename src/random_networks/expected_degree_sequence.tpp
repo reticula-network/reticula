@@ -1,3 +1,8 @@
+#include <random>
+
+#include "../../include/reticula/network_concepts.hpp"
+#include "../../include/reticula/networks.hpp"
+
 namespace reticula {
   template <
     integer_network_vertex VertT,

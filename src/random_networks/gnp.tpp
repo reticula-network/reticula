@@ -1,3 +1,8 @@
+#include <random>
+
+#include "../../include/reticula/network_concepts.hpp"
+#include "../../include/reticula/networks.hpp"
+
 namespace reticula {
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>

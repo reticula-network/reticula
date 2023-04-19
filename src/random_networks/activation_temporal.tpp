@@ -1,4 +1,5 @@
 #include "../../include/reticula/generators.hpp"
+#include "../../include/reticula/distributions.hpp"
 
 namespace reticula {
   template <
