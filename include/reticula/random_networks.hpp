@@ -188,6 +188,18 @@ namespace reticula {
       Gen& generator);
 
 
+namespace reticula {
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
+  undirected_hypernetwork<VertT> random_gmnp_hypergraph(
+      VertT m, VertT n, double p,
+      Gen& generator);
+
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
+  directed_hypernetwork<VertT> random_directed_gmnp_hypergraph(
+      VertT m, VertT n, double p,
+      Gen& generator);
+
+
   /**
     Random undirected temporal network, with nodes labeled from 0 to `size` and
     where and undirected connection between any two nodes can be activated
