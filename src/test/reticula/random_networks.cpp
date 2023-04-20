@@ -603,6 +603,93 @@ TEST_CASE("random directed expected degree sequence hypergraph",
   }
 }
 
+
+TEMPLATE_TEST_CASE("Random uniform hypergraph",
+    "[reticula::random_uniform_hypergraph]",
+    std::size_t, int) {
+  std::mt19937_64 gen(42);
+  TestType n = 10000;
+  TestType m = 3;
+
+  SECTION("empty") {
+    auto g1 = reticula::random_uniform_hypergraph(n, m, 0, gen);
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == static_cast<std::size_t>(n));
+
+    auto g2 = reticula::random_uniform_hypergraph(0, 0, 1, gen);
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("edge sizes") {
+    double p = 1e-7;
+    reticula::undirected_hypernetwork<TestType> r =
+      reticula::random_uniform_hypergraph<TestType>(n, m, p, gen);
+    for (auto&& e: r.edges())
+      REQUIRE(e.incident_verts().size() == static_cast<std::size_t>(m));
+  }
+
+  SECTION("randomness") {
+    double p = 1e-7;
+    reticula::undirected_hypernetwork<TestType> r =
+      reticula::random_uniform_hypergraph<TestType>(n, m, p, gen);
+
+    REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
+
+    double mean = 16661.66;  // comb(n, m)*p
+    double sigma = std::sqrt(mean);
+    REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
+    REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+
+    // TODO add uniformity test
+  }
+}
+
+TEMPLATE_TEST_CASE("Random directed uniform hypergraph",
+    "[reticula::random_directed_uniform_hypergraph]",
+    std::size_t, int) {
+  std::mt19937_64 gen(42);
+  TestType n = 500;
+  TestType m1 = 3;
+  TestType m2 = 4;
+
+  SECTION("empty") {
+    auto g1 = reticula::random_directed_uniform_hypergraph(n, m1, m2, 0, gen);
+    REQUIRE(g1.edges().size() == 0);
+    REQUIRE(g1.vertices().size() == static_cast<std::size_t>(n));
+
+    auto g2 = reticula::random_directed_uniform_hypergraph(0, 0, 0, 1, gen);
+    REQUIRE(g2.edges().size() == 0);
+    REQUIRE(g2.vertices().size() == 0);
+  }
+
+  SECTION("edge sizes") {
+    double p = 2e-13;
+    reticula::directed_hypernetwork<TestType> r =
+      reticula::random_directed_uniform_hypergraph<TestType>(n, m1, m2, p, gen);
+    for (auto&& e: r.edges()) {
+      REQUIRE(e.mutator_verts().size() == static_cast<std::size_t>(m1));
+      REQUIRE(e.mutated_verts().size() == static_cast<std::size_t>(m2));
+    }
+  }
+
+  SECTION("randomness") {
+    double p = 2e-13;
+    reticula::directed_hypernetwork<TestType> r =
+      reticula::random_directed_uniform_hypergraph<TestType>(n, m1, m2, p, gen);
+
+    REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
+
+    double mean = static_cast<double>(n)*static_cast<double>(n-1)*p;
+    double sigma = std::sqrt(mean);
+    REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
+    REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+
+    // TODO add uniformity test
+  }
+}
+
+
 TEST_CASE("random fully-mixed temporal network",
     "[reticula::random_fully_mixed_temporal_network]") {
   std::mt19937_64 gen(42);

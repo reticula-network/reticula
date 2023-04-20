@@ -188,15 +188,15 @@ namespace reticula {
       Gen& generator);
 
 
-namespace reticula {
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
-  undirected_hypernetwork<VertT> random_gmnp_hypergraph(
-      VertT m, VertT n, double p,
-      Gen& generator);
+  undirected_hypernetwork<VertT>
+  random_uniform_hypergraph(VertT size, VertT edge_degree, double edge_prob, Gen& generator);
 
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
-  directed_hypernetwork<VertT> random_directed_gmnp_hypergraph(
-      VertT m, VertT n, double p,
+  directed_hypernetwork<VertT>
+  random_directed_uniform_hypergraph(
+      VertT size, VertT edge_in_degree,
+      VertT edge_out_degree, double edge_prob,
       Gen& generator);
 
 
