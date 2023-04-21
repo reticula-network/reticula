@@ -8,7 +8,8 @@
 namespace reticula {
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_hypernetwork<VertT>
-  random_uniform_hypergraph(VertT size, VertT edge_degree, double edge_prob, Gen& generator) {
+  random_uniform_hypergraph(
+      VertT size, VertT edge_degree, double edge_prob, Gen& generator) {
     if (size < 0)
       throw std::domain_error("size must be non-negative");
 
@@ -31,7 +32,8 @@ namespace reticula {
                       std::lgamma(size - edge_degree + 1);
     double ncm_estimate = std::exp(logncm + std::log(edge_prob));
 
-    if (ncm_estimate > static_cast<double>(std::numeric_limits<std::size_t>::max()))
+    if (ncm_estimate > static_cast<double>(
+        std::numeric_limits<std::size_t>::max()))
       throw std::invalid_argument(
           "cannot generate a hypergraph with that many edges");
 
@@ -110,7 +112,8 @@ namespace reticula {
 
     double ncm_estimate = std::exp(logncm + std::log(edge_prob));
 
-    if (ncm_estimate > static_cast<double>(std::numeric_limits<std::size_t>::max()))
+    if (ncm_estimate > static_cast<double>(
+        std::numeric_limits<std::size_t>::max()))
       throw std::invalid_argument(
           "cannot generate a hypergraph with that many edges");
 
@@ -138,8 +141,12 @@ namespace reticula {
       if (carry > 0) {
         finished = true;
       } else {
-        std::unordered_set<VertT> in(current.begin(), current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree));
-        std::unordered_set<VertT> out(current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree), current.end());
+        std::unordered_set<VertT> in(
+          current.begin(),
+          current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree));
+        std::unordered_set<VertT> out(
+          current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree),
+          current.end());
         if (in.size() == static_cast<std::size_t>(edge_in_degree) &&
             out.size() == static_cast<std::size_t>(edge_out_degree))
           edges.emplace_back(in, out);
