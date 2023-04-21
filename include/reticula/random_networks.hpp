@@ -190,7 +190,8 @@ namespace reticula {
 
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_hypernetwork<VertT>
-  random_uniform_hypergraph(VertT size, VertT edge_degree, double edge_prob, Gen& generator);
+  random_uniform_hypergraph(
+      VertT size, VertT edge_degree, double edge_prob, Gen& generator);
 
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   directed_hypernetwork<VertT>
