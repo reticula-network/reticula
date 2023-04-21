@@ -205,7 +205,7 @@ namespace reticula {
   template <ranges::input_range R>
   requires std::convertible_to<ranges::range_value_t<R>, VertexType>
   undirected_hyperedge<VertexType>::undirected_hyperedge(
-      const R& verts) : _verts(verts) {
+      const R& verts) {
     if constexpr (ranges::sized_range<R>)
       _verts.reserve(ranges::size(verts));
     ranges::copy(verts, std::back_inserter(_verts));
