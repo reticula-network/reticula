@@ -1,4 +1,5 @@
 #include <cmath>
+#include <functional>
 #include <random>
 #include <unordered_set>
 
@@ -39,35 +40,33 @@ namespace reticula {
 
     edges.reserve(static_cast<std::size_t>(ncm_estimate*1.1));
 
-    for (VertT i{}; i < edge_degree; i++)
-      edge_prob /= static_cast<double>(i + 1);
-
     std::uniform_real_distribution<> rd;
 
     double lp = std::log(1.0 - edge_prob);
     double lr = std::log(1.0 - rd(generator));
-    VertT carry = static_cast<VertT>(std::floor(lr/lp));
+    std::size_t carry = static_cast<std::size_t>(std::floor(lr/lp));
 
     std::vector<VertT> current(static_cast<std::size_t>(edge_degree));
     bool finished = false;
 
     while (!finished) {
-      for (VertT i{}; i < edge_degree; i++) {
-        VertT temp_sum = current[static_cast<std::size_t>(i)] + carry;
-        current[static_cast<std::size_t>(i)] = temp_sum % size;
-        carry = temp_sum/size;
+      for (std::size_t i{}; i < static_cast<std::size_t>(edge_degree); i++) {
+        std::size_t temp_sum = static_cast<std::size_t>(current[i]) + carry;
+        current[i] = static_cast<VertT>(
+          temp_sum % static_cast<std::size_t>(size));
+        carry = temp_sum/static_cast<std::size_t>(size);
       }
 
       if (carry > 0) {
         finished = true;
       } else {
-        std::unordered_set<VertT> c(current.begin(), current.end());
-        if (c.size() == static_cast<std::size_t>(edge_degree))
-          edges.emplace_back(c);
+        if (std::ranges::adjacent_find(
+            current, std::greater_equal<VertT>{}) == current.end())
+          edges.emplace_back(current);
       }
 
-      double lr = std::log(1.0 - rd(generator));
-      carry = static_cast<VertT>(1 + std::floor(lr/lp));
+      lr = std::log(1.0 - rd(generator));
+      carry = static_cast<std::size_t>(1 + std::floor(lr/lp));
     }
 
     return undirected_hypernetwork<VertT>(edges,
@@ -119,41 +118,39 @@ namespace reticula {
 
     edges.reserve(static_cast<std::size_t>(ncm_estimate*1.1));
 
-    for (VertT i{}; i < edge_degree; i++)
-      edge_prob /= static_cast<double>(i + 1);
-
     std::uniform_real_distribution<> rd;
 
     double lp = std::log(1.0 - edge_prob);
     double lr = std::log(1.0 - rd(generator));
-    VertT carry = static_cast<VertT>(std::floor(lr/lp));
+    std::size_t carry = static_cast<std::size_t>(std::floor(lr/lp));
 
     std::vector<VertT> current(static_cast<std::size_t>(edge_degree));
     bool finished = false;
 
     while (!finished) {
-      for (VertT i{}; i < edge_degree; i++) {
-        VertT temp_sum = current[static_cast<std::size_t>(i)] + carry;
-        current[static_cast<std::size_t>(i)] = temp_sum % size;
-        carry = temp_sum/size;
+      for (std::size_t i{}; i < static_cast<std::size_t>(edge_degree); i++) {
+        std::size_t temp_sum = static_cast<std::size_t>(current[i]) + carry;
+        current[i] = static_cast<VertT>(
+          temp_sum % static_cast<std::size_t>(size));
+        carry = temp_sum/static_cast<std::size_t>(size);
       }
 
       if (carry > 0) {
         finished = true;
       } else {
-        std::unordered_set<VertT> in(
-          current.begin(),
-          current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree));
-        std::unordered_set<VertT> out(
-          current.begin() + static_cast<std::ptrdiff_t>(edge_in_degree),
-          current.end());
-        if (in.size() == static_cast<std::size_t>(edge_in_degree) &&
-            out.size() == static_cast<std::size_t>(edge_out_degree))
+        auto split = current.begin() +
+          static_cast<std::ptrdiff_t>(edge_in_degree);
+        std::ranges::subrange
+          in{current.begin(), split}, out{split, current.end()};
+        if (std::ranges::adjacent_find(
+              in, std::greater_equal<VertT>{}) == in.end() &&
+            std::ranges::adjacent_find(
+              out, std::greater_equal<VertT>{}) == out.end())
           edges.emplace_back(in, out);
       }
 
-      double lr = std::log(1.0 - rd(generator));
-      carry = static_cast<VertT>(1 + std::floor(lr/lp));
+      lr = std::log(1.0 - rd(generator));
+      carry = static_cast<std::size_t>(1 + std::floor(lr/lp));
     }
 
     return directed_hypernetwork<VertT>(edges,
