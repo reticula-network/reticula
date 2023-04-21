@@ -680,7 +680,7 @@ TEMPLATE_TEST_CASE("Random directed uniform hypergraph",
 
     REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
 
-    double mean = static_cast<double>(n)*static_cast<double>(n-1)*p;
+    double mean = 10656.72;
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
