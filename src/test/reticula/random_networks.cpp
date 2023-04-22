@@ -38,8 +38,25 @@ TEMPLATE_TEST_CASE("Random G(n, p) graph",
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+  }
 
-    // TODO add uniformity test
+  SECTION("edge probability") {
+    double p = 0.1;
+    TestType n = 20;
+    std::unordered_map<reticula::undirected_edge<TestType>, std::size_t> n_edges;
+    std::size_t n_trials = 10000;
+    for (std::size_t i{}; i < n_trials; i++) {
+      reticula::undirected_network<TestType> r =
+        reticula::random_gnp_graph<TestType>(n, p, gen);
+      for (auto e : r.edges())
+        n_edges[e]++;
+    }
+
+    for (auto& [e, n] : n_edges) {
+      double p_est = static_cast<double>(n)/static_cast<double>(n_trials);
+      REQUIRE(p_est > p*0.75);
+      REQUIRE(p_est < p*1.25);
+    }
   }
 }
 
@@ -70,8 +87,25 @@ TEMPLATE_TEST_CASE("Random directed G(n, p) graph",
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+  }
 
-    // TODO add uniformity test
+  SECTION("edge probability") {
+    double p = 0.1;
+    TestType n = 20;
+    std::unordered_map<reticula::directed_edge<TestType>, std::size_t> n_edges;
+    std::size_t n_trials = 10000;
+    for (std::size_t i{}; i < n_trials; i++) {
+      reticula::directed_network<TestType> r =
+        reticula::random_directed_gnp_graph<TestType>(n, p, gen);
+      for (auto e : r.edges())
+        n_edges[e]++;
+    }
+
+    for (auto& [e, n] : n_edges) {
+      double p_est = static_cast<double>(n)/static_cast<double>(n_trials);
+      REQUIRE(p_est > p*0.75);
+      REQUIRE(p_est < p*1.25);
+    }
   }
 }
 
@@ -640,8 +674,27 @@ TEMPLATE_TEST_CASE("Random uniform hypergraph",
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+  }
 
-    // TODO add uniformity test
+  SECTION("edge probability") {
+    double p = 0.05;
+    TestType n = 20;
+    TestType m = 3;
+    std::unordered_map<
+        reticula::undirected_hyperedge<TestType>, std::size_t> n_edges;
+    std::size_t n_trials = 10000;
+    for (std::size_t i{}; i < n_trials; i++) {
+      reticula::undirected_hypernetwork<TestType> r =
+        reticula::random_uniform_hypergraph<TestType>(n, m, p, gen);
+      for (auto e : r.edges())
+        n_edges[e]++;
+    }
+
+    for (auto& [e, n] : n_edges) {
+      double p_est = static_cast<double>(n)/static_cast<double>(n_trials);
+      REQUIRE(p_est > p*0.75);
+      REQUIRE(p_est < p*1.25);
+    }
   }
 }
 
@@ -684,8 +737,28 @@ TEMPLATE_TEST_CASE("Random directed uniform hypergraph",
     double sigma = std::sqrt(mean);
     REQUIRE(static_cast<double>(r.edges().size()) > mean - 3*sigma);
     REQUIRE(static_cast<double>(r.edges().size()) < mean + 3*sigma);
+  }
 
-    // TODO add uniformity test
+  SECTION("edge probability") {
+    double p = 0.02;
+    TestType n = 5;
+    TestType m1 = 3, m2 = 2;
+    std::unordered_map<
+        reticula::directed_hyperedge<TestType>, std::size_t> n_edges;
+    std::size_t n_trials = 10000;
+    for (std::size_t i{}; i < n_trials; i++) {
+      reticula::directed_hypernetwork<TestType> r =
+        reticula::random_directed_uniform_hypergraph<TestType>(
+                   n, m1, m2, p, gen);
+      for (auto e : r.edges())
+        n_edges[e]++;
+    }
+
+    for (auto& [e, n] : n_edges) {
+      double p_est = static_cast<double>(n)/static_cast<double>(n_trials);
+      REQUIRE(p_est > p*0.75);
+      REQUIRE(p_est < p*1.25);
+    }
   }
 }
 
