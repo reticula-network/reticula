@@ -43,7 +43,8 @@ TEMPLATE_TEST_CASE("Random G(n, p) graph",
   SECTION("edge probability") {
     double p = 0.1;
     TestType n = 20;
-    std::unordered_map<reticula::undirected_edge<TestType>, std::size_t> n_edges;
+    std::unordered_map<
+       reticula::undirected_edge<TestType>, std::size_t> n_edges;
     std::size_t n_trials = 10000;
     for (std::size_t i{}; i < n_trials; i++) {
       reticula::undirected_network<TestType> r =
