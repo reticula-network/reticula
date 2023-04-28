@@ -3,6 +3,7 @@
 #include <ostream>
 
 #include "../include/reticula/utils.hpp"
+#include "../include/reticula/network_concepts.hpp"
 
 // Hashing rules for edges
 namespace std {

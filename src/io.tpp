@@ -1,6 +1,9 @@
 #include <csv.hpp>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
+
+#include "../include/reticula/networks.hpp"
 
 namespace reticula {
   namespace detail {

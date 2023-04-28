@@ -1,4 +1,8 @@
+#include <cmath>
 #include <limits>
+
+#include "../include/reticula/ranges.hpp"
+#include "../include/reticula/network_concepts.hpp"
 
 namespace reticula {
   template <ranges::forward_range AttrPairRange>

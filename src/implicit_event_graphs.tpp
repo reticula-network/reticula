@@ -1,3 +1,6 @@
+#include "../include/reticula/networks.hpp"
+#include "../include/reticula/temporal_edges.hpp"
+
 namespace reticula {
   template <
     temporal_network_edge EdgeT,

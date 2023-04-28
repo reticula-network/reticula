@@ -3,6 +3,7 @@
 #include <ostream>
 
 #include "../include/reticula/utils.hpp"
+#include "../include/reticula/network_concepts.hpp"
 
 namespace std {
   template<reticula::network_vertex VertexType, typename TimeType>

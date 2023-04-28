@@ -1,6 +1,7 @@
 #include <random>
 
 #include "../include/reticula/utils.hpp"
+#include "../include/reticula/networks.hpp"
 #include "../include/reticula/components.hpp"
 
 namespace reticula {

@@ -1,3 +1,5 @@
+#include <concepts>
+
 namespace reticula {
   // power_law_with_specified_mean
   template <std::floating_point RealType>

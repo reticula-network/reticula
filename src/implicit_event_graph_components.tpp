@@ -3,6 +3,10 @@
 
 #include <ds/disjoint_set.hpp>
 
+#include "../include/reticula/temporal_adjacency.hpp"
+#include "../include/reticula/components.hpp"
+#include "../include/reticula/implicit_event_graphs.hpp"
+
 namespace reticula {
   namespace detail {
     template <typename Comp, typename AdjT, typename TempResType>

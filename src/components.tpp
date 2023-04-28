@@ -1,3 +1,5 @@
+#include "../include/reticula/networks.hpp"
+
 namespace reticula {
   template <network_vertex VertT>
   component<VertT>::component(std::size_t size_hint) {

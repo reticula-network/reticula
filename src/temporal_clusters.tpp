@@ -1,6 +1,9 @@
 #include <limits>
 #include <cmath>
 
+#include "../include/reticula/temporal_edges.hpp"
+#include "../include/reticula/temporal_adjacency.hpp"
+
 namespace reticula {
   template <
     temporal_network_edge EdgeT,
