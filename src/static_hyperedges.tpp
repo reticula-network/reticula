@@ -150,6 +150,32 @@ namespace reticula {
     return res;
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType>
+  bool directed_hyperedge<VertexType>::operator<(
+      const directed_hyperedge<VertexType>& o) const noexcept {
+    return std::tie(_tails, _heads) < std::tie(o._tails, o._heads);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_hyperedge<VertexType>::operator<=(
+      const directed_hyperedge<VertexType>& o) const noexcept {
+    return std::tie(_tails, _heads) <= std::tie(o._tails, o._heads);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_hyperedge<VertexType>::operator>(
+      const directed_hyperedge<VertexType>& o) const noexcept {
+    return std::tie(_tails, _heads) > std::tie(o._tails, o._heads);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_hyperedge<VertexType>::operator>=(
+      const directed_hyperedge<VertexType>& o) const noexcept {
+    return std::tie(_tails, _heads) >= std::tie(o._tails, o._heads);
+  }
+#endif
+
   template <network_vertex VertexType>
   bool effect_lt(
       const directed_hyperedge<VertexType>& a,
@@ -225,6 +251,32 @@ namespace reticula {
   undirected_hyperedge<VertexType>::incident_verts() const {
     return _verts;
   }
+
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType>
+  bool undirected_hyperedge<VertexType>::operator<(
+      const undirected_hyperedge<VertexType>& o) const noexcept {
+    return _verts < o._verts;
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_hyperedge<VertexType>::operator<=(
+      const undirected_hyperedge<VertexType>& o) const noexcept {
+    return _verts <= o._verts;
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_hyperedge<VertexType>::operator>(
+      const undirected_hyperedge<VertexType>& o) const noexcept {
+    return _verts > o._verts;
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_hyperedge<VertexType>::operator>=(
+      const undirected_hyperedge<VertexType>& o) const noexcept {
+    return _verts >= o._verts;
+  }
+#endif
 
   template <network_vertex VertexType>
   bool effect_lt(

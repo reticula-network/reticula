@@ -235,6 +235,19 @@ namespace reticula {
         const directed_temporal_hyperedge<
           VertexType, TimeType>&) const = default;
 
+#if (_LIBCPP_VERSION)
+    bool operator==(const directed_temporal_hyperedge<
+      VertexType, TimeType>&) const noexcept = default;
+    bool operator<(const directed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator<=(const directed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>(const directed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>=(const directed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+#endif
+
     /**
       Defines a strong lexicographic ordering along with `operator==` where
       cause times are compared then head vertices and then tail vertices.
@@ -454,6 +467,19 @@ namespace reticula {
         const directed_delayed_temporal_hyperedge<
           VertexType, TimeType>&) const = default;
 
+#if (_LIBCPP_VERSION)
+    bool operator==(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>&) const noexcept = default;
+    bool operator<(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator<=(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>=(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+#endif
+
     template <network_vertex VertexType, typename TimeType>
     friend bool effect_lt(
         const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
@@ -619,6 +645,19 @@ namespace reticula {
     auto operator<=>(
         const undirected_temporal_hyperedge<
           VertexType, TimeType>&) const = default;
+
+#if (_LIBCPP_VERSION)
+    bool operator==(const undirected_temporal_hyperedge<
+      VertexType, TimeType>&) const noexcept = default;
+    bool operator<(const undirected_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator<=(const undirected_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>(const undirected_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+    bool operator>=(const undirected_temporal_hyperedge<
+      VertexType, TimeType>& o) const noexcept;
+#endif
 
     /**
       Exactly the same as `operator<`.
