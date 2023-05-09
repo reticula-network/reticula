@@ -37,7 +37,7 @@ TEMPLATE_TEST_CASE_SIG("square grid graph", "[reticula::square_grid_graph]",
 
     // test degrees
     REQUIRE(std::count_if(verts.begin(), verts.end(),
-          [&periodic, dims = Dims, n](std::size_t vert) {
+          [&periodic, dims = Dims](std::size_t vert) {
             return periodic.degree(vert) == dims*2;
           }) == static_cast<std::ptrdiff_t>(verts.size()));
 
@@ -67,7 +67,7 @@ TEMPLATE_TEST_CASE_SIG("square grid graph", "[reticula::square_grid_graph]",
     // test degrees
     for (std::size_t d = 1; d <= Dims; d++)
       REQUIRE(std::count_if(verts.begin(), verts.end(),
-            [&aperiodic, d, dims = Dims, n](std::size_t vert) {
+            [&aperiodic, d, dims = Dims](std::size_t vert) {
               return aperiodic.degree(vert) == dims+d;
             }) == static_cast<std::ptrdiff_t>(
               power(n-2, d)*choose(Dims, d)*power(2, Dims-d)));
