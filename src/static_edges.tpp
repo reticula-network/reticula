@@ -105,6 +105,32 @@ namespace reticula {
     return _head;
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType>
+  bool directed_edge<VertexType>::operator<(
+      const directed_edge<VertexType>& o) const noexcept {
+    return std::tie(_tail, _head) < std::tie(o._tail, o._head);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_edge<VertexType>::operator<=(
+      const directed_edge<VertexType>& o) const noexcept {
+    return std::tie(_tail, _head) <= std::tie(o._tail, o._head);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_edge<VertexType>::operator>(
+      const directed_edge<VertexType>& o) const noexcept {
+    return std::tie(_tail, _head) > std::tie(o._tail, o._head);
+  }
+
+  template <network_vertex VertexType>
+  bool directed_edge<VertexType>::operator>=(
+      const directed_edge<VertexType>& o) const noexcept {
+    return std::tie(_tail, _head) >= std::tie(o._tail, o._head);
+  }
+#endif
+
   template <network_vertex VertexType>
   bool effect_lt(
       const directed_edge<VertexType>& a,
@@ -186,6 +212,32 @@ namespace reticula {
     else
       return {_v1, _v2};
   }
+
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType>
+  bool undirected_edge<VertexType>::operator<(
+      const undirected_edge<VertexType>& o) const noexcept {
+    return std::tie(_v1, _v2) < std::tie(o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_edge<VertexType>::operator<=(
+      const undirected_edge<VertexType>& o) const noexcept {
+    return std::tie(_v1, _v2) <= std::tie(o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_edge<VertexType>::operator>(
+      const undirected_edge<VertexType>& o) const noexcept {
+    return std::tie(_v1, _v2) > std::tie(o._v1, o._v2);
+  }
+
+  template <network_vertex VertexType>
+  bool undirected_edge<VertexType>::operator>=(
+      const undirected_edge<VertexType>& o) const noexcept {
+    return std::tie(_v1, _v2) >= std::tie(o._v1, o._v2);
+  }
+#endif
 
   template <network_vertex VertexType>
   bool effect_lt(
