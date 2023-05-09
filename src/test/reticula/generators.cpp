@@ -109,7 +109,7 @@ TEST_CASE("path graph", "[reticula::path_graph]") {
 
     // test degrees
     REQUIRE(std::count_if(verts.begin(), verts.end(),
-          [&periodic, n](std::size_t vert) {
+          [&periodic](std::size_t vert) {
             return periodic.degree(vert) == 2;
           }) == static_cast<std::ptrdiff_t>(verts.size()));
 
@@ -137,11 +137,11 @@ TEST_CASE("path graph", "[reticula::path_graph]") {
 
     // test degrees
     REQUIRE(std::count_if(verts.begin(), verts.end(),
-          [&aperiodic, n](std::size_t vert) {
+          [&aperiodic](std::size_t vert) {
             return aperiodic.degree(vert) == 2;
           }) == static_cast<std::ptrdiff_t>(n-2));
     REQUIRE(std::count_if(verts.begin(), verts.end(),
-          [&aperiodic, n](std::size_t vert) {
+          [&aperiodic](std::size_t vert) {
             return aperiodic.degree(vert) == 1;
           }) == 2);
 
