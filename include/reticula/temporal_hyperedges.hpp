@@ -237,7 +237,7 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
     bool operator==(const directed_temporal_hyperedge<
-      VertexType, TimeType>&) const = default;
+      VertexType, TimeType>&) const noexcept = default;
     bool operator<(const directed_temporal_hyperedge<
       VertexType, TimeType>& o) const noexcept;
     bool operator<=(const directed_temporal_hyperedge<
@@ -469,7 +469,7 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
     bool operator==(const directed_delayed_temporal_hyperedge<
-      VertexType, TimeType>&) const = default;
+      VertexType, TimeType>&) const noexcept = default;
     bool operator<(const directed_delayed_temporal_hyperedge<
       VertexType, TimeType>& o) const noexcept;
     bool operator<=(const directed_delayed_temporal_hyperedge<
@@ -648,7 +648,7 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
     bool operator==(const undirected_temporal_hyperedge<
-      VertexType, TimeType>&) const = default;
+      VertexType, TimeType>&) const noexcept = default;
     bool operator<(const undirected_temporal_hyperedge<
       VertexType, TimeType>& o) const noexcept;
     bool operator<=(const undirected_temporal_hyperedge<

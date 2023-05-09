@@ -171,7 +171,8 @@ namespace reticula {
     auto operator<=>(const directed_hyperedge<VertexType>&) const = default;
 
 #if (_LIBCPP_VERSION)
-    bool operator==(const directed_hyperedge<VertexType>&) const = default;
+    bool operator==(
+      const directed_hyperedge<VertexType>&) const noexcept = default;
     bool operator<(const directed_hyperedge<VertexType>& o) const noexcept;
     bool operator<=(const directed_hyperedge<VertexType>& o) const noexcept;
     bool operator>(const directed_hyperedge<VertexType>& o) const noexcept;
@@ -287,7 +288,8 @@ namespace reticula {
     auto operator<=>(const undirected_hyperedge<VertexType>&) const = default;
 
 #if (_LIBCPP_VERSION)
-    bool operator==(const undirected_hyperedge<VertexType>&) const = default;
+    bool operator==(
+      const undirected_hyperedge<VertexType>&) const noexcept = default;
     bool operator<(const undirected_hyperedge<VertexType>& o) const noexcept;
     bool operator<=(const undirected_hyperedge<VertexType>& o) const noexcept;
     bool operator>(const undirected_hyperedge<VertexType>& o) const noexcept;
