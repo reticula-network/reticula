@@ -656,7 +656,7 @@ TEST_CASE("directed delayed temporal hyperedges",
     for (auto v: edge.heads())
         INFO(v);
 
-    INFO("tails: " edge.tails().size());
+    INFO("tails: " << edge.tails().size());
     for (auto v: edge.tails())
         INFO(v);
 
