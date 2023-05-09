@@ -227,41 +227,6 @@ namespace reticula {
     return _heads;
   }
 
-#if (_LIBCPP_VERSION)
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_temporal_hyperedge<VertexType, TimeType>::operator<(
-      const directed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_time, _tails, _heads) <
-      std::tie(o._time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_temporal_hyperedge<VertexType, TimeType>::operator<=(
-      const directed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_time, _tails, _heads) <=
-      std::tie(o._time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_temporal_hyperedge<VertexType, TimeType>::operator>(
-      const directed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_time, _tails, _heads) >
-      std::tie(o._time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_temporal_hyperedge<VertexType, TimeType>::operator>=(
-      const directed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_time, _tails, _heads) >=
-      std::tie(o._time, o._tails, o._heads);
-  }
-#endif
-
-
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_temporal_hyperedge<VertexType, TimeType>& a,
@@ -419,40 +384,6 @@ namespace reticula {
     return res;
   }
 
-#if (_LIBCPP_VERSION)
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::operator<(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_cause_time, _effect_time, _tails, _heads) <
-      std::tie(o._cause_time, o._effect_time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::operator<=(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_cause_time, _effect_time, _tails, _heads) <=
-      std::tie(o._cause_time, o._effect_time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::operator>(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_cause_time, _effect_time, _tails, _heads) >
-      std::tie(o._cause_time, o._effect_time, o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::operator>=(
-      const directed_delayed_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(_cause_time, _effect_time, _tails, _heads) >=
-      std::tie(o._cause_time, o._effect_time, o._tails, o._heads);
-  }
-#endif
-
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_delayed_temporal_hyperedge<VertexType, TimeType>& a,
@@ -559,36 +490,6 @@ namespace reticula {
   undirected_temporal_hyperedge<VertexType, TimeType>::incident_verts() const {
     return _verts;
   }
-
-#if (_LIBCPP_VERSION)
-  template <network_vertex VertexType, typename TimeType>
-  bool undirected_temporal_hyperedge<VertexType, TimeType>::operator<(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(time, _verts) < std::tie(o._time, o._verts);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool undirected_temporal_hyperedge<VertexType, TimeType>::operator<=(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(time, _verts) <= std::tie(o._time, o._verts);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool undirected_temporal_hyperedge<VertexType, TimeType>::operator>(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(time, _verts) > std::tie(o._time, o._verts);
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  bool undirected_temporal_hyperedge<VertexType, TimeType>::operator>=(
-      const undirected_temporal_hyperedge<VertexType, TimeType>& o)
-      const noexcept {
-    return std::tie(time, _verts) >= std::tie(o._time, o._verts);
-  }
-#endif
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
