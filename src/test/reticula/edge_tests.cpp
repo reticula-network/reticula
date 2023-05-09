@@ -654,8 +654,8 @@ TEST_CASE("directed delayed temporal hyperedges",
     REQUIRE_FALSE(edge.is_out_incident(2));
     REQUIRE_FALSE(edge.is_out_incident(3));
 
-    CAPTURE(edge.heads())
-    CAPTURE(edge.tails())
+    CAPTURE(edge.heads());
+    CAPTURE(edge.tails());
 
     REQUIRE(edge.is_in_incident(2));
     REQUIRE(edge.is_in_incident(6));
