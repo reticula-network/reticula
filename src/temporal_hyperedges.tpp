@@ -565,28 +565,28 @@ namespace reticula {
   bool undirected_temporal_hyperedge<VertexType, TimeType>::operator<(
       const undirected_temporal_hyperedge<VertexType, TimeType>& o)
       const noexcept {
-    return std::tie(time, _verts) < std::tie(o._time, o._verts);
+    return std::tie(_time, _verts) < std::tie(o._time, o._verts);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::operator<=(
       const undirected_temporal_hyperedge<VertexType, TimeType>& o)
       const noexcept {
-    return std::tie(time, _verts) <= std::tie(o._time, o._verts);
+    return std::tie(_time, _verts) <= std::tie(o._time, o._verts);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::operator>(
       const undirected_temporal_hyperedge<VertexType, TimeType>& o)
       const noexcept {
-    return std::tie(time, _verts) > std::tie(o._time, o._verts);
+    return std::tie(_time, _verts) > std::tie(o._time, o._verts);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::operator>=(
       const undirected_temporal_hyperedge<VertexType, TimeType>& o)
       const noexcept {
-    return std::tie(time, _verts) >= std::tie(o._time, o._verts);
+    return std::tie(_time, _verts) >= std::tie(o._time, o._verts);
   }
 #endif
 
