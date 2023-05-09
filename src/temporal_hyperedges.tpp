@@ -237,7 +237,7 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  bool directed_temporal_hyperedge<VertexTypem TimeType>::operator<=(
+  bool directed_temporal_hyperedge<VertexTypem, TimeType>::operator<=(
       const directed_temporal_hyperedge<VertexType, TimeType>& o)
       const noexcept {
     return std::tie(_time, _tails, _heads) <=
