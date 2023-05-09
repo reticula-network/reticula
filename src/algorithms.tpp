@@ -891,14 +891,14 @@ namespace reticula {
       double mutator_default_value,
       double mutated_default_value) {
     return attribute_assortativity(net,
-        [&net, &mutator_attribute_map, mutator_default_value](
+        [&mutator_attribute_map, mutator_default_value](
           const typename EdgeT::VertexType& v) -> double {
             auto it = mutator_attribute_map.find(v);
             if (it == mutator_attribute_map.end())
               return mutator_default_value;
             else
               return it->second;
-        }, [&net, &mutated_attribute_map, mutated_default_value](
+        }, [&mutated_attribute_map, mutated_default_value](
           const typename EdgeT::VertexType& v) -> double {
             auto it = mutated_attribute_map.find(v);
             if (it == mutated_attribute_map.end())
