@@ -84,7 +84,7 @@ TEST_CASE("interval set", "[reticula::interval_set]") {
       REQUIRE(reticula::ranges::is_sorted(is2));
       REQUIRE(reticula::ranges::all_of(reticula::views::iota(-10, 20),
             [&is1, &is2, &original_is2](int i) {
-              return (is1.covers(i) | original_is2.covers(i)) ==
+              return (is1.covers(i) || original_is2.covers(i)) ==
                 (is2.covers(i));
               }));
     }
