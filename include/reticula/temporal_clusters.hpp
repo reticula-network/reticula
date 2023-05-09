@@ -15,7 +15,7 @@ namespace reticula {
   template <typename T>
   concept network_temporal_cluster =
     temporal_network_edge<typename T::VertexType> &&
-    requires(T a, const T::VertexType& v) {
+    requires(T a, const typename T::VertexType& v) {
       a.insert(v);
     } && requires(T a, const T& b) {
       a.merge(b);
@@ -27,7 +27,7 @@ namespace reticula {
     ranges::forward_range<T> &&
     ranges::sized_range<T> &&
     std::equality_comparable<T> &&
-    requires(const T& a, const T::VertexType& v) {
+    requires(const T& a, const typename T::VertexType& v) {
       { a.contains(v) } -> std::convertible_to<bool>;
     };  // NOLINT(readability/braces)
 
@@ -139,15 +139,15 @@ namespace reticula {
 
     explicit temporal_cluster_sketch(
         AdjT adj,
-        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
+        typename EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
     temporal_cluster_sketch(
         std::initializer_list<EdgeT> verts, AdjT adj,
-        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
+        typename EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
     template<ranges::input_range Range>
     requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
     explicit temporal_cluster_sketch(Range&& verts, AdjT adj,
-        EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
+        typename EdgeT::TimeType temporal_resolution = 1, std::size_t seed = 0);
 
     template <ranges::input_range Range>
     requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
@@ -162,7 +162,7 @@ namespace reticula {
     lifetime() const;
     double volume_estimate() const;
     double mass_estimate() const;
-    EdgeT::TimeType temporal_resolution() const;
+    typename EdgeT::TimeType temporal_resolution() const;
 
   private:
     void insert_time_range(
@@ -170,7 +170,7 @@ namespace reticula {
         typename EdgeT::TimeType start,
         typename EdgeT::TimeType end);
 
-    EdgeT::TimeType _dt;
+    typename EdgeT::TimeType _dt;
     AdjT _adj;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType> _lifetime;
     EventSketchType _events;
@@ -194,10 +194,10 @@ namespace reticula {
     lifetime() const;
     double volume_estimate() const;
     double mass_estimate() const;
-    EdgeT::TimeType temporal_resolution() const;
+    typename EdgeT::TimeType temporal_resolution() const;
 
   private:
-    EdgeT::TimeType _dt;
+    typename EdgeT::TimeType _dt;
     double _size_estimate;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     _lifetime;

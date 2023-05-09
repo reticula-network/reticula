@@ -137,7 +137,7 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_cluster<EdgeT, AdjT>::IteratorType
+  typename temporal_cluster<EdgeT, AdjT>::IteratorType
   temporal_cluster<EdgeT, AdjT>::begin() const {
     return _events.begin();
   }
@@ -145,7 +145,7 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  temporal_cluster<EdgeT, AdjT>::IteratorType
+  typename temporal_cluster<EdgeT, AdjT>::IteratorType
   temporal_cluster<EdgeT, AdjT>::end() const {
     return _events.end();
   }
@@ -233,7 +233,8 @@ namespace reticula {
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
-      AdjT adj, EdgeT::TimeType temporal_resolution, std::size_t seed) :
+      AdjT adj, typename EdgeT::TimeType temporal_resolution,
+      std::size_t seed) :
       _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
@@ -246,7 +247,7 @@ namespace reticula {
     temporal_adjacency::temporal_adjacency AdjT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       std::initializer_list<EdgeT> events, AdjT adj,
-      EdgeT::TimeType temporal_resolution, std::size_t seed) :
+      typename EdgeT::TimeType temporal_resolution, std::size_t seed) :
     temporal_cluster_sketch(
         std::vector(events), adj, temporal_resolution, seed) {}
 
@@ -257,7 +258,7 @@ namespace reticula {
   requires std::convertible_to<ranges::range_value_t<Range>, EdgeT>
   temporal_cluster_sketch<EdgeT, AdjT>::temporal_cluster_sketch(
       Range&& events, AdjT adj,
-      EdgeT::TimeType temporal_resolution, std::size_t seed) :
+      typename EdgeT::TimeType temporal_resolution, std::size_t seed) :
       _dt(temporal_resolution), _adj(adj), _lifetime(
           std::numeric_limits<typename EdgeT::TimeType>::max(),
           std::numeric_limits<typename EdgeT::TimeType>::min()),
@@ -354,8 +355,8 @@ namespace reticula {
       typename EdgeT::VertexType v,
       typename EdgeT::TimeType start, typename EdgeT::TimeType end) {
     typename EdgeT::TimeType
-      a = static_cast<EdgeT::TimeType>(std::floor(start/_dt)),
-      b = static_cast<EdgeT::TimeType>(std::floor(end/_dt) + 1);
+      a = static_cast<typename EdgeT::TimeType>(std::floor(start/_dt)),
+      b = static_cast<typename EdgeT::TimeType>(std::floor(end/_dt) + 1);
     for (typename EdgeT::TimeType s = a; s <= b; s++)
       if (s*_dt > start && s*_dt <= end)
         _times.insert({v, s});
