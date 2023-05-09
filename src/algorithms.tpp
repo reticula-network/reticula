@@ -836,7 +836,7 @@ namespace reticula {
       const MapT& attribute_map,
       double default_value) {
     return attribute_assortativity(net,
-        [&net, &attribute_map, default_value](
+        [&attribute_map, default_value](
           const typename EdgeT::VertexType& v) -> double {
             auto it = attribute_map.find(v);
             if (it == attribute_map.end())
