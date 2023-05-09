@@ -654,11 +654,11 @@ TEST_CASE("directed delayed temporal hyperedges",
 
     INFO("heads: " << edge.heads().size());
     for (auto v: edge.heads())
-        INFO(v);
+        INFO("- " << v);
 
     INFO("tails: " << edge.tails().size());
     for (auto v: edge.tails())
-        INFO(v);
+        INFO("- " << v);
 
     REQUIRE_FALSE(edge.is_out_incident(2));
     REQUIRE_FALSE(edge.is_out_incident(3));
