@@ -18,7 +18,7 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
-  GIT_TAG ef856ad)
+  GIT_TAG 0caf55d9518255232e270d7a2ef873c9d0c13c98)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
