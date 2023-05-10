@@ -1,4 +1,5 @@
 #include <functional>
+#include <algorithm>
 
 #include "../include/reticula/utils.hpp"
 
@@ -102,13 +103,13 @@ namespace reticula {
   template <network_vertex VertexType>
   inline bool directed_hyperedge<VertexType>::is_out_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_tails, vert);
+    return std::binary_search(_tails.begin(), _tails.end(), vert);
   }
 
   template <network_vertex VertexType>
   inline bool directed_hyperedge<VertexType>::is_in_incident(
       const VertexType& vert) const  {
-    return ranges::binary_search(_heads, vert);
+    return std::binary_search(_heads.begin(), _heads.end(), vert);
   }
 
   template <network_vertex VertexType>
@@ -219,19 +220,19 @@ namespace reticula {
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_in_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_hyperedge<VertexType>::is_out_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType>

@@ -1,4 +1,5 @@
 #include <functional>
+#include <algorithm>
 #include <istream>
 #include <ostream>
 
@@ -179,13 +180,13 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_hyperedge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_tails, vert);
+    return std::binary_search(_tails.begin(), _tails.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_hyperedge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return ranges::binary_search(_heads, vert);
+    return std::binary_search(_heads.begin(), _heads.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -366,13 +367,13 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       is_out_incident(const VertexType& vert) const {
-    return ranges::binary_search(_tails, vert);
+    return std::binary_search(_tails.begin(), _tails.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       is_in_incident(const VertexType& vert) const {
-    return ranges::binary_search(_heads, vert);
+    return std::binary_search(_heads.begin(), _heads.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -527,19 +528,19 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_incident(const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_in_incident(const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_hyperedge<VertexType, TimeType>::
       is_out_incident(const VertexType& vert) const {
-    return ranges::binary_search(_verts, vert);
+    return std::binary_search(_verts.begin(), _verts.end(), vert);
   }
 
   template <network_vertex VertexType, typename TimeType>

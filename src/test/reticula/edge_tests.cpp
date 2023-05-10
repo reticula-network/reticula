@@ -651,15 +651,6 @@ TEST_CASE("directed delayed temporal hyperedges",
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE(edge.is_out_incident(5));
-
-    INFO("heads: " << edge.heads().size());
-    for (auto v: edge.heads())
-        INFO("- " << v);
-
-    INFO("tails: " << edge.tails().size());
-    for (auto v: edge.tails())
-        INFO("- " << v);
-
     REQUIRE_FALSE(edge.is_out_incident(2));
     REQUIRE_FALSE(edge.is_out_incident(3));
 
