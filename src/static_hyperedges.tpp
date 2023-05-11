@@ -153,27 +153,10 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
   template <network_vertex VertexType>
-  bool directed_hyperedge<VertexType>::operator<(
-      const directed_hyperedge<VertexType>& o) const noexcept {
-    return std::tie(_tails, _heads) < std::tie(o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType>
-  bool directed_hyperedge<VertexType>::operator<=(
-      const directed_hyperedge<VertexType>& o) const noexcept {
-    return std::tie(_tails, _heads) <= std::tie(o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType>
-  bool directed_hyperedge<VertexType>::operator>(
-      const directed_hyperedge<VertexType>& o) const noexcept {
-    return std::tie(_tails, _heads) > std::tie(o._tails, o._heads);
-  }
-
-  template <network_vertex VertexType>
-  bool directed_hyperedge<VertexType>::operator>=(
-      const directed_hyperedge<VertexType>& o) const noexcept {
-    return std::tie(_tails, _heads) >= std::tie(o._tails, o._heads);
+  auto directed_hyperedge<VertexType>::operator<=>(
+      const directed_hyperedge<VertexType>& o) const {
+    return utils::compare(std::tie(_tails, _heads),
+                          std::tie(o._tails, o._heads));
   }
 #endif
 
@@ -255,27 +238,9 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
   template <network_vertex VertexType>
-  bool undirected_hyperedge<VertexType>::operator<(
-      const undirected_hyperedge<VertexType>& o) const noexcept {
-    return _verts < o._verts;
-  }
-
-  template <network_vertex VertexType>
-  bool undirected_hyperedge<VertexType>::operator<=(
-      const undirected_hyperedge<VertexType>& o) const noexcept {
-    return _verts <= o._verts;
-  }
-
-  template <network_vertex VertexType>
-  bool undirected_hyperedge<VertexType>::operator>(
-      const undirected_hyperedge<VertexType>& o) const noexcept {
-    return _verts > o._verts;
-  }
-
-  template <network_vertex VertexType>
-  bool undirected_hyperedge<VertexType>::operator>=(
-      const undirected_hyperedge<VertexType>& o) const noexcept {
-    return _verts >= o._verts;
+  auto undirected_hyperedge<VertexType>::operator<=>(
+      const undirected_hyperedge<VertexType>& o) const {
+    return utils::compare(_verts, o._verts);
   }
 #endif
 

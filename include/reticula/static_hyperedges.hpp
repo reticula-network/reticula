@@ -168,15 +168,13 @@ namespace reticula {
       Defines a strong lexicographic ordering where tail vertices compared
       before head vertices.
      */
-    auto operator<=>(const directed_hyperedge<VertexType>&) const = default;
 
 #if (_LIBCPP_VERSION)
+    auto operator<=>(const directed_hyperedge<VertexType>&) const;
     bool operator==(
       const directed_hyperedge<VertexType>&) const noexcept = default;
-    bool operator<(const directed_hyperedge<VertexType>& o) const noexcept;
-    bool operator<=(const directed_hyperedge<VertexType>& o) const noexcept;
-    bool operator>(const directed_hyperedge<VertexType>& o) const noexcept;
-    bool operator>=(const directed_hyperedge<VertexType>& o) const noexcept;
+#else
+    auto operator<=>(const directed_hyperedge<VertexType>&) const = default;
 #endif
 
     /**
@@ -285,15 +283,12 @@ namespace reticula {
     /**
       Defines an arbitrary strong ordering.
      */
-    auto operator<=>(const undirected_hyperedge<VertexType>&) const = default;
 
 #if (_LIBCPP_VERSION)
-    bool operator==(
-      const undirected_hyperedge<VertexType>&) const noexcept = default;
-    bool operator<(const undirected_hyperedge<VertexType>& o) const noexcept;
-    bool operator<=(const undirected_hyperedge<VertexType>& o) const noexcept;
-    bool operator>(const undirected_hyperedge<VertexType>& o) const noexcept;
-    bool operator>=(const undirected_hyperedge<VertexType>& o) const noexcept;
+    auto operator<=>(const undirected_hyperedge<VertexType>&) const;
+    bool operator==(const undirected_hyperedge<VertexType>&) const noexcept = default;
+#else
+    auto operator<=>(const undirected_hyperedge<VertexType>&) const = default;
 #endif
 
     /**

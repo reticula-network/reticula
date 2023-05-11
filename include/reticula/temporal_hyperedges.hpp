@@ -231,21 +231,14 @@ namespace reticula {
       Defines a strong lexicographic ordering where cause times are compare then
       tail set and then head set.
      */
-    auto operator<=>(
-        const directed_temporal_hyperedge<
-          VertexType, TimeType>&) const = default;
-
 #if (_LIBCPP_VERSION)
     bool operator==(const directed_temporal_hyperedge<
       VertexType, TimeType>&) const noexcept = default;
-    bool operator<(const directed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator<=(const directed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>(const directed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>=(const directed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
+    auto operator<=>(const directed_temporal_hyperedge<
+      VertexType, TimeType>& o) const;
+#else
+    auto operator<=>(const directed_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
 #endif
 
     /**
@@ -463,21 +456,14 @@ namespace reticula {
       Defines a strong lexicographic ordering where cause times are compare then
       effect times then tail vertices and finally head vertices.
      */
-    auto operator<=>(
-        const directed_delayed_temporal_hyperedge<
-          VertexType, TimeType>&) const = default;
-
 #if (_LIBCPP_VERSION)
     bool operator==(const directed_delayed_temporal_hyperedge<
       VertexType, TimeType>&) const noexcept = default;
-    bool operator<(const directed_delayed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator<=(const directed_delayed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>(const directed_delayed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>=(const directed_delayed_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
+    auto operator<=>(const directed_delayed_temporal_hyperedge<
+      VertexType, TimeType>& o) const;
+#else
+    auto operator<=>(const directed_delayed_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
 #endif
 
     template <network_vertex VertexType, typename TimeType>
@@ -642,21 +628,14 @@ namespace reticula {
       Defines a strong ordering that would order events based on cause times
       first, then lexographically by the sorted set of verticess.
      */
-    auto operator<=>(
-        const undirected_temporal_hyperedge<
-          VertexType, TimeType>&) const = default;
-
 #if (_LIBCPP_VERSION)
     bool operator==(const undirected_temporal_hyperedge<
       VertexType, TimeType>&) const noexcept = default;
-    bool operator<(const undirected_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator<=(const undirected_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>(const undirected_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
-    bool operator>=(const undirected_temporal_hyperedge<
-      VertexType, TimeType>& o) const noexcept;
+    auto operator<=>(const undirected_temporal_hyperedge<
+      VertexType, TimeType>& o) const;
+#else
+    auto operator<=>(const undirected_temporal_hyperedge<
+          VertexType, TimeType>&) const = default;
 #endif
 
     /**

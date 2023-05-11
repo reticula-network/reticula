@@ -724,6 +724,7 @@ TEST_CASE("higher-order edges", "[reticula::directed_edge]") {
   using HyperEventGraphEdge =
     reticula::directed_edge<
       reticula::directed_temporal_hyperedge<int, float>>;
+  STATIC_REQUIRE(reticula::static_network_edge<HyperEventGraphEdge>);
   REQUIRE_NOTHROW(HyperEventGraphEdge({{}, {}}));
   REQUIRE_NOTHROW(reticula::hash<HyperEventGraphEdge>{}(
         HyperEventGraphEdge({{}, {}})));
