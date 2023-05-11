@@ -219,8 +219,16 @@ namespace reticula {
       Defines a strong lexicographic ordering where
       cause times are compare then tail vertices and then head vertices.
      */
+#if (_LIBCPP_VERSION)
+    bool operator==(
+        const directed_temporal_edge<VertexType, TimeType>&)
+        const noexcept = default;
+    auto operator<=>(
+        const directed_temporal_edge<VertexType, TimeType>&) const;
+#else
     auto operator<=>(
         const directed_temporal_edge<VertexType, TimeType>&) const = default;
+#endif
 
     /**
       Defines a strong lexicographic ordering along with `operator==` where
@@ -431,9 +439,18 @@ namespace reticula {
       Defines a strong lexicographic ordering where cause times are compare
       then effect times then tail vertices and finally head vertices.
      */
+#if (_LIBCPP_VERSION)
+    bool operator==(
+        const directed_delayed_temporal_edge<
+          VertexType, TimeType>&) const noexcept = default;
+    auto operator<=>(
+        const directed_delayed_temporal_edge<
+          VertexType, TimeType>&) const;
+#else
     auto operator<=>(
         const directed_delayed_temporal_edge<
           VertexType, TimeType>&) const = default;
+#endif
 
     template <network_vertex VertexType, typename TimeType>
     friend bool effect_lt(
@@ -578,8 +595,16 @@ namespace reticula {
       Defines a strong ordering along with that would rank events
       based on cause times first.
      */
+#if (_LIBCPP_VERSION)
+    bool operator==(
+        const undirected_temporal_edge<VertexType, TimeType>&)
+        const noexcept = default;
+    auto operator<=>(
+        const undirected_temporal_edge<VertexType, TimeType>&) const;
+#else
     auto operator<=>(
         const undirected_temporal_edge<VertexType, TimeType>&) const = default;
+#endif
 
     /**
       Exactly the same as `operator<`.

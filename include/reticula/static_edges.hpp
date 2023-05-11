@@ -142,15 +142,12 @@ namespace reticula {
       Defines a strong lexicographic ordering where tail vertices compared
       before head vertices.
      */
-    auto operator<=>(const directed_edge<VertexType>& other) const = default;
-
 #if (_LIBCPP_VERSION)
     bool operator==(
       const directed_edge<VertexType>&) const noexcept = default;
-    bool operator<(const directed_edge<VertexType>& o) const noexcept;
-    bool operator<=(const directed_edge<VertexType>& o) const noexcept;
-    bool operator>(const directed_edge<VertexType>& o) const noexcept;
-    bool operator>=(const directed_edge<VertexType>& o) const noexcept;
+    auto operator<=>(const directed_edge<VertexType>& o) const;
+#else
+    auto operator<=>(const directed_edge<VertexType>& other) const = default;
 #endif
 
     /**
@@ -270,15 +267,12 @@ namespace reticula {
     /**
       Defines a arbitrary strong ordering.
      */
-    auto operator<=>(const undirected_edge<VertexType>&) const = default;
-
 #if (_LIBCPP_VERSION)
     bool operator==(
       const undirected_edge<VertexType>&) const noexcept = default;
-    bool operator<(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator<=(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator>(const undirected_edge<VertexType>& o) const noexcept;
-    bool operator>=(const undirected_edge<VertexType>& o) const noexcept;
+    auto operator<=>(const undirected_edge<VertexType>& o) const;
+#else
+    auto operator<=>(const undirected_edge<VertexType>&) const = default;
 #endif
 
     /**

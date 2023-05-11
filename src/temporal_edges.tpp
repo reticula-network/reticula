@@ -166,6 +166,16 @@ namespace reticula {
     return _head;
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  auto directed_temporal_edge<VertexType, TimeType>::operator<=>(
+      const directed_temporal_edge<VertexType, TimeType>& o) const {
+    return utils::compare(
+      std::tie(_time, _head, _tail),
+      std::tie(o._time, o._head, o._tail));
+  }
+#endif
+
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_temporal_edge<VertexType, TimeType>& a,
@@ -290,6 +300,16 @@ namespace reticula {
     return _head;
   }
 
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  auto directed_delayed_temporal_edge<VertexType, TimeType>::operator<=>(
+      const directed_delayed_temporal_edge<VertexType, TimeType>& o) const {
+    return utils::compare(
+      std::tie(_cause_time, _effect_time, _head, _tail),
+      std::tie(o._cause_time, o._effect_time, o._head, o._tail));
+  }
+#endif
+
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
@@ -401,6 +421,16 @@ namespace reticula {
     else
       return {_v1, _v2};
   }
+
+#if (_LIBCPP_VERSION)
+  template <network_vertex VertexType, typename TimeType>
+  auto undirected_temporal_edge<VertexType, TimeType>::operator<=>(
+      const undirected_temporal_edge<VertexType, TimeType>& o) const {
+    return utils::compare(
+      std::tie(_time, _v1, _v2),
+      std::tie(o._time, o._v1, o._v2));
+  }
+#endif
 
   template <network_vertex VertexType, typename TimeType>
   bool adjacent(

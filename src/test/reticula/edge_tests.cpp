@@ -732,4 +732,9 @@ TEST_CASE("higher-order edges", "[reticula::directed_edge]") {
         HyperEventGraphEdge({{}, {}})));
   REQUIRE_NOTHROW(hll::hash<HyperEventGraphEdge>{}(
         HyperEventGraphEdge({{}, {}}), std::uint64_t{}));
+
+  using DirectedEventGraphEdge =
+    reticula::directed_edge<
+      reticula::undirected_temporal_edge<std::string, float>>;
+  STATIC_REQUIRE(reticula::static_network_edge<DirectedEventGraphEdge>);
 }
