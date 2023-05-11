@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.14)
-
 project(reticula LANGUAGES CXX VERSION 0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -59,6 +58,7 @@ add_executable(
   ${PROJECT_NAME}_tests
   EXCLUDE_FROM_ALL
   src/test/reticula/stats.cpp
+  src/test/reticula/utils.cpp
   src/test/reticula/intervals.cpp
   src/test/reticula/temporal_adjacency.cpp
   src/test/reticula/operations.cpp

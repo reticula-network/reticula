@@ -74,6 +74,18 @@ namespace reticula {
       explicit vertex_type_too_small_error(const char* what_arg)
         : std::invalid_argument(what_arg) {}
     };
+
+    /**
+      The following compare functions are defined to supplement Apple Clang's
+      deficiencies when it comes to three-way comparisons. It is not efficient
+      nor correct, nor designed to be maintainable.
+    */
+    template <typename T>
+    std::weak_ordering compare(const T& a, const T& b) {
+        if (a < b) return std::weak_ordering::less;
+        if (a > b) return std::weak_ordering::greater;
+        return std::weak_ordering::equivalent;
+    }
   }  // namespace utils
 
   template <typename Key>
