@@ -286,7 +286,8 @@ namespace reticula {
 
 #if (_LIBCPP_VERSION)
     auto operator<=>(const undirected_hyperedge<VertexType>&) const;
-    bool operator==(const undirected_hyperedge<VertexType>&) const noexcept = default;
+    bool operator==(const undirected_hyperedge<VertexType>&) const
+      noexcept = default;
 #else
     auto operator<=>(const undirected_hyperedge<VertexType>&) const = default;
 #endif
