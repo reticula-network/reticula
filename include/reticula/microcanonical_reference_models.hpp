@@ -174,6 +174,68 @@ namespace reticula {
     network<EdgeT> inter_event_shuffling(
         const network<EdgeT>& temp, Gen& generator);
 
+
+    /**
+      Produces a random shuffling of the static network where the degree
+      sequence (distribution of degrees) of the resulting network is the same
+      as the original network.
+
+      Equivalent to sampling from 1k-random graphs of the input graph, or
+      canonical name $P[p(k)]$.
+
+      The set of vertices, number of edges and degree distributions are
+      preserved.
+    */
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net,
+        Gen& generator,
+        std::size_t rewirings);
+
+    /**
+      Same as above but with $100 |E|$ rewirings.
+     */
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net,
+        Gen& generator);
+
+    /**
+      Produces a random shuffling of the static network where the joint-degree
+      sequence (distribution of degrees on the two ends of each edge) of the
+      resulting network is the same as the original network.
+
+      Equivalent to sampling from 2k-random graphs of the input graph, or
+      canonical name $P[p(k, k')]$.
+
+      The set of vertices, number of edges, degree distribution and
+      degree-degree distribution are preserved.
+    */
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> joint_degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net,
+        Gen& generator,
+        std::size_t rewirings);
+
+    /**
+      Same as above but with $100 |E|$ rewirings.
+    */
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> joint_degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net,
+        Gen& generator);
   }  // namespace microcanonical_reference_models
 
   namespace mrrms = microcanonical_reference_models;

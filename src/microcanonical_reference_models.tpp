@@ -1,7 +1,13 @@
+#include <random>
+#include <ranges>
+#include <stdexcept>
 #include <unordered_set>
 #include <unordered_map>
 #include <concepts>
 
+#include <indexed_set/indexed_set.hpp>
+
+#include "../include/reticula/network_concepts.hpp"
 #include "../include/reticula/components.hpp"
 #include "../include/reticula/temporal_algorithms.hpp"
 #include "../include/reticula/algorithms.hpp"
@@ -443,6 +449,174 @@ namespace reticula {
       }
 
       return network<EdgeT>(shuffled_edges, temp.vertices());
+    }
+
+
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net, Gen& generator, std::size_t rewirings) {
+      indexed_set::indexed_set<EdgeT, hash<EdgeT>> edges;
+      for (auto&& e: net.edges())
+        edges.insert(e);
+
+      auto verts = net.vertices();
+
+      std::size_t rewires = 0;
+      while (rewires < rewirings) {
+        auto i = indexed_set::random_sample(edges, generator);
+        auto inc_i = i.incident_verts();
+        if (inc_i.size() != 2)
+          throw std::invalid_argument("network cannot contain self-loops");
+
+        auto r = inc_i[0];
+        auto s = inc_i[1];
+        std::size_t tries = 0;
+        bool rewired = false;
+        while (!rewired && tries < edges.size()) {
+          tries++;
+          auto j = indexed_set::random_sample(edges, generator);
+          auto inc_j = j.incident_verts();
+          if (inc_j.size() != 2)
+            throw std::invalid_argument("network cannot contain self-loops");
+
+          auto u = inc_j[0];
+          auto v = inc_j[1];
+          if (i == j || r == u || r == v || s == u || s == v)
+            continue;
+
+          EdgeT e1(r, v), e2(u, s);
+          if (edges.contains(e1) || edges.contains(e2))
+            continue;
+
+          edges.erase(i);
+          edges.erase(j);
+
+          edges.insert(e1);
+          edges.insert(e2);
+
+          rewires++;
+          rewired = true;
+        }
+      }
+
+      return network<EdgeT>(edges, verts);
+    }
+
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net, Gen& generator) {
+      return degree_sequence_preserving_shuffling(
+        net, generator, 100*net.edges().size());
+    }
+
+
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> joint_degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net, Gen& generator, std::size_t rewirings) {
+      std::unordered_map<
+        std::size_t,
+        indexed_set::indexed_set<EdgeT, hash<EdgeT>>> edges_with_node_degree;
+      for (auto&& e: net.edges()) {
+        auto inc = e.incident_verts();
+        if (inc.size() != 2)
+          throw std::invalid_argument("network cannot contain self-loops");
+        edges_with_node_degree[degree(net, inc[0])].insert(e);
+        edges_with_node_degree[degree(net, inc[1])].insert(e);
+      }
+
+      auto verts = net.vertices();
+      indexed_set::indexed_set<EdgeT, hash<EdgeT>> edges;
+      for (auto&& e: net.edges())
+        edges.insert(e);
+
+      std::size_t rewires = 0;
+      while (rewires < rewirings) {
+        auto i = indexed_set::random_sample(edges, generator);
+        auto inc_i = i.incident_verts();
+        if (inc_i.size() != 2)
+          throw std::invalid_argument("network cannot contain self-loops");
+
+        auto r = inc_i[0];
+        auto s = inc_i[1];
+        auto k_r = degree(net, r);
+        auto k_s = degree(net, s);
+        if (std::bernoulli_distribution{}(generator)) {
+          std::swap(r, s);
+          std::swap(k_r, k_s);
+        }
+
+        if (edges_with_node_degree[k_r].size() < 2)
+          continue;
+
+        std::size_t tries = 0;
+        bool rewired = false;
+        while (!rewired && tries < edges.size()) {
+          tries++;
+          auto j = indexed_set::random_sample(
+            edges_with_node_degree[k_r], generator);
+          auto inc_j = j.incident_verts();
+          if (inc_j.size() != 2)
+            throw std::invalid_argument("network cannot contain self-loops");
+
+          auto u = inc_j[0];
+          auto v = inc_j[1];
+          if (i == j || r == u || r == v || s == u || s == v)
+            continue;
+
+          auto k_u = degree(net, u);
+          auto k_v = degree(net, v);
+          if (k_u != k_r && k_v == k_r) {
+            std::swap(u, v);
+            std::swap(k_u, k_v);
+          } else if ((k_u == k_r && k_v == k_r) &&
+                std::bernoulli_distribution{}(generator)) {
+              std::swap(u, v);
+              std::swap(k_u, k_v);
+          }
+
+          EdgeT e1(r, v), e2(u, s);
+          if (edges.contains(e1) || edges.contains(e2))
+            continue;
+
+          edges.erase(i);
+          edges_with_node_degree[k_r].erase(i);
+          edges_with_node_degree[k_s].erase(i);
+          edges.erase(j);
+          edges_with_node_degree[k_u].erase(j);
+          edges_with_node_degree[k_v].erase(j);
+
+          edges.insert(e1);
+          edges_with_node_degree[k_r].insert(e1);
+          edges_with_node_degree[k_v].insert(e1);
+          edges.insert(e2);
+          edges_with_node_degree[k_u].insert(e2);
+          edges_with_node_degree[k_s].insert(e2);
+
+          rewires++;
+          rewired = true;
+        }
+      }
+
+      return network<EdgeT>(edges, net.vertices());
+    }
+
+    template <
+      undirected_static_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> joint_degree_sequence_preserving_shuffling(
+        const network<EdgeT>& net, Gen& generator) {
+      return joint_degree_sequence_preserving_shuffling(
+        net, generator, 100*net.edges().size());
     }
   }  // namespace microcanonical_reference_models
 }  // namespace reticula

@@ -272,3 +272,56 @@ TEST_CASE("inter-event shuffling",
         }));
   }
 }
+
+TEST_CASE("degree-sequence preserving shuffling",
+      "[reticula::microcanonical_reference_models::"
+      "degree_sequence_preserving_shuffling]") {
+    std::mt19937_64 gen(42);
+    std::size_t n = 100;
+    double p = 0.03;
+    auto g = reticula::random_gnp_graph<std::size_t>(n, p, gen);
+    auto degree_seq = reticula::degree_sequence(g);
+    for (std::size_t i = 0; i < 20; i++) {
+        auto g2 = micro::degree_sequence_preserving_shuffling(g, gen);
+        REQUIRE_THAT(reticula::degree_sequence(g2), Equals(degree_seq));
+    }
+}
+
+TEST_CASE("joint degree-sequence preserving shuffling",
+          "[reticule::microcanonical_reference_models::"
+          "joint_degree_sequence_preserving_shuffling]") {
+    std::mt19937_64 gen(42);
+    std::size_t n = 100;
+    double p = 0.03;
+    auto g = reticula::random_gnp_graph<std::size_t>(n, p, gen);
+
+    auto degree_seq = reticula::degree_sequence(g);
+    std::vector<std::pair<std::size_t, std::size_t>> joint_degree_seq;
+    for (auto&& e: g.edges()) {
+        auto inc = e.incident_verts();
+        joint_degree_seq.emplace_back(
+            reticula::degree(g, inc.at(0)),
+            reticula::degree(g, inc.at(1)));
+        joint_degree_seq.emplace_back(
+            reticula::degree(g, inc.at(1)),
+            reticula::degree(g, inc.at(0)));
+    }
+
+    for (std::size_t i = 0; i < 20; i++) {
+        auto g2 = micro::joint_degree_sequence_preserving_shuffling(g, gen);
+        REQUIRE_THAT(reticula::degree_sequence(g2), Equals(degree_seq));
+
+        std::vector<std::pair<std::size_t, std::size_t>> new_joint_degree_seq;
+        for (auto&& e: g2.edges()) {
+            auto inc = e.incident_verts();
+            new_joint_degree_seq.emplace_back(
+                reticula::degree(g2, inc.at(0)),
+                reticula::degree(g2, inc.at(1)));
+            new_joint_degree_seq.emplace_back(
+                reticula::degree(g2, inc.at(1)),
+                reticula::degree(g2, inc.at(0)));
+        }
+
+        REQUIRE_THAT(new_joint_degree_seq, UnorderedEquals(joint_degree_seq));
+    }
+}

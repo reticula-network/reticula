@@ -19,6 +19,10 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
   GIT_TAG 0caf55d9518255232e270d7a2ef873c9d0c13c98)
 FetchContent_Declare(
+  indexed_set
+  GIT_REPOSITORY https://github.com/arashbm/indexed_set.git
+  GIT_TAG df32d2189e2a7c210b139d45453e1c65dbbc677a)
+FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
   GIT_TAG 18aa052)
@@ -32,7 +36,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
   GIT_TAG v3.2.1)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog)
+FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set)
 
 add_library(csv INTERFACE)
 target_include_directories(csv
@@ -47,7 +51,7 @@ target_include_directories(
   $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE
-  disjoint_set hyperloglog csv)
+  disjoint_set hyperloglog indexed_set csv)
 
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
