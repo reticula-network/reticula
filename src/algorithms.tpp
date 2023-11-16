@@ -317,7 +317,7 @@ namespace reticula {
             stack.push(ov);
     }
 
-    if (topo.size() < in_counts.size())
+    if (topo.size() < verts.size())
       return std::nullopt;
 
     return topo;
