@@ -954,6 +954,42 @@ TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
         {1, 4}, {2, 3}, {3, 2}, {5, 1}, {4, 0}});
 }
 
+TEST_CASE("edge degree functions",
+    "[reticula::edge_in_degree][reticula::edge_out_degree]"
+    "[reticula::edge_incident_degree][reticula::edge_degree]") {
+  REQUIRE(reticula::edge_in_degree(
+    reticula::directed_edge<int>(0, 0)) == 1);
+  REQUIRE(reticula::edge_in_degree(
+    reticula::directed_edge<int>(0, 1)) == 1);
+  REQUIRE(reticula::edge_in_degree(
+    reticula::directed_hyperedge<int>(
+      {0, 1}, {1, 2, 3})) == 2);
+
+  REQUIRE(reticula::edge_out_degree(
+    reticula::directed_edge<int>(0, 0)) == 1);
+  REQUIRE(reticula::edge_out_degree(
+    reticula::directed_edge<int>(0, 1)) == 1);
+  REQUIRE(reticula::edge_out_degree(
+    reticula::directed_hyperedge<int>(
+      {0, 1}, {1, 2, 3})) == 3);
+
+  REQUIRE(reticula::edge_incident_degree(
+    reticula::directed_edge<int>(0, 0)) == 1);
+  REQUIRE(reticula::edge_incident_degree(
+    reticula::directed_edge<int>(0, 1)) == 2);
+  REQUIRE(reticula::edge_incident_degree(
+    reticula::directed_hyperedge<int>(
+      {0, 1}, {1, 2, 3})) == 4);
+
+  REQUIRE(reticula::edge_degree(
+    reticula::undirected_edge<int>(0, 0)) == 1);
+  REQUIRE(reticula::edge_degree(
+    reticula::undirected_edge<int>(0, 1)) == 2);
+  REQUIRE(reticula::edge_degree(
+    reticula::undirected_hyperedge<int>(
+      {0, 1, 2, 3})) == 4);
+}
+
 TEST_CASE("degree functions",
     "[reticula::in_degree][reticula::out_degree]"
     "[reticula::incident_degree][reticula::degree]") {
@@ -993,6 +1029,18 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {2, 2}, {3, 3}, {2, 2}, {3, 3}, {3, 3}, {1, 1}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}});
   }
 
   SECTION("when given an undirected hypergraph") {
@@ -1032,6 +1080,18 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {2, 2}, {3, 3}, {2, 2}, {3, 3}, {3, 3}, {1, 1}, {1, 1}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 3, 2, 2});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 3, 2, 2});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 3, 2, 2});
+    REQUIRE(reticula::edge_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 3, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {2, 2}, {2, 2}, {2, 2}, {2, 2}, {3, 3}, {2, 2}, {2, 2}});
   }
 
   SECTION("when given an undirected temporal network") {
@@ -1070,6 +1130,18 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {3, 3}, {4, 4}, {2, 2}, {1, 1}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 2}});
   }
 
   SECTION("when given a directed network") {
@@ -1102,6 +1174,16 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {0, 1}, {2, 1}, {1, 1}, {1, 1}, {1, 2}, {1, 0}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {1, 1}, {1, 1}, {1, 1}, {1, 1}, {1, 1}, {1, 1}});
   }
 
   SECTION("when given a directed hypernetwork") {
@@ -1134,6 +1216,17 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {0, 1}, {2, 2}, {2, 1}, {1, 1}, {1, 2}, {1, 0}, {1, 0}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 1, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 2, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 3, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {1, 1}, {1, 1}, {1, 2}, {1, 1},
+          {1, 1}, {1, 1}, {1, 1}});
   }
 
   SECTION("when given an directed temporal network") {
@@ -1166,6 +1259,16 @@ TEST_CASE("degree functions",
     REQUIRE(reticula::in_out_degree_pair_sequence(graph) ==
         std::vector<std::pair<std::size_t, std::size_t>>{
           {0, 0}, {1, 2}, {2, 2}, {1, 1}, {1, 0}});
+
+    REQUIRE(reticula::edge_in_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_out_degree_sequence(graph) ==
+        std::vector<std::size_t>{1, 1, 1, 1, 1});
+    REQUIRE(reticula::edge_incident_degree_sequence(graph) ==
+        std::vector<std::size_t>{2, 2, 2, 2, 2});
+    REQUIRE(reticula::edge_in_out_degree_pair_sequence(graph) ==
+        std::vector<std::pair<std::size_t, std::size_t>>{
+          {1, 1}, {1, 1}, {1, 1}, {1, 1}, {1, 1}});
   }
 }
 

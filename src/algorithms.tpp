@@ -754,6 +754,29 @@ namespace reticula {
     return net.degree(vert);
   }
 
+  template <network_edge EdgeT>
+  std::size_t edge_in_degree(
+      const EdgeT& edge) {
+    return edge.mutator_verts().size();
+  }
+
+  template <network_edge EdgeT>
+  std::size_t edge_out_degree(
+      const EdgeT& edge) {
+    return edge.mutated_verts().size();
+  }
+
+  template <network_edge EdgeT>
+  std::size_t edge_incident_degree(
+      const EdgeT& edge) {
+    return edge.incident_verts().size();
+  }
+
+  template <undirected_network_edge EdgeT>
+  std::size_t edge_degree(
+      const EdgeT& edge) {
+    return edge.incident_verts().size();
+  }
 
   template <network_edge EdgeT>
   std::vector<std::size_t>
@@ -806,6 +829,62 @@ namespace reticula {
     seq.reserve(net.vertices().size());
     for (auto&& v: net.vertices())
       seq.push_back(degree(net, v));
+
+    return seq;
+  }
+
+
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_in_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.edges().size());
+    for (auto&& e: net.edges())
+      seq.push_back(edge_in_degree(e));
+
+    return seq;
+  }
+
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_out_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.edges().size());
+    for (auto&& e: net.edges())
+      seq.push_back(edge_out_degree(e));
+
+    return seq;
+  }
+
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_incident_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.edges().size());
+    for (auto&& e: net.edges())
+      seq.push_back(edge_incident_degree(e));
+
+    return seq;
+  }
+
+  template <network_edge EdgeT>
+  std::vector<std::pair<std::size_t, std::size_t>>
+  edge_in_out_degree_pair_sequence(const network<EdgeT>& net) {
+    std::vector<std::pair<std::size_t, std::size_t>> seq;
+    seq.reserve(net.edges().size());
+    for (auto&& e: net.edges())
+      seq.emplace_back(edge_in_degree(e), edge_out_degree(e));
+
+    return seq;
+  }
+
+  template <undirected_network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_degree_sequence(const network<EdgeT>& net) {
+    std::vector<std::size_t> seq;
+    seq.reserve(net.edges().size());
+    for (auto&& e: net.edges())
+      seq.push_back(edge_degree(e));
 
     return seq;
   }

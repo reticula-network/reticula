@@ -371,7 +371,7 @@ namespace reticula {
       const typename EdgeT::VertexType& vert);
 
   /**
-    Calculate out-degree of a vertex in a network
+    Calculate incident degree of a vertex in a network
   */
   template <network_edge EdgeT>
   std::size_t incident_degree(
@@ -385,6 +385,34 @@ namespace reticula {
   std::size_t degree(
       const network<EdgeT>& net,
       const typename EdgeT::VertexType& vert);
+
+  /**
+    Calculate in-degree of an edge
+  */
+  template <network_edge EdgeT>
+  std::size_t edge_in_degree(
+      const EdgeT& edge);
+
+  /**
+    Calculate out-degree of an edge
+  */
+  template <network_edge EdgeT>
+  std::size_t edge_out_degree(
+      const EdgeT& edge);
+
+  /**
+    Calculate incident degree (order) of an edge
+  */
+  template <network_edge EdgeT>
+  std::size_t edge_incident_degree(
+      const EdgeT& edge);
+
+  /**
+    Calculate degree (order) of an edge
+  */
+  template <undirected_network_edge EdgeT>
+  std::size_t edge_degree(
+      const EdgeT& edge);
 
   /**
     Returns the in-degree sequence of a network
@@ -420,6 +448,41 @@ namespace reticula {
   template <undirected_network_edge EdgeT>
   std::vector<std::size_t>
   degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the edge in-degree sequence of a network
+  */
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_in_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the edge out-degree sequence of a network
+  */
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_out_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the edge degree (order) sequence of a network
+  */
+  template <network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_incident_degree_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the (in-, out-) edge-degree-pair sequence of a network
+  */
+  template <network_edge EdgeT>
+  std::vector<std::pair<std::size_t, std::size_t>>
+  edge_in_out_degree_pair_sequence(const network<EdgeT>& net);
+
+  /**
+    Returns the edge degree (order) sequence of an undirected network
+  */
+  template <undirected_network_edge EdgeT>
+  std::vector<std::size_t>
+  edge_degree_sequence(const network<EdgeT>& net);
 
 
   /**
