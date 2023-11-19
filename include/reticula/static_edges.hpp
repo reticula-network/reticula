@@ -72,7 +72,7 @@ namespace reticula {
       or the relation.
       @param v2 Head end of the edge, often the receiving end of an effect.
      */
-    directed_edge(VertexType v1, VertexType v2);
+    directed_edge(const VertexType& v1, const VertexType& v2);
 
 
     /**
@@ -213,11 +213,9 @@ namespace reticula {
 
     undirected_edge() = default;
     /**
-      Create an undirected edge. Order of the parameters are arbitrary unless
-      dealing with IO functions. IO functions try to preserve the same order as
-      of vertices from input string in the output string.
+      Create an undirected edge. Order of the parameters are arbitrary.
      */
-    undirected_edge(VertexType v1, VertexType v2);
+    undirected_edge(const VertexType& v1, const VertexType& v2);
 
     /**
       An undirected edge is incident to vertex `v` iff `v` is either of its

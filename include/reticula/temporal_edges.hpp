@@ -107,7 +107,7 @@ namespace reticula {
       @param time Timestamp at which the event "happened".
      */
     directed_temporal_edge(
-        VertexType tail, VertexType head, TimeType time);
+        const VertexType& tail, const VertexType& head, TimeType time);
     /**
       Create a directed temporal edge from a static projection and a time. The
       resulting edge would have the same endpoints as projection and the time
@@ -322,7 +322,7 @@ namespace reticula {
       @param effect_time The timestamp at which the event was "received".
      */
     directed_delayed_temporal_edge(
-        VertexType tail, VertexType head,
+        const VertexType& tail, const VertexType& head,
         TimeType cause_time, TimeType effect_time);
     /**
       Create a directed delayed temporal edge from a static projection, a cause
@@ -514,7 +514,7 @@ namespace reticula {
       @param time Timestamp at which the event "happened".
     */
     undirected_temporal_edge(
-        VertexType v1, VertexType v2, TimeType time);
+        const VertexType& v1, const VertexType& v2, TimeType time);
     /**
       Create an undirected temporal edge from a static projection and a time.
       The resulting edge would have the same endpoints as projection and the

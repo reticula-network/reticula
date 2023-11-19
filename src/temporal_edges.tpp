@@ -91,7 +91,7 @@ namespace reticula {
 
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
-    VertexType tail, VertexType head, TimeType time)
+    const VertexType& tail, const VertexType& head, TimeType time)
     : _time(time), _tail(tail), _head(head) {}
 
   template <network_vertex VertexType, typename TimeType>
@@ -209,7 +209,7 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
     directed_delayed_temporal_edge(
-      VertexType tail, VertexType head,
+      const VertexType& tail, const VertexType& head,
       TimeType cause_time, TimeType effect_time) :
       _cause_time(cause_time), _effect_time(effect_time),
       _tail(tail), _head(head) {
@@ -344,10 +344,9 @@ namespace reticula {
 
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
-      VertexType v1, VertexType v2, TimeType time) : _time(time) {
-    auto [i, j] = std::minmax(v1, v2);
-    _v1 = i;
-    _v2 = j;
+      const VertexType& v1, const VertexType& v2,
+      TimeType time) : _time(time) {
+    std::tie(_v1, _v2) = std::minmax(v1, v2);
   }
 
   template <network_vertex VertexType, typename TimeType>

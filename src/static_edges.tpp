@@ -53,7 +53,8 @@ namespace reticula {
   // properties of directed edge:
 
   template <network_vertex VertexType>
-  directed_edge<VertexType>::directed_edge(VertexType tail, VertexType head)
+  directed_edge<VertexType>::directed_edge(
+      const VertexType& tail, const VertexType& head)
       : _tail(tail), _head(head) {}
 
   template <network_vertex VertexType>
@@ -146,10 +147,9 @@ namespace reticula {
   // properties of undirected edge:
 
   template <network_vertex VertexType>
-  undirected_edge<VertexType>::undirected_edge(VertexType v1, VertexType v2) {
-    auto [i, j] = std::minmax(v1, v2);
-    _v1 = i;
-    _v2 = j;
+  undirected_edge<VertexType>::undirected_edge(
+      const VertexType& v1, const VertexType& v2) {
+    std::tie(_v1, _v2) = std::minmax(v1, v2);
   }
 
   template <network_vertex VertexType>

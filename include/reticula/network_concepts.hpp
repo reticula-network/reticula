@@ -21,6 +21,7 @@ namespace reticula {
 
   template <typename T>
   concept network_vertex =
+    std::default_initializable<T> &&
     std::totally_ordered<T> &&
     hashable_with<T, hash>;
 
