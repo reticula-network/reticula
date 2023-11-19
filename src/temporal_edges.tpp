@@ -345,7 +345,9 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
       VertexType v1, VertexType v2, TimeType time) : _time(time) {
-    std::tie(_v1, _v2) = std::minmax(v1, v2);
+    auto [i, j] = std::minmax(v1, v2);
+    _v1 = i;
+    _v2 = j;
   }
 
   template <network_vertex VertexType, typename TimeType>
