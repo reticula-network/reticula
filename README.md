@@ -1,8 +1,9 @@
 # Reticula [![Actions Status][action-image]][action-link] [![Documentations][docs-badge]][docs-website] [![Paper][paper-badge]][paper-link]
 
-*Reticula* is a general-purpose complex network analysis tool with focus on
-[hypergraphs][hyper], [temporal networks][temp], [event graphs][event] and
-[reachability][out-component].
+*Reticula* is a general-purpose complex network analysis tool, supporting
+static networks as well as [hypergraphs][hyper], [temporal networks][temp].
+It allows you to study radomise networks, calculate static or
+[temporal network reachability][out-component] and form [event graphs][event].
 
 Reticula (singular: reticulum) is a word with Latin origin meaning networks or
 network-like (i.e., reticulate) structures.
@@ -31,7 +32,10 @@ The documentation is available at [reticula.network][website]
 
 Reticular relies heavily on certain C++20 features, such as concepts and ranges.
 If you intend on using Reticula in your project, you need a compiler with decent
-support of both. This library is regularly tested on GCC version 10.
+support of both. This library is regularly tested on Linux (GCC 11.4.0), MacOS
+(XCode 14.3, AppleClang 14.0.3.14030022) and Windows (Visual Studio 17 2022,
+MSVC 19.37.32825.0), though anything more recent should probably work just as
+well.
 
 ### Including reticula in your CMake project
 
@@ -49,17 +53,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(reticula)
 ```
 
-You can use a git tag or branch name or the hash of a specific commit. We
-recommand that you use the most recent release branch `v#.#` for a new project.
-
 If you want to fetch other content using CMake FetchContent module, you can
 include those in `FetchContent_MakeAvailable` call or call this function
 separatly for each content.
+
+Finally, link your target and Reticula like this:
+
+```cmake
+target_link_libraries(${TARGET_NAME} PRIVATE reticula)
+```
 
 
 [FetchContent]: https://cmake.org/cmake/help/latest/module/FetchContent.html
 
 ## Development
+
 ### Running the test suit
 
 Clone the library:
@@ -76,4 +84,3 @@ $ cmake ..
 $ cmake --build . --target reticula_tests
 $ ./reticula_tests
 ```
-
