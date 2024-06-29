@@ -245,9 +245,10 @@ namespace reticula {
 
     @param base_net Base (aggregate) static network
     @param max_t The end of observation window
-    @param iet_dist random_number_distribution that generates inter-event times.
+    @param iet_dist random_number_distribution that generates inter-event times
+    for activations of each link
     @param res_dist random_number_distribution that generates time of the first
-    event for each link.
+    event for each link
     @param generator A uniform random bit generator
     @param size_hint Estimated number of edges in the final temporal network.
   */
@@ -280,7 +281,8 @@ namespace reticula {
 
     @param base_net Base (aggregate) static network
     @param max_t The end of observation window
-    @param iet_dist random_number_distribution that generates inter-event times.
+    @param iet_dist random_number_distribution that generates inter-event times
+    for activations of each link
     @param generator A uniform random bit generator
     @param size_hint Estimated number of edges in the final temporal network.
   */
@@ -293,6 +295,99 @@ namespace reticula {
       typename EdgeT::StaticProjectionType, typename IETDist::result_type>
   network<EdgeT>
   random_link_activation_temporal_network(
+      const network<typename EdgeT::StaticProjectionType>& base_net,
+      typename EdgeT::TimeType max_t,
+      IETDist iet_dist,
+      Gen& generator,
+      std::size_t size_hint = 0);
+
+
+  /**
+    Random temporal network constructed from a base (aggregate) static network
+    where each node is activated according to the inter-activation time
+    distribution provided by `iet_dist` observed in time range [0, `max_t`).
+    The time of the first activation for each node is derived from the
+    distribution `res_dist`.
+
+    At each activation of a node, a random outgoing link from that node is
+    selected an an event is added for that link.
+
+    Note that for undirected networks, the activation times of each link are
+    the result of indipendent activation of the nodes incident to the link. For
+    example, for a network consisting of a single link and two nodes, the link
+    is activated every time either of the two nodes are activated.
+
+    Also note that if a non-renewal process is used for generating node
+    activation times, the exogenous activations of links connected to that node
+    do not affect the future activations of that node in any way. This is,
+    therefore not a suitable method for simulating, e.g., activation cascades.
+
+    @param base_net Base (aggregate) static network
+    @param max_t The end of observation window
+    @param iet_dist random_number_distribution that generates inter-activation
+    times of each node
+    @param res_dist random_number_distribution that generates time of the first
+    activatoin for each node
+    @param generator A uniform random bit generator
+    @param size_hint Estimated number of edges in the final temporal network.
+  */
+  template <
+    temporal_network_edge EdgeT,
+    random_number_distribution IETDist,
+    random_number_distribution ResDist,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::same_as<
+      typename IETDist::result_type, typename ResDist::result_type> &&
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
+  network<EdgeT>
+  random_node_activation_temporal_network(
+      const network<typename EdgeT::StaticProjectionType>& base_net,
+      typename EdgeT::TimeType max_t,
+      IETDist iet_dist,
+      ResDist res_dist,
+      Gen& generator,
+      std::size_t size_hint = 0);
+
+
+  /**
+    Random temporal network constructed from a base (aggregate) static network
+    where each node is activated according to the inter-activation time
+    distribution provided by `iet_dist` observed in time range [0, `max_t`).
+    The time of the first activation for each edge is derived from a burn-in
+    process by running the inter-event time distribution for time period equal
+    to `max_t`.
+
+    At each activation of a node, a random outgoing link from that node is
+    selected an an event is added for that link.
+
+    Note that for undirected networks, the activation times of each link are
+    the result of indipendent activation of the nodes incident to the link. For
+    example, for a network consisting of a single link and two nodes, the link
+    is activated every time either of the two nodes are activated.
+
+    Also note that if a non-renewal process is used for generating node
+    activation times, the exogenous activations of links connected to that node
+    do not affect the future activations of that node in any way. This is,
+    therefore not a suitable method for simulating, e.g., activation cascades.
+
+    @param base_net Base (aggregate) static network
+    @param max_t The end of observation window
+    @param iet_dist random_number_distribution that generates inter-activation
+    times of the nodes
+    @param generator A uniform random bit generator
+    @param size_hint Estimated number of edges in the final temporal network
+  */
+  template <
+    temporal_network_edge EdgeT,
+    random_number_distribution IETDist,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
+  network<EdgeT>
+  random_node_activation_temporal_network(
       const network<typename EdgeT::StaticProjectionType>& base_net,
       typename EdgeT::TimeType max_t,
       IETDist iet_dist,

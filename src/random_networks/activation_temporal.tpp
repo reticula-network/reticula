@@ -1,5 +1,6 @@
 #include "../../include/reticula/generators.hpp"
 #include "../../include/reticula/distributions.hpp"
+#include <random>
 
 namespace reticula {
   template <
@@ -84,6 +85,76 @@ namespace reticula {
     for (const auto& e: base_net.edges())
       for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator))
         if (t >= max_t) edges.emplace_back(e, t - max_t);
+
+    return network<EdgeT>(edges, base_net.vertices());
+  }
+
+  template <
+    temporal_network_edge EdgeT,
+    random_number_distribution IETDist,
+    random_number_distribution ResDist,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::same_as<
+      typename IETDist::result_type, typename ResDist::result_type> &&
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
+  network<EdgeT>
+  random_node_activation_temporal_network(
+      const network<typename EdgeT::StaticProjectionType>& base_net,
+      typename EdgeT::TimeType max_t,
+      IETDist iet_dist,
+      ResDist res_dist,
+      Gen& generator,
+      std::size_t size_hint) {
+    std::vector<EdgeT> edges;
+    if (size_hint > 0)
+      edges.reserve(size_hint);
+
+    for (const auto& v: base_net.vertices()) {
+      auto links = base_net.out_edges();
+      if (links.empty()) continue;
+      std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
+      for (auto t = res_dist(generator); t < max_t; t += iet_dist(generator)) {
+        auto e = links[idx(generator)];
+        edges.emplace_back(e, t);
+      }
+    }
+
+    return network<EdgeT>(edges, base_net.vertices());
+  }
+
+  template <
+    temporal_network_edge EdgeT,
+    random_number_distribution IETDist,
+    std::uniform_random_bit_generator Gen>
+  requires
+    std::constructible_from<EdgeT,
+      typename EdgeT::StaticProjectionType, typename IETDist::result_type>
+  network<EdgeT>
+  random_node_activation_temporal_network(
+      const network<typename EdgeT::StaticProjectionType>& base_net,
+      typename EdgeT::TimeType max_t,
+      IETDist iet_dist,
+      Gen& generator,
+      std::size_t size_hint) {
+    std::vector<EdgeT> edges;
+    if (size_hint > 0)
+      edges.reserve(size_hint);
+
+    for (const auto& e: base_net.edges())
+      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator))
+        if (t >= max_t) edges.emplace_back(e, t - max_t);
+
+    for (const auto& v: base_net.vertices()) {
+      auto links = base_net.out_edges();
+      if (links.empty()) continue;
+      std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
+      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator)) {
+        auto e = links[idx(generator)];
+        if (t >= max_t) edges.emplace_back(e, t - max_t);
+      }
+    }
 
     return network<EdgeT>(edges, base_net.vertices());
   }
