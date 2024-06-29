@@ -1,4 +1,5 @@
 #include <concepts>
+#include <stdexcept>
 
 namespace reticula {
   // power_law_with_specified_mean
