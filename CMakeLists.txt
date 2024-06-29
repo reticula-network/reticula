@@ -34,7 +34,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v3.2.1)
+  GIT_TAG v3.6.0)
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set)
 
