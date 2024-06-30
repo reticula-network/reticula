@@ -114,11 +114,10 @@ namespace reticula {
     for (const auto& v: base_net.vertices()) {
       auto links = base_net.out_edges();
       if (links.empty()) continue;
+
       std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
-      for (auto t = res_dist(generator); t < max_t; t += iet_dist(generator)) {
-        auto e = links[idx(generator)];
-        edges.emplace_back(e, t);
-      }
+      for (auto t = res_dist(generator); t < max_t; t += iet_dist(generator))
+        edges.emplace_back(links[idx(generator)], t);
     }
 
     return network<EdgeT>(edges, base_net.vertices());
@@ -149,11 +148,10 @@ namespace reticula {
     for (const auto& v: base_net.vertices()) {
       auto links = base_net.out_edges();
       if (links.empty()) continue;
+
       std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
-      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator)) {
-        auto e = links[idx(generator)];
-        if (t >= max_t) edges.emplace_back(e, t - max_t);
-      }
+      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator))
+        if (t >= max_t) edges.emplace_back(links[idx(generator)], t - max_t);
     }
 
     return network<EdgeT>(edges, base_net.vertices());
