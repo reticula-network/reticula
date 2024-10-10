@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vector>
 #include <utility>
 #include <random>
@@ -30,6 +31,16 @@ random_uneven_temporal_network(Gen& gen) {
   return reticula::directed_temporal_network<std::size_t, double>(
       g1.edges_cause(), reticula::views::iota(
         std::size_t{}, static_cast<std::size_t>(1024)));
+}
+
+/**
+  Returns an empty directed temporal network of 1024 nodes.
+*/
+reticula::directed_temporal_network<std::size_t, double>
+empty_temporal_network() {
+  return reticula::directed_temporal_network<std::size_t, double>(
+    std::vector<reticula::directed_temporal_edge<std::size_t, double>>{},
+    std::ranges::iota_view(std::size_t{}, static_cast<std::size_t>(1024)));
 }
 
 template <reticula::temporal_network_edge EdgeT>
@@ -160,6 +171,9 @@ TEST_CASE("timeline shuffling",
       == reticula::static_projection(shuffled).edges().size());
   REQUIRE_THAT(reticula::static_projection(g).edges(),
        Equals(reticula::static_projection(shuffled).edges()));
+
+  auto empty = empty_temporal_network();
+  REQUIRE(empty == micro::timeline_shuffling(empty, gen));
 }
 
 TEST_CASE("weight-constrained timeline shuffling",
@@ -191,6 +205,9 @@ TEST_CASE("weight-constrained timeline shuffling",
       REQUIRE(tls_before[i].first == tls_after[i].first);
       REQUIRE(tls_before[i].second.size() == tls_after[i].second.size());
   }
+
+  auto empty = empty_temporal_network();
+  REQUIRE(empty == micro::weight_constrained_timeline_shuffling(empty, gen));
 }
 
 TEST_CASE("activity-constrained timeline shuffling",
