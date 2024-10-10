@@ -75,12 +75,37 @@ namespace reticula {
     network<EdgeT> topology_constrained_link_shuffling(
         const network<EdgeT>& temp, Gen& generator);
 
+    /**
+      Produces a random shuffling of the temporal network where the events are
+      shuffled by assigning new, uniformly random timetamps and moving it to a
+      randomly selected link with a non-empty timeline. Equivalent to
+      micocanonical reference model with the canonical name $P[\mathcal{L}, E]$.
+
+      The observation window, the window where the original measurement of the
+      temporal network was made, is passed through parameters `t_start` and
+      `t_end`.
+
+      The set of vertices, total number of events and the static projection of
+      the temporal network are conserved.
+    */
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end);
+
 
     /**
       Produces a random shuffling of the temporal network where the events are
       shuffled by assigning new, uniformly random timetamps and moving it to a
       randomly selected link with a non-empty timeline. Equivalent to
       micocanonical reference model with the canonical name $P[\mathcal{L}, E]$.
+
+      The observation window, the window where the original measurement of the
+      temporal network was made, is derived by minimum and maximum cause time of
+      the events.
 
       The set of vertices, total number of events and the static projection of
       the temporal network are conserved.

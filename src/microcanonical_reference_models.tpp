@@ -286,6 +286,9 @@ namespace reticula {
     network<EdgeT> timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator,
         typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end) {
+      if (temp.vertices().empty() || temp.edges().empty())
+        return temp;
+
       auto [t0, t1] = cause_time_window(temp);
       if (t0 < t_start || t1 > t_end)
         throw std::invalid_argument("observation window does not cover "
@@ -331,6 +334,9 @@ namespace reticula {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
+      if (temp.vertices().empty() || temp.edges().empty())
+        return temp;
+
       auto [t0, t1] = cause_time_window(temp);
       return timeline_shuffling(temp, generator, t0, t1);
     }
@@ -377,6 +383,9 @@ namespace reticula {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> weight_constrained_timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
+      if (temp.vertices().empty() || temp.edges().empty())
+        return temp;
+
       auto [t0, t1] = cause_time_window(temp);
       return weight_constrained_timeline_shuffling(temp, generator, t0, t1);
     }
