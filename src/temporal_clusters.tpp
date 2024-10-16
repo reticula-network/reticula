@@ -13,7 +13,6 @@ namespace reticula {
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
-
     if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
       _lifetime = {
         std::numeric_limits<typename EdgeT::TimeType>::infinity(),

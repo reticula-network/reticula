@@ -79,7 +79,8 @@ TEST_CASE("temporal cluster properties", "[reticula::temporal_cluster]") {
   }
 }
 
-TEST_CASE("temporal cluster properties (simple)", "[reticula::temporal_cluster]") {
+TEST_CASE("temporal cluster properties (simple)",
+          "[reticula::temporal_cluster]") {
   using EdgeType = reticula::undirected_temporal_hyperedge<int, float>;
   using AdjType = reticula::temporal_adjacency::simple<EdgeType>;
   using CompType = reticula::temporal_cluster<EdgeType, AdjType>;
