@@ -49,7 +49,7 @@ namespace reticula {
   template <typename T>
   void interval_set<T>::merge(const interval_set<T>& cs) {
     std::vector<std::pair<T, T>> out;
-    out.reserve((_ints.capacity() + cs._ints.capacity()));
+    out.reserve((_ints.size() + cs._ints.size()));
 
     auto f1 = _ints.begin(), l1 = _ints.end();
     auto f2 = cs._ints.begin(), l2 = cs._ints.end();
