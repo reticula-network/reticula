@@ -15,10 +15,20 @@ namespace reticula {
     }
 
     template <temporal_network_edge EdgeT>
+    bool
+    simple<EdgeT>::infinite_linger(
+        const EdgeT&, const typename EdgeT::VertexType&) const {
+      return true;
+    }
+
+    template <temporal_network_edge EdgeT>
     typename EdgeT::TimeType
     simple<EdgeT>::maximum_linger(
         const typename EdgeT::VertexType&) const {
-      return std::numeric_limits<typename EdgeT::TimeType>::max();
+      if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+        return std::numeric_limits<typename EdgeT::TimeType>::infinity();
+      else
+        return std::numeric_limits<typename EdgeT::TimeType>::max();
     }
 
 
@@ -32,6 +42,16 @@ namespace reticula {
     limited_waiting_time<EdgeT>::linger(
         const EdgeT&, const typename EdgeT::VertexType&) const {
       return _dt;
+    }
+
+    template <temporal_network_edge EdgeT>
+    bool
+    limited_waiting_time<EdgeT>::infinite_linger(
+        const EdgeT&, const typename EdgeT::VertexType&) const {
+      if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+        if (std::isinf(_dt))
+          return true;
+      return false;
     }
 
     template <temporal_network_edge EdgeT>
@@ -69,6 +89,14 @@ namespace reticula {
 
     template <temporal_network_edge EdgeT>
     requires std::floating_point<typename EdgeT::TimeType>
+    bool
+    exponential<EdgeT>::infinite_linger(
+        const EdgeT&, const typename EdgeT::VertexType&) const {
+      return false;
+    }
+
+    template <temporal_network_edge EdgeT>
+    requires std::floating_point<typename EdgeT::TimeType>
     typename EdgeT::TimeType
     exponential<EdgeT>::maximum_linger(
         const typename EdgeT::VertexType&) const {
@@ -99,6 +127,14 @@ namespace reticula {
       seed = utils::combine_hash<typename EdgeT::VertexType, hash>(seed, v);
       std::mt19937_64 gen(seed);
       return dist(gen);
+    }
+
+    template <temporal_network_edge EdgeT>
+    requires std::integral<typename EdgeT::TimeType>
+    bool
+    geometric<EdgeT>::infinite_linger(
+        const EdgeT&, const typename EdgeT::VertexType&) const {
+      return false;
     }
 
     template <temporal_network_edge EdgeT>

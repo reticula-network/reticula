@@ -176,6 +176,7 @@ namespace reticula {
     EventSketchType _events;
     VertSketchType _verts;
     TimeSketchType _times;
+    bool _infinite_times;
   };
 
   template <

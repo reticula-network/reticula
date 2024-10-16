@@ -16,6 +16,7 @@ namespace reticula {
           typename T::VertexType v) {
         { a.linger(e, v) } -> std::convertible_to<
           typename T::EdgeType::TimeType>;
+        { a.infinite_linger(e, v) } -> std::convertible_to<bool>;
         { a.maximum_linger(v) } -> std::convertible_to<
           typename T::EdgeType::TimeType>;
       };  // NOLINT(readability/braces)
@@ -38,6 +39,19 @@ namespace reticula {
       */
       typename EdgeType::TimeType
       linger(const EdgeType& e, const VertexType& v) const;
+
+      /**
+        Determines whether the effect transmitted by event `e` lingers in the
+        mutated vertex `v` forever, regardless of the fact that
+        EdgeType::TimeType might not support infinity.
+
+        Returns true for all simple adjacency instances.
+
+        @param e The transmitting event
+        @param v The mutated vertex
+      */
+      bool
+      infinite_linger(const EdgeType& e, const VertexType& v) const;
 
       /**
         Maximum theoritical duration where an effect transmitted by an event
@@ -70,6 +84,20 @@ namespace reticula {
       */
       typename EdgeType::TimeType
       linger(const EdgeType& e, const VertexType& v) const;
+
+      /**
+        Determines whether the effect transmitted by event `e` lingers in the
+        mutated vertex `v` forever, regardless of the fact that
+        EdgeType::TimeType might not support infinity.
+
+        Returns true if the limited waiting time is infinite, otherwise returns
+        false.
+
+        @param e The transmitting event
+        @param v The mutated vertex
+      */
+      bool
+      infinite_linger(const EdgeType& e, const VertexType& v) const;
 
       /**
         Maximum theoritical duration where an effect transmitted by an event
@@ -110,6 +138,19 @@ namespace reticula {
       */
       typename EdgeType::TimeType
       linger(const EdgeType& e, const VertexType& v) const;
+
+      /**
+        Determines whether the effect transmitted by event `e` lingers in the
+        mutated vertex `v` forever, regardless of the fact that
+        EdgeType::TimeType might not support infinity.
+
+        Returns false for all exponential adjacency instances.
+
+        @param e The transmitting event
+        @param v The mutated vertex
+      */
+      bool
+      infinite_linger(const EdgeType& e, const VertexType& v) const;
 
       /**
         Maximum theoritical duration where an effect transmitted by an event
@@ -155,6 +196,19 @@ namespace reticula {
       */
       typename EdgeType::TimeType
       linger(const EdgeType& e, const VertexType& v) const;
+
+      /**
+        Determines whether the effect transmitted by event `e` lingers in the
+        mutated vertex `v` forever, regardless of the fact that
+        EdgeType::TimeType might not support infinity.
+
+        Returns false for all geometric adjacency instances.
+
+        @param e The transmitting event
+        @param v The mutated vertex
+      */
+      bool
+      infinite_linger(const EdgeType& e, const VertexType& v) const;
 
       /**
         Maximum theoritical duration where an effect transmitted by an event

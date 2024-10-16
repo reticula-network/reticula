@@ -13,6 +13,12 @@ namespace reticula {
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
+
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      _lifetime = {
+        std::numeric_limits<typename EdgeT::TimeType>::infinity(),
+        -std::numeric_limits<typename EdgeT::TimeType>::infinity()};
+
     if (size_hint > 0)
       _events.reserve(size_hint);
   }
@@ -240,7 +246,13 @@ namespace reticula {
           std::numeric_limits<typename EdgeT::TimeType>::min()),
       _events(true, seed),
       _verts(true, seed),
-      _times(true, seed) {}
+      _times(true, seed),
+      _infinite_times(false) {
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      _lifetime = {
+        std::numeric_limits<typename EdgeT::TimeType>::infinity(),
+        -std::numeric_limits<typename EdgeT::TimeType>::infinity()};
+  }
 
   template <
     temporal_network_edge EdgeT,
@@ -264,7 +276,13 @@ namespace reticula {
           std::numeric_limits<typename EdgeT::TimeType>::min()),
       _events(true, seed),
       _verts(true, seed),
-      _times(true, seed) {
+      _times(true, seed),
+      _infinite_times(false) {
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      _lifetime = {
+        std::numeric_limits<typename EdgeT::TimeType>::infinity(),
+        -std::numeric_limits<typename EdgeT::TimeType>::infinity()};
+
     for (auto&& e: events)
       insert(e);
   }
@@ -274,19 +292,31 @@ namespace reticula {
     temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster_sketch<EdgeT, AdjT>::insert(const EdgeT& e) {
     _events.insert(e);
-    typename EdgeT::TimeType max =
-      std::numeric_limits<typename EdgeT::TimeType>::max(),
-      effect = e.effect_time();
+    typename EdgeT::TimeType effect = e.effect_time();
     _lifetime.first = std::min(_lifetime.first, effect);
+
+    typename EdgeT::TimeType max =
+      std::numeric_limits<typename EdgeT::TimeType>::max();
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      max = std::numeric_limits<typename EdgeT::TimeType>::infinity();
+
     for (auto& v: e.mutated_verts()) {
       _verts.insert(v);
-      typename EdgeT::TimeType linger = _adj.linger(e, v);
-      if (max - effect <= linger) {
-        insert_time_range(v, effect, max);
+
+
+      if (_adj.infinite_linger(e, v)) {
+        _infinite_times = true;
         _lifetime.second = max;
       } else {
-        insert_time_range(v, effect, effect + linger);
-        _lifetime.second = std::max(_lifetime.second, effect + linger);
+        typename EdgeT::TimeType linger = _adj.linger(e, v);
+        if (max - effect <= linger) {
+          insert_time_range(v, effect, max);
+          _lifetime.second = max;
+        } else {
+          typename EdgeT::TimeType linger = _adj.linger(e, v);
+          insert_time_range(v, effect, effect + linger);
+          _lifetime.second = std::max(_lifetime.second, effect + linger);
+        }
       }
     }
   }
@@ -316,6 +346,7 @@ namespace reticula {
 
     _events.merge(c._events);
     _verts.merge(c._verts);
+    _infinite_times |= c._infinite_times;
     _times.merge(c._times);
   }
 
@@ -345,7 +376,10 @@ namespace reticula {
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
   double temporal_cluster_sketch<EdgeT, AdjT>::mass_estimate() const {
-    return _times.estimate()*static_cast<double>(_dt);
+    if (_infinite_times)
+      return std::numeric_limits<double>::infinity();
+    else
+      return _times.estimate()*static_cast<double>(_dt);
   }
 
   template <
