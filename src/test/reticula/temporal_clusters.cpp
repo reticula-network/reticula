@@ -79,6 +79,66 @@ TEST_CASE("temporal cluster properties", "[reticula::temporal_cluster]") {
   }
 }
 
+TEST_CASE("temporal cluster properties (simple)", "[reticula::temporal_cluster]") {
+  using EdgeType = reticula::undirected_temporal_hyperedge<int, float>;
+  using AdjType = reticula::temporal_adjacency::simple<EdgeType>;
+  using CompType = reticula::temporal_cluster<EdgeType, AdjType>;
+
+  CompType comp(AdjType{});
+
+  comp.insert({{1, 2}, 1.0});
+  comp.insert({{1, 3}, 3.0});
+  comp.insert({{2, 5}, 3.0});
+  comp.insert({{4, 5}, 5.0});
+
+  SECTION("equality operator") {
+    REQUIRE(comp == CompType(
+          {{{1, 2}, 1.0}, {{1, 3}, 3.0}, {{2, 5}, 3.0}, {{4, 5}, 5.0}},
+          AdjType{}));
+  }
+
+  EdgeType::TimeType inf = std::numeric_limits<
+      typename EdgeType::TimeType>::infinity();
+
+  SECTION("correct basic properties") {
+    REQUIRE(std::unordered_set<EdgeType>(comp.begin(), comp.end()) ==
+      std::unordered_set<EdgeType>(
+        {{{1, 2}, 1.0}, {{1, 3}, 3.0}, {{2, 5}, 3.0}, {{4, 5}, 5.0}}));
+    REQUIRE(comp.lifetime() == std::pair<float, float>(1.0, inf));
+    REQUIRE(comp.mass() == inf);
+    REQUIRE(comp.volume() == 5);
+
+    REQUIRE(comp.covers(3, 5.0));
+    REQUIRE_FALSE(comp.covers(6, 15.0));
+
+    REQUIRE(comp.size() == 4);
+  }
+
+  SECTION("insertion") {
+    comp.insert({{5, 1}, 12.0});
+    REQUIRE(comp.size() == 5);
+    REQUIRE(comp.mass() == inf);
+    REQUIRE(comp.volume() == 5);
+
+    REQUIRE(comp.covers(3, 5.0));
+    REQUIRE(comp.covers(5, 15.0));
+  }
+
+  SECTION("merging") {
+    CompType comp2(AdjType{});
+    comp2.insert({{5, 1}, 12.0});
+
+    comp.merge(comp2);
+
+    REQUIRE(comp.size() == 5);
+    REQUIRE(comp.mass() == inf);
+    REQUIRE(comp.volume() == 5);
+
+    REQUIRE(comp.covers(3, 5.0));
+    REQUIRE(comp.covers(5, 15.0));
+  }
+}
+
 TEST_CASE("temporal cluster size", "[reticula::temporal_cluster_size]") {
   using EdgeType = reticula::undirected_temporal_hyperedge<int, float>;
   using AdjType = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;

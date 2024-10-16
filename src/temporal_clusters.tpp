@@ -41,6 +41,11 @@ namespace reticula {
     _adj(adj), _lifetime(
         std::numeric_limits<typename EdgeT::TimeType>::max(),
         std::numeric_limits<typename EdgeT::TimeType>::min()) {
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      _lifetime = {
+        std::numeric_limits<typename EdgeT::TimeType>::infinity(),
+        -std::numeric_limits<typename EdgeT::TimeType>::infinity()};
+
     if (size_hint == 0) {
       if constexpr (ranges::sized_range<Range>)
         _events.reserve(ranges::size(events));
@@ -57,9 +62,13 @@ namespace reticula {
     temporal_adjacency::temporal_adjacency AdjT>
   void temporal_cluster<EdgeT, AdjT>::insert(const EdgeT& e) {
     _events.insert(e);
+    typename EdgeT::TimeType effect = e.effect_time();
+
     typename EdgeT::TimeType max =
-      std::numeric_limits<typename EdgeT::TimeType>::max(),
-      effect = e.effect_time();
+      std::numeric_limits<typename EdgeT::TimeType>::max();
+    if constexpr (std::numeric_limits<typename EdgeT::TimeType>::has_infinity)
+      max = std::numeric_limits<typename EdgeT::TimeType>::infinity();
+
     _lifetime.first = std::min(_lifetime.first, effect);
     for (auto& v: e.mutated_verts()) {
       typename EdgeT::TimeType linger = _adj.linger(e, v);
@@ -302,7 +311,6 @@ namespace reticula {
 
     for (auto& v: e.mutated_verts()) {
       _verts.insert(v);
-
 
       if (_adj.infinite_linger(e, v)) {
         _infinite_times = true;

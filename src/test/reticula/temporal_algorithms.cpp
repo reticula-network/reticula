@@ -126,7 +126,50 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
   }
 }
 
-TEST_CASE("percolation out-cluster", "[reticula::out_cluster]") {
+TEST_CASE("percolation simple out-cluster", "[reticula::out_cluster]") {
+  using EdgeType = reticula::directed_delayed_temporal_edge<int, double>;
+  using AdjT = reticula::temporal_adjacency::simple<EdgeType>;
+  AdjT adj;
+  reticula::network<EdgeType> network(
+      {{1, 2, 1, 5}, {2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9},
+        {5, 6, 1, 3}});
+
+  SECTION("from an event") {
+    std::vector<
+      std::pair<
+        EdgeType,
+        reticula::temporal_cluster<EdgeType, AdjT>>> true_oc({
+          {{1, 2, 1, 5},
+            {{{1, 2, 1, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{2, 1, 2, 3},
+            {{{2, 1, 2, 3}, {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{1, 2, 5, 5},
+            {{{1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{2, 3, 6, 7},
+            {{{2, 3, 6, 7}, {3, 4, 8, 9}}, adj}},
+          {{3, 4, 8, 9},
+            {{{3, 4, 8, 9}}, adj}},
+          {{5, 6, 1, 3},
+            {{{5, 6, 1, 3}}, adj}}});
+    REQUIRE(reticula::ranges::all_of(true_oc,
+          [&network, &adj](const auto& p) {
+            return reticula::out_cluster(network, adj, p.first) == p.second;
+          }));
+  }
+
+  SECTION("from a node and time") {
+    REQUIRE(reticula::out_cluster(network, adj, 1, 3) ==
+        reticula::temporal_cluster<EdgeType, AdjT>({
+          {1, 1, 3, 3},
+          {1, 2, 5, 5}, {2, 3, 6, 7}, {3, 4, 8, 9}}, adj));
+    REQUIRE(reticula::out_cluster(network, adj, 3, 7) ==
+        reticula::temporal_cluster<EdgeType, AdjT>({
+          {3, 3, 7, 7},
+          {3, 4, 8, 9}}, adj));
+  }
+}
+
+TEST_CASE("percolation LWT out-cluster", "[reticula::out_cluster]") {
   using EdgeType = reticula::directed_delayed_temporal_edge<int, int>;
   using AdjT = reticula::temporal_adjacency::limited_waiting_time<EdgeType>;
   AdjT adj(2);
