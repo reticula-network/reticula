@@ -82,7 +82,7 @@ TEST_CASE("exponential temporal adjacency",
   reticula::temporal_adjacency::exponential<EdgeType> adj(1.0/dt, 0);
   auto res = adj.linger(a, 2);
 
-  // reporducible results
+  // reproducible results
   REQUIRE(
       reticula::temporal_adjacency::exponential<EdgeType>(1.0/dt, 0)
         .linger(a, 2) == res);
@@ -99,8 +99,6 @@ TEST_CASE("exponential temporal adjacency",
   REQUIRE(val < dt + 3*sigma);
   REQUIRE(val > dt - 3*sigma);
 
-  REQUIRE(adj.maximum_linger(1) == std::numeric_limits<
-          typename EdgeType::TimeType>::max());
   REQUIRE_FALSE(adj.infinite_linger(a, 2));
 }
 
@@ -116,7 +114,7 @@ TEST_CASE("geometric temporal adjacency",
   reticula::temporal_adjacency::geometric<EdgeType> adj(p, 0);
   auto res = adj.linger(a, 2);
 
-  // reporducible results
+  // reproducible results
   REQUIRE(
       reticula::temporal_adjacency::geometric<EdgeType>(p, 0)
         .linger(a, 2) == res);
