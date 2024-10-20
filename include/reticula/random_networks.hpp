@@ -313,7 +313,7 @@ namespace reticula {
     selected an event is added for that link.
 
     Note that for undirected networks, the activation times of each link are
-    the result of indipendent activation of the nodes incident to the link. For
+    the result of independent activation of the nodes incident to the link. For
     example, for a network consisting of a single link and two nodes, the link
     is activated every time either of the two nodes are activated.
 
@@ -327,7 +327,7 @@ namespace reticula {
     @param iet_dist random_number_distribution that generates inter-activation
     times of each node
     @param res_dist random_number_distribution that generates time of the first
-    activatoin for each node
+    activation for each node
     @param generator A uniform random bit generator
     @param size_hint Estimated number of edges in the final temporal network.
   */
