@@ -17,24 +17,15 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
-  GIT_TAG 0caf55d9518255232e270d7a2ef873c9d0c13c98)
+  GIT_TAG v1.0.0)
 FetchContent_Declare(
   indexed_set
   GIT_REPOSITORY https://github.com/arashbm/indexed_set.git
-  GIT_TAG df32d2189e2a7c210b139d45453e1c65dbbc677a)
+  GIT_TAG v1.0.0)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
-  GIT_TAG 18aa052)
-FetchContent_Declare(
-  Range-v3
-  GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
-  GIT_TAG 0.12.0)
-
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v3.6.0)
+  GIT_TAG v1.0.0)
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set)
 
@@ -53,65 +44,69 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} INTERFACE
   disjoint_set hyperloglog indexed_set csv)
 
-FetchContent_MakeAvailable(Catch2)
-list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-add_executable(
-  ${PROJECT_NAME}_tests
-  EXCLUDE_FROM_ALL
-  src/test/reticula/stats.cpp
-  src/test/reticula/utils.cpp
-  src/test/reticula/intervals.cpp
-  src/test/reticula/temporal_adjacency.cpp
-  src/test/reticula/operations.cpp
-  src/test/reticula/algorithms.cpp
-  src/test/reticula/temporal_algorithms.cpp
-  src/test/reticula/compile.cpp
-  src/test/reticula/edge_tests.cpp
-  src/test/reticula/generators.cpp
-  src/test/reticula/implicit_event_graphs.cpp
-  src/test/reticula/implicit_event_graph_components.cpp
-  src/test/reticula/networks.cpp
-  src/test/reticula/io.cpp
-  src/test/reticula/random_networks.cpp
-  src/test/reticula/distributions.cpp
-  src/test/reticula/components.cpp
-  src/test/reticula/temporal_clusters.cpp
-  src/test/reticula/microcanonical_reference_models.cpp)
-target_link_libraries(${PROJECT_NAME}_tests
-  PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    /bigobj
-    /W4 /permissive- /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296
-    /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826
-    /w14905 /w14906 /w14928)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    -g -fsanitize=address,undefined
-    -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wnull-dereference
-    -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused
-    -Woverloaded-virtual -Wpedantic -Wimplicit-fallthrough
-    -Wmisleading-indentation
-    -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp
-  target_link_options(${PROJECT_NAME}_tests PRIVATE
-    -fsanitize=address,undefined)
-else()  # GCC
-  target_compile_options(${PROJECT_NAME}_tests PRIVATE
-    -g -fsanitize=address,undefined
-    -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wnull-dereference
-    -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused
-    -Woverloaded-virtual -Wpedantic -Wimplicit-fallthrough
-    -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches
-    -Wlogical-op -Wuseless-cast)
-  target_link_options(${PROJECT_NAME}_tests PRIVATE
-    -fsanitize=address,undefined)
-endif()
-
-
 if (is_standalone)
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v3.7.1)
+
+  FetchContent_MakeAvailable(Catch2)
+  list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+  add_executable(
+    ${PROJECT_NAME}_tests
+    EXCLUDE_FROM_ALL
+    src/test/reticula/stats.cpp
+    src/test/reticula/utils.cpp
+    src/test/reticula/intervals.cpp
+    src/test/reticula/temporal_adjacency.cpp
+    src/test/reticula/operations.cpp
+    src/test/reticula/algorithms.cpp
+    src/test/reticula/temporal_algorithms.cpp
+    src/test/reticula/compile.cpp
+    src/test/reticula/edge_tests.cpp
+    src/test/reticula/generators.cpp
+    src/test/reticula/implicit_event_graphs.cpp
+    src/test/reticula/implicit_event_graph_components.cpp
+    src/test/reticula/networks.cpp
+    src/test/reticula/io.cpp
+    src/test/reticula/random_networks.cpp
+    src/test/reticula/distributions.cpp
+    src/test/reticula/components.cpp
+    src/test/reticula/temporal_clusters.cpp
+    src/test/reticula/microcanonical_reference_models.cpp)
+  target_link_libraries(${PROJECT_NAME}_tests
+    PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME}_tests PRIVATE
+      /bigobj
+      /W4 /permissive- /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296
+      /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826
+      /w14905 /w14906 /w14928)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME}_tests PRIVATE
+      -g -fsanitize=address,undefined
+      -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wnull-dereference
+      -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused
+      -Woverloaded-virtual -Wpedantic -Wimplicit-fallthrough
+      -Wmisleading-indentation
+      -Wno-deprecated-declarations) # std::tmpnam in tests/io.cpp
+    target_link_options(${PROJECT_NAME}_tests PRIVATE
+      -fsanitize=address,undefined)
+  else()  # GCC
+    target_compile_options(${PROJECT_NAME}_tests PRIVATE
+      -g -fsanitize=address,undefined
+      -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wnull-dereference
+      -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused
+      -Woverloaded-virtual -Wpedantic -Wimplicit-fallthrough
+      -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches
+      -Wlogical-op -Wuseless-cast)
+    target_link_options(${PROJECT_NAME}_tests PRIVATE
+      -fsanitize=address,undefined)
+  endif()
+
   include(CTest)
   include(Catch)
   catch_discover_tests(${PROJECT_NAME}_tests)
