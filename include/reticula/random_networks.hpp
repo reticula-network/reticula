@@ -310,7 +310,7 @@ namespace reticula {
     distribution `res_dist`.
 
     At each activation of a node, a random outgoing link from that node is
-    selected an an event is added for that link.
+    selected an event is added for that link.
 
     Note that for undirected networks, the activation times of each link are
     the result of indipendent activation of the nodes incident to the link. For

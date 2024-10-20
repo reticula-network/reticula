@@ -112,7 +112,7 @@ namespace reticula {
       edges.reserve(size_hint);
 
     for (const auto& v: base_net.vertices()) {
-      auto links = base_net.out_edges();
+      auto links = base_net.out_edges(v);
       if (links.empty()) continue;
 
       std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
@@ -141,12 +141,8 @@ namespace reticula {
     if (size_hint > 0)
       edges.reserve(size_hint);
 
-    for (const auto& e: base_net.edges())
-      for (typename EdgeT::TimeType t{}; t < max_t*2; t += iet_dist(generator))
-        if (t >= max_t) edges.emplace_back(e, t - max_t);
-
     for (const auto& v: base_net.vertices()) {
-      auto links = base_net.out_edges();
+      auto links = base_net.out_edges(v);
       if (links.empty()) continue;
 
       std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
