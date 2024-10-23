@@ -8,7 +8,7 @@
 
 namespace reticula {
   /**
-    Calculates Pearson's correlation coeafficient of the two variables in the
+    Calculates Pearson's correlation coefficient of the two variables in the
     vector f.
   */
   template <ranges::forward_range AttrPairRange>
