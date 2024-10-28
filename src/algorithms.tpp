@@ -455,6 +455,9 @@ namespace reticula {
 
   template <directed_static_network_edge EdgeT>
   bool is_weakly_connected(const network<EdgeT>& dir) {
+    if (dir.vertices().empty())
+      return true;
+
     return breadth_first_search(dir, dir.vertices().front(),
         [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },
@@ -494,6 +497,9 @@ namespace reticula {
 
   template <undirected_static_network_edge EdgeT>
   bool is_connected(const network<EdgeT>& net) {
+    if (net.vertices().empty())
+      return true;
+
     return breadth_first_search(net, net.vertices().front(),
         [](const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType&){ return true; },

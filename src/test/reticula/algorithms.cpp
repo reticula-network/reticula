@@ -694,6 +694,9 @@ TEST_CASE("is weakly connected?", "[reticula::is_weakly_connected]") {
   reticula::directed_network<int> connected({
           {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
   REQUIRE(reticula::is_weakly_connected(connected));
+
+  reticula::directed_network<int> empty;
+  REQUIRE(reticula::is_weakly_connected(empty));
 }
 
 TEST_CASE("weakly connected component",
@@ -800,6 +803,9 @@ TEST_CASE("is connected?", "[reticula::is_connected]") {
   reticula::undirected_network<int> connected({
       {1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
   REQUIRE(reticula::is_connected(connected));
+
+  reticula::undirected_network<int> empty;
+  REQUIRE(reticula::is_connected(empty));
 }
 
 TEST_CASE("is reachable (static networks)", "[reticula::is_reachable]") {
