@@ -55,8 +55,13 @@ namespace reticula {
   template <std::uniform_random_bit_generator Generator>
   RealType residual_power_law_with_specified_mean<RealType>::operator()(
       Generator& g) const {
-    std::uniform_real_distribution<RealType> dist;
-    return _x_min*std::pow((1.0 - dist(g)), 1.0/(1.0 - _exponent));
+    auto u = std::uniform_real_distribution<RealType>{}(g);
+    if (u*_mean < _x_min)
+      return u*_mean;
+
+    return _x_min * std::pow(
+      (1.0 - dist(g)) * (_exponent - 1.0),
+      1.0 / (_exponent - 2.0));
   }
 
   template <std::floating_point RealType>
@@ -74,7 +79,7 @@ namespace reticula {
     return _mean;
   }
 
-  // hawkes_univariate_exponential
+  // Hawkes_univariate_exponential
   template <std::floating_point RealType>
   hawkes_univariate_exponential<RealType>::hawkes_univariate_exponential(
     RealType mu, RealType alpha, RealType theta, RealType phi) :
