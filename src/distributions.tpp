@@ -60,8 +60,7 @@ namespace reticula {
       return u*_mean;
 
     return _x_min * std::pow(
-      (1.0 - dist(g)) * (_exponent - 1.0),
-      1.0 / (_exponent - 2.0));
+      (1.0-u) * (_exponent-1.0), 1.0/(_exponent-2.0));
   }
 
   template <std::floating_point RealType>
