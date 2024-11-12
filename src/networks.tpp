@@ -44,21 +44,21 @@ namespace reticula {
             [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
     }
 
+    for (const auto& e: _edges_cause) {
+      for (auto&& v: e.mutator_verts())
+        _out_edges[v].push_back(e);
+
+      if (!instantaneous_undirected)
+        for (auto&& v: e.mutated_verts())
+          _in_edges[v].push_back(e);
+    }
+
     std::unordered_set<typename EdgeT::VertexType,
       hash<typename EdgeT::VertexType>> verts_set;
-    for (const auto& e: _edges_cause) {
-      for (auto&& v: e.mutator_verts()) {
-        _out_edges[v].push_back(e);
-        verts_set.insert(v);
-      }
-
-      if (!instantaneous_undirected) {
-        for (auto&& v: e.mutated_verts()) {
-          _in_edges[v].push_back(e);
-          verts_set.insert(v);
-        }
-      }
-    }
+    for (auto&& v: _in_edges | ranges::views::keys)
+      verts_set.insert(v);
+    for (auto&& v: _out_edges | ranges::views::keys)
+      verts_set.insert(v);
 
     // adding the supplemental set of verts
     for (const auto& v: verts)
