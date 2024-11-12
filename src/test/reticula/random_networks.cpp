@@ -8,6 +8,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <catch2/catch_template_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
+
 using Catch::Matchers::UnorderedEquals;
 
 TEMPLATE_TEST_CASE("Random G(n, p) graph",
@@ -57,6 +59,12 @@ TEMPLATE_TEST_CASE("Random G(n, p) graph",
       REQUIRE(p_est > p*0.75);
       REQUIRE(p_est < p*1.25);
     }
+  }
+
+  SECTION("benchmark") {
+    BENCHMARK("random_gnp_graph") {
+        return reticula::random_gnp_graph<TestType>(32768, 1e-4, gen);
+    };
   }
 }
 
@@ -118,6 +126,10 @@ TEMPLATE_TEST_CASE("Barabasi-Albert random graph",
     reticula::random_barabasi_albert_graph<TestType>(n, m, gen);
   REQUIRE(r.vertices().size() == static_cast<std::size_t>(n));
   REQUIRE(r.edges().size() == static_cast<std::size_t>((n-m)*m));
+
+  BENCHMARK("random_barabasi_albert_graph") {
+      return reticula::random_barabasi_albert_graph<TestType>(n, m, gen);
+  };
 }
 
 TEMPLATE_TEST_CASE("random k-regular graph", "[reticula::random_regular_graph]",
@@ -135,7 +147,11 @@ TEMPLATE_TEST_CASE("random k-regular graph", "[reticula::random_regular_graph]",
           return r.degree(v) == static_cast<std::size_t>(k);
         }));
 
-  // TODO add uniformity test
+  // TODO: add uniformity test
+
+  BENCHMARK("random_regular_graph") {
+      return reticula::random_regular_graph<TestType>(n, k, gen);
+  };
 }
 
 TEST_CASE("random directed degree sequence graph",
