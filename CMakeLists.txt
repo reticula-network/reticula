@@ -55,9 +55,7 @@ if (is_standalone)
 
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-  add_executable(
-    ${PROJECT_NAME}_tests
-    EXCLUDE_FROM_ALL
+  set(TEST_FILES
     src/test/reticula/stats.cpp
     src/test/reticula/utils.cpp
     src/test/reticula/intervals.cpp
@@ -77,6 +75,9 @@ if (is_standalone)
     src/test/reticula/components.cpp
     src/test/reticula/temporal_clusters.cpp
     src/test/reticula/microcanonical_reference_models.cpp)
+    
+
+  add_executable(${PROJECT_NAME}_tests EXCLUDE_FROM_ALL ${TEST_FILES})
   target_link_libraries(${PROJECT_NAME}_tests
     PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -110,6 +111,13 @@ if (is_standalone)
   include(CTest)
   include(Catch)
   catch_discover_tests(${PROJECT_NAME}_tests)
+
+  add_executable(${PROJECT_NAME}_benchmarks EXCLUDE_FROM_ALL ${TEST_FILES})
+  target_link_libraries(${PROJECT_NAME}_benchmarks
+    PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME}_benchmarks PRIVATE /bigobj)
+  endif()
 endif()
 
 install(
