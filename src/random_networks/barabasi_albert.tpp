@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <random>
 
 #include "../../include/reticula/network_concepts.hpp"
@@ -18,29 +19,30 @@ namespace reticula {
     std::vector<undirected_edge<VertT>> edges;
     edges.reserve(static_cast<std::size_t>(m*(n-m)));
 
-    std::vector<VertT> degrees(static_cast<std::size_t>(n));
+    std::vector<VertT> repeated_nodes;
+    repeated_nodes.reserve(static_cast<std::size_t>(2 * m * (n - m)));
+
 
     for (VertT i = 0; i < m; i++) {
       edges.emplace_back(i, m);
-      degrees[static_cast<std::size_t>(i)] += 1;
-      degrees[static_cast<std::size_t>(m)] += 1;
+      repeated_nodes.push_back(i);
+      repeated_nodes.push_back(m);
     }
 
     for (VertT current_node = m+1; current_node < n; current_node++) {
-      std::discrete_distribution<VertT> dist(
-          degrees.begin(),
-          degrees.begin() + static_cast<std::ptrdiff_t>(current_node));
+      std::uniform_int_distribution<std::size_t> dist(
+        0, repeated_nodes.size()-1);
 
       std::unordered_set<VertT> targets;
       targets.reserve(static_cast<std::size_t>(m));
 
       while (targets.size() < static_cast<std::size_t>(m))
-        targets.insert(dist(generator));
+        targets.insert(repeated_nodes[dist(generator)]);
 
       for (const auto& i: targets) {
         edges.emplace_back(current_node, i);
-        degrees[static_cast<std::size_t>(i)] += 1;
-        degrees[static_cast<std::size_t>(current_node)] += 1;
+        repeated_nodes.push_back(i);
+        repeated_nodes.push_back(current_node);
       }
     }
 
