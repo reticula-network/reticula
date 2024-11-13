@@ -95,9 +95,15 @@ namespace reticula {
               degrees[static_cast<std::size_t>(u)]*
               degrees[static_cast<std::size_t>(v)])/
             (2.0*static_cast<double>(degree_sum));
-        if (undirected_edge<VertT> new_edge(u, v);
-            !edges.contains(new_edge) &&
-              std::uniform_real_distribution{}(gen) > puv) {
+        directed_edge<VertT> new_edge{u, v};
+
+        // Bayati et al. 2009 suggests that the probability of accepting u, v is
+        // proportional to remaining degrees of u and v and (1-d[u]d[v]/4m). We
+        // have chosen u and v at random with weights proportional to remaining
+        // degree, to get the complement out of the way we accept if x > puv
+        // where x is randomly drawn in [0, 1).
+        if (!edges.contains(new_edge) &&
+            std::uniform_real_distribution{}(gen) > puv) {
           edges.insert(new_edge);
 
           repeated_stubs.pop_back();
@@ -236,8 +242,14 @@ namespace reticula {
               out_degrees[static_cast<std::size_t>(u)])/
             (2.0*static_cast<double>(degree_sum));
         directed_edge<VertT> new_edge{u, v};
+
+        // Bayati et al. 2009 suggests that the probability of accepting u, v is
+        // proportional to remaining degrees of u and v and (1-d[u]d[v]/4m). We
+        // have chosen u and v at random with weights proportional to remaining
+        // degree, to get the complement out of the way we accept if x > puv
+        // where x is randomly drawn in [0, 1).
         if (!edges.contains(new_edge) &&
-              std::uniform_real_distribution{}(gen) > puv) {
+            std::uniform_real_distribution{}(gen) > puv) {
           edges.insert(new_edge);
 
           out_repeated_stubs.pop_back();
