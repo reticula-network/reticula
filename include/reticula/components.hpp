@@ -57,10 +57,10 @@ namespace reticula {
     void merge(const component<VertT>& other);
 
     bool operator==(const component<VertT>&) const = default;
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
 
     bool contains(const VertexType& v) const;
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     IteratorType begin() const;
     IteratorType end() const;
@@ -76,7 +76,7 @@ namespace reticula {
 
     explicit component_size(const component<VertT>& c);
 
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
 
   private:
     std::size_t _verts;
@@ -110,7 +110,7 @@ namespace reticula {
 
     void merge(const component_sketch<VertT>& other);
 
-    double size_estimate() const;
+    [[nodiscard]] double size_estimate() const;
 
   private:
     SketchType _verts;
@@ -123,7 +123,7 @@ namespace reticula {
 
     explicit component_size_estimate(const component_sketch<VertT>& c);
 
-    double size_estimate() const;
+    [[nodiscard]] double size_estimate() const;
   private:
     double _verts;
   };

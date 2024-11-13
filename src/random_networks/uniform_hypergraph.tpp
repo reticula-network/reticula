@@ -31,7 +31,7 @@ namespace reticula {
     double logncm = std::lgamma(size + 1) -
                       std::lgamma(edge_degree + 1) -
                       std::lgamma(size - edge_degree + 1);
-    double ncm_estimate = std::exp(logncm + std::log(edge_prob));
+    const double ncm_estimate = std::exp(logncm + std::log(edge_prob));
 
     if (ncm_estimate > static_cast<double>(
         std::numeric_limits<std::size_t>::max()))
@@ -42,9 +42,9 @@ namespace reticula {
 
     std::uniform_real_distribution<> rd;
 
-    double lp = std::log(1.0 - edge_prob);
+    const double lp = std::log(1.0 - edge_prob);
     double lr = std::log(1.0 - rd(generator));
-    std::size_t carry = static_cast<std::size_t>(std::floor(lr/lp));
+    auto carry = static_cast<std::size_t>(std::floor(lr/lp));
 
     std::vector<VertT> current(static_cast<std::size_t>(edge_degree));
     bool finished = false;
@@ -120,9 +120,9 @@ namespace reticula {
 
     std::uniform_real_distribution<> rd;
 
-    double lp = std::log(1.0 - edge_prob);
+    const double lp = std::log(1.0 - edge_prob);
     double lr = std::log(1.0 - rd(generator));
-    std::size_t carry = static_cast<std::size_t>(std::floor(lr/lp));
+    auto carry = static_cast<std::size_t>(std::floor(lr/lp));
 
     std::vector<VertT> current(static_cast<std::size_t>(edge_degree));
     bool finished = false;

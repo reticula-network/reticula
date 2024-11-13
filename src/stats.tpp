@@ -13,7 +13,7 @@ namespace reticula {
       return std::numeric_limits<double>::quiet_NaN();
 
     double mean_x = 0.0, mean_y = 0.0;
-    double length = static_cast<double>(f.size());
+    auto length = static_cast<double>(f.size());
     auto& [first_x, first_y] = *std::begin(f);
     bool eq_x = true, eq_y = true;
     for (auto& [x, y]: f) {

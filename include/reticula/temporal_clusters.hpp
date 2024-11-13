@@ -61,11 +61,11 @@ namespace reticula {
     void merge(const temporal_cluster<EdgeT, AdjT>& other);
 
     bool operator==(const temporal_cluster<EdgeT, AdjT>& c) const;
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
 
     bool contains(const EdgeT& e) const;
     bool covers(typename EdgeT::VertexType v, typename EdgeT::TimeType t) const;
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     IteratorType begin() const;
     IteratorType end() const;
@@ -78,7 +78,7 @@ namespace reticula {
 
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
-    std::size_t volume() const;
+    [[nodiscard]] std::size_t volume() const;
     typename EdgeT::TimeType mass() const;
 
   private:
@@ -104,10 +104,10 @@ namespace reticula {
 
     explicit temporal_cluster_size(const temporal_cluster<EdgeT, AdjT>& c);
 
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
-    std::size_t volume() const;
+    [[nodiscard]] std::size_t volume() const;
     typename EdgeT::TimeType mass() const;
 
   private:
@@ -157,11 +157,11 @@ namespace reticula {
 
     void merge(const temporal_cluster_sketch<EdgeT, AdjT>& other);
 
-    double size_estimate() const;
+    [[nodiscard]] double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
-    double volume_estimate() const;
-    double mass_estimate() const;
+    [[nodiscard]] double volume_estimate() const;
+    [[nodiscard]] double mass_estimate() const;
     typename EdgeT::TimeType temporal_resolution() const;
 
   private:
@@ -190,11 +190,11 @@ namespace reticula {
     explicit temporal_cluster_size_estimate(
         const temporal_cluster_sketch<EdgeT, AdjT>& c);
 
-    double size_estimate() const;
+    [[nodiscard]] double size_estimate() const;
     std::pair<typename EdgeT::TimeType, typename EdgeT::TimeType>
     lifetime() const;
-    double volume_estimate() const;
-    double mass_estimate() const;
+    [[nodiscard]] double volume_estimate() const;
+    [[nodiscard]] double mass_estimate() const;
     typename EdgeT::TimeType temporal_resolution() const;
 
   private:

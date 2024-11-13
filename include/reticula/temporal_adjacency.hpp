@@ -226,7 +226,7 @@ namespace reticula {
         to the probability of lingering of the effect at each tick of the time.
         The mean value of `linger` that will generated is equal to 1/p - 1.
       */
-      double p() const;
+      [[nodiscard]] double p() const;
 
     private:
       double _p;

@@ -395,7 +395,7 @@ namespace reticula {
   void temporal_cluster_sketch<EdgeT, AdjT>::insert_time_range(
       typename EdgeT::VertexType v,
       typename EdgeT::TimeType start, typename EdgeT::TimeType end) {
-    typename EdgeT::TimeType
+    auto
       a = static_cast<typename EdgeT::TimeType>(std::floor(start/_dt)),
       b = static_cast<typename EdgeT::TimeType>(std::floor(end/_dt) + 1);
     for (typename EdgeT::TimeType s = a; s <= b; s++)

@@ -146,7 +146,7 @@ namespace reticula {
       double p = std::min(wu*wv/s_in, 1.0);
       while (v < in_weight_node_pairs.size() && p > 0) {
         if (p != 1.0) {
-          std::size_t delta = static_cast<std::size_t>(
+          auto delta = static_cast<std::size_t>(
               std::log(
                 std::uniform_real_distribution{}(generator))/std::log(1-p));
 
@@ -235,10 +235,8 @@ namespace reticula {
     std::vector<undirected_hyperedge<VertT>> edges;
     edges.reserve(weight_edge_pairs.size());
 
-    for (std::size_t u = 0; u < weight_edge_pairs.size(); u++) {
+    for (auto [wu, i] : weight_edge_pairs) {
       std::size_t v = 0;
-
-      auto [wu, i] = weight_edge_pairs[u];
       auto [wv, j] = weight_node_pairs[v];
 
       std::vector<VertT> incidents;
@@ -367,10 +365,8 @@ namespace reticula {
     std::vector<std::pair<std::size_t, std::vector<VertT>>> edges_out_inc;
     edges_out_inc.reserve(out_weight_edge_pairs.size());
 
-    for (std::size_t u = 0; u < out_weight_edge_pairs.size(); u++) {
+    for (auto [wu, i] : out_weight_edge_pairs) {
       std::size_t v = 0;
-
-      auto [wu, i] = out_weight_edge_pairs[u];
       auto [wv, j] = in_weight_node_pairs[v];
 
       std::vector<VertT> out_incidents;
@@ -379,7 +375,7 @@ namespace reticula {
       double p = std::min(wu*wv/s_in, 1.0);
       while (v < in_weight_node_pairs.size() && p > 0) {
         if (p != 1.0) {
-          std::size_t delta = static_cast<std::size_t>(
+          auto delta = static_cast<std::size_t>(
               std::log(
                 std::uniform_real_distribution{}(generator))/std::log(1-p));
           v += delta;
@@ -401,10 +397,8 @@ namespace reticula {
     std::vector<std::pair<std::size_t, std::vector<VertT>>> edges_in_inc;
     edges_in_inc.reserve(in_weight_edge_pairs.size());
 
-    for (std::size_t u = 0; u < in_weight_edge_pairs.size(); u++) {
+    for (auto [wu, i] : in_weight_edge_pairs) {
       std::size_t v = 0;
-
-      auto [wu, i] = in_weight_edge_pairs[u];
       auto [wv, j] = out_weight_node_pairs[v];
 
       std::vector<VertT> in_incidents;
@@ -413,7 +407,7 @@ namespace reticula {
       double p = std::min(wu*wv/s_in, 1.0);
       while (v < out_weight_node_pairs.size() && p > 0) {
         if (p != 1.0) {
-          std::size_t delta = static_cast<std::size_t>(
+          auto delta = static_cast<std::size_t>(
               std::log(
                 std::uniform_real_distribution{}(generator))/std::log(1-p));
           v += delta;

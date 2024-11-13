@@ -300,7 +300,7 @@ namespace reticula {
     bool reducible = is_undirected_v<EdgeT>;
 
     while (temp_edge_iter < eg.events_cause().end()) {
-      std::size_t temp_edge_idx = static_cast<std::size_t>(
+      auto temp_edge_idx = static_cast<std::size_t>(
           std::distance(eg.events_cause().begin(), temp_edge_iter));
 
       for (auto&& other:
@@ -310,7 +310,7 @@ namespace reticula {
             eg.events_cause().end(),
             other);
 
-        std::size_t other_idx = static_cast<std::size_t>(
+        auto other_idx = static_cast<std::size_t>(
             std::distance(eg.events_cause().begin(), other_it));
         disj_set.merge(temp_edge_idx, other_idx);
       }

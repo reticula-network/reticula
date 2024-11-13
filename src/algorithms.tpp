@@ -682,13 +682,13 @@ namespace reticula {
 
   template <network_vertex VertT>
   double density(const undirected_network<VertT>& net) {
-    double n = static_cast<double>(net.vertices().size());
+    auto n = static_cast<double>(net.vertices().size());
     return static_cast<double>(net.edges().size())/(n*(n-1)/2.0);
   }
 
   template <network_vertex VertT>
   double density(const directed_network<VertT>& net) {
-    double n = static_cast<double>(net.vertices().size());
+    auto n = static_cast<double>(net.vertices().size());
     return static_cast<double>(net.edges().size())/(n*(n-1));
   }
 

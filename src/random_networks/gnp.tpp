@@ -27,7 +27,7 @@ namespace reticula {
 
     double lp = std::log(1.0 - p);
     VertT v = 1;
-    VertT w = static_cast<VertT>(
+    auto w = static_cast<VertT>(
         std::floor(std::log(1.0 - rd(generator))/lp));
 
     while (v < n) {
@@ -70,7 +70,7 @@ namespace reticula {
 
     double lp = std::log(1.0 - p);
     VertT v = 1;
-    VertT w = static_cast<VertT>(
+    auto w = static_cast<VertT>(
         std::floor(std::log(1.0 - rd(generator))/lp));
 
     while (v < n) {
