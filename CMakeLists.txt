@@ -26,13 +26,18 @@ FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
   GIT_TAG v1.0.0)
+FetchContent_Declare(
+  csvparser
+  URL https://raw.githubusercontent.com/vincentlaucsb/csv-parser/refs/tags/2.3.0/single_include/csv.hpp
+  URL_HASH MD5=c7f7832d8f52039ead7cec25cb30ab73
+  DOWNLOAD_NO_EXTRACT YES)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set)
+FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csvparser)
 
 add_library(csv INTERFACE)
 target_include_directories(csv
   SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/extern/csv/
+  $<BUILD_INTERFACE:${csvparser_SOURCE_DIR}>/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_library(${PROJECT_NAME} INTERFACE)
