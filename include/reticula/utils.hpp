@@ -45,8 +45,7 @@ namespace reticula {
      */
     template <class T1, class T2, template<typename> class HashStruct>
     inline std::size_t unordered_hash(const T1& t1, const T2& t2) {
-      std::size_t h1, h2;
-      std::tie(h1, h2) = std::minmax(
+      auto [h1, h2] = std::minmax(
           HashStruct<T1>{}(t1), HashStruct<T2>{}(t2));
       return h1 ^ (h2 + RETICULA_UTIL_GOLDEN_RATIO + (h1 << 6) + (h1 >> 2));
     }
