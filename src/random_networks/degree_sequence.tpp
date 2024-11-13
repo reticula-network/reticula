@@ -17,7 +17,7 @@ namespace reticula {
     std::optional<undirected_network<VertT>> maybe_g = std::nullopt;
     constexpr std::size_t tries = 1000;
     while (!maybe_g) maybe_g = try_random_degree_sequence_graph<VertT>(
-        std::forward(degree_sequence), gen, tries);
+        std::forward<Range>(degree_sequence), gen, tries);
     return *maybe_g;
   }
 
@@ -143,7 +143,7 @@ namespace reticula {
     std::optional<directed_network<VertT>> maybe_g = std::nullopt;
     constexpr std::size_t tries = 1000;
     while (!maybe_g) maybe_g = try_random_directed_degree_sequence_graph<VertT>(
-        std::forward(in_out_degree_sequence), gen, tries);
+        std::forward<PairRange>(in_out_degree_sequence), gen, tries);
     return *maybe_g;
   }
 
