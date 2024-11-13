@@ -3,6 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 
 using Catch::Approx;
 using Catch::Matchers::UnorderedEquals;
@@ -915,6 +916,14 @@ TEST_CASE("is graphic", "[reticula::is_graphic]") {
   REQUIRE_FALSE(reticula::is_graphic(std::vector<int>({-1, 3, 3, 3, 2, 2})));
   REQUIRE_FALSE(reticula::is_graphic(std::vector<int>({4, 3, 3, 2, 2, 1})));
   REQUIRE_FALSE(reticula::is_graphic(std::vector<int>({4, 3, 2, 1})));
+
+  std::mt19937_64 gen(42);
+  auto ds = reticula::degree_sequence(
+    reticula::random_gnp_graph<int>(
+      16384, 0.001, gen));
+  BENCHMARK("is_graphic") {
+    return reticula::is_graphic(ds);
+  };
 }
 
 TEST_CASE("is digraphic", "[reticula::is_digraphic]") {
@@ -940,6 +949,15 @@ TEST_CASE("is digraphic", "[reticula::is_digraphic]") {
           {{4, 3}, {2, 1}, {1, 1}, {1, 1}, {0, 1}})));
   REQUIRE_FALSE(reticula::is_digraphic(std::vector<std::pair<int, int>>(
           {{4, 0}, {0, 1}, {1, 1}, {3, 1}, {0, 1}})));
+
+
+  std::mt19937_64 gen(42);
+  auto dds = reticula::in_out_degree_pair_sequence(
+    reticula::random_directed_gnp_graph<int>(
+      16384, 0.001, gen));
+  BENCHMARK("is_digraphic") {
+    return reticula::is_digraphic(dds);
+  };
 }
 
 TEST_CASE("shortest path from vert", "[reticula::shortest_path_lengths_from]") {
