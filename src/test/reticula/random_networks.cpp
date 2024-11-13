@@ -198,7 +198,35 @@ TEST_CASE("random directed degree sequence graph",
           }));
   }
 
+  SECTION("produces the degree sequence exactly") {
+    std::vector<std::pair<int, int>> degree_sequence = {
+        {2, 0}, {2, 2}, {3, 2}, {2, 3}, {2, 0},
+        {3, 3}, {1, 2}, {2, 2}, {0, 3}, {3, 3}};
+    auto g = reticula::random_directed_degree_sequence_graph<int>(
+        degree_sequence, gen);
+
+    std::vector<std::pair<int, int>> degrees;
+    for (auto v: g.vertices())
+      degrees.emplace_back(
+          static_cast<int>(g.in_degree(v)),
+          static_cast<int>(g.out_degree(v)));
+
+    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+
+    REQUIRE(reticula::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.head() == e.tail();
+          }));
+  }
+
   // TODO: test uniformity
+
+  /*SECTION("benchmark") {*/
+  /*  BENCHMARK("random_directed_degree_sequence_graph") {*/
+  /*    return reticula::random_directed_degree_sequence_graph<int>(*/
+  /*        std::vector<std::pair<int, int>>(1000, {3, 3}), gen);*/
+  /*  };*/
+  /*}*/
 }
 
 TEST_CASE("random degree sequence graph",
@@ -242,7 +270,31 @@ TEST_CASE("random degree sequence graph",
           }));
   }
 
+  SECTION("produces the degree sequence exactly") {
+    std::vector<int> degree_sequence = {2, 2, 3, 1, 1, 1, 1, 1, 2, 0};
+    auto g = reticula::random_degree_sequence_graph<int>(
+        degree_sequence, gen);
+
+    std::vector<int> degrees;
+    for (auto v: g.vertices())
+      degrees.push_back(static_cast<int>(g.degree(v)));
+
+    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+
+    REQUIRE(reticula::ranges::none_of(g.edges(),
+          [](const auto& e) {
+            return e.incident_verts().size() == 1;
+          }));
+  }
+
   // TODO: test uniformity
+
+  SECTION("benchmark") {
+    BENCHMARK("random_degree_sequence_graph") {
+      return reticula::random_degree_sequence_graph<int>(
+          std::vector<int>(1000, 3), gen);
+    };
+  }
 }
 
 TEST_CASE("random expected degree sequence graph",
