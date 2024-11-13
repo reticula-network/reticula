@@ -1,4 +1,5 @@
 #include "../include/reticula/algorithms.hpp"
+#include <cstddef>
 
 namespace reticula {
   template <
@@ -45,58 +46,49 @@ namespace reticula {
 
     VertT degree_sum = std::accumulate(degrees.begin(), degrees.end(), VertT{});
 
-    auto has_possible_edge = [](
-      const std::unordered_set<
-        undirected_edge<VertT>,
-        hash<undirected_edge<VertT>>>& edges,
-      auto nodes_begin, auto nodes_end) {
-        std::size_t size = static_cast<std::size_t>(
-            std::distance(nodes_begin, nodes_end));
-        if (size == 0) {
-          return false;
-        } else {
-          for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(size); i++)
-            for (std::ptrdiff_t j = 0; j < i; j++)
-              if (!edges.contains({
-                    static_cast<VertT>(*(nodes_begin+i)),
-                    static_cast<VertT>(*(nodes_begin+j))}))
-                return true;
-        }
-
-        return false;
-    };
-
     for (std::size_t t = 0; t < max_tries; t++) {
       std::unordered_set<
         undirected_edge<VertT>,
         hash<undirected_edge<VertT>>> edges;
       edges.reserve(static_cast<std::size_t>(degree_sum)/2);
 
-      VertT stubs_sum = degree_sum;
+      std::vector<VertT> stubs = degrees; // Copy of degrees to modify
+      std::vector<VertT> repeated_stubs;
+      repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
 
-      std::vector<VertT> nodes;
-      nodes.reserve(degrees.size());
-      std::vector<VertT> stubs;
-      stubs.reserve(degrees.size());
+      // Initialize repeated_stubs
+      for (VertT i = 0; i < static_cast<VertT>(degrees.size()); i++)
+        for (VertT j = 0; j < degrees[static_cast<std::size_t>(i)]; j++)
+          repeated_stubs.push_back(i);
 
-      for (VertT i = 0; i < static_cast<VertT>(degrees.size()); i++) {
-        if (degrees[static_cast<std::size_t>(i)] > 0) {
-          nodes.push_back(i);
-          stubs.push_back(degrees[static_cast<std::size_t>(i)]);
-        }
-      }
+      auto has_possible_edge = [&edges](const std::vector<VertT>& stubs) {
+        std::size_t size = stubs.size();
 
-      auto stubs_end = stubs.end();
-      auto nodes_end = nodes.end();
+        if (size < 2)
+          return false;
 
-      std::discrete_distribution<std::size_t> d(stubs.begin(), stubs_end);
-      bool suitable_edges_remaining = has_possible_edge(edges,
-            nodes.begin(), nodes_end);
+        for (std::size_t i = 0; i < size; i++)
+          for (std::size_t j = i + 1; j < size; j++)
+            if (stubs[i] != stubs[j] &&
+                !edges.contains({stubs[i], stubs[j]}))
+              return true;
+
+        return false;
+      };
+
+      auto suitable_edges_remaining = has_possible_edge(repeated_stubs);
       while (suitable_edges_remaining) {
-        std::size_t i = d(gen), j = d(gen);
-        while (i == j) j = d(gen);
+        std::size_t current_size = repeated_stubs.size();
+        std::uniform_int_distribution<std::size_t> dist_u{0, current_size - 1};
+        std::size_t idx_u = dist_u(gen);
+        VertT u = repeated_stubs[idx_u];
+        std::swap(repeated_stubs[idx_u], repeated_stubs.at(current_size - 1));
 
-        VertT u = nodes[i], v = nodes[j];
+        std::uniform_int_distribution<std::size_t> dist_v{0, current_size - 2};
+        std::size_t idx_v = dist_v(gen);
+        while (repeated_stubs[idx_v] == u) idx_v = dist_v(gen);
+        VertT v = repeated_stubs[idx_v];
+        std::swap(repeated_stubs[idx_v], repeated_stubs.at(current_size - 2));
 
         double puv =
           static_cast<double>(
@@ -108,43 +100,19 @@ namespace reticula {
               std::uniform_real_distribution{}(gen) > puv) {
           edges.insert(new_edge);
 
-          bool node_deleted = false;
+          repeated_stubs.pop_back();
+          repeated_stubs.pop_back();
 
-          stubs[i]--;
-          if (stubs[i] == 0) {
-            node_deleted = true;
+          stubs[static_cast<std::size_t>(u)]--;
+          stubs[static_cast<std::size_t>(v)]--;
 
-            stubs[i] = *(stubs_end-1);
-            stubs_end--;
-            nodes[i] = *(nodes_end-1);
-            nodes_end--;
-
-            std::ptrdiff_t previous_last_index = std::distance(
-                nodes.begin(), nodes_end);
-            if (j == static_cast<std::size_t>(previous_last_index))
-              j = i;
-          }
-
-          stubs[j]--;
-          if (stubs[j] == 0) {
-            node_deleted = true;
-
-            stubs[j] = *(stubs_end-1);
-            stubs_end--;
-            nodes[j] = *(nodes_end-1);
-            nodes_end--;
-          }
-          stubs_sum -= 2;
-
-          if (node_deleted)
-            suitable_edges_remaining = has_possible_edge(
-                  edges, nodes.begin(), nodes_end);
-
-          d = std::discrete_distribution<std::size_t>(stubs.begin(), stubs_end);
+          if (stubs[static_cast<std::size_t>(u)] == 0 ||
+              stubs[static_cast<std::size_t>(v)] == 0)
+            suitable_edges_remaining = has_possible_edge(repeated_stubs);
         }
       }
 
-      if (stubs_sum == 0)
+      if (repeated_stubs.empty())
         return undirected_network<VertT>(edges,
             views::iota(
               VertT{}, static_cast<VertT>(degrees.size())));
@@ -202,135 +170,93 @@ namespace reticula {
     if (in_degrees.empty())
       return directed_network<VertT>();
 
-    VertT in_degree_sum = std::accumulate(
-        in_degrees.begin(), in_degrees.end(), VertT{});
+    VertT degree_sum =
+        std::accumulate(in_degrees.begin(), in_degrees.end(), VertT{});
 
-    VertT out_degree_sum = std::accumulate(
-        out_degrees.begin(), out_degrees.end(), VertT{});
-
-    if (in_degree_sum != out_degree_sum)
+    if (degree_sum !=
+        std::accumulate(out_degrees.begin(), out_degrees.end(), VertT{}))
       throw std::invalid_argument(
           "in- and out-degree sequences should have equal sums");
-
-    auto has_possible_directed_edge = [](
-        const std::unordered_set<
-          directed_edge<VertT>,
-          hash<directed_edge<VertT>>>& edges,
-        auto in_nodes_begin, auto in_nodes_end,
-        auto out_nodes_begin, auto out_nodes_end) {
-      if (in_nodes_begin == in_nodes_end ||
-          out_nodes_begin == out_nodes_end) {
-        return false;
-      } else {
-        for (auto out_it = out_nodes_begin; out_it < out_nodes_end; out_it++)
-          for (auto in_it = in_nodes_begin; in_it < in_nodes_end; in_it++)
-            if (*out_it != *in_it && !edges.contains({
-                  static_cast<VertT>(*out_it),
-                  static_cast<VertT>(*in_it)}))
-              return true;
-      }
-      return false;
-    };
 
     for (std::size_t t = 0; t < max_tries; t++) {
       std::unordered_set<
         directed_edge<VertT>,
         hash<directed_edge<VertT>>> edges;
-      edges.reserve(static_cast<std::size_t>(in_degree_sum));
+      edges.reserve(static_cast<std::size_t>(degree_sum));
 
-      VertT in_stubs_sum = in_degree_sum;
+      std::vector<VertT> in_stubs = in_degrees;
+      std::vector<VertT> out_stubs = out_degrees;
 
-      std::vector<VertT> in_nodes, in_stubs;
-      in_nodes.reserve(in_degrees.size());
-      in_stubs.reserve(in_degrees.size());
-
-      std::vector<VertT> out_nodes, out_stubs;
-      out_nodes.reserve(in_degrees.size());
-      out_stubs.reserve(in_degrees.size());
+      std::vector<VertT> in_repeated_stubs;
+      in_repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
+      std::vector<VertT> out_repeated_stubs;
+      out_repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
 
       for (VertT i = 0; i < static_cast<VertT>(in_degrees.size()); i++) {
-        if (in_degrees[static_cast<std::size_t>(i)] > 0) {
-          in_nodes.push_back(i);
-          in_stubs.push_back(in_degrees[static_cast<std::size_t>(i)]);
-        }
-        if (out_degrees[static_cast<std::size_t>(i)] > 0) {
-          out_nodes.push_back(i);
-          out_stubs.push_back(out_degrees[static_cast<std::size_t>(i)]);
-        }
+        for (VertT j = 0; j < in_degrees[static_cast<std::size_t>(i)]; j++)
+          in_repeated_stubs.push_back(i);
+        for (VertT j = 0; j < out_degrees[static_cast<std::size_t>(i)]; j++)
+          out_repeated_stubs.push_back(i);
       }
 
-      auto in_nodes_end = in_nodes.end();
-      auto in_stubs_end = in_stubs.end();
+      auto has_possible_directed_edge =
+          [&edges](const std::vector<VertT>& in_stubs,
+                   const std::vector<VertT>& out_stubs) {
+            if (out_stubs.empty() || in_stubs.empty())
+              return false;
 
-      auto out_nodes_end = out_nodes.end();
-      auto out_stubs_end = out_stubs.end();
+            for (const auto& u : out_stubs)
+              for (const auto& v : in_stubs)
+                if (u != v && !edges.contains({u, v}))
+                  return true;
+            return false;
+          };
 
-      std::discrete_distribution<std::size_t> in_d(
-          in_stubs.begin(), in_stubs_end);
-      std::discrete_distribution<std::size_t> out_d(
-          out_stubs.begin(), out_stubs_end);
-      bool suitable_edges_remaining = has_possible_directed_edge(edges,
-            in_nodes.begin(), in_nodes_end,
-            out_nodes.begin(), out_nodes_end);
+      bool suitable_edges_remaining = has_possible_directed_edge(
+          in_repeated_stubs, out_repeated_stubs);
       while (suitable_edges_remaining) {
-        std::size_t i = in_d(gen), j = out_d(gen);
-        while (in_nodes[i] == out_nodes[j]) j = out_d(gen);
+        std::size_t out_size = out_repeated_stubs.size();
+        std::uniform_int_distribution<std::size_t> dist{0, out_size - 1};
 
-        VertT u = in_nodes[i], v = out_nodes[j];
+        std::size_t idx_u = dist(gen);
+        std::size_t idx_v = dist(gen);
+        while (out_repeated_stubs[idx_u] == in_repeated_stubs[idx_v]) {
+          idx_u = dist(gen);
+          idx_v = dist(gen);
+        }
+
+        VertT u = out_repeated_stubs[idx_u];
+        std::swap(out_repeated_stubs[idx_u], out_repeated_stubs[out_size - 1]);
+        VertT v = in_repeated_stubs[idx_v];
+        std::swap(in_repeated_stubs[idx_v], in_repeated_stubs[out_size - 1]);
 
         double puv =
           static_cast<double>(
-              in_degrees[static_cast<std::size_t>(u)]*
-              out_degrees[static_cast<std::size_t>(v)])/
-            (2.0*static_cast<double>(in_degree_sum));
-        if (directed_edge<VertT> new_edge(
-              static_cast<VertT>(u), static_cast<VertT>(v));
-            !edges.contains(new_edge) &&
+              in_degrees[static_cast<std::size_t>(v)]*
+              out_degrees[static_cast<std::size_t>(u)])/
+            (2.0*static_cast<double>(degree_sum));
+        directed_edge<VertT> new_edge{u, v};
+        if (!edges.contains(new_edge) &&
               std::uniform_real_distribution{}(gen) > puv) {
           edges.insert(new_edge);
 
-          bool node_deleted = false;
+          out_repeated_stubs.pop_back();
+          in_repeated_stubs.pop_back();
 
-          in_stubs[i]--;
-          in_stubs_sum--;
-          if (in_stubs[i] == 0) {
-            node_deleted = true;
+          out_stubs[static_cast<std::size_t>(u)]--;
+          in_stubs[static_cast<std::size_t>(v)]--;
 
-            in_stubs[i] = *(in_stubs_end-1);
-            in_stubs_end--;
-            in_nodes[i] = *(in_nodes_end-1);
-            in_nodes_end--;
-          }
-
-          out_stubs[j]--;
-          if (out_stubs[j] == 0) {
-            node_deleted = true;
-
-            out_stubs[j] = *(out_stubs_end-1);
-            out_stubs_end--;
-            out_nodes[j] = *(out_nodes_end-1);
-            out_nodes_end--;
-          }
-
-          if (node_deleted)
+          if (out_stubs[static_cast<std::size_t>(u)] == 0 ||
+              in_stubs[static_cast<std::size_t>(v)] == 0)
             suitable_edges_remaining = has_possible_directed_edge(
-                  edges,
-                  in_nodes.begin(), in_nodes_end,
-                  out_nodes.begin(), out_nodes_end);
-
-          in_d = std::discrete_distribution<std::size_t>(
-              in_stubs.begin(), in_stubs_end);
-          out_d = std::discrete_distribution<std::size_t>(
-              out_stubs.begin(), out_stubs_end);
+                in_repeated_stubs, out_repeated_stubs);
         }
       }
 
-      if (in_stubs_sum == 0)
+      if (in_repeated_stubs.empty() && out_repeated_stubs.empty())
         return directed_network<VertT>(edges,
-            views::iota(
-              VertT{}, static_cast<VertT>(in_degrees.size())));
+            views::iota(VertT{}, static_cast<VertT>(in_degrees.size())));
     }
     return std::nullopt;
   }
-
 }  // namespace reticula
