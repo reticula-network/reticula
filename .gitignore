@@ -33,3 +33,6 @@
 .cache
 
 build
+build_dbg
+
+callgrind.out.*
