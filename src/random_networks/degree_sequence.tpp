@@ -52,7 +52,7 @@ namespace reticula {
         hash<undirected_edge<VertT>>> edges;
       edges.reserve(static_cast<std::size_t>(degree_sum)/2);
 
-      std::vector<VertT> stubs = degrees; // Copy of degrees to modify
+      std::vector<VertT> stubs = degrees;
       std::vector<VertT> repeated_stubs;
       repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
 
