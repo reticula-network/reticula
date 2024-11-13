@@ -95,7 +95,7 @@ namespace reticula {
               degrees[static_cast<std::size_t>(u)]*
               degrees[static_cast<std::size_t>(v)])/
             (2.0*static_cast<double>(degree_sum));
-        directed_edge<VertT> new_edge{u, v};
+        undirected_edge<VertT> new_edge{u, v};
 
         // Bayati et al. 2009 suggests that the probability of accepting u, v is
         // proportional to remaining degrees of u and v and (1-d[u]d[v]/4m). We
