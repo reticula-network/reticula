@@ -221,12 +221,12 @@ TEST_CASE("random directed degree sequence graph",
 
   // TODO: test uniformity
 
-  /*SECTION("benchmark") {*/
-  /*  BENCHMARK("random_directed_degree_sequence_graph") {*/
-  /*    return reticula::random_directed_degree_sequence_graph<int>(*/
-  /*        std::vector<std::pair<int, int>>(1000, {3, 3}), gen);*/
-  /*  };*/
-  /*}*/
+  SECTION("benchmark") {
+    BENCHMARK("random_directed_degree_sequence_graph") {
+      return reticula::random_directed_degree_sequence_graph<int>(
+          std::vector<std::pair<int, int>>(1000, {3, 3}), gen);
+    };
+  }
 }
 
 TEST_CASE("random degree sequence graph",
