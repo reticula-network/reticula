@@ -1344,6 +1344,10 @@ TEST_CASE("degree assortativity", "[reticula::degree_assortativity]") {
         {25, 26}, {25, 27}, {26, 27}});
     REQUIRE(reticula::degree_assortativity(zebra) ==
         Approx(0.7177).margin(1e-4));
+
+    BENCHMARK("undirected degree assortativity") {
+      return reticula::degree_assortativity(net);
+    };
   }
 
   SECTION("directed") {
