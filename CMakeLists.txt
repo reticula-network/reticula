@@ -37,7 +37,7 @@ FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csvparser)
 add_library(csv INTERFACE)
 target_include_directories(csv
   SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${csvparser_SOURCE_DIR}>/
+  $<BUILD_INTERFACE:${csvparser_SOURCE_DIR}>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_library(${PROJECT_NAME} INTERFACE)
