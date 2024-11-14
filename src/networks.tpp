@@ -92,13 +92,21 @@ namespace reticula {
     if (instantaneous_undirected)
       return out_degree(v);
 
-    return in_edges(v).size();
+    auto p = _in_edges.find(v);
+    if (p == _in_edges.end())
+      return 0;
+    else
+      return p->second.size();
   }
 
   template <network_edge EdgeT>
   size_t network<EdgeT>::out_degree(
       const typename EdgeT::VertexType& v) const {
-    return out_edges(v).size();
+    auto p = _out_edges.find(v);
+    if (p == _out_edges.end())
+      return 0;
+    else
+      return p->second.size();
   }
 
   template <network_edge EdgeT>
