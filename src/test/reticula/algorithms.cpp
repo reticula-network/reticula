@@ -778,6 +778,12 @@ TEST_CASE("connected components", "[reticula::connected_components]") {
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
         UnorderedEquals(weak1) || UnorderedEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
+
+    std::mt19937_64 gen(42);
+    auto g = reticula::random_gnp_graph<int>(16384, 0.001, gen);
+    BENCHMARK("connected components") {
+      return reticula::connected_components(g);
+    };
   }
 
   SECTION("works for undirected hypergraph") {
