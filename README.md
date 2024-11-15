@@ -30,12 +30,9 @@ The documentation is available at [reticula.network][website]
 
 ### Requirements
 
-Reticular relies heavily on certain C++20 features, such as concepts and ranges.
+Reticula relies heavily on certain C++20 features, such as concepts and ranges.
 If you intend on using Reticula in your project, you need a compiler with decent
-support of both. This library is regularly tested on Linux (GCC 11.4.0), MacOS
-(XCode 14.3, AppleClang 14.0.3.14030022) and Windows (Visual Studio 17 2022,
-MSVC 19.37.32825.0), though anything more recent should probably work just as
-well.
+support of C++20 features.
 
 ### Including reticula in your CMake project
 
@@ -55,7 +52,7 @@ FetchContent_MakeAvailable(reticula)
 
 If you want to fetch other content using CMake FetchContent module, you can
 include those in `FetchContent_MakeAvailable` call or call this function
-separatly for each content.
+separately for each content.
 
 Finally, link your target and Reticula like this:
 
