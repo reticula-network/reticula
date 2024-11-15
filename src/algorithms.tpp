@@ -213,11 +213,14 @@ namespace reticula {
       for (std::size_t i = 0; auto& v: verts)
         vert_idx.emplace(v, i++);
 
-      for (auto e: net.edges())
-        for (auto v1: e.mutator_verts())
-          for (auto v2: e.mutated_verts())
+      for (auto e: net.edges()) {
+        auto mutator_verts = e.mutator_verts();
+        auto mutated_verts = e.mutated_verts();
+        for (auto v1: mutator_verts)
+          for (auto v2: mutated_verts)
             if (!is_undirected_v<EdgeT> || v1 < v2)
-              disj_set.merge(vert_idx.at(v1), vert_idx.at(v2));
+              disj_set.merge(vert_idx[v1], vert_idx[v2]);
+      }
 
       auto sets = disj_set.sets(singletons);
       std::vector<component<typename EdgeT::VertexType>> comp_vector;
