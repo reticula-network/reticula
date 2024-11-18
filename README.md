@@ -1,9 +1,9 @@
 # Reticula [![Actions Status][action-image]][action-link] [![Documentations][docs-badge]][docs-website] [![Paper][paper-badge]][paper-link]
 
 *Reticula* is a general-purpose complex network analysis tool, supporting
-static networks as well as [hypergraphs][hyper], [temporal networks][temp].
-It allows you to study radomise networks, calculate static or
-[temporal network reachability][out-component] and form [event graphs][event].
+static networks as well as [hypergraphs][hyper], [temporal networks][temp]. It
+allows you to study randomise networks, calculate static or [temporal network
+reachability][out-component] and form [event graphs][event].
 
 Reticula (singular: reticulum) is a word with Latin origin meaning networks or
 network-like (i.e., reticulate) structures.
@@ -31,8 +31,8 @@ The documentation is available at [reticula.network][website]
 ### Requirements
 
 Reticula relies heavily on certain C++20 features, such as concepts and ranges.
-If you intend on using Reticula in your project, you need a compiler with decent
-support of C++20 features.
+If you intend on using Reticula in your project, you need a compiler with
+decent support of C++20 features.
 
 ### Including reticula in your CMake project
 
