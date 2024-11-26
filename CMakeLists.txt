@@ -115,7 +115,7 @@ if (is_standalone)
 
   include(CTest)
   include(Catch)
-  catch_discover_tests(${PROJECT_NAME}_tests)
+  catch_discover_tests(${PROJECT_NAME}_tests EXTRA_ARGS --skip-benchmarks)
 
   add_executable(${PROJECT_NAME}_benchmarks EXCLUDE_FROM_ALL ${TEST_FILES})
   target_link_libraries(${PROJECT_NAME}_benchmarks
