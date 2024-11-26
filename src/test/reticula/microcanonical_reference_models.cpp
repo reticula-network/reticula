@@ -1,3 +1,5 @@
+#include "catch2/matchers/catch_matchers.hpp"
+#include "reticula/operations.hpp"
 #include <cstdint>
 #include <vector>
 #include <utility>
@@ -20,7 +22,7 @@ using Catch::Matchers::Equals;
 namespace micro = reticula::microcanonical_reference_models;
 
 /**
-  Returns a directed temporal network of 1024 nodes  with many events between
+  Returns a directed temporal network of 1024 nodes with many events between
   nodes 0 and 1.
 */
 template <std::uniform_random_bit_generator Gen>
@@ -95,23 +97,22 @@ TEST_CASE("connected link shuffling",
   SECTION("with directed temporal network") {
       auto g = random_uneven_temporal_network(gen);
 
-      g = reticula::graph_union(g, {{1, 3, 0}, {5, 6, 12}, {20, 25, 1}});
+      g = reticula::with_edges(g, {{1, 3, 0}, {5, 6, 12}, {20, 25, 1}});
       auto shuffled =
         micro::connected_link_shuffling(g, gen);
+      auto static_proj_g = reticula::static_projection(g);
+      auto static_proj_shuf = reticula::static_projection(shuffled);
 
       REQUIRE_THAT(g.vertices(),
           Equals(shuffled.vertices()));
       REQUIRE_THAT(timestamps(g.edges_cause()),
           Equals(timestamps(shuffled.edges_cause())));
-      REQUIRE(reticula::static_projection(g).edges().size()
-          == reticula::static_projection(shuffled).edges().size());
-      REQUIRE_THAT(reticula::static_projection(g).edges(),
-           !Equals(reticula::static_projection(shuffled).edges()));
-      REQUIRE_THAT(reticula::weakly_connected_components(
-                  reticula::static_projection(g)),
+      REQUIRE(static_proj_g.edges().size() == static_proj_shuf.edges().size());
+      REQUIRE_THAT(static_proj_g.edges(), !Equals(static_proj_shuf.edges()));
+      REQUIRE_THAT(
+              reticula::weakly_connected_components(static_proj_g),
               UnorderedEquals(
-                  reticula::weakly_connected_components(
-                      reticula::static_projection(shuffled))));
+                   reticula::weakly_connected_components(static_proj_shuf)));
   }
 
   SECTION("with undirected temporal networks") {
@@ -121,23 +122,20 @@ TEST_CASE("connected link shuffling",
           g1.edges_cause(), reticula::views::iota(
             std::size_t{}, static_cast<std::size_t>(1024)));
 
-      g = reticula::graph_union(g, {{1, 3, 0}, {5, 6, 12}, {20, 25, 1}});
+      g = reticula::with_edges(g, {{1, 3, 0}, {5, 6, 12}, {20, 25, 1}});
       auto shuffled =
         micro::connected_link_shuffling(g, gen);
+      auto static_proj_g = reticula::static_projection(g);
+      auto static_proj_shuf = reticula::static_projection(shuffled);
 
-      REQUIRE_THAT(g.vertices(),
-          Equals(shuffled.vertices()));
+      REQUIRE_THAT(g.vertices(), Equals(shuffled.vertices()));
       REQUIRE_THAT(timestamps(g.edges_cause()),
           Equals(timestamps(shuffled.edges_cause())));
-      REQUIRE(reticula::static_projection(g).edges().size()
-          == reticula::static_projection(shuffled).edges().size());
-      REQUIRE_THAT(reticula::static_projection(g).edges(),
-           !Equals(reticula::static_projection(shuffled).edges()));
-      REQUIRE_THAT(reticula::connected_components(
-                  reticula::static_projection(g)),
+      REQUIRE(static_proj_g.edges().size() == static_proj_shuf.edges().size());
+      REQUIRE_THAT(static_proj_g.edges(), !Equals(static_proj_shuf.edges()));
+      REQUIRE_THAT(reticula::connected_components(static_proj_g),
               UnorderedEquals(
-                  reticula::connected_components(
-                      reticula::static_projection(shuffled))));
+                   reticula::connected_components(static_proj_shuf)));
   }
 }
 
@@ -164,16 +162,22 @@ TEST_CASE("timeline shuffling",
   auto g = random_uneven_temporal_network(gen);
   auto shuffled =
     micro::timeline_shuffling(g, gen);
+  auto static_proj_g = reticula::static_projection(g);
+      auto static_proj_shuf = reticula::static_projection(shuffled);
 
   REQUIRE_THAT(g.vertices(), Equals(shuffled.vertices()));
   REQUIRE(g.edges_cause().size() == shuffled.edges_cause().size());
-  REQUIRE(reticula::static_projection(g).edges().size()
-      == reticula::static_projection(shuffled).edges().size());
-  REQUIRE_THAT(reticula::static_projection(g).edges(),
-       Equals(reticula::static_projection(shuffled).edges()));
+  REQUIRE(static_proj_g.edges().size() == static_proj_shuf.edges().size());
+  REQUIRE_THAT(static_proj_g.edges(),
+       Equals(static_proj_shuf.edges()));
 
   auto empty = empty_temporal_network();
   REQUIRE(empty == micro::timeline_shuffling(empty, gen));
+
+  auto shuffled_with_extra =
+    micro::timeline_shuffling(g, gen, {{1, 101}});
+  REQUIRE_THAT(reticula::with_edges(static_proj_g, {{1, 101}}).edges(),
+       Equals(reticula::static_projection(shuffled_with_extra).edges()));
 }
 
 TEST_CASE("weight-constrained timeline shuffling",

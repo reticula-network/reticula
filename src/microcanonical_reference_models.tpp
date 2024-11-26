@@ -100,6 +100,52 @@ namespace reticula {
           return {i, j, e.cause_time(), e.effect_time()};
         }
       };
+
+      template <
+        static_network_edge EdgeT,
+        std::uniform_random_bit_generator Gen>
+      requires is_dyadic_v<EdgeT>
+      std::unordered_map<
+        EdgeT,
+        std::pair<
+            typename EdgeT::VertexType,
+            typename EdgeT::VertexType>,
+        hash<EdgeT>>
+      link_shuffling_mapping(const network<EdgeT>& proj, Gen& generator) {
+        std::unordered_set<
+          std::pair<
+            typename EdgeT::VertexType,
+            typename EdgeT::VertexType>,
+          hash<
+            std::pair<
+              typename EdgeT::VertexType,
+              typename EdgeT::VertexType>>> new_links;
+
+        auto nodes = proj.vertices();
+        std::uniform_int_distribution<std::size_t> d(0, nodes.size() - 1);
+        while (new_links.size() < proj.edges().size()) {
+          std::size_t i = d(generator), j = d(generator);
+          while (i == j) j = d(generator);
+          new_links.emplace(nodes[i], nodes[j]);
+        }
+
+        std::vector<
+          std::pair<
+            typename EdgeT::VertexType,
+            typename EdgeT::VertexType>> new_links_v(
+                new_links.begin(), new_links.end());
+        ranges::shuffle(new_links_v, generator);
+
+        std::unordered_map<
+          EdgeT,
+          std::pair<
+            typename EdgeT::VertexType,
+            typename EdgeT::VertexType>,
+          hash<EdgeT>> link_map;
+        for (std::size_t i = 0; i < new_links_v.size(); i++)
+          link_map.emplace(proj.edges()[i], new_links_v[i]);
+        return link_map;
+      }
     }  // namespace detail
 
     template <
@@ -158,41 +204,8 @@ namespace reticula {
         const network<EdgeT>& temp, Gen& generator) {
       if (temp.vertices().empty() || temp.edges().empty())
         return temp;
-
-      auto nodes = temp.vertices();
-
-      std::uniform_int_distribution<std::size_t> d(0, nodes.size() - 1);
       auto proj = static_projection(temp);
-
-      std::unordered_set<
-        std::pair<
-          typename EdgeT::VertexType,
-          typename EdgeT::VertexType>,
-        hash<
-          std::pair<
-            typename EdgeT::VertexType,
-            typename EdgeT::VertexType>>> new_links;
-      while (new_links.size() < proj.edges().size()) {
-        std::size_t i = d(generator), j = d(generator);
-        while (i == j) j = d(generator);
-        new_links.emplace(nodes[i], nodes[j]);
-      }
-
-      std::vector<
-        std::pair<
-          typename EdgeT::VertexType,
-          typename EdgeT::VertexType>> new_links_v(
-              new_links.begin(), new_links.end());
-      ranges::shuffle(new_links_v, generator);
-
-      std::unordered_map<
-        typename EdgeT::StaticProjectionType,
-        std::pair<
-          typename EdgeT::VertexType,
-          typename EdgeT::VertexType>,
-        hash<typename EdgeT::StaticProjectionType>> link_map;
-      for (std::size_t i = 0; i < new_links_v.size(); i++)
-        link_map.emplace(proj.edges()[i], new_links_v[i]);
+      auto link_map = detail::link_shuffling_mapping(proj, generator);
 
       return network<EdgeT>(
           temp.edges_cause() | views::transform(
@@ -208,7 +221,18 @@ namespace reticula {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> connected_link_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
-      auto proj = static_projection(temp);
+      return connected_link_shuffling(temp, generator, {});
+    }
+
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> connected_link_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        const std::vector<
+          typename EdgeT::StaticProjectionType>& unobserved_links) {
+      auto proj = with_edges(static_projection(temp), unobserved_links);
 
       std::vector<component<typename EdgeT::VertexType>> proj_ccs;
       if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
@@ -218,24 +242,47 @@ namespace reticula {
 
       ranges::sort(proj_ccs, ranges::greater{}, ranges::size);
 
-      auto is_projection_connected = [](const network<EdgeT>& shuff) {
+      auto is_mapping_connected = [](
+          const std::unordered_map<
+            typename EdgeT::StaticProjectionType,
+            std::pair<
+              typename EdgeT::VertexType, typename EdgeT::VertexType>,
+            hash<typename EdgeT::StaticProjectionType>> mapping) {
+        auto edges = std::vector<typename EdgeT::StaticProjectionType>();
+        for (auto& [k, v]: mapping)
+          edges.emplace_back(v.first, v.second);
+        network<typename EdgeT::StaticProjectionType> shuff(edges);
         if constexpr (is_undirected_v<typename EdgeT::StaticProjectionType>)
-          return is_connected(static_projection(shuff));
+          return is_connected(shuff);
         else
-          return is_weakly_connected(static_projection(shuff));
+          return is_weakly_connected(shuff);
       };
 
       network<EdgeT> res(std::vector<EdgeT>(), proj.vertices());
       for (auto& comp: proj_ccs) {
-        auto sub_temp = vertex_induced_subgraph(temp, comp);
-        network<EdgeT> shuff(std::vector<EdgeT>(), sub_temp.vertices());
-        while (!is_projection_connected(shuff))
-          shuff = link_shuffling(sub_temp, generator);
-        res = graph_union(res, shuff);
+        if (comp.size() == 1) {
+          res = with_vertices(res, comp);
+        } else {
+          auto sub_temp = vertex_induced_subgraph(temp, comp);
+          auto proj_subgraph = vertex_induced_subgraph(proj, comp);
+          auto mapping = detail::link_shuffling_mapping(
+            proj_subgraph, generator);
+          while (!is_mapping_connected(mapping))
+            mapping = detail::link_shuffling_mapping(
+              proj_subgraph, generator);
+          network<EdgeT> shuff(
+              sub_temp.edges_cause() | views::transform(
+                [&mapping](const auto& e){
+                  auto& [ni, nj] = mapping.at(e.static_projection());
+                  return detail::replace_verts<EdgeT>{}(e, ni, nj);
+                }), temp.vertices());
+          res = graph_union(res, shuff);
+        }
       }
 
       return res;
     }
+
 
     template <
       temporal_network_edge EdgeT,
@@ -243,10 +290,21 @@ namespace reticula {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> topology_constrained_link_shuffling(
         const network<EdgeT>& temp, Gen& generator) {
+      return topology_constrained_link_shuffling(temp, generator, {});
+    }
+
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> topology_constrained_link_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        const std::vector<
+          typename EdgeT::StaticProjectionType>& unobserved_links) {
       if (temp.vertices().empty() || temp.edges().empty())
         return temp;
 
-      auto proj = static_projection(temp);
+      auto proj = with_edges(static_projection(temp), unobserved_links);
       auto shuffled_links = proj.edges();
       ranges::shuffle(shuffled_links, generator);
 
@@ -285,7 +343,9 @@ namespace reticula {
     requires is_dyadic_v<EdgeT>
     network<EdgeT> timeline_shuffling(
         const network<EdgeT>& temp, Gen& generator,
-        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end) {
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end,
+        const std::vector<
+          typename EdgeT::StaticProjectionType>& unobserved_links) {
       if (temp.vertices().empty() || temp.edges().empty())
         return temp;
 
@@ -297,7 +357,7 @@ namespace reticula {
       std::vector<EdgeT> shuffled_edges;
       shuffled_edges.reserve(temp.edges_cause().size());
 
-      auto p = static_projection(temp);
+      auto p = with_edges(static_projection(temp), unobserved_links);
       auto& links = p.edges();
 
       std::unordered_map<
@@ -338,8 +398,34 @@ namespace reticula {
         return temp;
 
       auto [t0, t1] = cause_time_window(temp);
-      return timeline_shuffling(temp, generator, t0, t1);
+      return timeline_shuffling(temp, generator, t0, t1, {});
     }
+
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        const std::vector<
+          typename EdgeT::StaticProjectionType>& unobserved_links) {
+      if (temp.vertices().empty() || temp.edges().empty())
+        return temp;
+
+      auto [t0, t1] = cause_time_window(temp);
+      return timeline_shuffling(temp, generator, t0, t1, unobserved_links);
+    }
+
+    template <
+      temporal_network_edge EdgeT,
+      std::uniform_random_bit_generator Gen>
+    requires is_dyadic_v<EdgeT>
+    network<EdgeT> timeline_shuffling(
+        const network<EdgeT>& temp, Gen& generator,
+        typename EdgeT::TimeType t_start, typename EdgeT::TimeType t_end) {
+      return timeline_shuffling(temp, generator, t_start, t_end, {});
+    }
+
 
     template <
       temporal_network_edge EdgeT,
