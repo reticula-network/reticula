@@ -10,7 +10,6 @@
 #include <hll/hyperloglog.hpp>
 
 #include "ranges.hpp"
-#include "type_traits.hpp"
 #include "network_concepts.hpp"
 
 namespace reticula {

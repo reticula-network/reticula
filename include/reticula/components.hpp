@@ -7,7 +7,6 @@
 
 #include "ranges.hpp"
 #include "network_concepts.hpp"
-#include "type_traits.hpp"
 
 namespace reticula {
   template <typename T>

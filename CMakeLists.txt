@@ -79,7 +79,8 @@ if (is_standalone)
     src/test/reticula/distributions.cpp
     src/test/reticula/components.cpp
     src/test/reticula/temporal_clusters.cpp
-    src/test/reticula/microcanonical_reference_models.cpp)
+    src/test/reticula/microcanonical_reference_models.cpp
+    src/test/reticula/traits.cpp)
     
 
   add_executable(${PROJECT_NAME}_tests EXCLUDE_FROM_ALL ${TEST_FILES})

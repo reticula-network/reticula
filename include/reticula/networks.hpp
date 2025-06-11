@@ -224,6 +224,26 @@ namespace reticula {
       is_instantaneous_v<EdgeType> && is_undirected_v<EdgeType>;
   };
 
+  template <network_edge EdgeT>
+  struct is_instantaneous<network<EdgeT>> {
+    static constexpr bool value = is_instantaneous_v<EdgeT>;
+  };
+
+  template <network_edge EdgeT>
+  struct is_undirected<network<EdgeT>> {
+    static constexpr bool value = is_undirected_v<EdgeT>;
+  };
+
+  template <network_edge EdgeT>
+  struct is_directed<network<EdgeT>> {
+    static constexpr bool value = is_directed_v<EdgeT>;
+  };
+
+  template <network_edge EdgeT>
+  struct is_dyadic<network<EdgeT>> {
+    static constexpr bool value = is_dyadic_v<EdgeT>;
+  };
+
   /**
     Directed network class. network class with directed edges.
    */

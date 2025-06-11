@@ -9,7 +9,6 @@
 #include "network_concepts.hpp"
 #include "temporal_adjacency.hpp"
 #include "intervals.hpp"
-#include "type_traits.hpp"
 
 namespace reticula {
   template <typename T>

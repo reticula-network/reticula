@@ -9,7 +9,6 @@
 #include <iterator>
 
 #include "ranges.hpp"
-#include "type_traits.hpp"
 
 namespace reticula {
   template <typename T, template<typename> class HashStruct>
@@ -66,7 +65,46 @@ namespace reticula {
     !requires(const T& a) {  // it has to be more specialized than network_edge
       a.effect_time();
     };  // NOLINT(readability/braces)
+}  // namespace reticula
 
+namespace reticula {
+  template <network_edge EdgeT>
+  struct is_instantaneous {
+    static constexpr bool value = false;
+  };
+
+  template <typename EdgeT>
+  inline constexpr bool
+  is_instantaneous_v = is_instantaneous<EdgeT>::value;
+
+  template <network_edge EdgeT>
+  struct is_undirected {
+    static constexpr bool value = false;
+  };
+
+  template <typename EdgeT>
+  inline constexpr bool
+  is_undirected_v = is_undirected<EdgeT>::value;
+  // Complementary trait capturing directedness as
+  // the negation of `is_undirected`
+
+  template <network_edge EdgeT>
+  struct is_directed {
+    static constexpr bool value = !is_undirected_v<EdgeT>;
+  };
+
+  template <typename EdgeT>
+  inline constexpr bool
+  is_directed_v = is_directed<EdgeT>::value;
+
+  template <network_edge EdgeT>
+  struct is_dyadic {
+    static constexpr bool value = false;
+  };
+
+  template <typename EdgeT>
+  inline constexpr bool
+  is_dyadic_v = is_dyadic<EdgeT>::value;
 
   template <typename T>
   concept directed_network_edge =
