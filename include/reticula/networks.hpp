@@ -366,7 +366,7 @@ namespace reticula {
 
     std::unordered_set<typename EdgeT::VertexType,
       hash<typename EdgeT::VertexType>> verts_set;
-    if (ranges::sized_range<VertRange>)
+    if constexpr (ranges::sized_range<VertRange>)
       verts_set.reserve(ranges::size(verts));
     for (const auto& v: verts)
       verts_set.insert(v);
