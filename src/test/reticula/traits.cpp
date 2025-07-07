@@ -11,4 +11,17 @@ TEST_CASE("edge and network traits", "[reticula::traits]") {
       reticula::undirected_edge<int>>);
   STATIC_REQUIRE(reticula::is_directed_v<
       reticula::directed_edge<int>>);
+  STATIC_REQUIRE(reticula::is_dyadic_v<
+      reticula::directed_edge<int>>);
+  STATIC_REQUIRE_FALSE(reticula::is_dyadic_v<
+      reticula::undirected_hyperedge<int>>);
+
+  STATIC_REQUIRE(reticula::is_undirected_v<
+      reticula::undirected_network<int>>);
+  STATIC_REQUIRE_FALSE(reticula::is_directed_v<
+      reticula::undirected_network<int>>);
+  STATIC_REQUIRE(reticula::is_directed_v<
+      reticula::directed_network<int>>);
+  STATIC_REQUIRE_FALSE(reticula::is_dyadic_v<
+      reticula::undirected_hypernetwork<int>>);
 }
