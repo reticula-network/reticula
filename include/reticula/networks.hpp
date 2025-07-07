@@ -366,22 +366,14 @@ namespace reticula {
 
     std::unordered_set<typename EdgeT::VertexType,
       hash<typename EdgeT::VertexType>> verts_set;
-
-    // adding the supplemental set of verts
+    if (ranges::sized_range<VertRange>)
+      verts_set.reserve(ranges::size(verts));
     for (const auto& v: verts)
       verts_set.insert(v);
 
-    for (auto&& e: _edges_cause)
-      for (auto&& v: e.incident_verts())
-      verts_set.insert(v);
-
-    _verts = std::vector<typename EdgeT::VertexType>(
-        verts_set.begin(), verts_set.end());
-    ranges::sort(_verts);
-
-    _out_edges.reserve(_verts.size());
+    _out_edges.reserve(verts_set.size());
     if (!instantaneous_undirected)
-      _in_edges.reserve(_verts.size());
+      _in_edges.reserve(verts_set.size());
 
     for (const auto& e: _edges_cause) {
       for (auto&& v: e.mutator_verts())
@@ -391,6 +383,15 @@ namespace reticula {
         for (auto&& v: e.mutated_verts())
           _in_edges[v].push_back(e);
     }
+
+    for (auto&& v: _in_edges | ranges::views::keys)
+      verts_set.insert(v);
+    for (auto&& v: _out_edges | ranges::views::keys)
+      verts_set.insert(v);
+
+    _verts = std::vector<typename EdgeT::VertexType>(
+        verts_set.begin(), verts_set.end());
+    ranges::sort(_verts);
 
     if (!instantaneous_undirected) {
       for (auto&& [v, e_list]: _in_edges) {
