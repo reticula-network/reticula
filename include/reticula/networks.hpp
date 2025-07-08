@@ -364,16 +364,38 @@ namespace reticula {
             [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
     }
 
-    std::unordered_set<typename EdgeT::VertexType,
-      hash<typename EdgeT::VertexType>> verts_set;
+    std::unordered_set<VertexType, hash<VertexType>> verts_set;
     if constexpr (ranges::sized_range<VertRange>)
       verts_set.reserve(ranges::size(verts));
     for (const auto& v: verts)
       verts_set.insert(v);
 
-    _out_edges.reserve(verts_set.size());
-    if (!instantaneous_undirected)
-      _in_edges.reserve(verts_set.size());
+    // reserve space for in- and out-edges maps
+    std::unordered_map<VertexType, std::size_t, hash<VertexType>> out_counts;
+    out_counts.reserve(verts_set.size());
+    std::unordered_map<VertexType, std::size_t, hash<VertexType>> in_counts;
+    in_counts.reserve(verts_set.size());
+
+    for (const auto& e: _edges_cause) {
+      for (auto&& v: e.mutator_verts())
+        ++out_counts[v];
+
+      if (!instantaneous_undirected)
+        for (auto&& v: e.mutated_verts())
+          ++in_counts[v];
+    }
+
+    _out_edges.reserve(out_counts.size());
+
+    for (auto&& [v, count]: out_counts)
+      _out_edges[v].reserve(count);
+
+    if (!instantaneous_undirected) {
+      _in_edges.reserve(in_counts.size());
+      for (auto&& [v, count]: in_counts)
+        _in_edges[v].reserve(count);
+    }
+
 
     for (const auto& e: _edges_cause) {
       for (auto&& v: e.mutator_verts())
