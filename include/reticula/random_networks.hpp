@@ -624,10 +624,7 @@ namespace reticula {
       }
 
       if (edges.size() == static_cast<std::size_t>(size*degree)/2)
-        return undirected_network<VertT>(
-            std::vector<undirected_edge<VertT>>(
-              edges.begin(), edges.end()),
-            views::iota(VertT{}, size));
+        return undirected_network<VertT>(edges, views::iota(VertT{}, size));
     }
 
     return std::nullopt;
