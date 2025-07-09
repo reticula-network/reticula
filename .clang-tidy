@@ -1,0 +1,10 @@
+---
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-avoid-do-while
+  modernize-*,-modernize-use-trailing-return-type,
+WarningsAsErrors: true
+HeaderFilterRegex: 'include/reticula/'
+FormatStyle: file

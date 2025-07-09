@@ -1,0 +1,11 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+DerivePointerAlignment: false
+PointerAlignment: Left
+IndentWidth: 2
+ContinuationIndentWidth: 2
+AlignAfterOpenBracket: AlwaysBreak
+BreakTemplateDeclarations: true
+...
+
