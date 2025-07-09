@@ -343,7 +343,8 @@ TEST_CASE("undirected temporal hyperedges",
     reticula::undirected_hyperedge<int> static_edge({1, 2, 3, 4});
     reticula::undirected_temporal_hyperedge<int, int> te(static_edge, 3);
 
-    REQUIRE(te == reticula::undirected_temporal_hyperedge<int, int>({1, 2, 3, 4}, 3));
+    REQUIRE(te == reticula::undirected_temporal_hyperedge<int, int>(
+        {1, 2, 3, 4}, 3));
     REQUIRE(te.cause_time() == 3);
     REQUIRE(te.effect_time() == 3);
     REQUIRE_THAT(te.mutated_verts(),
@@ -520,7 +521,8 @@ TEST_CASE("directed temporal hyperedges",
     reticula::directed_hyperedge<int> static_edge({1, 2}, {2, 3});
     reticula::directed_temporal_hyperedge<int, int> te(static_edge, 3);
 
-    REQUIRE(te == reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3));
+    REQUIRE(te == reticula::directed_temporal_hyperedge<int, int>(
+        {1, 2}, {2, 3}, 3));
     REQUIRE(te.cause_time() == 3);
     REQUIRE(te.effect_time() == 3);
     REQUIRE_THAT(te.mutated_verts(),
