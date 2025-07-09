@@ -3,7 +3,6 @@
 
 #include <concepts>
 #include <tuple>
-#include <vector>
 #include <istream>
 #include <ostream>
 #include <iterator>
@@ -38,6 +37,12 @@ namespace reticula {
     { is >> value };  // NOLINT(readability/braces)
   };  // NOLINT(readability/braces)
 
+  template <typename R, typename V>
+  concept vertex_range =
+    network_vertex<V> &&
+    ranges::forward_range<R> &&
+    std::convertible_to<ranges::range_reference_t<R>, const V>;
+
   template <typename T>
   concept network_edge =
     std::totally_ordered<T> &&
@@ -48,12 +53,9 @@ namespace reticula {
       { effect_lt(a, b) } -> std::convertible_to<bool>;
       { adjacent(a, b) } -> std::convertible_to<bool>;
     } && requires(const T& a) {
-      { a.mutated_verts() } ->
-        std::convertible_to<std::vector<typename T::VertexType>>;
-      { a.mutator_verts() } ->
-        std::convertible_to<std::vector<typename T::VertexType>>;
-      { a.incident_verts() } ->
-        std::convertible_to<std::vector<typename T::VertexType>>;
+      { a.mutated_verts() } -> vertex_range<typename T::VertexType>;
+      { a.mutator_verts() } -> vertex_range<typename T::VertexType>;
+      { a.incident_verts() } -> vertex_range<typename T::VertexType>;
     } && requires(const T& a, typename T::VertexType v) {
       { a.is_incident(v) } -> std::convertible_to<bool>;
       { a.is_in_incident(v) } -> std::convertible_to<bool>;

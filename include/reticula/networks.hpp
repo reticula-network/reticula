@@ -358,7 +358,7 @@ namespace reticula {
         _edges_cause.end());
     _edges_cause.shrink_to_fit();
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       _edges_effect = _edges_cause;
       std::sort(_edges_effect.begin(), _edges_effect.end(),
             [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
@@ -380,7 +380,7 @@ namespace reticula {
       for (auto&& v: e.mutator_verts())
         ++out_counts[v];
 
-      if (!instantaneous_undirected)
+      if constexpr (!instantaneous_undirected)
         for (auto&& v: e.mutated_verts())
           ++in_counts[v];
     }
@@ -390,7 +390,7 @@ namespace reticula {
     for (auto&& [v, count]: out_counts)
       _out_edges[v].reserve(count);
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       _in_edges.reserve(in_counts.size());
       for (auto&& [v, count]: in_counts)
         _in_edges[v].reserve(count);
@@ -401,7 +401,7 @@ namespace reticula {
       for (auto&& v: e.mutator_verts())
         _out_edges[v].push_back(e);
 
-      if (!instantaneous_undirected)
+      if constexpr (!instantaneous_undirected)
         for (auto&& v: e.mutated_verts())
           _in_edges[v].push_back(e);
     }
@@ -415,7 +415,7 @@ namespace reticula {
         verts_set.begin(), verts_set.end());
     ranges::sort(_verts);
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       for (auto&& [v, e_list]: _in_edges) {
         std::sort(e_list.begin(), e_list.end(),
             [](const EdgeT& a, const EdgeT& b){ return effect_lt(a, b); });
@@ -436,7 +436,7 @@ namespace reticula {
   template <network_edge EdgeT>
   size_t network<EdgeT>::in_degree(
       const typename EdgeT::VertexType& v) const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return out_degree(v);
 
     auto p = _in_edges.find(v);
@@ -459,7 +459,7 @@ namespace reticula {
   template <network_edge EdgeT>
   size_t network<EdgeT>::degree(
       const typename EdgeT::VertexType& v) const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return out_degree(v);
 
     return incident_edges(v).size();
@@ -469,7 +469,7 @@ namespace reticula {
   std::vector<EdgeT>
   network<EdgeT>::in_edges(
       const typename EdgeT::VertexType& v) const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return out_edges(v);
 
     auto p = _in_edges.find(v);
@@ -484,7 +484,7 @@ namespace reticula {
     typename EdgeT::VertexType, std::vector<EdgeT>,
     hash<typename EdgeT::VertexType>>&
   network<EdgeT>::in_edges() const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return _out_edges;
     return _in_edges;
   }
@@ -514,7 +514,7 @@ namespace reticula {
       const typename EdgeT::VertexType& v) const {
     std::vector<EdgeT> inc(out_edges(v));
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       auto in = in_edges(v);
       inc.insert(inc.end(), in.begin(), in.end());
 
@@ -528,7 +528,7 @@ namespace reticula {
   template <network_edge EdgeT>
   std::vector<typename EdgeT::VertexType>
   network<EdgeT>::predecessors(const typename EdgeT::VertexType& v) const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return successors(v);
 
     std::unordered_set<
@@ -565,7 +565,7 @@ namespace reticula {
   network<EdgeT>::neighbours(const typename EdgeT::VertexType& v) const {
     std::vector<typename EdgeT::VertexType> inc(successors(v));
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       std::vector<typename EdgeT::VertexType> pred(predecessors(v));
       inc.insert(inc.end(), pred.begin(), pred.end());
 
@@ -590,7 +590,7 @@ namespace reticula {
   template <network_edge EdgeT>
   const std::vector<EdgeT>&
   network<EdgeT>::edges_effect() const {
-    if (instantaneous_undirected)
+    if constexpr (instantaneous_undirected)
       return _edges_cause;
 
     return _edges_effect;
@@ -606,7 +606,7 @@ namespace reticula {
   network<EdgeT>
   network<EdgeT>::union_with(const network<EdgeT>& other) const {
     network<EdgeT> res(*this);
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       for (auto& [v, es]: other._in_edges) {
         auto& res_edges = res._in_edges[v];
         auto mid = res_edges.insert(res_edges.end(), es.begin(), es.end());
@@ -633,7 +633,7 @@ namespace reticula {
       }
     }
 
-    if (!instantaneous_undirected) {
+    if constexpr (!instantaneous_undirected) {
       auto mid_effect = res._edges_effect.insert(
           res._edges_effect.end(),
           other._edges_effect.begin(),

@@ -827,36 +827,42 @@ namespace reticula {
       bool revert_graph = false,
       bool ignore_direction = false,
       std::size_t size_hint = 0) {
-    component<typename EdgeT::VertexType> discovered_comp(size_hint);
+    using V = typename EdgeT::VertexType;
+
+    component<V> discovered_comp(size_hint);
     discovered_comp.insert(vert);
-    std::queue<typename EdgeT::VertexType> queue;
+    std::queue<V> queue;
     queue.push(vert);
+
+    auto visit = [&queue, &discovered_comp, &discovered](
+          const V& from, const EdgeT& e, const V& to) -> bool {
+      if (!discovered_comp.contains(to)) {
+        discovered_comp.insert(to);
+        if (!discovered(from, e, to))
+          return false;
+        queue.push(to);
+      }
+      return true;
+    };
+
     while (!queue.empty()) {
       auto v = queue.front();
       queue.pop();
-      std::vector<EdgeT> next_edges;
-      if (ignore_direction)
-        next_edges = net.incident_edges(v);
-      else if (revert_graph)
-        next_edges = net.in_edges(v);
-      else
-        next_edges = net.out_edges(v);
-      for (auto& e: next_edges) {
-        std::vector<typename EdgeT::VertexType> next;
-        if (ignore_direction)
-          next = e.incident_verts();
-        else if (revert_graph)
-          next = e.mutator_verts();
-        else
-          next = e.mutated_verts();
 
-        for (auto& w: next) {
-          if (!discovered_comp.contains(w)) {
-            discovered_comp.insert(w);
-            if (!discovered(v, e, w))
-              return discovered_comp;
-            queue.push(w);
+      if (ignore_direction) {
+        for (const auto& e : net.incident_edges(v)) {
+          for (const V& w : e.incident_verts())
+            if (!visit(v, e, w)) return discovered_comp;
+        }
+      } else if (revert_graph) {
+          for (const auto& e : net.in_edges(v)) {
+              for (const V& w : e.mutator_verts())
+                  if (!visit(v, e, w)) return discovered_comp;
           }
+      } else {
+        for (const auto& e : net.out_edges(v)) {
+          for (const V& w : e.mutated_verts())
+          if (!visit(v, e, w)) return discovered_comp;
         }
       }
     }

@@ -321,11 +321,11 @@ TEST_CASE("joint degree-sequence preserving shuffling",
     for (auto&& e: g.edges()) {
         auto inc = e.incident_verts();
         joint_degree_seq.emplace_back(
-            reticula::degree(g, inc.at(0)),
-            reticula::degree(g, inc.at(1)));
+            reticula::degree(g, inc[0]),
+            reticula::degree(g, inc[1]));
         joint_degree_seq.emplace_back(
-            reticula::degree(g, inc.at(1)),
-            reticula::degree(g, inc.at(0)));
+            reticula::degree(g, inc[1]),
+            reticula::degree(g, inc[0]));
     }
 
     for (std::size_t i = 0; i < 20; i++) {
@@ -336,11 +336,11 @@ TEST_CASE("joint degree-sequence preserving shuffling",
         for (auto&& e: g2.edges()) {
             auto inc = e.incident_verts();
             new_joint_degree_seq.emplace_back(
-                reticula::degree(g2, inc.at(0)),
-                reticula::degree(g2, inc.at(1)));
+                reticula::degree(g2, inc[0]),
+                reticula::degree(g2, inc[1]));
             new_joint_degree_seq.emplace_back(
-                reticula::degree(g2, inc.at(1)),
-                reticula::degree(g2, inc.at(0)));
+                reticula::degree(g2, inc[1]),
+                reticula::degree(g2, inc[0]));
         }
 
         REQUIRE_THAT(new_joint_degree_seq, UnorderedEquals(joint_degree_seq));

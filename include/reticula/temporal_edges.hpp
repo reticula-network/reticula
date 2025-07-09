@@ -2,7 +2,7 @@
 #define INCLUDE_RETICULA_TEMPORAL_EDGES_HPP_
 
 #include <tuple>
-#include <vector>
+#include <span>
 #include <algorithm>
 #include <compare>
 
@@ -172,7 +172,7 @@ namespace reticula {
       vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType, 1> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -180,7 +180,7 @@ namespace reticula {
       vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType, 1> mutated_verts() const;
 
     /**
       List of all vertices that initiate (cause) or receive (affected by) the
@@ -188,7 +188,7 @@ namespace reticula {
       of results of `mutator_verts()` and `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Returns the single vertex at the tail of the directed link arrow.
@@ -259,7 +259,8 @@ namespace reticula {
 
   private:
     TimeType _time;
-    VertexType _tail, _head;
+    // _tail, _head
+    std::array<VertexType, 2> _verts;
 
     friend struct std::hash<directed_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<directed_temporal_edge<VertexType, TimeType>>;
@@ -392,7 +393,7 @@ namespace reticula {
       tail vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType, 1> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -400,7 +401,7 @@ namespace reticula {
       head vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType, 1> mutated_verts() const;
 
     /**
       List of all vertices that initiate (cause) or receive (affected by) the
@@ -408,7 +409,7 @@ namespace reticula {
       of results of `mutator_verts()` and `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Returns the single vertex at the tail of the directed link arrow.
@@ -468,7 +469,8 @@ namespace reticula {
 
   private:
     TimeType _cause_time, _effect_time;
-    VertexType _tail, _head;
+    // _tail, _head
+    std::array<VertexType, 2> _verts;
 
     friend struct
     std::hash<directed_delayed_temporal_edge<VertexType, TimeType>>;
@@ -575,20 +577,20 @@ namespace reticula {
       of an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       In an undirected temporal edge both vertices might act as target of an
       effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       In an undirected temporal edge both vertices are incident to the edge.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Defines a strong ordering along with that would rank events
@@ -648,7 +650,7 @@ namespace reticula {
 
   private:
     TimeType _time;
-    VertexType _v1, _v2;
+    std::array<VertexType, 2> _verts;
 
     friend struct std::hash<undirected_temporal_edge<VertexType, TimeType>>;
     friend struct hll::hash<undirected_temporal_edge<VertexType, TimeType>>;
@@ -672,7 +674,7 @@ namespace std {
           VertexType, TimeType>& e) const {
       return reticula::utils::combine_hash<TimeType, reticula::hash>(
           reticula::utils::combine_hash<VertexType, reticula::hash>(
-            reticula::hash<VertexType>{}(e._v1), e._v2), e._time);
+            reticula::hash<VertexType>{}(e._verts[0]), e._verts[1]), e._time);
     }
   };
 
@@ -684,7 +686,7 @@ namespace std {
           VertexType, TimeType>& e) const {
       return reticula::utils::combine_hash<TimeType, reticula::hash>(
           reticula::utils::combine_hash<VertexType, reticula::hash>(
-            reticula::hash<VertexType>{}(e._tail), e._head), e._time);
+            reticula::hash<VertexType>{}(e._verts[0]), e._verts[1]), e._time);
     }
   };
 
@@ -697,7 +699,7 @@ namespace std {
       return reticula::utils::combine_hash<TimeType, reticula::hash>(
               reticula::utils::combine_hash<TimeType, reticula::hash>(
                 reticula::utils::combine_hash<VertexType, reticula::hash>(
-                  reticula::hash<VertexType>{}(e._tail), e._head),
+                  reticula::hash<VertexType>{}(e._verts[0]), e._verts[1]),
                 e._cause_time),
               e._effect_time);
     }
@@ -750,17 +752,17 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
     const VertexType& tail, const VertexType& head, TimeType time)
-    : _time(time), _tail(tail), _head(head) {}
+    : _time(time), _verts({tail, head}) {}
 
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
     const directed_edge<VertexType>& projection, TimeType time)
-    : _time(time), _tail(projection.tail()), _head(projection.head()) {}
+    : _time(time), _verts({projection.tail(), projection.head()}) {}
 
   template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_temporal_edge<VertexType, TimeType>::static_projection() const {
-    return directed_edge<VertexType>(_tail, _head);
+    return directed_edge<VertexType>(_verts[0], _verts[1]);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -778,50 +780,48 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (_tail == vert);
+    return (_verts[0] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (_head == vert);
+    return (_verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (_tail == vert || _head == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    return {_tail};
+    return std::span<const VertexType, 1>(&_verts[0], 1);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    return {_head};
+    return std::span<const VertexType, 1>(&_verts[1], 1);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (_tail == _head)
-      return {_tail};
-    else
-      return {_tail, _head};
+    std::size_t n = (_verts[0] == _verts[1]) ? 1 : 2;
+    return {_verts.data(), n};
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType directed_temporal_edge<VertexType, TimeType>::tail() const {
-    return _tail;
+    return _verts[0];
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType directed_temporal_edge<VertexType, TimeType>::head() const {
-    return _head;
+    return _verts[1];
   }
 
 #if (_LIBCPP_VERSION)
@@ -829,8 +829,8 @@ namespace reticula {
   auto directed_temporal_edge<VertexType, TimeType>::operator<=>(
       const directed_temporal_edge<VertexType, TimeType>& o) const {
     return utils::compare(
-      std::tie(_time, _head, _tail),
-      std::tie(o._time, o._head, o._tail));
+      std::tie(_time, _verts[1], _verts[0]),
+      std::tie(o._time, o._verts[1], o._verts[0]));
   }
 #endif
 
@@ -838,28 +838,28 @@ namespace reticula {
   bool adjacent(
       const directed_temporal_edge<VertexType, TimeType>& a,
       const directed_temporal_edge<VertexType, TimeType>& b) {
-    return ((b._time > a._time) && (a._head == b._tail));
+    return ((b._time > a._time) && (a._verts[1] == b._verts[0]));
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_temporal_edge<VertexType, TimeType>& a,
       const directed_temporal_edge<VertexType, TimeType>& b) {
-    return std::make_tuple(a._time, a._head, a._tail) <
-      std::make_tuple(b._time, b._head, b._tail);
+    return std::make_tuple(a._time, a._verts[1], a._verts[0]) <
+      std::make_tuple(b._time, b._verts[1], b._verts[0]);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::ostream& operator<<(std::ostream& os,
       const directed_temporal_edge<VertexType, TimeType>& e) {
-    return os << e._tail << " " << e._head << " " << e._time;
+    return os << e._verts[0] << " " << e._verts[1] << " " << e._time;
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::istream& operator>>(
       std::istream& is,
       directed_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e._tail >> e._head >> e._time;
+    return is >> e._verts[0] >> e._verts[1] >> e._time;
   }
 
   // properties of directed delayed temporal edges:
@@ -870,7 +870,7 @@ namespace reticula {
       const VertexType& tail, const VertexType& head,
       TimeType cause_time, TimeType effect_time) :
       _cause_time(cause_time), _effect_time(effect_time),
-      _tail(tail), _head(head) {
+      _verts({tail, head}) {
     if (_effect_time < _cause_time)
       throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
           " cause_time larger than effect_time");
@@ -882,7 +882,7 @@ namespace reticula {
       const directed_edge<VertexType>& projection,
       TimeType cause_time, TimeType effect_time) :
       _cause_time(cause_time), _effect_time(effect_time),
-      _tail(projection.tail()), _head(projection.head()) {
+      _verts({projection.tail(), projection.head()}) {
     if (_effect_time < _cause_time)
       throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
           " cause_time larger than effect_time");
@@ -892,7 +892,7 @@ namespace reticula {
   directed_edge<VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::
       static_projection() const {
-    return directed_edge<VertexType>(_tail, _head);
+    return directed_edge<VertexType>(_verts[0], _verts[1]);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -910,52 +910,50 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (_tail == vert);
+    return (_verts[0] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (_head == vert);
+    return (_verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool directed_delayed_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (_tail == vert || _head == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_delayed_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    return {_tail};
+    return std::span<const VertexType, 1>(&_verts[0], 1);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_delayed_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    return {_head};
+    return std::span<const VertexType, 1>(&_verts[1], 1);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_delayed_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (_tail == _head)
-      return {_tail};
-    else
-      return {_tail, _head};
+    std::size_t n = (_verts[0] == _verts[1]) ? 1 : 2;
+    return {_verts.data(), n};
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType
   directed_delayed_temporal_edge<VertexType, TimeType>::tail() const {
-    return _tail;
+    return _verts[0];
   }
 
   template <network_vertex VertexType, typename TimeType>
   VertexType
   directed_delayed_temporal_edge<VertexType, TimeType>::head() const {
-    return _head;
+    return _verts[1];
   }
 
 #if (_LIBCPP_VERSION)
@@ -963,8 +961,8 @@ namespace reticula {
   auto directed_delayed_temporal_edge<VertexType, TimeType>::operator<=>(
       const directed_delayed_temporal_edge<VertexType, TimeType>& o) const {
     return utils::compare(
-      std::tie(_cause_time, _effect_time, _head, _tail),
-      std::tie(o._cause_time, o._effect_time, o._head, o._tail));
+      std::tie(_cause_time, _effect_time, _verts[1], _verts[0]),
+      std::tie(o._cause_time, o._effect_time, o._verts[1], o._verts[0]));
   }
 #endif
 
@@ -972,21 +970,21 @@ namespace reticula {
   bool adjacent(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return (b._cause_time > a._effect_time) && (a._head == b._tail);
+    return (b._cause_time > a._effect_time) && (a._verts[1] == b._verts[0]);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool effect_lt(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return std::make_tuple(a._effect_time, a._cause_time, a._head, a._tail) <
-      std::make_tuple(b._effect_time, b._cause_time, b._head, b._tail);
+    return std::make_tuple(a._effect_time, a._cause_time, a._verts[1], a._verts[0]) <
+      std::make_tuple(b._effect_time, b._cause_time, b._verts[1], b._verts[0]);
   }
 
   template <network_vertex VertexType, typename TimeType>
   std::ostream& operator<<(std::ostream& os,
       const directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-    return os << e._tail << " " << e._head << " "
+    return os << e._verts[0] << " " << e._verts[1] << " "
       << e._cause_time << " " << e._effect_time;
   }
 
@@ -994,7 +992,7 @@ namespace reticula {
   std::istream& operator>>(
       std::istream& is,
       directed_delayed_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e._tail >> e._head >> e._cause_time >> e._effect_time;
+    return is >> e._verts[0] >> e._verts[1] >> e._cause_time >> e._effect_time;
   }
 
 
@@ -1004,7 +1002,8 @@ namespace reticula {
   undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
       const VertexType& v1, const VertexType& v2,
       TimeType time) : _time(time) {
-    std::tie(_v1, _v2) = std::minmax(v1, v2);
+    auto [l, h] = std::minmax(v1, v2);
+    _verts = {l, h};
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -1013,17 +1012,17 @@ namespace reticula {
       TimeType time) : _time(time) {
     auto verts = projection.incident_verts();
 
-    _v1 = verts[0];
+    _verts[0] = verts[0];
     if (verts.size() > 1)
-      _v2 = verts[1];
+      _verts[1] = verts[1];
     else
-      _v2 = verts[0];
+      _verts[1] = verts[0];
   }
 
   template <network_vertex VertexType, typename TimeType>
   undirected_edge<VertexType>
   undirected_temporal_edge<VertexType, TimeType>::static_projection() const {
-    return undirected_edge<VertexType>(_v1, _v2);
+    return undirected_edge<VertexType>(_verts[0], _verts[1]);
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -1039,46 +1038,38 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_in_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
   bool undirected_temporal_edge<VertexType, TimeType>::is_out_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
-  undirected_temporal_edge<VertexType, TimeType>::mutator_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
-  undirected_temporal_edge<VertexType, TimeType>::mutated_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
-  }
-
-  template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_temporal_edge<VertexType, TimeType>::incident_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
+    std::size_t n = (_verts[0] == _verts[1]) ? 1 : 2;
+    return {_verts.data(), n};
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::span<const VertexType>
+  undirected_temporal_edge<VertexType, TimeType>::mutator_verts() const {
+    return incident_verts();
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  std::span<const VertexType>
+  undirected_temporal_edge<VertexType, TimeType>::mutated_verts() const {
+    return incident_verts();
   }
 
 #if (_LIBCPP_VERSION)
@@ -1086,8 +1077,8 @@ namespace reticula {
   auto undirected_temporal_edge<VertexType, TimeType>::operator<=>(
       const undirected_temporal_edge<VertexType, TimeType>& o) const {
     return utils::compare(
-      std::tie(_time, _v1, _v2),
-      std::tie(o._time, o._v1, o._v2));
+      std::tie(_time, _verts[0], _verts[1]),
+      std::tie(o._time, o._verts[0], o._verts[1]));
   }
 #endif
 
@@ -1096,10 +1087,10 @@ namespace reticula {
       const undirected_temporal_edge<VertexType, TimeType>& a,
       const undirected_temporal_edge<VertexType, TimeType>& b) {
     return ((b._time > a._time) &&
-              (a._v1 == b._v1 ||
-                a._v1 == b._v2 ||
-                a._v2 == b._v1 ||
-                a._v2 == b._v2));
+              (a._verts[0] == b._verts[0] ||
+                a._verts[0] == b._verts[1] ||
+                a._verts[1] == b._verts[0] ||
+                a._verts[1] == b._verts[1]));
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -1114,7 +1105,7 @@ namespace reticula {
   std::ostream& operator<<(
       std::ostream& os,
       const undirected_temporal_edge<VertexType, TimeType>& e) {
-    return os << e._v1 << " " << e._v2 << " " << e._time;
+    return os << e._verts[0] << " " << e._verts[1] << " " << e._time;
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -1122,7 +1113,7 @@ namespace reticula {
   std::istream& operator>>(
       std::istream& is,
       undirected_temporal_edge<VertexType, TimeType>& e) {
-    return is >> e._v1 >> e._v2 >> e._time;
+    return is >> e._verts[0] >> e._verts[1] >> e._time;
   }
 }  // namespace reticula
 

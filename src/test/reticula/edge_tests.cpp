@@ -2,9 +2,9 @@
 #include <string>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_vector.hpp>
-using Catch::Matchers::Equals;
-using Catch::Matchers::UnorderedEquals;
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
+using Catch::Matchers::RangeEquals;
+using Catch::Matchers::UnorderedRangeEquals;
 
 #include <reticula/network_concepts.hpp>
 #include <reticula/static_edges.hpp>
@@ -31,11 +31,11 @@ TEST_CASE("undirected edges", "[reticula::undirected_edge]") {
     reticula::undirected_edge<int> edge(1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_incident(1));
 
@@ -76,11 +76,11 @@ TEST_CASE("undirected hyperedges", "[reticula::undirected_hyperedge]") {
     reticula::undirected_hyperedge<int> edge({1, 2, 3});
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
 
     REQUIRE(edge.is_incident(1));
     REQUIRE(edge.is_incident(2));
@@ -136,13 +136,13 @@ TEST_CASE("directed edges", "[reticula::directed_edge]") {
     reticula::directed_edge<int> edge(1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        Equals(std::vector<int>({2})));
+        RangeEquals(std::vector<int>({2})));
     REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
-        Equals(std::vector<int>({1})));
+        RangeEquals(std::vector<int>({1})));
     REQUIRE(edge.tail() == 1);
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE_FALSE(edge.is_out_incident(2));
@@ -187,15 +187,15 @@ TEST_CASE("directed hyperedges", "[reticula::directed_hyperedge]") {
     reticula::directed_hyperedge<int> edge({1, 2}, {2, 3, 4});
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({2, 3, 4})));
+        UnorderedRangeEquals(std::vector<int>({2, 3, 4})));
     REQUIRE_THAT(edge.heads(),
-        UnorderedEquals(std::vector<int>({2, 3, 4})));
+        UnorderedRangeEquals(std::vector<int>({2, 3, 4})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.tails(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3, 4})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE(edge.is_out_incident(2));
@@ -268,11 +268,11 @@ TEST_CASE("undirected temporal edges",
     reticula::undirected_temporal_edge<int, int> edge(1, 2, 1);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 1);
 
@@ -328,11 +328,11 @@ TEST_CASE("undirected temporal hyperedges",
     reticula::undirected_temporal_hyperedge<int, int> edge({1, 2, 3}, 1);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 1);
 
@@ -412,13 +412,13 @@ TEST_CASE("directed temporal edges", "[reticula::directed_temporal_edge]") {
     reticula::directed_temporal_edge<int, int> edge(1, 2, 1);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        Equals(std::vector<int>({2})));
+        RangeEquals(std::vector<int>({2})));
     REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
-        Equals(std::vector<int>({1})));
+        RangeEquals(std::vector<int>({1})));
     REQUIRE(edge.tail() == 1);
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE_FALSE(edge.is_out_incident(2));
@@ -475,15 +475,15 @@ TEST_CASE("directed temporal hyperedges",
     reticula::directed_temporal_hyperedge<int, int> edge({1, 2}, {2, 3}, 1);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        UnorderedEquals(std::vector<int>({2, 3})));
+        UnorderedRangeEquals(std::vector<int>({2, 3})));
     REQUIRE_THAT(edge.heads(),
-        UnorderedEquals(std::vector<int>({2, 3})));
+        UnorderedRangeEquals(std::vector<int>({2, 3})));
     REQUIRE_THAT(edge.mutator_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.tails(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2, 3})));
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
 
     REQUIRE(edge.is_out_incident(1));
     REQUIRE(edge.is_out_incident(2));
@@ -558,13 +558,13 @@ TEST_CASE("directed delayed temporal edges",
     reticula::directed_delayed_temporal_edge<int, int> edge(1, 2, 1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        Equals(std::vector<int>({2})));
+        RangeEquals(std::vector<int>({2})));
     REQUIRE(edge.head() == 2);
     REQUIRE_THAT(edge.mutator_verts(),
-        Equals(std::vector<int>({1})));
+        RangeEquals(std::vector<int>({1})));
     REQUIRE(edge.tail() == 1);
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 2})));
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
 
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 2);
@@ -636,15 +636,15 @@ TEST_CASE("directed delayed temporal hyperedges",
       edge({1, 5}, {2, 6}, 1, 2);
 
     REQUIRE_THAT(edge.mutated_verts(),
-        Equals(std::vector<int>({2, 6})));
+        RangeEquals(std::vector<int>({2, 6})));
     REQUIRE_THAT(edge.heads(),
-        Equals(std::vector<int>({2, 6})));
+        RangeEquals(std::vector<int>({2, 6})));
     REQUIRE_THAT(edge.mutator_verts(),
-        Equals(std::vector<int>({1, 5})));
+        RangeEquals(std::vector<int>({1, 5})));
     REQUIRE_THAT(edge.tails(),
-        Equals(std::vector<int>({1, 5})));
+        RangeEquals(std::vector<int>({1, 5})));
     REQUIRE_THAT(edge.incident_verts(),
-        UnorderedEquals(std::vector<int>({1, 5, 2, 6})));
+        UnorderedRangeEquals(std::vector<int>({1, 5, 2, 6})));
 
     REQUIRE(edge.cause_time() == 1);
     REQUIRE(edge.effect_time() == 2);

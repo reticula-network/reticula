@@ -2,7 +2,7 @@
 #define INCLUDE_RETICULA_STATIC_EDGES_HPP_
 
 #include <tuple>
-#include <vector>
+#include <span>
 #include <algorithm>
 #include <compare>
 
@@ -108,14 +108,14 @@ namespace reticula {
       relationship. For directed edges this is equal to the tail vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType, 1> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
       relationship. For directed edges this is equal to the head vertex.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType, 1> mutated_verts() const;
 
     /**
       List of all vertices that initiate (cause) or receive (affected by) the
@@ -123,7 +123,7 @@ namespace reticula {
       of results of `mutator_verts()` and `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Returns the single vertex at the tail of the directed link arrow.
@@ -188,7 +188,8 @@ namespace reticula {
         directed_edge<VertexType>& e);
 
   private:
-    VertexType _tail, _head;
+    // _tail, _head;
+    std::array<VertexType, 2> _verts;
 
     friend struct std::hash<directed_edge<VertexType>>;
     friend struct hll::hash<directed_edge<VertexType>>;
@@ -247,19 +248,19 @@ namespace reticula {
       effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       In an undirected edge both vertices might act as target of an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       In an undirected edge both vertices might act are considered incident.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Defines a arbitrary strong ordering.
@@ -307,7 +308,7 @@ namespace reticula {
         undirected_edge<VertexType>& e);
 
   private:
-    VertexType _v1, _v2;
+    std::array<VertexType, 2> _verts;
 
     friend struct std::hash<undirected_edge<VertexType>>;
     friend struct hll::hash<undirected_edge<VertexType>>;
@@ -329,7 +330,7 @@ namespace std {
     std::size_t
     operator()(const reticula::directed_edge<VertexType>& e) const {
       return reticula::utils::combine_hash<VertexType, reticula::hash>(
-          reticula::hash<VertexType>{}(e._tail), e._head);
+          reticula::hash<VertexType>{}(e._verts[0]), e._verts[1]);
     }
   };
 
@@ -338,7 +339,7 @@ namespace std {
     std::size_t operator()(
         const reticula::undirected_edge<VertexType>& e) const {
       return reticula::utils::combine_hash<VertexType, reticula::hash>(
-          reticula::hash<VertexType>{}(e._v1), e._v2);
+          reticula::hash<VertexType>{}(e._verts[0]), e._verts[1]);
     }
   };
 }  // namespace std
@@ -372,18 +373,18 @@ namespace reticula {
   template <network_vertex VertexType>
   directed_edge<VertexType>::directed_edge(
       const VertexType& tail, const VertexType& head)
-      : _tail(tail), _head(head) {}
+      : _verts({tail, head}) {}
 
   template <network_vertex VertexType>
   inline bool
   directed_edge<VertexType>::is_out_incident(const VertexType& vert) const {
-    return (_tail == vert);
+    return (_verts[0] == vert);
   }
 
   template <network_vertex VertexType>
   inline bool
   directed_edge<VertexType>::is_in_incident(const VertexType& vert) const  {
-    return (_head == vert);
+    return (_verts[1] == vert);
   }
 
   template <network_vertex VertexType>
@@ -393,41 +394,39 @@ namespace reticula {
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_edge<VertexType>::mutator_verts() const {
-    return {_tail};
+    return std::span<const VertexType, 1>(&_verts[0], 1);
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType, 1>
   directed_edge<VertexType>::mutated_verts() const {
-    return {_head};
+    return std::span<const VertexType, 1>(&_verts[1], 1);
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_edge<VertexType>::incident_verts() const {
-    if (_tail == _head)
-      return {_tail};
-    else
-      return {_tail, _head};
+    std::size_t n = (_verts[0] == _verts[1]) ? 1 : 2;
+    return {_verts.data(), n};
   }
 
   template <network_vertex VertexType>
   VertexType directed_edge<VertexType>::tail() const {
-    return _tail;
+    return _verts[0];
   }
 
   template <network_vertex VertexType>
   VertexType directed_edge<VertexType>::head() const {
-    return _head;
+    return _verts[1];
   }
 
 #if (_LIBCPP_VERSION)
   template <network_vertex VertexType>
   auto directed_edge<VertexType>::operator<=>(
       const directed_edge<VertexType>& o) const {
-    return utils::compare(std::tie(_tail, _head), std::tie(o._tail, o._head));
+    return utils::compare(std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
   }
 #endif
 
@@ -435,29 +434,29 @@ namespace reticula {
   bool effect_lt(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
-    return std::make_tuple(a._head, a._tail) <
-      std::make_tuple(b._head, b._tail);
+    return std::make_tuple(a._verts[1], a._verts[0]) <
+      std::make_tuple(b._verts[1], b._verts[0]);
   }
 
   template <network_vertex VertexType>
   bool adjacent(
       const directed_edge<VertexType>& a,
       const directed_edge<VertexType>& b) {
-    return (a._head == b._tail);
+    return (a._verts[1] == b._verts[0]);
   }
 
   template <network_vertex VertexType>
   std::ostream& operator<<(
       std::ostream &os,
       const directed_edge<VertexType>& e) {
-    return os << e._tail << " " << e._head;
+    return os << e._verts[0] << " " << e._verts[1];
   }
 
   template <network_vertex VertexType>
   std::istream& operator>>(
       std::istream &is,
       directed_edge<VertexType>& e) {
-    return is >> e._tail >> e._head;
+    return is >> e._verts[0] >> e._verts[1];
   }
 
 
@@ -466,59 +465,52 @@ namespace reticula {
   template <network_vertex VertexType>
   undirected_edge<VertexType>::undirected_edge(
       const VertexType& v1, const VertexType& v2) {
-    std::tie(_v1, _v2) = std::minmax(v1, v2);
+    auto [l, h] = std::minmax(v1, v2);
+    _verts = {l, h};
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return (_verts[0] == vert || _verts[1] == vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_in_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return is_incident(vert);
   }
 
   template <network_vertex VertexType>
   inline bool undirected_edge<VertexType>::is_out_incident(
       const VertexType& vert) const {
-    return (_v1 == vert || _v2 == vert);
+    return is_incident(vert);
+  }
+
+  template <network_vertex vertextype>
+  std::span<const vertextype>
+  undirected_edge<vertextype>::incident_verts() const {
+    std::size_t n = (_verts[0] == _verts[1]) ? 1 : 2;
+    return {_verts.data(), n};
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_edge<VertexType>::mutator_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
+    return incident_verts();
   }
 
   template <network_vertex vertextype>
-  std::vector<vertextype>
+  std::span<const vertextype>
   undirected_edge<vertextype>::mutated_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
-  }
-
-  template <network_vertex vertextype>
-  std::vector<vertextype>
-  undirected_edge<vertextype>::incident_verts() const {
-    if (_v1 == _v2)
-      return {_v1};
-    else
-      return {_v1, _v2};
+    return incident_verts();
   }
 
 #if (_LIBCPP_VERSION)
   template <network_vertex VertexType>
   auto undirected_edge<VertexType>::operator<=>(
       const undirected_edge<VertexType>& o) const {
-    return utils::compare(std::tie(_v1, _v2), std::tie(o._v1, o._v2));
+    return utils::compare(std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
   }
 #endif
 
@@ -533,10 +525,10 @@ namespace reticula {
   bool adjacent(
       const undirected_edge<VertexType>& a,
       const undirected_edge<VertexType>& b) {
-    return (a._v1 == b._v1 ||
-            a._v1 == b._v2 ||
-            a._v2 == b._v1 ||
-            a._v2 == b._v2);
+    return (a._verts[0] == b._verts[0] ||
+            a._verts[0] == b._verts[1] ||
+            a._verts[1] == b._verts[0] ||
+            a._verts[1] == b._verts[1]);
   }
 
   template <network_vertex VertexType>
@@ -544,14 +536,14 @@ namespace reticula {
   std::ostream& operator<<(
       std::ostream &os,
       const undirected_edge<VertexType>& e) {
-    return os << e._v1 << " " << e._v2;
+    return os << e._verts[0] << " " << e._verts[1];
   }
 
   template <network_vertex VertexType>
   requires input_streamable<VertexType>
   std::istream& operator>>(std::istream &is,
       undirected_edge<VertexType>& e) {
-    return is >> e._v1 >> e._v2;
+    return is >> e._verts[0] >> e._verts[1];
   }
 }  // namespace reticula
 
