@@ -3,6 +3,7 @@
 
 #include <tuple>
 #include <vector>
+#include <span>
 #include <algorithm>
 #include <compare>
 #include <initializer_list>
@@ -196,7 +197,7 @@ namespace reticula {
       set of vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       List of all vertices that can receive (affected by) the effects of the
@@ -204,7 +205,7 @@ namespace reticula {
       set of vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       List of all vertices that can initiate (cause) or receive (be affected by)
@@ -218,13 +219,13 @@ namespace reticula {
       The same as `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> tails() const;
+    std::span<const VertexType> tails() const;
 
     /**
       The same as `mutator_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> heads() const;
+    std::span<const VertexType> heads() const;
 
     /**
       Defines a strong lexicographic ordering where cause times are compare then
@@ -421,7 +422,7 @@ namespace reticula {
       the tail set of vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -429,7 +430,7 @@ namespace reticula {
       the head set of vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       List of all vertices that can initiate (cause) or receive (be affected by)
@@ -443,13 +444,13 @@ namespace reticula {
       The same as `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> tails() const;
+    std::span<const VertexType> tails() const;
 
     /**
       The same as `mutator_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> heads() const;
+    std::span<const VertexType> heads() const;
 
     /**
       Defines a strong lexicographic ordering where cause times are compare then
@@ -621,7 +622,7 @@ namespace reticula {
       the same as `mutator_verts()` or `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Defines a strong ordering that would order events based on cause times
@@ -673,8 +674,6 @@ namespace reticula {
 // Implementation
 #include <functional>
 #include <algorithm>
-#include <istream>
-#include <ostream>
 
 #include "utils.hpp"
 
@@ -869,13 +868,13 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::mutator_verts() const {
     return _tails;
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::mutated_verts() const {
     return _heads;
   }
@@ -890,13 +889,13 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::tails() const {
     return _tails;
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::heads() const {
     return _heads;
   }
@@ -1031,28 +1030,28 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       mutator_verts() const {
     return _tails;
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       mutated_verts() const {
     return _heads;
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       tails() const {
     return _tails;
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
       heads() const {
     return _heads;
@@ -1181,7 +1180,7 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_temporal_hyperedge<VertexType, TimeType>::incident_verts() const {
     return _verts;
   }

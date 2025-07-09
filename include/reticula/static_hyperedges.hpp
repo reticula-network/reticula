@@ -3,6 +3,7 @@
 
 #include <tuple>
 #include <vector>
+#include <span>
 #include <algorithm>
 #include <compare>
 #include <initializer_list>
@@ -133,7 +134,7 @@ namespace reticula {
       vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       List of all vertices that receive (affected by) the effects of the
@@ -141,7 +142,7 @@ namespace reticula {
       vertices.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       List of all vertices that can initiate (cause) or receive (be affected by)
@@ -155,13 +156,13 @@ namespace reticula {
       The same as `mutated_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> tails() const;
+    std::span<const VertexType> tails() const;
 
     /**
       The same as `mutator_verts()`.
      */
     [[nodiscard]]
-    std::vector<VertexType> heads() const;
+    std::span<const VertexType> heads() const;
 
     /**
       Defines a strong lexicographic ordering where tail vertices compared
@@ -265,19 +266,19 @@ namespace reticula {
       effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutator_verts() const;
+    std::span<const VertexType> mutator_verts() const;
 
     /**
       In an undirected hyperedge all vertices might act as target of an effect.
      */
     [[nodiscard]]
-    std::vector<VertexType> mutated_verts() const;
+    std::span<const VertexType> mutated_verts() const;
 
     /**
       In an undirected hyperedge all vertices are incident to the edge.
      */
     [[nodiscard]]
-    std::vector<VertexType> incident_verts() const;
+    std::span<const VertexType> incident_verts() const;
 
     /**
       Defines an arbitrary strong ordering.
@@ -440,25 +441,25 @@ namespace reticula {
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_hyperedge<VertexType>::mutator_verts() const {
     return _tails;
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_hyperedge<VertexType>::mutated_verts() const {
     return _heads;
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_hyperedge<VertexType>::tails() const {
     return _tails;
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   directed_hyperedge<VertexType>::heads() const {
     return _heads;
   }
@@ -540,19 +541,19 @@ namespace reticula {
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_hyperedge<VertexType>::mutator_verts() const {
     return _verts;
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_hyperedge<VertexType>::mutated_verts() const {
     return _verts;
   }
 
   template <network_vertex VertexType>
-  std::vector<VertexType>
+  std::span<const VertexType>
   undirected_hyperedge<VertexType>::incident_verts() const {
     return _verts;
   }
