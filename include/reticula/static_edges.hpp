@@ -426,7 +426,8 @@ namespace reticula {
   template <network_vertex VertexType>
   auto directed_edge<VertexType>::operator<=>(
       const directed_edge<VertexType>& o) const {
-    return utils::compare(std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
+    return utils::compare(
+      std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
   }
 #endif
 
@@ -510,7 +511,8 @@ namespace reticula {
   template <network_vertex VertexType>
   auto undirected_edge<VertexType>::operator<=>(
       const undirected_edge<VertexType>& o) const {
-    return utils::compare(std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
+    return utils::compare(
+      std::tie(_verts[0], _verts[1]), std::tie(o._verts[0], o._verts[1]));
   }
 #endif
 

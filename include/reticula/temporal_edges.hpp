@@ -977,8 +977,10 @@ namespace reticula {
   bool effect_lt(
       const directed_delayed_temporal_edge<VertexType, TimeType>& a,
       const directed_delayed_temporal_edge<VertexType, TimeType>& b) {
-    return std::make_tuple(a._effect_time, a._cause_time, a._verts[1], a._verts[0]) <
-      std::make_tuple(b._effect_time, b._cause_time, b._verts[1], b._verts[0]);
+    return std::make_tuple(
+        a._effect_time, a._cause_time, a._verts[1], a._verts[0]) <
+      std::make_tuple(
+        b._effect_time, b._cause_time, b._verts[1], b._verts[0]);
   }
 
   template <network_vertex VertexType, typename TimeType>
