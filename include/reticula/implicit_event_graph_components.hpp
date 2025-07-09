@@ -239,7 +239,6 @@ namespace reticula {
           }
         }
 
-        auto nodes = temp_edge_iter->mutator_verts();
         in_components.at(*temp_edge_iter).insert(*temp_edge_iter);
 
         if (out_degrees.at(*temp_edge_iter) == 0) {
