@@ -3,6 +3,7 @@
 
 #include <tuple>
 #include <span>
+#include <array>
 #include <algorithm>
 #include <compare>
 
