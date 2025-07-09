@@ -828,8 +828,13 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   directed_temporal_hyperedge<VertexType, TimeType>::
   directed_temporal_hyperedge(
-    const directed_hyperedge<VertexType>& projection, TimeType time)
-    : _time(time), _tails(projection.tails()), _heads(projection.heads()) {}
+    const directed_hyperedge<VertexType>& proj, TimeType time) : _time(time) {
+    auto tails = proj.tails();
+    _tails = std::vector<VertexType>(tails.begin(), tails.end());
+
+    auto heads = proj.heads();
+    _heads = std::vector<VertexType>(heads.begin(), heads.end());
+  }
 
   template <network_vertex VertexType, typename TimeType>
   directed_hyperedge<VertexType>
@@ -980,10 +985,14 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   directed_delayed_temporal_hyperedge<VertexType, TimeType>::
     directed_delayed_temporal_hyperedge(
-      const directed_hyperedge<VertexType>& projection,
+      const directed_hyperedge<VertexType>& proj,
       TimeType cause_time, TimeType effect_time) :
-      _cause_time(cause_time), _effect_time(effect_time),
-      _tails(projection.tails()), _heads(projection.heads()) {
+      _cause_time(cause_time), _effect_time(effect_time) {
+    auto tails = proj.tails();
+    _tails = std::vector<VertexType>(tails.begin(), tails.end());
+
+    auto heads = proj.heads();
+    _heads = std::vector<VertexType>(heads.begin(), heads.end());
     if (_effect_time < _cause_time)
       throw std::invalid_argument("directed_delayed_temporal_hyperedge cannot"
           " have a cause_time larger than effect_time");
@@ -1127,8 +1136,11 @@ namespace reticula {
   template <network_vertex VertexType, typename TimeType>
   undirected_temporal_hyperedge<VertexType, TimeType>::
   undirected_temporal_hyperedge(
-      const undirected_hyperedge<VertexType>& projection, TimeType time) :
-    _time(time), _verts(projection.incident_verts()) {}
+      const undirected_hyperedge<VertexType>& proj, TimeType time) :
+        _time(time) {
+    auto iv = proj.incident_verts();
+    _verts = std::vector<VertexType>(iv.begin(), iv.end());
+  }
 
   template <network_vertex VertexType, typename TimeType>
   undirected_hyperedge<VertexType>

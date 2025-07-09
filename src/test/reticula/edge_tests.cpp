@@ -264,6 +264,21 @@ TEST_CASE("undirected temporal edges",
       reticula::undirected_temporal_edge<std::size_t, double>>);
   }
 
+  SECTION("can be constructed from static projection") {
+    reticula::undirected_edge<int> static_edge(1, 2);
+    reticula::undirected_temporal_edge<int, int> te(static_edge, 3);
+
+    REQUIRE(te == reticula::undirected_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(te.cause_time() == 3);
+    REQUIRE(te.effect_time() == 3);
+    REQUIRE_THAT(te.mutated_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(te.mutator_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+  }
+
   SECTION("have correct properties") {
     reticula::undirected_temporal_edge<int, int> edge(1, 2, 1);
 
@@ -323,6 +338,22 @@ TEST_CASE("undirected temporal hyperedges",
     STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::undirected_temporal_hyperedge<std::size_t, double>>);
   }
+
+  SECTION("can be constructed from static projection") {
+    reticula::undirected_hyperedge<int> static_edge({1, 2, 3, 4});
+    reticula::undirected_temporal_hyperedge<int, int> te(static_edge, 3);
+
+    REQUIRE(te == reticula::undirected_temporal_hyperedge<int, int>({1, 2, 3, 4}, 3));
+    REQUIRE(te.cause_time() == 3);
+    REQUIRE(te.effect_time() == 3);
+    REQUIRE_THAT(te.mutated_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4})));
+    REQUIRE_THAT(te.mutator_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4})));
+  }
+
 
   SECTION("have correct properties") {
     reticula::undirected_temporal_hyperedge<int, int> edge({1, 2, 3}, 1);
@@ -408,6 +439,20 @@ TEST_CASE("directed temporal edges", "[reticula::directed_temporal_edge]") {
       reticula::directed_temporal_edge<std::size_t, double>>);
   }
 
+  SECTION("can be constructed from static projection") {
+    reticula::directed_edge<int> static_edge(1, 2);
+    reticula::directed_temporal_edge<int, int> te(static_edge, 3);
+    REQUIRE(te == reticula::directed_temporal_edge<int, int>(1, 2, 3));
+    REQUIRE(te.cause_time() == 3);
+    REQUIRE(te.effect_time() == 3);
+    REQUIRE_THAT(te.mutated_verts(),
+        RangeEquals(std::vector<int>({2})));
+    REQUIRE_THAT(te.mutator_verts(),
+        RangeEquals(std::vector<int>({1})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+  }
+
   SECTION("have correct properties") {
     reticula::directed_temporal_edge<int, int> edge(1, 2, 1);
 
@@ -469,6 +514,21 @@ TEST_CASE("directed temporal hyperedges",
       reticula::directed_temporal_hyperedge<std::size_t, std::size_t>>);
     STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_temporal_hyperedge<std::size_t, double>>);
+  }
+
+  SECTION("can be constructed from static projection") {
+    reticula::directed_hyperedge<int> static_edge({1, 2}, {2, 3});
+    reticula::directed_temporal_hyperedge<int, int> te(static_edge, 3);
+
+    REQUIRE(te == reticula::directed_temporal_hyperedge<int, int>({1, 2}, {2, 3}, 3));
+    REQUIRE(te.cause_time() == 3);
+    REQUIRE(te.effect_time() == 3);
+    REQUIRE_THAT(te.mutated_verts(),
+        UnorderedRangeEquals(std::vector<int>({2, 3})));
+    REQUIRE_THAT(te.mutator_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
   }
 
   SECTION("have correct properties") {
@@ -554,6 +614,22 @@ TEST_CASE("directed delayed temporal edges",
       reticula::directed_delayed_temporal_edge<std::size_t, double>>);
   }
 
+  SECTION("can be constructed from static projection") {
+    reticula::directed_edge<int> static_edge(1, 2);
+    reticula::directed_delayed_temporal_edge<int, int> te(static_edge, 3, 4);
+
+    REQUIRE(te ==
+        reticula::directed_delayed_temporal_edge<int, int>(1, 2, 3, 4));
+    REQUIRE(te.cause_time() == 3);
+    REQUIRE(te.effect_time() == 4);
+    REQUIRE_THAT(te.mutated_verts(),
+        RangeEquals(std::vector<int>({2})));
+    REQUIRE_THAT(te.mutator_verts(),
+        RangeEquals(std::vector<int>({1})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 2})));
+  }
+
   SECTION("have correct properties") {
     reticula::directed_delayed_temporal_edge<int, int> edge(1, 2, 1, 2);
 
@@ -629,6 +705,24 @@ TEST_CASE("directed delayed temporal hyperedges",
       reticula::directed_delayed_temporal_hyperedge<std::size_t, std::size_t>>);
     STATIC_REQUIRE(reticula::temporal_network_edge<
       reticula::directed_delayed_temporal_hyperedge<std::size_t, double>>);
+  }
+
+  SECTION("can be constructed from static projection") {
+    reticula::directed_hyperedge<int> static_edge({1, 5, 2}, {2, 6});
+    reticula::directed_delayed_temporal_hyperedge<int, int> te(
+        static_edge, 1, 2);
+
+    REQUIRE(te ==
+        reticula::directed_delayed_temporal_hyperedge<int, int>(
+            {1, 5, 2}, {2, 6}, 1, 2));
+    REQUIRE(te.cause_time() == 1);
+    REQUIRE(te.effect_time() == 2);
+    REQUIRE_THAT(te.mutated_verts(),
+        RangeEquals(std::vector<int>({2, 6})));
+    REQUIRE_THAT(te.mutator_verts(),
+        RangeEquals(std::vector<int>({1, 2, 5})));
+    REQUIRE_THAT(te.incident_verts(),
+        UnorderedRangeEquals(std::vector<int>({1, 5, 2, 6})));
   }
 
   SECTION("have correct properties") {
