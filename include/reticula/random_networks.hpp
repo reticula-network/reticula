@@ -444,7 +444,7 @@ namespace reticula {
       }
     }
 
-    return undirected_network<VertT>(edges);
+    return undirected_network<VertT>(edges, views::iota(VertT{}, n));
   }
 }  // namespace reticula
 
@@ -493,8 +493,7 @@ namespace reticula {
       w = w + static_cast<VertT>(1 + std::floor(lr/lp));
     }
 
-    return undirected_network<VertT>(edges,
-        views::iota(VertT{}, n));
+    return undirected_network<VertT>(edges, views::iota(VertT{}, n));
   }
 
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
@@ -536,8 +535,7 @@ namespace reticula {
       w = w + static_cast<VertT>(1 + std::floor(lr/lp));
     }
 
-    return directed_network<VertT>(edges,
-        views::iota(VertT{}, n));
+    return directed_network<VertT>(edges, views::iota(VertT{}, n));
   }
 }  // namespace reticula
 
