@@ -3,12 +3,13 @@
 #include <unordered_map>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
+#include <catch2/matchers/catch_matchers_contains.hpp>
 #include <catch2/catch_approx.hpp>
 
-using Catch::Matchers::UnorderedEquals;
+using Catch::Matchers::RangeEquals;
 using Catch::Matchers::Contains;
-using Catch::Matchers::Equals;
+using Catch::Matchers::UnorderedRangeEquals;
 
 #include <reticula/networks.hpp>
 #include <reticula/components.hpp>
@@ -29,7 +30,7 @@ TEST_CASE("cartesian product", "[reticula::cartesian_product]") {
         graph2.vertices().size()*graph1.edges().size());
 
     REQUIRE_THAT(prod.edges(),
-        UnorderedEquals(
+        UnorderedRangeEquals(
           std::vector<reticula::undirected_edge<std::pair<int, int>>>{
             {{1, 1}, {2, 1}}, {{1, 1}, {3, 1}}, {{1, 1}, {1, 2}},
             {{1, 2}, {2, 2}}, {{1, 2}, {3, 2}}, {{1, 2}, {1, 3}},
@@ -53,11 +54,11 @@ TEST_CASE("vertex induced subgraph", "[reticula::vertex_induced_subgraph]") {
 
     REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
           {1, 2, 3, 4}),
-        UnorderedEquals(res.vertices()));
+        UnorderedRangeEquals(res.vertices()));
 
     REQUIRE_THAT(std::vector<EdgeType>({
           {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
-        UnorderedEquals(res.edges()));
+        UnorderedRangeEquals(res.edges()));
   }
 
   SECTION("with initializer_list") {
@@ -65,11 +66,11 @@ TEST_CASE("vertex induced subgraph", "[reticula::vertex_induced_subgraph]") {
 
     REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
           {1, 2, 3, 4}),
-        UnorderedEquals(res.vertices()));
+        UnorderedRangeEquals(res.vertices()));
 
     REQUIRE_THAT(std::vector<EdgeType>({
           {{1}, {2, 4}, 1}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}),
-        UnorderedEquals(res.edges()));
+        UnorderedRangeEquals(res.edges()));
   }
 }
 
@@ -86,11 +87,11 @@ TEST_CASE("edge induced subgraph", "[reticula::edge_induced_subgraph]") {
 
     REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
           {1, 2, 4, 7}),
-        UnorderedEquals(res.vertices()));
+        UnorderedRangeEquals(res.vertices()));
 
     REQUIRE_THAT(std::vector<EdgeType>({
           {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
-        UnorderedEquals(res.edges()));
+        UnorderedRangeEquals(res.edges()));
   }
 
   SECTION("with initializer_list") {
@@ -99,11 +100,11 @@ TEST_CASE("edge induced subgraph", "[reticula::edge_induced_subgraph]") {
 
     REQUIRE_THAT(std::vector<typename EdgeType::VertexType>(
           {1, 2, 4, 7}),
-        UnorderedEquals(res.vertices()));
+        UnorderedRangeEquals(res.vertices()));
 
     REQUIRE_THAT(std::vector<EdgeType>({
           {{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}),
-        UnorderedEquals(res.edges()));
+        UnorderedRangeEquals(res.edges()));
   }
 }
 
@@ -117,13 +118,17 @@ TEST_CASE("graph union", "[reticula::graph_union]") {
 
   auto res1 = reticula::graph_union(n1, n2);
   auto res2 = reticula::graph_union(n1, n2);
-  REQUIRE(res1.edges() == res2.edges());
-  REQUIRE_THAT(res1.edges(), Contains(n1.edges()));
-  REQUIRE_THAT(res1.edges(), Contains(n2.edges()));
+  REQUIRE_THAT(res1.edges(), RangeEquals(res2.edges()));
+  for (const auto& edge : n1.edges())
+    REQUIRE_THAT(res1.edges(), Contains(edge));
+  for (const auto& edge : n2.edges())
+    REQUIRE_THAT(res1.edges(), Contains(edge));
 
-  REQUIRE(res1.vertices() == res2.vertices());
-  REQUIRE_THAT(res1.vertices(), Contains(n1.vertices()));
-  REQUIRE_THAT(res1.vertices(), Contains(n2.vertices()));
+  REQUIRE_THAT(res1.vertices(), RangeEquals(res2.vertices()));
+  for (const auto& vertex : n1.vertices())
+    REQUIRE_THAT(res1.vertices(), Contains(vertex));
+  for (const auto& vertex : n2.vertices())
+    REQUIRE_THAT(res1.vertices(), Contains(vertex));
 }
 
 TEST_CASE("with edges", "[reticula::with_edges]") {
@@ -132,9 +137,9 @@ TEST_CASE("with edges", "[reticula::with_edges]") {
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
   auto res = reticula::with_edges(n1, {
       {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}});
-  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+  REQUIRE_THAT(res.vertices(), UnorderedRangeEquals(
         std::vector<typename EdgeType::VertexType>{1, 2, 3, 4, 7}));
-  REQUIRE_THAT(res.edges(), UnorderedEquals(
+  REQUIRE_THAT(res.edges(), UnorderedRangeEquals(
         std::vector<EdgeType>{
           {{1}, {2, 4}, 1}, {{2}, {1, 7}, 2},
           {{7, 1}, {2}, 5}, {{2}, {3, 1}, 6}, {{3, 4}, {4}, 8}}));
@@ -145,9 +150,9 @@ TEST_CASE("with vertices", "[reticula::with_vertices]") {
   reticula::network<EdgeType> n1(
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
   auto res = reticula::with_vertices(n1, {3, 4, 5, 6});
-  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+  REQUIRE_THAT(res.vertices(), UnorderedRangeEquals(
         std::vector<typename EdgeType::VertexType>{1, 2, 3, 4, 5, 6, 7}));
-  REQUIRE_THAT(res.edges(), UnorderedEquals(
+  REQUIRE_THAT(res.edges(), UnorderedRangeEquals(
         std::vector<EdgeType>{
           {{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
 }
@@ -159,9 +164,9 @@ TEST_CASE("without edges", "[reticula::without_edges]") {
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
   auto res = reticula::without_edges(n1,
       {{{3}, {3}, 1}, {{3}, {3}, 1}, {{2}, {7, 1}, 2}});
-  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+  REQUIRE_THAT(res.vertices(), UnorderedRangeEquals(
         std::vector<typename EdgeType::VertexType>{1, 2, 4, 7}));
-  REQUIRE_THAT(res.edges(), UnorderedEquals(
+  REQUIRE_THAT(res.edges(), UnorderedRangeEquals(
         std::vector<EdgeType>{{{1}, {2, 4}, 1}, {{7, 1}, {2}, 5}}));
 }
 
@@ -170,9 +175,9 @@ TEST_CASE("without vertices", "[reticula::without_vertices]") {
   reticula::network<EdgeType> n1(
       {{{1}, {2, 4}, 1}, {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}});
   auto res = reticula::without_vertices(n1, {3, 4, 8});
-  REQUIRE_THAT(res.vertices(), UnorderedEquals(
+  REQUIRE_THAT(res.vertices(), UnorderedRangeEquals(
         std::vector<typename EdgeType::VertexType>{1, 2, 7}));
-  REQUIRE_THAT(res.edges(), UnorderedEquals(
+  REQUIRE_THAT(res.edges(), UnorderedRangeEquals(
         std::vector<EdgeType>{{{7, 1}, {2}, 5}, {{2}, {1, 7}, 2}}));
 }
 
@@ -187,13 +192,13 @@ TEST_CASE("occupy edges", "[reticula::occupy_edges]") {
       return probs.contains(e) ? probs.at(e) : 0.0;
     }, gen);
   auto g2 = reticula::occupy_edges(n1, probs, gen, 0.0);
-  REQUIRE_THAT(n1.vertices(), UnorderedEquals(g1.vertices()));
-  REQUIRE_THAT(n1.vertices(), UnorderedEquals(g2.vertices()));
+  REQUIRE_THAT(n1.vertices(), UnorderedRangeEquals(g1.vertices()));
+  REQUIRE_THAT(n1.vertices(), UnorderedRangeEquals(g2.vertices()));
 
   REQUIRE_THAT(g1.edges(),
-      UnorderedEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
+      UnorderedRangeEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
   REQUIRE_THAT(g2.edges(),
-      UnorderedEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
+      UnorderedRangeEquals(std::vector<EdgeType>{{{2}, {1, 7}, 2}}));
 }
 
 TEST_CASE("uniformly occupy edges", "[reticula::uniformly_occupy_edges]") {
@@ -220,14 +225,14 @@ TEST_CASE("occupy vertices", "[reticula::occupy_vertices]") {
       return probs.contains(v) ? probs.at(v) : 0.0;
     }, gen);
   auto g2 = reticula::occupy_vertices(n1, probs, gen, 0.0);
-  REQUIRE_THAT(g1.vertices(), UnorderedEquals(std::vector<int>{1, 2, 7}));
-  REQUIRE_THAT(g2.vertices(), UnorderedEquals(std::vector<int>{1, 2, 7}));
+  REQUIRE_THAT(g1.vertices(), UnorderedRangeEquals(std::vector<int>{1, 2, 7}));
+  REQUIRE_THAT(g2.vertices(), UnorderedRangeEquals(std::vector<int>{1, 2, 7}));
 
   REQUIRE_THAT(g1.edges(),
-      UnorderedEquals(std::vector<EdgeType>{
+      UnorderedRangeEquals(std::vector<EdgeType>{
         {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
   REQUIRE_THAT(g2.edges(),
-      UnorderedEquals(std::vector<EdgeType>{
+      UnorderedRangeEquals(std::vector<EdgeType>{
         {{2}, {1, 7}, 2}, {{7, 1}, {2}, 5}}));
 }
 

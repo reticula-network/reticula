@@ -142,7 +142,7 @@ TEMPLATE_TEST_CASE("random k-regular graph", "[reticula::random_regular_graph]",
   REQUIRE(r.edges().size() == static_cast<std::size_t>(k*n/2));
 
   auto verts = r.vertices();
-  REQUIRE(std::all_of(verts.cbegin(), verts.cend(),
+  REQUIRE(std::all_of(verts.begin(), verts.end(),
         [&r, k](TestType v) {
           return r.degree(v) == static_cast<std::size_t>(k);
         }));

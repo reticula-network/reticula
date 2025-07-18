@@ -2,7 +2,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 using Catch::Matchers::UnorderedEquals;
+using Catch::Matchers::RangeEquals;
+using Catch::Matchers::UnorderedRangeEquals;
 
 #include <reticula/ranges.hpp>
 #include <reticula/utils.hpp>
@@ -41,7 +44,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1}, {2, 1, 2}},
               {{1, 2, 5}, {2, 3, 6}},
@@ -52,7 +55,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1}, {2, 1, 2}},
               {{1, 2, 1}, {1, 2, 5}},
@@ -73,7 +76,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1}, {2, 1, 2}},
               {{1, 2, 5}, {2, 3, 6}},
@@ -84,7 +87,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1}, {2, 1, 2}},
               {{1, 2, 1}, {2, 3, 6}},
@@ -103,7 +106,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(2);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1, 5}, {2, 3, 6, 7}},
               {{2, 1, 2, 3}, {1, 2, 5, 5}},
@@ -115,7 +118,7 @@ TEST_CASE("event graph", "[reticula::event_graph]") {
       reticula::temporal_adjacency::limited_waiting_time<EdgeType> adj(5);
       reticula::directed_network<EdgeType> eg = event_graph(network, adj);
       REQUIRE_THAT(eg.edges(),
-          UnorderedEquals(
+          UnorderedRangeEquals(
             std::vector<reticula::directed_edge<EdgeType>>({
               {{1, 2, 1, 5}, {2, 3, 6, 7}},
               {{2, 1, 2, 3}, {1, 2, 5, 5}},
@@ -327,7 +330,7 @@ TEST_CASE("percolation in-clusters", "[reticula::in_clusters]") {
             {{{5, 6, 1, 3}}, adj}}});
 
 
-    REQUIRE_THAT(reticula::in_clusters(network, adj), UnorderedEquals(true_ic));
+    REQUIRE_THAT(reticula::in_clusters(network, adj), UnorderedRangeEquals(true_ic));
   }
 
   SECTION("random network") {
@@ -362,9 +365,9 @@ TEST_CASE("static projection", "[reticula::static_projection]") {
         {5, 6, 1, 3}});
 
   auto sp = reticula::static_projection(network);
-  REQUIRE(sp.vertices() == network.vertices());
+  REQUIRE_THAT(sp.vertices(), RangeEquals(network.vertices()));
   REQUIRE_THAT(sp.edges(),
-      UnorderedEquals(std::vector<reticula::directed_edge<int>>{
+      UnorderedRangeEquals(std::vector<reticula::directed_edge<int>>{
         {1, 2}, {2, 1}, {2, 3}, {3, 4}, {5, 6}}));
 }
 
