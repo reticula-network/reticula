@@ -329,7 +329,7 @@ TEST_CASE("random expected degree sequence graph",
           }));
   }
 
-  SECTION("edge existance probability") {
+  SECTION("edge existence probability") {
     std::size_t ens = 20'000;
     std::size_t n = 20;
 
@@ -444,7 +444,7 @@ TEST_CASE("random directed expected degree sequence graph",
           std::vector<std::pair<double, double>>(n, {2.0, 3.0}), gen, false));
   }
 
-  SECTION("edge existance probability") {
+  SECTION("edge existence probability") {
     std::size_t ens = 20'000;
     std::size_t n = 20;
 
@@ -477,7 +477,7 @@ TEST_CASE("random directed expected degree sequence graph",
               std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
-              double wu = static_cast<double>(u);
+              auto wu = static_cast<double>(u);
               double wv = 19 - static_cast<double>(v);
               double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
               double puv = std::min(wu*wv/s, 1.0);
@@ -505,7 +505,7 @@ TEST_CASE("random directed expected degree sequence graph",
               std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
-              double wu = static_cast<double>(u);
+              auto wu = static_cast<double>(u);
               double wv = 19 - static_cast<double>(v);
               double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
               double puv = std::min(wu*wv/s, 1.0);
@@ -656,7 +656,7 @@ TEST_CASE("random directed expected degree sequence hypergraph",
           std::vector<std::pair<double, double>>(n, {3.00, 5.00}), gen));
   }
 
-  SECTION("edge existance probability") {
+  SECTION("edge existence probability") {
     std::size_t ens = 1000;
     std::size_t n = 100;
 

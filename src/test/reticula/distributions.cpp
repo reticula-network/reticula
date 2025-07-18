@@ -3,7 +3,7 @@
 #include <reticula/distributions.hpp>
 
 
-TEST_CASE("power-law with secified mean",
+TEST_CASE("power-law with specified mean",
     "[reticula::power_law_with_specified_mean]") {
   STATIC_REQUIRE(reticula::random_number_distribution<
       reticula::power_law_with_specified_mean<>>);

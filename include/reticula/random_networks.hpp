@@ -101,7 +101,7 @@ namespace reticula {
     weight sequence, which for this reason is more commonly known as the degree
     sequence.
 
-    Additionally, existance of each two edges in the generated graph is
+    Additionally, existence of each two edges in the generated graph is
     independent of each other.
 
     Chung, Fan, and Linyuan Lu. "Connected components in random graphs with
@@ -134,7 +134,7 @@ namespace reticula {
     $u$ will have an expected in-degree of $i_u$ and expected out-degree of
     $o_u$.
 
-    Additionally, existance of each two edges in the generated graph is
+    Additionally, existence of each two edges in the generated graph is
     independent of each other.
 
     The implementation is based on Chung-Lu algorithm (i.e. that of
