@@ -1,6 +1,6 @@
 # AGENTS directives for reticula repository
 ## Build & Test
-- cmake -S . -B build && cmake --build build -j$(nproc)
+- cmake -S . -B build && cmake --build build -j$(nproc) -t reticula_tests
 - ctest --test-dir build --output-on-failure -j$(nproc)
 - ctest --test-dir build -R <test_name> --output-on-failure
 ## Lint & Formatting
