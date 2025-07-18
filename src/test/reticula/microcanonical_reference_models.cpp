@@ -48,7 +48,8 @@ empty_temporal_network() {
 }
 
 template <std::ranges::range EdgeRange>
-  requires reticula::temporal_network_edge<std::ranges::range_value_t<EdgeRange>>
+  requires reticula::temporal_network_edge<
+    std::ranges::range_value_t<EdgeRange>>
 std::vector<std::pair<
   typename std::ranges::range_value_t<EdgeRange>::TimeType,
   typename std::ranges::range_value_t<EdgeRange>::TimeType>>
@@ -114,7 +115,8 @@ TEST_CASE("connected link shuffling",
       REQUIRE_THAT(timestamps(g.edges_cause()),
           Equals(timestamps(shuffled.edges_cause())));
       REQUIRE(static_proj_g.edges().size() == static_proj_shuf.edges().size());
-      REQUIRE_THAT(static_proj_g.edges(), !RangeEquals(static_proj_shuf.edges()));
+      REQUIRE_THAT(static_proj_g.edges(),
+                   !RangeEquals(static_proj_shuf.edges()));
       REQUIRE_THAT(
               reticula::weakly_connected_components(static_proj_g),
               UnorderedEquals(
@@ -139,7 +141,8 @@ TEST_CASE("connected link shuffling",
       REQUIRE_THAT(timestamps(g.edges_cause()),
           Equals(timestamps(shuffled.edges_cause())));
       REQUIRE(static_proj_g.edges().size() == static_proj_shuf.edges().size());
-      REQUIRE_THAT(static_proj_g.edges(), !RangeEquals(static_proj_shuf.edges()));
+      REQUIRE_THAT(static_proj_g.edges(),
+                   !RangeEquals(static_proj_shuf.edges()));
       REQUIRE_THAT(reticula::connected_components(static_proj_g),
               UnorderedEquals(
                    reticula::connected_components(static_proj_shuf)));

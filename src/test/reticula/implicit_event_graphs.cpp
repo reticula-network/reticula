@@ -45,7 +45,8 @@ TEST_CASE("implicit event graphs", "[reticula::implicit_event_graph]") {
         RangeEquals(std::vector<EdgeType>(
             {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}})));
     REQUIRE_THAT(eg.temporal_net_vertices(),
-        RangeEquals(std::vector<typename EdgeType::VertexType>({0, 1, 2, 3, 4})));
+        RangeEquals(
+                 std::vector<typename EdgeType::VertexType>({0, 1, 2, 3, 4})));
   }
 
   SECTION("when given direct successors test cases") {

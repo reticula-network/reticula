@@ -330,7 +330,8 @@ TEST_CASE("percolation in-clusters", "[reticula::in_clusters]") {
             {{{5, 6, 1, 3}}, adj}}});
 
 
-    REQUIRE_THAT(reticula::in_clusters(network, adj), UnorderedRangeEquals(true_ic));
+    REQUIRE_THAT(reticula::in_clusters(network, adj),
+                 UnorderedRangeEquals(true_ic));
   }
 
   SECTION("random network") {

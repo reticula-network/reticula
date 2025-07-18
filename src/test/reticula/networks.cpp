@@ -498,7 +498,7 @@ TEST_CASE("directed hypernetworks",
         REQUIRE_THAT(u.vertices(), Contains(vertex));
       for (const auto& edge : other.edges_cause())
         REQUIRE_THAT(u.edges_cause(), Contains(edge));
-      for (const auto& edge : other.edges_effect()) 
+      for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
       REQUIRE(reticula::ranges::all_of(other.edges(),
@@ -592,11 +592,11 @@ TEST_CASE("undirected temporal networks",
 
       REQUIRE_THAT(u.edges_cause(), UnorderedRangeEquals(u.edges_effect()));
 
-      for (const auto& vertex : graph.vertices()) 
+      for (const auto& vertex : graph.vertices())
         REQUIRE_THAT(u.vertices(), Contains(vertex));
       for (const auto& edge : graph.edges_cause())
         REQUIRE_THAT(u.edges_cause(), Contains(edge));
-      for (const auto& edge : graph.edges_effect()) 
+      for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
       REQUIRE(reticula::ranges::all_of(graph.edges(),
@@ -616,7 +616,7 @@ TEST_CASE("undirected temporal networks",
                       return true;
                   }));
 
-      for (const auto& vertex : other.vertices()) 
+      for (const auto& vertex : other.vertices())
         REQUIRE_THAT(u.vertices(), Contains(vertex));
       for (const auto& edge : other.edges_cause())
         REQUIRE_THAT(u.edges_cause(), Contains(edge));
@@ -866,9 +866,9 @@ TEST_CASE("directed temporal networks",
                       return true;
                   }));
 
-      for (const auto& vertex : other.vertices()) 
+      for (const auto& vertex : other.vertices())
         REQUIRE_THAT(u.vertices(), Contains(vertex));
-      for (const auto& edge : other.edges_cause()) 
+      for (const auto& edge : other.edges_cause())
         REQUIRE_THAT(u.edges_cause(), Contains(edge));
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
