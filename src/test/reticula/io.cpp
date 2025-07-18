@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <cstdio>
+#include <unistd.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
@@ -63,7 +64,10 @@ TEST_CASE("read directed edgelist", "[reticula::read_edgelist]") {
 TEST_CASE("write/read edgelists",
     "[reticula::write_edgelist][reticula::read_edgelist]") {
   auto g = reticula::complete_directed_graph(std::size_t{100});
-  std::string filename = std::tmpnam(nullptr);
+  char fname[] = "/tmp/reticula_testXXXXXX";
+  int fd = mkstemp(fname);
+  close(fd);
+  std::string filename(fname);
   reticula::write_edgelist(g, filename);
   auto g2 = reticula::read_edgelist<
     reticula::directed_edge<std::size_t>>(filename);
