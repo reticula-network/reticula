@@ -949,8 +949,6 @@ namespace reticula {
       for (auto&& e: net.edges())
         edges.insert(e);
 
-      auto verts = net.vertices();
-
       std::size_t rewires = 0;
       while (rewires < rewirings) {
         auto i = indexed_set::random_sample(edges, generator);
@@ -989,7 +987,7 @@ namespace reticula {
         }
       }
 
-      return network<EdgeT>(edges, verts);
+      return network<EdgeT>(edges, net.vertices());
     }
 
     template <
@@ -1020,7 +1018,6 @@ namespace reticula {
         edges_with_node_degree[degree(net, inc[1])].insert(e);
       }
 
-      auto verts = net.vertices();
       indexed_set::indexed_set<EdgeT, hash<EdgeT>> edges;
       for (auto&& e: net.edges())
         edges.insert(e);
