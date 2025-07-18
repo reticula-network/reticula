@@ -1288,7 +1288,9 @@ namespace reticula {
         hash<undirected_edge<VertT>>> edges;
       edges.reserve(static_cast<std::size_t>(degree_sum)/2);
 
-      std::vector<VertT> stubs = degrees;
+      std::vector<VertT> stubs;
+      if (!degrees.empty())
+        stubs = degrees;
       std::vector<VertT> repeated_stubs;
       repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
 
@@ -1427,8 +1429,12 @@ namespace reticula {
         hash<directed_edge<VertT>>> edges;
       edges.reserve(static_cast<std::size_t>(degree_sum));
 
-      std::vector<VertT> in_stubs = in_degrees;
-      std::vector<VertT> out_stubs = out_degrees;
+      std::vector<VertT> in_stubs;
+      std::vector<VertT> out_stubs;
+      if (!in_degrees.empty() && !out_degrees.empty()) {
+        in_stubs = in_degrees;
+        out_stubs = out_degrees;
+      }
 
       std::vector<VertT> in_repeated_stubs;
       in_repeated_stubs.reserve(static_cast<std::size_t>(degree_sum));
