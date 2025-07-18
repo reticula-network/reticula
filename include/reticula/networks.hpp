@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <span>
 
 #include "ranges.hpp"
 #include "network_concepts.hpp"
@@ -89,39 +90,39 @@ namespace reticula {
       network sorted by operator<.
      */
     [[nodiscard]]
-    const std::vector<VertexType>& vertices() const;
+    std::span<const VertexType> vertices() const;
 
     /**
       List of unique edges in the network sorted by operator<.
      */
     [[nodiscard]]
-    const std::vector<EdgeType>& edges() const;
+    std::span<const EdgeType> edges() const;
 
     /**
       List of unique edges in the network sorted by operator<.
      */
     [[nodiscard]]
-    const std::vector<EdgeType>& edges_cause() const;
+    std::span<const EdgeType> edges_cause() const;
 
     /**
       List of unique edges in the network sorted by effect_lt.
      */
     [[nodiscard]]
-    const std::vector<EdgeType>& edges_effect() const;
+    std::span<const EdgeType> edges_effect() const;
 
     /**
       List of edges in network incident to `vert`, i.e. 'vert' is mutated by
       them. Edges are sorted by `effect_lt(e1, e2)`.
      */
     [[nodiscard]]
-    std::vector<EdgeType> in_edges(const VertexType& vert) const;
+    std::span<const EdgeType> in_edges(const VertexType& vert) const;
 
     /**
       List of edges in network which `vert` is incident to, i.e. where 'vert' is
       a mutator of. Edges are sorted by `operator<(e1, e2)`.
      */
     [[nodiscard]]
-    std::vector<EdgeType> out_edges(const VertexType& vert) const;
+    std::span<const EdgeType> out_edges(const VertexType& vert) const;
 
     /**
       Map of vertices and edges in network that are incident to them, i.e.
@@ -466,7 +467,7 @@ namespace reticula {
   }
 
   template <network_edge EdgeT>
-  std::vector<EdgeT>
+  std::span<const EdgeT>
   network<EdgeT>::in_edges(
       const typename EdgeT::VertexType& v) const {
     if constexpr (instantaneous_undirected)
@@ -474,9 +475,9 @@ namespace reticula {
 
     auto p = _in_edges.find(v);
     if (p == _in_edges.end())
-      return std::vector<EdgeT>();
+      return {};
     else
-      return p->second;
+      return {p->second};
   }
 
   template <network_edge EdgeT>
@@ -490,14 +491,14 @@ namespace reticula {
   }
 
   template <network_edge EdgeT>
-  std::vector<EdgeT>
+  std::span<const EdgeT>
   network<EdgeT>::out_edges(
       const typename EdgeT::VertexType& v) const {
     auto p = _out_edges.find(v);
     if (p == _out_edges.end())
-      return std::vector<EdgeT>();
+      return {};
     else
-      return p->second;
+      return {p->second};
   }
 
   template <network_edge EdgeT>
@@ -512,7 +513,8 @@ namespace reticula {
   std::vector<EdgeT>
   network<EdgeT>::incident_edges(
       const typename EdgeT::VertexType& v) const {
-    std::vector<EdgeT> inc(out_edges(v));
+    auto oe = out_edges(v);
+    std::vector<EdgeT> inc(oe.begin(), oe.end());
 
     if constexpr (!instantaneous_undirected) {
       auto in = in_edges(v);
@@ -576,19 +578,19 @@ namespace reticula {
   }
 
   template <network_edge EdgeT>
-  const std::vector<EdgeT>&
+  std::span<const EdgeT>
   network<EdgeT>::edges() const {
     return _edges_cause;
   }
 
   template <network_edge EdgeT>
-  const std::vector<EdgeT>&
+  std::span<const EdgeT>
   network<EdgeT>::edges_cause() const {
     return _edges_cause;
   }
 
   template <network_edge EdgeT>
-  const std::vector<EdgeT>&
+  std::span<const EdgeT>
   network<EdgeT>::edges_effect() const {
     if constexpr (instantaneous_undirected)
       return _edges_cause;
@@ -597,7 +599,7 @@ namespace reticula {
   }
 
   template <network_edge EdgeT>
-  const std::vector<typename EdgeT::VertexType>&
+  std::span<const typename EdgeT::VertexType>
   network<EdgeT>::vertices() const {
     return _verts;
   }

@@ -2,7 +2,7 @@
 #define INCLUDE_RETICULA_IMPLICIT_EVENT_GRAPHS_HPP_
 
 #include <utility>
-#include <unordered_map>
+#include <span>
 
 #include "ranges.hpp"
 #include "temporal_edges.hpp"
@@ -120,18 +120,18 @@ namespace reticula {
        The set of events represented in the original temporal network, sorted by
        operator<.
      */
-    const std::vector<EdgeType>& events_cause() const;
+    std::span<const EdgeType> events_cause() const;
 
     /**
        The set of events represented in the original temporal network, sorted by
        effect_lt.
      */
-    const std::vector<EdgeType>& events_effect() const;
+    std::span<const EdgeType> events_effect() const;
 
     /**
        The set of vertices represented in the original temporal network.
      */
-    std::vector<VertexType> temporal_net_vertices() const;
+    std::span<const VertexType> temporal_net_vertices() const;
 
     AdjT temporal_adjacency() const;
 
@@ -222,7 +222,7 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  const std::vector<EdgeT>&
+  std::span<const EdgeT>
   implicit_event_graph<EdgeT, AdjT>::events_cause() const {
     return _temp.edges_cause();
   }
@@ -230,7 +230,7 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  const std::vector<EdgeT>&
+  std::span<const EdgeT>
   implicit_event_graph<EdgeT, AdjT>::events_effect() const {
     return _temp.edges_effect();
   }
@@ -238,7 +238,7 @@ namespace reticula {
   template <
     temporal_network_edge EdgeT,
     temporal_adjacency::temporal_adjacency AdjT>
-  std::vector<typename EdgeT::VertexType>
+  std::span<const typename EdgeT::VertexType>
   implicit_event_graph<EdgeT, AdjT>::temporal_net_vertices() const {
     return _temp.vertices();
   }

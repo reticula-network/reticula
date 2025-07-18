@@ -811,7 +811,7 @@ namespace reticula {
       for (const auto& [idx, set]: sets) {
         auto& current_set = comp_vector.emplace_back(set.size());
         for (const auto& event_idx: set)
-          current_set.insert(verts.at(event_idx));
+          current_set.insert(verts[event_idx]);
       }
 
       return comp_vector;

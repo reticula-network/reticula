@@ -695,7 +695,9 @@ namespace reticula {
         return temp;
 
       auto proj = with_edges(static_projection(temp), unobserved_links);
-      auto shuffled_links = proj.edges();
+      auto shuffled_links_span = proj.edges();
+      std::vector<typename EdgeT::StaticProjectionType> shuffled_links(
+          shuffled_links_span.begin(), shuffled_links_span.end());
       ranges::shuffle(shuffled_links, generator);
 
       std::vector<EdgeT> shuffled_edges;
@@ -748,7 +750,7 @@ namespace reticula {
       shuffled_edges.reserve(temp.edges_cause().size());
 
       auto p = with_edges(static_projection(temp), unobserved_links);
-      auto& links = p.edges();
+      auto links = p.edges();
 
       std::unordered_map<
         typename EdgeT::StaticProjectionType, std::vector<EdgeT>,
