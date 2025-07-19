@@ -131,8 +131,8 @@ namespace reticula {
     template <
       ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
-      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
     directed_temporal_edge(
         uniform_const_t,
         MutatorRange&& mutators,
@@ -372,8 +372,8 @@ namespace reticula {
     template <
       ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
-      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
     directed_delayed_temporal_edge(
         uniform_const_t,
         MutatorRange&& mutators,
@@ -582,8 +582,8 @@ namespace reticula {
     template <
       ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
-      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
     undirected_temporal_edge(
         uniform_const_t,
         MutatorRange&& mutators,
@@ -823,12 +823,12 @@ namespace reticula {
     const directed_edge<VertexType>& projection, TimeType time)
     : _time(time), _verts({projection.tail(), projection.head()}) {}
 
-  template <network_vertex VertexType, typename TimeType>
+  template <network_vertex VertT, typename TimeT>
   template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires
-    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
-  directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+  directed_temporal_edge<VertT, TimeT>::directed_temporal_edge(
       uniform_const_t,
       MutatorRange&& mutators,
       MutatedRange&& mutated,
@@ -984,12 +984,12 @@ namespace reticula {
           " cause_time larger than effect_time");
   }
 
-  template <network_vertex VertexType, typename TimeType>
+  template <network_vertex VertT, typename TimeT>
   template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires
-    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
-  directed_delayed_temporal_edge<VertexType, TimeType>::
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+  directed_delayed_temporal_edge<VertT, TimeT>::
     directed_delayed_temporal_edge(
       uniform_const_t,
       MutatorRange&& mutators,
@@ -1165,12 +1165,12 @@ namespace reticula {
       _verts[1] = verts[0];
   }
 
-  template <network_vertex VertexType, typename TimeType>
+  template <network_vertex VertT, typename TimeT>
   template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires
-    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
-  undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+  undirected_temporal_edge<VertT, TimeT>::undirected_temporal_edge(
       uniform_const_t,
       MutatorRange&& mutators,
       MutatedRange&& mutated,
