@@ -261,7 +261,6 @@ TEST_CASE("mapping", "[reticula::mapping]") {
 
 
 TEST_CASE("relabel nodes", "[reticula::relabel_nodes]") {
-  // let's make a graph with more to it than integral vertices
   reticula::undirected_network<int> graph1({{1, 2}, {1, 3}});
   reticula::undirected_network<int> graph2({{1, 2}, {1, 3}});
   reticula::undirected_network<std::pair<int, int>> orig =
@@ -277,53 +276,52 @@ TEST_CASE("relabel nodes", "[reticula::relabel_nodes]") {
 TEST_CASE("relabel_nodes with function mapping", "[reticula::relabel_nodes]") {
   SECTION("simple directed network with lambda") {
     reticula::directed_network<int> net({{1, 2}, {2, 3}, {3, 1}});
-    
-    auto relabeled = reticula::relabel_nodes<std::size_t>(net, 
-      [](int v) { return static_cast<std::size_t>(v * 10); });
-    
+
+    auto relabeled = reticula::relabel_nodes<std::size_t>(
+      net, [](int v) { return static_cast<std::size_t>(v * 10); });
+
     REQUIRE(relabeled.vertices().size() == 3);
     REQUIRE(relabeled.edges().size() == 3);
-    
-    // Check that vertices are correctly mapped
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::size_t>({10, 20, 30})));
+    REQUIRE_THAT(
+      vertices, UnorderedRangeEquals(std::vector<std::size_t>({10, 20, 30})));
   }
-  
+
   SECTION("undirected network with function object") {
     struct Doubler {
       int operator()(int x) const { return x * 2; }
     };
-    
+
     reticula::undirected_network<int> net({{1, 2}, {2, 3}});
     auto relabeled = reticula::relabel_nodes<int>(net, Doubler{});
-    
+
     REQUIRE(relabeled.vertices().size() == 3);
     REQUIRE(relabeled.edges().size() == 2);
-    
+
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<int>({2, 4, 6})));
   }
-  
+
   SECTION("type conversion") {
     reticula::undirected_network<int> net({{-1, 0}, {0, 1}});
-    
-    auto relabeled = reticula::relabel_nodes<std::size_t>(net,
-      [](int v) { return static_cast<std::size_t>(v + 10); });
-    
+
+    auto relabeled = reticula::relabel_nodes<std::size_t>(
+      net, [](int v) { return static_cast<std::size_t>(v + 10); });
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::size_t>({9, 10, 11})));
+    REQUIRE_THAT(
+      vertices, UnorderedRangeEquals(std::vector<std::size_t>({9, 10, 11})));
   }
-  
+
   SECTION("complex vertex types") {
     using VertexType = std::pair<int, int>;
-    reticula::undirected_network<VertexType> net({
-      {{1, 2}, {3, 4}},
-      {{3, 4}, {5, 6}}
-    });
-    
-    auto relabeled = reticula::relabel_nodes<int>(net,
-      [](const VertexType& v) { return v.first + v.second; });
-    
+    reticula::undirected_network<VertexType> net(
+      {{{1, 2}, {3, 4}}, {{3, 4}, {5, 6}}});
+
+    auto relabeled = reticula::relabel_nodes<int>(
+      net, [](const VertexType& v) { return v.first + v.second; });
+
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<int>({3, 7, 11})));
   }
@@ -331,69 +329,52 @@ TEST_CASE("relabel_nodes with function mapping", "[reticula::relabel_nodes]") {
 
 TEST_CASE("relabel_nodes with container mapping", "[reticula::relabel_nodes]") {
   SECTION("std::map mapping") {
-    reticula::directed_network<std::string> net({
-      {"alice", "bob"},
-      {"bob", "charlie"},
-      {"charlie", "alice"}
-    });
-    
+    reticula::directed_network<std::string> net(
+      {{"alice", "bob"}, {"bob", "charlie"}, {"charlie", "alice"}});
+
     std::map<std::string, int> mapping = {
-      {"alice", 1},
-      {"bob", 2}, 
-      {"charlie", 3}
-    };
-    
+      {"alice", 1}, {"bob", 2}, {"charlie", 3}};
+
     auto relabeled = reticula::relabel_nodes<int>(net, mapping);
-    
+
     REQUIRE(relabeled.vertices().size() == 3);
     REQUIRE(relabeled.edges().size() == 3);
-    
+
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
   }
-  
+
   SECTION("std::unordered_map mapping") {
     reticula::undirected_network<int> net({{10, 20}, {20, 30}});
-    
+
     std::unordered_map<int, std::string> mapping = {
-      {10, "ten"},
-      {20, "twenty"},
-      {30, "thirty"}
-    };
-    
+      {10, "ten"}, {20, "twenty"}, {30, "thirty"}};
+
     auto relabeled = reticula::relabel_nodes<std::string>(net, mapping);
-    
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::string>({"ten", "twenty", "thirty"})));
+    REQUIRE_THAT(
+      vertices, UnorderedRangeEquals(
+                  std::vector<std::string>({"ten", "twenty", "thirty"})));
   }
-  
+
   SECTION("missing vertex throws exception") {
     reticula::undirected_network<int> net({{1, 2}, {2, 3}});
-    
-    std::map<int, std::string> incomplete_mapping = {
-      {1, "one"},
-      {2, "two"}
-      // missing vertex 3
-    };
-    
+
+    std::map<int, std::string> incomplete_mapping = {{1, "one"}, {2, "two"}};
+
     REQUIRE_THROWS_AS(
       reticula::relabel_nodes<std::string>(net, incomplete_mapping),
-      std::out_of_range
-    );
+      std::out_of_range);
   }
-  
+
   SECTION("extra mappings are ignored") {
     reticula::undirected_network<int> net({{1, 2}});
-    
-    std::map<int, char> mapping = {
-      {1, 'a'},
-      {2, 'b'},
-      {3, 'c'},  // extra mapping
-      {4, 'd'}   // extra mapping
-    };
-    
+
+    std::map<int, char> mapping = {{1, 'a'}, {2, 'b'}, {3, 'c'}, {4, 'd'}};
+
     auto relabeled = reticula::relabel_nodes<char>(net, mapping);
-    
+
     REQUIRE(relabeled.vertices().size() == 2);
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<char>({'a', 'b'})));
@@ -402,46 +383,45 @@ TEST_CASE("relabel_nodes with container mapping", "[reticula::relabel_nodes]") {
 
 TEST_CASE("relabel_nodes automatic integer", "[reticula::relabel_nodes]") {
   SECTION("consecutive numbering from 0") {
-    reticula::undirected_network<std::string> net({
-      {"zebra", "apple"},
-      {"apple", "banana"},
-      {"banana", "zebra"}
-    });
-    
+    reticula::undirected_network<std::string> net(
+      {{"zebra", "apple"}, {"apple", "banana"}, {"banana", "zebra"}});
+
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 3);
     REQUIRE(relabeled.edges().size() == 3);
-    
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::size_t>({0, 1, 2})));
+    REQUIRE_THAT(
+      vertices, UnorderedRangeEquals(std::vector<std::size_t>({0, 1, 2})));
   }
-  
+
   SECTION("different integer types") {
     reticula::directed_network<char> net({{'a', 'b'}, {'b', 'c'}});
-    
+
     auto relabeled_int = reticula::relabel_nodes<int>(net);
     auto relabeled_uint8 = reticula::relabel_nodes<std::uint8_t>(net);
-    
+
     REQUIRE(relabeled_int.vertices().size() == 3);
     REQUIRE(relabeled_uint8.vertices().size() == 3);
-    
+
     auto vertices_int = relabeled_int.vertices();
     auto vertices_uint8 = relabeled_uint8.vertices();
-    
-    REQUIRE_THAT(vertices_int, UnorderedRangeEquals(std::vector<int>({0, 1, 2})));
-    REQUIRE_THAT(vertices_uint8, UnorderedRangeEquals(std::vector<std::uint8_t>({0, 1, 2})));
+
+    REQUIRE_THAT(
+      vertices_int, UnorderedRangeEquals(std::vector<int>({0, 1, 2})));
+    REQUIRE_THAT(
+      vertices_uint8,
+      UnorderedRangeEquals(std::vector<std::uint8_t>({0, 1, 2})));
   }
-  
+
   SECTION("complex vertex types to integers") {
     using ComplexVertex = std::pair<std::string, int>;
-    reticula::undirected_network<ComplexVertex> net({
-      {{"hello", 1}, {"world", 2}},
-      {{"world", 2}, {"test", 3}}
-    });
-    
+    reticula::undirected_network<ComplexVertex> net(
+      {{{"hello", 1}, {"world", 2}}, {{"world", 2}, {"test", 3}}});
+
     auto relabeled = reticula::relabel_nodes<int>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 3);
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<int>({0, 1, 2})));
@@ -452,180 +432,147 @@ TEST_CASE("relabel_nodes edge type handling", "[reticula::relabel_nodes]") {
   SECTION("directed edges") {
     reticula::directed_network<int> net({{1, 2}, {2, 3}, {3, 1}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 3);
-    
-    // Check that edges maintain their directedness
+
     for (const auto& edge : relabeled.edges()) {
       REQUIRE(edge.mutator_verts().size() == 1);
       REQUIRE(edge.mutated_verts().size() == 1);
     }
   }
-  
+
   SECTION("undirected edges") {
     reticula::undirected_network<int> net({{1, 2}, {2, 3}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
-    
-    // Check that edges maintain their undirectedness
-    for (const auto& edge : relabeled.edges()) {
+
+    for (const auto& edge : relabeled.edges())
       REQUIRE(edge.mutator_verts().size() == edge.mutated_verts().size());
-    }
   }
-  
+
   SECTION("directed hyperedges") {
-    reticula::directed_hypernetwork<int> net({
-      {{1, 2}, {3, 4}},
-      {{3}, {5, 6}}
-    });
+    reticula::directed_hypernetwork<int> net({{{1, 2}, {3, 4}}, {{3}, {5, 6}}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 6);
   }
-  
+
   SECTION("undirected hyperedges") {
-    reticula::undirected_hypernetwork<int> net({
-      {1, 2, 3},
-      {3, 4, 5}
-    });
+    reticula::undirected_hypernetwork<int> net({{1, 2, 3}, {3, 4, 5}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 5);
   }
-  
+
   SECTION("directed temporal edges") {
-    reticula::directed_temporal_network<int, int> net({
-      {1, 2, 10},
-      {2, 3, 20},
-      {3, 1, 30}
-    });
+    reticula::directed_temporal_network<int, int> net(
+      {{1, 2, 10}, {2, 3, 20}, {3, 1, 30}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 3);
     REQUIRE(relabeled.vertices().size() == 3);
-    
-    // Check that edges maintain their temporal properties
+
     for (const auto& edge : relabeled.edges()) {
       REQUIRE(edge.mutator_verts().size() == 1);
       REQUIRE(edge.mutated_verts().size() == 1);
       REQUIRE(edge.cause_time() == edge.effect_time());
     }
   }
-  
+
   SECTION("undirected temporal edges") {
-    reticula::undirected_temporal_network<int, double> net({
-      {1, 2, 1.5},
-      {2, 3, 2.5}
-    });
+    reticula::undirected_temporal_network<int, double> net(
+      {{1, 2, 1.5}, {2, 3, 2.5}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 3);
-    
-    // Check that edges maintain their undirectedness and temporal properties
+
     for (const auto& edge : relabeled.edges()) {
       REQUIRE(edge.mutator_verts().size() == edge.mutated_verts().size());
       REQUIRE(edge.cause_time() == edge.effect_time());
     }
   }
-  
+
   SECTION("directed delayed temporal edges") {
-    reticula::directed_delayed_temporal_network<int, double> net({
-      {1, 2, 1.0, 2.0},
-      {2, 3, 2.5, 3.5}
-    });
+    reticula::directed_delayed_temporal_network<int, double> net(
+      {{1, 2, 1.0, 2.0}, {2, 3, 2.5, 3.5}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 3);
-    
-    // Check that edges maintain their delayed temporal properties
+
     for (const auto& edge : relabeled.edges()) {
       REQUIRE(edge.mutator_verts().size() == 1);
       REQUIRE(edge.mutated_verts().size() == 1);
       REQUIRE(edge.cause_time() < edge.effect_time());
     }
   }
-  
+
   SECTION("directed temporal hyperedges") {
-    reticula::directed_temporal_hypernetwork<int, int> net({
-      {{1, 2}, {3, 4}, 10},
-      {{3}, {5, 6}, 20}
-    });
+    reticula::directed_temporal_hypernetwork<int, int> net(
+      {{{1, 2}, {3, 4}, 10}, {{3}, {5, 6}, 20}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 6);
-    
-    // Check that hyperedges maintain their temporal properties
-    for (const auto& edge : relabeled.edges()) {
+
+    for (const auto& edge : relabeled.edges())
       REQUIRE(edge.cause_time() == edge.effect_time());
-    }
   }
-  
+
   SECTION("undirected temporal hyperedges") {
-    reticula::undirected_temporal_hypernetwork<int, double> net({
-      {{1, 2, 3}, 1.5},
-      {{3, 4, 5}, 2.5}
-    });
+    reticula::undirected_temporal_hypernetwork<int, double> net(
+      {{{1, 2, 3}, 1.5}, {{3, 4, 5}, 2.5}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 5);
-    
-    // Check that hyperedges maintain their temporal properties
-    for (const auto& edge : relabeled.edges()) {
+
+    for (const auto& edge : relabeled.edges())
       REQUIRE(edge.cause_time() == edge.effect_time());
-    }
   }
-  
+
   SECTION("directed delayed temporal hyperedges") {
-    reticula::directed_delayed_temporal_hypernetwork<int, double> net({
-      {{1, 2}, {3, 4}, 1.0, 2.0},
-      {{3}, {5, 6}, 2.5, 3.5}
-    });
+    reticula::directed_delayed_temporal_hypernetwork<int, double> net(
+      {{{1, 2}, {3, 4}, 1.0, 2.0}, {{3}, {5, 6}, 2.5, 3.5}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 2);
     REQUIRE(relabeled.vertices().size() == 6);
-    
-    // Check that hyperedges maintain their delayed temporal properties
-    for (const auto& edge : relabeled.edges()) {
+
+    for (const auto& edge : relabeled.edges())
       REQUIRE(edge.cause_time() < edge.effect_time());
-    }
   }
 }
 
-TEST_CASE("relabel_nodes preserves network structure", "[reticula::relabel_nodes]") {
+TEST_CASE(
+  "relabel_nodes preserves network structure", "[reticula::relabel_nodes]") {
   SECTION("vertex and edge count preservation") {
     reticula::undirected_network<int> net({{1, 2}, {2, 3}, {3, 4}, {4, 1}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(net.vertices().size() == relabeled.vertices().size());
     REQUIRE(net.edges().size() == relabeled.edges().size());
   }
-  
+
   SECTION("connectivity preservation") {
-    // Create a simple path: 1-2-3-4
     reticula::undirected_network<int> net({{1, 2}, {2, 3}, {3, 4}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
-    // The relabeled network should still be connected
+
     auto components = reticula::connected_components(relabeled);
     REQUIRE(components.size() == 1);
     REQUIRE(components[0].size() == 4);
   }
-  
+
   SECTION("self-loops preservation") {
     reticula::directed_network<int> net({{1, 1}, {1, 2}, {2, 2}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.edges().size() == 3);
-    
-    // Check for self-loops in relabeled network
+
     int self_loop_count = 0;
     for (const auto& edge : relabeled.edges()) {
       if (edge.tail() == edge.head()) {
@@ -634,16 +581,15 @@ TEST_CASE("relabel_nodes preserves network structure", "[reticula::relabel_nodes
     }
     REQUIRE(self_loop_count == 2);
   }
-  
+
   SECTION("degree preservation") {
     reticula::undirected_network<int> net({{1, 2}, {1, 3}, {1, 4}, {2, 3}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
-    // Create mapping from old to new vertices
+
     std::map<int, std::size_t> mapping = {{1, 0}, {2, 1}, {3, 2}, {4, 3}};
-    auto explicit_relabeled = reticula::relabel_nodes<std::size_t>(net, mapping);
-    
-    // Check that vertex counts are preserved (degree function not available in test)
+    auto explicit_relabeled =
+      reticula::relabel_nodes<std::size_t>(net, mapping);
+
     REQUIRE(net.vertices().size() == explicit_relabeled.vertices().size());
     REQUIRE(net.edges().size() == explicit_relabeled.edges().size());
   }
@@ -653,59 +599,62 @@ TEST_CASE("relabel_nodes edge cases", "[reticula::relabel_nodes]") {
   SECTION("empty network") {
     reticula::undirected_network<int> empty_net;
     auto relabeled = reticula::relabel_nodes<std::size_t>(empty_net);
-    
+
     REQUIRE(relabeled.vertices().empty());
     REQUIRE(relabeled.edges().empty());
   }
-  
+
   SECTION("single vertex network") {
     reticula::undirected_network<int> net({}, {42});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 1);
     REQUIRE(relabeled.edges().empty());
     REQUIRE(relabeled.vertices()[0] == 0);
   }
-  
+
   SECTION("single edge network") {
     reticula::undirected_network<int> net({{1, 2}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 2);
     REQUIRE(relabeled.edges().size() == 1);
-    
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::size_t>({0, 1})));
+    REQUIRE_THAT(
+      vertices, UnorderedRangeEquals(std::vector<std::size_t>({0, 1})));
   }
-  
+
   SECTION("disconnected components") {
     reticula::undirected_network<int> net({{1, 2}, {3, 4}});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 4);
     REQUIRE(relabeled.edges().size() == 2);
-    
+
     auto components = reticula::connected_components(relabeled);
     REQUIRE(components.size() == 2);
     REQUIRE(components[0].size() == 2);
     REQUIRE(components[1].size() == 2);
   }
-  
+
   SECTION("isolated vertices") {
     reticula::undirected_network<int> net({{1, 2}}, {1, 2, 3, 4, 5});
     auto relabeled = reticula::relabel_nodes<std::size_t>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 5);
     REQUIRE(relabeled.edges().size() == 1);
-    
+
     auto vertices = relabeled.vertices();
-    REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<std::size_t>({0, 1, 2, 3, 4})));
+    REQUIRE_THAT(
+      vertices,
+      UnorderedRangeEquals(std::vector<std::size_t>({0, 1, 2, 3, 4})));
   }
-  
+
   SECTION("large vertex labels") {
     reticula::undirected_network<std::size_t> net({{1000000, 2000000}});
     auto relabeled = reticula::relabel_nodes<int>(net);
-    
+
     REQUIRE(relabeled.vertices().size() == 2);
     auto vertices = relabeled.vertices();
     REQUIRE_THAT(vertices, UnorderedRangeEquals(std::vector<int>({0, 1})));

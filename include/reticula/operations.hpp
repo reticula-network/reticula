@@ -574,75 +574,58 @@ namespace reticula {
   network<rebind_edge_t<EdgeT, OutVertT>>
   relabel_nodes(const network<EdgeT>& g, MapF&& label_map) {
     using OutEdgeT = rebind_edge_t<EdgeT, OutVertT>;
-    
+
     std::vector<OutEdgeT> new_edges;
     new_edges.reserve(g.edges().size());
-    
+
     for (const auto& edge : g.edges()) {
       auto incident = edge.incident_verts();
-      
+
       std::vector<OutVertT> new_incident;
       new_incident.reserve(incident.size());
-      for (const auto& v : incident) {
+      for (const auto& v : incident)
         new_incident.push_back(label_map(v));
-      }
-      
+
       if constexpr (temporal_network_edge<EdgeT>) {
-        // All temporal edges now use the same 5-argument constructor
         auto mutators = edge.mutator_verts();
         auto mutated = edge.mutated_verts();
-        
+
         std::vector<OutVertT> new_mutators;
         new_mutators.reserve(mutators.size());
-        for (const auto& v : mutators) {
+        for (const auto& v : mutators)
           new_mutators.push_back(label_map(v));
-        }
-        
+
         std::vector<OutVertT> new_mutated;
         new_mutated.reserve(mutated.size());
-        for (const auto& v : mutated) {
+        for (const auto& v : mutated)
           new_mutated.push_back(label_map(v));
-        }
-        
-        new_edges.emplace_back(uniform_const, new_mutators, new_mutated,
-                              edge.cause_time(), edge.effect_time());
+
+        new_edges.emplace_back(
+          uniform_const, new_mutators, new_mutated, edge.cause_time(),
+          edge.effect_time());
       } else {
-        // Static edge
-        if constexpr (is_dyadic_v<EdgeT>) {
-          // For dyadic edges, use the first two vertices
-          if (new_incident.size() >= 2) {
-            new_edges.emplace_back(new_incident[0], new_incident[1]);
-          } else if (new_incident.size() == 1) {
-            new_edges.emplace_back(new_incident[0], new_incident[0]);
-          }
-        } else {
-          // For hyperedges, use the uniform constructor
-          auto mutators = edge.mutator_verts();
-          auto mutated = edge.mutated_verts();
-          
-          std::vector<OutVertT> new_mutators;
-          new_mutators.reserve(mutators.size());
-          for (const auto& v : mutators) {
-            new_mutators.push_back(label_map(v));
-          }
-          
-          std::vector<OutVertT> new_mutated;
-          new_mutated.reserve(mutated.size());
-          for (const auto& v : mutated) {
-            new_mutated.push_back(label_map(v));
-          }
-          
-          new_edges.emplace_back(uniform_const, new_mutators, new_mutated);
-        }
+        auto mutators = edge.mutator_verts();
+        auto mutated = edge.mutated_verts();
+
+        std::vector<OutVertT> new_mutators;
+        new_mutators.reserve(mutators.size());
+        for (const auto& v : mutators)
+          new_mutators.push_back(label_map(v));
+
+        std::vector<OutVertT> new_mutated;
+        new_mutated.reserve(mutated.size());
+        for (const auto& v : mutated)
+          new_mutated.push_back(label_map(v));
+
+        new_edges.emplace_back(uniform_const, new_mutators, new_mutated);
       }
     }
-    
+
     std::vector<OutVertT> new_vertices;
     new_vertices.reserve(g.vertices().size());
-    for (const auto& v : g.vertices()) {
+    for (const auto& v : g.vertices())
       new_vertices.push_back(label_map(v));
-    }
-    
+
     return network<OutEdgeT>(new_edges, new_vertices);
   }
 
@@ -651,13 +634,14 @@ namespace reticula {
     mapping<typename EdgeT::VertexType, OutVertT> MapT>
   network<rebind_edge_t<EdgeT, OutVertT>>
   relabel_nodes(const network<EdgeT>& g, const MapT& label_map) {
-    return relabel_nodes<OutVertT>(g, [&label_map](const typename EdgeT::VertexType& v) {
+    return relabel_nodes<OutVertT>(
+        g, [&label_map](const typename EdgeT::VertexType& v) {
       auto it = label_map.find(v);
       if (it == label_map.end())
         throw std::out_of_range("Vertex not found in the label map");
       else
         return it->second;
-      });
+    });
   }
 
   template <integer_network_vertex OutVertT, network_edge EdgeT>

@@ -128,12 +128,13 @@ namespace reticula {
       @param cause_time Timestamp at which the event "happened".
       @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
     directed_temporal_edge(
-        uniform_const_t tag,
+        uniform_const_t,
         MutatorRange&& mutators,
         MutatedRange&& mutated,
         TimeType cause_time,
@@ -368,12 +369,13 @@ namespace reticula {
       @param cause_time The timestamp at which the event "happened".
       @param effect_time The timestamp at which the event was "received".
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
     directed_delayed_temporal_edge(
-        uniform_const_t tag,
+        uniform_const_t,
         MutatorRange&& mutators,
         MutatedRange&& mutated,
         TimeType cause_time,
@@ -577,12 +579,13 @@ namespace reticula {
       @param cause_time Timestamp at which the event "happened".
       @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
     undirected_temporal_edge(
-        uniform_const_t tag,
+        uniform_const_t,
         MutatorRange&& mutators,
         MutatedRange&& mutated,
         TimeType cause_time,

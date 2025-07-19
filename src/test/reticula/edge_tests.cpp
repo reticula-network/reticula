@@ -863,7 +863,8 @@ TEST_CASE(
     std::vector<int> empty_range;
 
     REQUIRE_THROWS_AS(
-      reticula::directed_edge<int>(reticula::uniform_const, empty_range, empty_range),
+      reticula::directed_edge<int>(
+        reticula::uniform_const, empty_range, empty_range),
       std::invalid_argument);
   }
 
@@ -907,7 +908,8 @@ TEST_CASE(
     std::vector<int> empty_range;
 
     REQUIRE_THROWS_AS(
-      reticula::undirected_edge<int>(reticula::uniform_const, empty_range, empty_range),
+      reticula::undirected_edge<int>(
+        reticula::uniform_const, empty_range, empty_range),
       std::invalid_argument);
   }
 

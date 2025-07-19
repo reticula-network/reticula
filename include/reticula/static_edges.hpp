@@ -81,7 +81,8 @@ namespace reticula {
       @param mutators Range of mutator vertices (tail vertices).
       @param mutated Range of mutated vertices (head vertices).
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
@@ -241,7 +242,8 @@ namespace reticula {
       @param mutators Range of mutator vertices.
       @param mutated Range of mutated vertices.
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
@@ -409,7 +411,8 @@ namespace reticula {
       : _verts({tail, head}) {}
 
   template <network_vertex VertexType>
-  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  template <
+    ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires
     std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
     std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
@@ -417,8 +420,10 @@ namespace reticula {
       uniform_const_t,
       MutatorRange&& mutators,
       MutatedRange&& mutated) {
-    std::vector<VertexType> mutator_verts(ranges::begin(mutators), ranges::end(mutators));
-    std::vector<VertexType> mutated_verts(ranges::begin(mutated), ranges::end(mutated));
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
 
     if (mutator_verts.empty() || mutated_verts.empty())
       throw std::invalid_argument(
@@ -528,13 +533,16 @@ namespace reticula {
   }
 
   template <network_vertex VertexType>
-  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
-    requires std::convertible_to<
+  template <
+    ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires std::convertible_to<
                ranges::range_value_t<MutatorRange>, VertexType> &&
-             std::convertible_to<
+           std::convertible_to<
                ranges::range_value_t<MutatedRange>, VertexType>
   undirected_edge<VertexType>::undirected_edge(
-    uniform_const_t, MutatorRange&& mutators, MutatedRange&& mutated) {
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated) {
     std::vector<VertexType> mutator_verts(
       ranges::begin(mutators), ranges::end(mutators));
     std::vector<VertexType> mutated_verts(

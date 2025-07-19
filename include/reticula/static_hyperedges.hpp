@@ -105,7 +105,8 @@ namespace reticula {
       @param mutators Range of mutator vertices (tail vertices).
       @param mutated Range of mutated vertices (head vertices).
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
@@ -258,7 +259,8 @@ namespace reticula {
       @param mutators Range of mutator vertices.
       @param mutated Range of mutated vertices.
      */
-    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    template <
+      ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
       std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
       std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
@@ -596,11 +598,10 @@ namespace reticula {
     std::vector<VertexType> mutated_verts(
       ranges::begin(mutated), ranges::end(mutated));
 
-    // Check for empty ranges
     if (mutator_verts.empty() && mutated_verts.empty())
       throw std::invalid_argument(
         "undirected_hyperedge requires non-empty ranges");
-    
+
     if (!ranges::equal(mutator_verts, mutated_verts))
       throw std::invalid_argument(
         "undirected_hyperedge requires mutator and mutated ranges to be equal");
@@ -608,7 +609,7 @@ namespace reticula {
     std::size_t total_size = mutator_verts.size() + mutated_verts.size();
     if (total_size > 0)
       _verts.reserve(total_size);
-    
+
     ranges::copy(mutator_verts, std::back_inserter(_verts));
     ranges::copy(mutated_verts, std::back_inserter(_verts));
 
