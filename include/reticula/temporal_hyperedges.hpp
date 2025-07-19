@@ -144,6 +144,26 @@ namespace reticula {
         const StaticProjectionType& projection, TimeType time);
 
     /**
+      Create a directed temporal hyperedge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+      @param cause_time Timestamp at which the event "happened".
+      @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+    directed_temporal_hyperedge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
+
+    /**
       Static hyperedge that encompasses all the non-temporal information about this
       hyperedge.
      */
@@ -368,6 +388,26 @@ namespace reticula {
         TimeType cause_time, TimeType effect_time);
 
     /**
+      Create a directed delayed temporal hyperedge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+      @param cause_time The timestamp at which the event "happened".
+      @param effect_time The timestamp at which the event was "received".
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+    directed_delayed_temporal_hyperedge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
+
+    /**
       Static hyperedge that encompasses all the non-temporal information about
       this hyperedge.
      */
@@ -554,6 +594,26 @@ namespace reticula {
     */
     undirected_temporal_hyperedge(
         const StaticProjectionType& projection, TimeType time);
+
+    /**
+      Create an undirected temporal hyperedge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices.
+      @param mutated Range of mutated vertices.
+      @param cause_time Timestamp at which the event "happened".
+      @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+    undirected_temporal_hyperedge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
 
 
     /**
@@ -837,6 +897,42 @@ namespace reticula {
   }
 
   template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_temporal_hyperedge<VertexType, TimeType>::
+    directed_temporal_hyperedge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) : _time(cause_time) {
+    if (cause_time != effect_time)
+      throw std::invalid_argument(
+        "directed_temporal_hyperedge requires cause_time == effect_time (use "
+        "directed_delayed_temporal_hyperedge for delays)");
+
+    if constexpr (ranges::sized_range<MutatorRange>)
+      _tails.reserve(ranges::size(mutators));
+    ranges::copy(mutators, std::back_inserter(_tails));
+
+    if constexpr (ranges::sized_range<MutatedRange>)
+      _heads.reserve(ranges::size(mutated));
+    ranges::copy(mutated, std::back_inserter(_heads));
+
+    ranges::sort(_heads);
+    auto [hfirst, hlast] = ranges::unique(_heads);
+    _heads.erase(hfirst, hlast);
+    _heads.shrink_to_fit();
+
+    ranges::sort(_tails);
+    auto [tfirst, tlast] = ranges::unique(_tails);
+    _tails.erase(tfirst, tlast);
+    _tails.shrink_to_fit();
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   directed_hyperedge<VertexType>
   directed_temporal_hyperedge<VertexType, TimeType>::static_projection() const {
     return directed_hyperedge<VertexType>(_tails, _heads);
@@ -998,6 +1094,43 @@ namespace reticula {
           " have a cause_time larger than effect_time");
   }
 
+  template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_delayed_temporal_hyperedge<VertexType, TimeType>::
+    directed_delayed_temporal_hyperedge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument(
+        "directed_delayed_temporal_hyperedge cannot"
+        " have a cause_time larger than effect_time");
+
+    if constexpr (ranges::sized_range<MutatorRange>)
+      _tails.reserve(ranges::size(mutators));
+    ranges::copy(mutators, std::back_inserter(_tails));
+
+    if constexpr (ranges::sized_range<MutatedRange>)
+      _heads.reserve(ranges::size(mutated));
+    ranges::copy(mutated, std::back_inserter(_heads));
+
+    ranges::sort(_heads);
+    auto [hfirst, hlast] = ranges::unique(_heads);
+    _heads.erase(hfirst, hlast);
+    _heads.shrink_to_fit();
+
+    ranges::sort(_tails);
+    auto [tfirst, tlast] = ranges::unique(_tails);
+    _tails.erase(tfirst, tlast);
+    _tails.shrink_to_fit();
+  }
+
 
   template <network_vertex VertexType, typename TimeType>
   directed_hyperedge<VertexType>
@@ -1140,6 +1273,50 @@ namespace reticula {
         _time(time) {
     auto iv = proj.incident_verts();
     _verts = std::vector<VertexType>(iv.begin(), iv.end());
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  undirected_temporal_hyperedge<VertexType, TimeType>::
+    undirected_temporal_hyperedge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) : _time(cause_time) {
+    if (cause_time != effect_time)
+      throw std::invalid_argument(
+        "undirected_temporal_hyperedge requires cause_time == effect_time (use "
+        "directed_delayed_temporal_hyperedge for delays)");
+
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() && mutated_verts.empty())
+      throw std::invalid_argument(
+        "undirected_temporal_hyperedge requires non-empty ranges");
+
+    if (!ranges::equal(mutator_verts, mutated_verts))
+      throw std::invalid_argument(
+        "undirected_temporal_hyperedge requires mutator and mutated ranges to "
+        "be equal");
+
+    std::size_t total_size = mutator_verts.size() + mutated_verts.size();
+    if (total_size > 0)
+      _verts.reserve(total_size);
+
+    ranges::copy(mutator_verts, std::back_inserter(_verts));
+    ranges::copy(mutated_verts, std::back_inserter(_verts));
+
+    ranges::sort(_verts);
+    auto [first, last] = ranges::unique(_verts);
+    _verts.erase(first, last);
+    _verts.shrink_to_fit();
   }
 
   template <network_vertex VertexType, typename TimeType>

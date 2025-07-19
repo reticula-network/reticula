@@ -9,6 +9,8 @@ using Catch::Matchers::UnorderedRangeEquals;
 #include <reticula/network_concepts.hpp>
 #include <reticula/static_edges.hpp>
 #include <reticula/static_hyperedges.hpp>
+#include <reticula/temporal_edges.hpp>
+#include <reticula/temporal_hyperedges.hpp>
 
 TEST_CASE("undirected edges", "[reticula::undirected_edge]") {
   SECTION("are read correctly") {
@@ -833,4 +835,522 @@ TEST_CASE("higher-order edges", "[reticula::directed_edge]") {
     reticula::directed_edge<
       reticula::undirected_temporal_edge<std::string, float>>;
   STATIC_REQUIRE(reticula::static_network_edge<DirectedEventGraphEdge>);
+}
+
+TEST_CASE(
+  "uniform constructor - directed edges",
+  "[reticula::uniform_const][reticula::directed_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2};
+    std::vector<int> v2 = {1};
+    REQUIRE(
+      reticula::directed_edge<int>{reticula::uniform_const, v1, v2} ==
+      reticula::directed_edge<int>{2, 1});
+
+    REQUIRE(
+      reticula::directed_edge<int>{reticula::uniform_const, v2, v1} ==
+      reticula::directed_edge<int>{1, 2});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {5};
+    REQUIRE(
+      reticula::directed_edge<int>{reticula::uniform_const, v, v} ==
+      reticula::directed_edge<int>{5, 5});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+
+    REQUIRE_THROWS_AS(
+      reticula::directed_edge<int>(reticula::uniform_const, empty_range, empty_range),
+      std::invalid_argument);
+  }
+
+  SECTION("too long input ranges throw exception") {
+    std::vector<int> v1 = {1, 2};
+    std::vector<int> v2 = {3};
+
+    REQUIRE_THROWS_AS(
+      reticula::directed_edge<int>(reticula::uniform_const, v1, v2),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      reticula::directed_edge<int>(reticula::uniform_const, v2, v1),
+      std::invalid_argument);
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - undirected edges",
+  "[reticula::uniform_const][reticula::undirected_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 1};
+    REQUIRE(
+      reticula::undirected_edge<int>{reticula::uniform_const, v1, v1} ==
+      reticula::undirected_edge<int>{2, 1});
+
+    std::vector<int> v2 = {1, 2};
+    REQUIRE(
+      reticula::undirected_edge<int>{reticula::uniform_const, v2, v2} ==
+      reticula::undirected_edge<int>{2, 1});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {5};
+    REQUIRE(
+      reticula::undirected_edge<int>{reticula::uniform_const, v, v} ==
+      reticula::undirected_edge<int>{5, 5});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_edge<int>(reticula::uniform_const, empty_range, empty_range),
+      std::invalid_argument);
+  }
+
+  SECTION("too long input ranges throw exception") {
+    std::vector<int> v1 = {1, 2, 3};
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_edge<int>(reticula::uniform_const, v1, v1),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal ranges throw exception") {
+    std::vector<int> v1 = {1, 2};
+    std::vector<int> v2 = {2, 3};
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_edge<int>(reticula::uniform_const, v1, v2),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_edge<int>(reticula::uniform_const, v2, v1),
+      std::invalid_argument);
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - directed hyperedges",
+  "[reticula::uniform_const][reticula::directed_hyperedge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 3, 4};
+    std::vector<int> v2 = {1, 2, 3, 4};
+    REQUIRE(
+      reticula::directed_hyperedge<int>{reticula::uniform_const, v1, v2} ==
+      reticula::directed_hyperedge<int>{v1, v2});
+
+    REQUIRE(
+      reticula::directed_hyperedge<int>{reticula::uniform_const, v2, v1} ==
+      reticula::directed_hyperedge<int>{v2, v1});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {1, 2, 3};
+    REQUIRE(
+      reticula::directed_hyperedge<int>{reticula::uniform_const, v, v} ==
+      reticula::directed_hyperedge<int>{v, v});
+  }
+
+  SECTION("empty ranges") {
+    std::vector<int> v;
+    REQUIRE(
+      reticula::directed_hyperedge<int>{reticula::uniform_const, v, v} ==
+      reticula::directed_hyperedge<int>{v, v});
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - undirected hyperedges",
+  "[reticula::uniform_const][reticula::undirected_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 1, 3, 4};
+    REQUIRE(
+      reticula::undirected_hyperedge<int>{reticula::uniform_const, v1, v1} ==
+      reticula::undirected_hyperedge<int>{v1});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_hyperedge<int>(
+        reticula::uniform_const, empty_range, empty_range),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal ranges throw exception") {
+    std::vector<int> v1 = {1, 2, 3};
+    std::vector<int> v2 = {2, 3, 4};
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_hyperedge<int>(reticula::uniform_const, v1, v2),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      reticula::undirected_hyperedge<int>(reticula::uniform_const, v2, v1),
+      std::invalid_argument);
+  }
+}
+
+
+TEST_CASE(
+  "uniform constructor - directed temporal edges",
+  "[reticula::uniform_const][reticula::directed_tempotal_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2};
+    std::vector<int> v2 = {1};
+    int t = 1;
+    REQUIRE(
+      reticula::directed_temporal_edge<int, int>{
+        reticula::uniform_const, v1, v2, t, t} ==
+      reticula::directed_temporal_edge<int, int>{2, 1, t});
+
+    REQUIRE(
+      reticula::directed_temporal_edge<int, int>{
+        reticula::uniform_const, v2, v1, t, t} ==
+      reticula::directed_temporal_edge<int, int>{1, 2, t});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {5};
+    int t = 1;
+    REQUIRE(
+      reticula::directed_temporal_edge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_temporal_edge<int, int>{5, 5, t});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+    int t = 1;
+    REQUIRE_THROWS_AS(
+      (reticula::directed_temporal_edge<int, int>(
+        reticula::uniform_const, empty_range, empty_range, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("too long input ranges throw exception") {
+    std::vector<int> v1 = {1, 2};
+    std::vector<int> v2 = {3};
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_temporal_edge<int, int>(
+        reticula::uniform_const, v1, v2, t, t)),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_temporal_edge<int, int>(
+        reticula::uniform_const, v2, v1, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal times throw exception") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_temporal_edge<int, int>(
+        reticula::uniform_const, v, v, t1, t2)),
+      std::invalid_argument);
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - directed delayed temporal edges",
+  "[reticula::uniform_const][reticula::directed_delayed_tempotal_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2};
+    std::vector<int> v2 = {1};
+    int t = 1;
+    REQUIRE(
+      reticula::directed_delayed_temporal_edge<int, int>{
+        reticula::uniform_const, v1, v2, t, t} ==
+      reticula::directed_delayed_temporal_edge<int, int>{2, 1, t, t});
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_edge<int, int>{
+        reticula::uniform_const, v2, v1, t, t} ==
+      reticula::directed_delayed_temporal_edge<int, int>{1, 2, t, t});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {5};
+    int t = 1;
+    REQUIRE(
+      reticula::directed_delayed_temporal_edge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_delayed_temporal_edge<int, int>{5, 5, t, t});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+    int t = 1;
+    REQUIRE_THROWS_AS(
+      (reticula::directed_delayed_temporal_edge<int, int>(
+        reticula::uniform_const, empty_range, empty_range, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("too long input ranges throw exception") {
+    std::vector<int> v1 = {1, 2};
+    std::vector<int> v2 = {3};
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_delayed_temporal_edge<int, int>(
+        reticula::uniform_const, v1, v2, t, t)),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_delayed_temporal_edge<int, int>(
+        reticula::uniform_const, v2, v1, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal times") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE(
+      (reticula::directed_delayed_temporal_edge<int, int>(
+        reticula::uniform_const, v, v, t1, t2)) ==
+      reticula::directed_delayed_temporal_edge<int, int>{1, 2, t1, t2});
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - undirected temporal edges",
+  "[reticula::uniform_const][reticula::undirected_temporal_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 1};
+    int t = 1;
+
+    REQUIRE(
+      (reticula::undirected_temporal_edge<int, int>{
+        reticula::uniform_const, v1, v1, t, t}) ==
+      reticula::undirected_temporal_edge<int, int>{2, 1, t});
+
+    std::vector<int> v2 = {1, 2};
+    REQUIRE(
+      reticula::undirected_temporal_edge<int, int>{
+        reticula::uniform_const, v2, v2, t, t} ==
+      reticula::undirected_temporal_edge<int, int>{2, 1, t});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {5};
+    int t = 1;
+
+    REQUIRE(
+      reticula::undirected_temporal_edge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::undirected_temporal_edge<int, int>{5, 5, t});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_edge<int, int>(
+        reticula::uniform_const, empty_range, empty_range, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("too long input ranges throw exception") {
+    std::vector<int> v1 = {1, 2, 3};
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_edge<int, int>(
+        reticula::uniform_const, v1, v1, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal ranges throw exception") {
+    std::vector<int> v1 = {1, 2};
+    std::vector<int> v2 = {2, 3};
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_edge<int, int>(
+        reticula::uniform_const, v1, v2, t, t)),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_edge<int, int>(
+        reticula::uniform_const, v2, v1, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal times throw exception") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_edge<int, int>(
+        reticula::uniform_const, v, v, t1, t2)),
+      std::invalid_argument);
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - directed temporal hyperedges",
+  "[reticula::uniform_const][reticula::directed_temporal_hyperedge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 3, 4};
+    std::vector<int> v2 = {1, 2, 3, 4};
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v1, v2, t, t} ==
+      reticula::directed_temporal_hyperedge<int, int>{v1, v2, t});
+
+    REQUIRE(
+      reticula::directed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v2, v1, t, t} ==
+      reticula::directed_temporal_hyperedge<int, int>{v2, v1, t});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {1, 2, 3};
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_temporal_hyperedge<int, int>{v, v, t});
+  }
+
+  SECTION("empty ranges") {
+    std::vector<int> v;
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_temporal_hyperedge<int, int>{v, v, t});
+  }
+
+  SECTION("unequal times throw exception") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE_THROWS_AS(
+      (reticula::directed_temporal_hyperedge<int, int>(
+        reticula::uniform_const, v, v, t1, t2)),
+      std::invalid_argument);
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - directed delayed temporal hyperedges",
+  "[reticula::uniform_const][reticula::directed_delayed_temporal_hyperedge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 3, 4};
+    std::vector<int> v2 = {1, 2, 3, 4};
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v1, v2, t, t} ==
+      reticula::directed_delayed_temporal_hyperedge<int, int>{v1, v2, t, t});
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v2, v1, t, t} ==
+      reticula::directed_delayed_temporal_hyperedge<int, int>{v2, v1, t, t});
+  }
+
+  SECTION("same vertex in both ranges") {
+    std::vector<int> v = {1, 2, 3};
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_delayed_temporal_hyperedge<int, int>{v, v, t, t});
+  }
+
+  SECTION("empty ranges") {
+    std::vector<int> v;
+    int t = 1;
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v, v, t, t} ==
+      reticula::directed_delayed_temporal_hyperedge<int, int>{v, v, t, t});
+  }
+
+  SECTION("unequal times") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE(
+      reticula::directed_delayed_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v, v, t1, t2} ==
+      reticula::directed_delayed_temporal_hyperedge<int, int>{v, v, t1, t2});
+  }
+}
+
+TEST_CASE(
+  "uniform constructor - undirected temporal hyperedges",
+  "[reticula::uniform_const][reticula::undirected_edge]") {
+  SECTION("basic construction") {
+    std::vector<int> v1 = {2, 1, 3, 4};
+    int t = 1;
+
+    REQUIRE(
+      reticula::undirected_temporal_hyperedge<int, int>{
+        reticula::uniform_const, v1, v1, t, t} ==
+      reticula::undirected_temporal_hyperedge<int, int>{v1, t});
+  }
+
+  SECTION("empty ranges throw exception") {
+    std::vector<int> empty_range;
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_hyperedge<int, int>(
+        reticula::uniform_const, empty_range, empty_range, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal ranges throw exception") {
+    std::vector<int> v1 = {1, 2, 3};
+    std::vector<int> v2 = {2, 3, 4};
+    int t = 1;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_hyperedge<int, int>(
+        reticula::uniform_const, v1, v2, t, t)),
+      std::invalid_argument);
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_hyperedge<int, int>(
+        reticula::uniform_const, v2, v1, t, t)),
+      std::invalid_argument);
+  }
+
+  SECTION("unequal times throw exception") {
+    std::vector<int> v = {1, 2};
+    int t1 = 1;
+    int t2 = 2;
+
+    REQUIRE_THROWS_AS(
+      (reticula::undirected_temporal_hyperedge<int, int>(
+        reticula::uniform_const, v, v, t1, t2)),
+      std::invalid_argument);
+  }
 }

@@ -223,9 +223,42 @@ namespace reticula {
       const undirected_network<VertT2>& g2);
 
 
-  template <integer_network_vertex OutVertT, network_vertex InVertT>
-  undirected_network<OutVertT>
-  relabel_nodes(const undirected_network<InVertT>& g);
+  /**
+    Relabels all vertices in a network using a mapping function.
+
+    @param g The input network.
+    @param label_map A function that maps old vertices to new vertices.
+    @return A new network with relabeled vertices.
+   */
+  template <network_vertex OutVertT, network_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> MapF>
+  requires std::convertible_to<
+    std::invoke_result_t<MapF, const typename EdgeT::VertexType&>, OutVertT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g, MapF&& label_map);
+
+  /**
+    Relabels all vertices in a network using a mapping container.
+
+    @param g The input network.
+    @param label_map A mapping container (e.g., std::map, std::unordered_map)
+    that maps old vertices to new vertices.
+    @return A new network with relabeled vertices.
+   */
+  template <network_vertex OutVertT, network_edge EdgeT,
+    mapping<typename EdgeT::VertexType, OutVertT> MapT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g, const MapT& label_map);
+
+  /**
+    Relabels all vertices in a network to consecutive integers starting from 0.
+
+    @param g The input network.
+    @return A new network with vertices relabeled as consecutive integers.
+   */
+  template <integer_network_vertex OutVertT, network_edge EdgeT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g);
 }  // namespace reticula
 
 // Implementation
@@ -534,24 +567,111 @@ namespace reticula {
     return undirected_network<std::pair<VertT1, VertT2>>(edges);
   }
 
-  template <integer_network_vertex OutVertT, network_vertex InVertT>
-  undirected_network<OutVertT>
-  relabel_nodes(const undirected_network<InVertT>& g) {
+  template <network_vertex OutVertT, network_edge EdgeT,
+    std::invocable<const typename EdgeT::VertexType&> MapF>
+  requires std::convertible_to<
+    std::invoke_result_t<MapF, const typename EdgeT::VertexType&>, OutVertT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g, MapF&& label_map) {
+    using OutEdgeT = rebind_edge_t<EdgeT, OutVertT>;
+    
+    std::vector<OutEdgeT> new_edges;
+    new_edges.reserve(g.edges().size());
+    
+    for (const auto& edge : g.edges()) {
+      auto incident = edge.incident_verts();
+      
+      std::vector<OutVertT> new_incident;
+      new_incident.reserve(incident.size());
+      for (const auto& v : incident) {
+        new_incident.push_back(label_map(v));
+      }
+      
+      if constexpr (temporal_network_edge<EdgeT>) {
+        // All temporal edges now use the same 5-argument constructor
+        auto mutators = edge.mutator_verts();
+        auto mutated = edge.mutated_verts();
+        
+        std::vector<OutVertT> new_mutators;
+        new_mutators.reserve(mutators.size());
+        for (const auto& v : mutators) {
+          new_mutators.push_back(label_map(v));
+        }
+        
+        std::vector<OutVertT> new_mutated;
+        new_mutated.reserve(mutated.size());
+        for (const auto& v : mutated) {
+          new_mutated.push_back(label_map(v));
+        }
+        
+        new_edges.emplace_back(uniform_const, new_mutators, new_mutated,
+                              edge.cause_time(), edge.effect_time());
+      } else {
+        // Static edge
+        if constexpr (is_dyadic_v<EdgeT>) {
+          // For dyadic edges, use the first two vertices
+          if (new_incident.size() >= 2) {
+            new_edges.emplace_back(new_incident[0], new_incident[1]);
+          } else if (new_incident.size() == 1) {
+            new_edges.emplace_back(new_incident[0], new_incident[0]);
+          }
+        } else {
+          // For hyperedges, use the uniform constructor
+          auto mutators = edge.mutator_verts();
+          auto mutated = edge.mutated_verts();
+          
+          std::vector<OutVertT> new_mutators;
+          new_mutators.reserve(mutators.size());
+          for (const auto& v : mutators) {
+            new_mutators.push_back(label_map(v));
+          }
+          
+          std::vector<OutVertT> new_mutated;
+          new_mutated.reserve(mutated.size());
+          for (const auto& v : mutated) {
+            new_mutated.push_back(label_map(v));
+          }
+          
+          new_edges.emplace_back(uniform_const, new_mutators, new_mutated);
+        }
+      }
+    }
+    
+    std::vector<OutVertT> new_vertices;
+    new_vertices.reserve(g.vertices().size());
+    for (const auto& v : g.vertices()) {
+      new_vertices.push_back(label_map(v));
+    }
+    
+    return network<OutEdgeT>(new_edges, new_vertices);
+  }
+
+
+  template <network_vertex OutVertT, network_edge EdgeT,
+    mapping<typename EdgeT::VertexType, OutVertT> MapT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g, const MapT& label_map) {
+    return relabel_nodes<OutVertT>(g, [&label_map](const typename EdgeT::VertexType& v) {
+      auto it = label_map.find(v);
+      if (it == label_map.end())
+        throw std::out_of_range("Vertex not found in the label map");
+      else
+        return it->second;
+      });
+  }
+
+  template <integer_network_vertex OutVertT, network_edge EdgeT>
+  network<rebind_edge_t<EdgeT, OutVertT>>
+  relabel_nodes(const network<EdgeT>& g) {
+    using InVertT = typename EdgeT::VertexType;
     std::unordered_map<InVertT, OutVertT, hash<InVertT>> new_labels;
     new_labels.reserve(g.vertices().size());
 
-    OutVertT i = {};
-    for (auto&& n: g.vertices())
-      new_labels.emplace(n, i++);
+    OutVertT i{};
+    for (const auto& v: g.vertices())
+      new_labels.emplace(v, i++);
 
-    std::vector<undirected_edge<OutVertT>> edges;
-    for (auto&& e: g.edges()) {
-      auto verts = e.mutator_verts();
-      if (verts.size() > 1)
-        edges.emplace_back(new_labels.at(verts[0]), new_labels.at(verts[1]));
-    }
-
-    return undirected_network<OutVertT>(edges);
+    return relabel_nodes<OutVertT>(g, new_labels);
   }
 }  // namespace reticula
 

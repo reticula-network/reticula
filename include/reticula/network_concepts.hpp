@@ -214,6 +214,28 @@ namespace reticula {
       { map.find(k) } -> std::convertible_to<typename T::iterator>;
       { map.at(k) } -> std::convertible_to<ValueT>;
     };  // NOLINT(readability/braces)
+
+
+  /**
+    Rebinds an edge type to a new vertex type. This is useful for algorithms
+    that need to change the vertex type of edges, e.g., when relabeling vertices.
+    The `EdgeTmpl` template parameter is a template that takes a single vertex
+    type as its argument, and `OldVertT` and `NewVertT` are the old and new vertex
+    types, respectively.
+  */
+  template<network_edge EdgeT, network_vertex VertT> struct rebind_edge;
+
+  template<template<class, class...> typename EdgeTmpl,
+    network_vertex OldVertT, typename... Extra, network_vertex NewVertT>
+  struct rebind_edge<EdgeTmpl<OldVertT, Extra...>, NewVertT> {
+    using type = EdgeTmpl<NewVertT, Extra...>;
+  };
+
+  template<network_edge EdgeT, network_vertex VertT>
+  using rebind_edge_t = typename rebind_edge<EdgeT, VertT>::type;
+
+  struct uniform_const_t {};
+  inline constexpr uniform_const_t uniform_const{};
 }  // namespace reticula
 
 #endif  // INCLUDE_RETICULA_NETWORK_CONCEPTS_HPP_

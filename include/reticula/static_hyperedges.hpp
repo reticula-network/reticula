@@ -98,6 +98,22 @@ namespace reticula {
       std::convertible_to<ranges::range_value_t<R2>, VertT>
     directed_hyperedge(const R1& tails, const R2& heads);
 
+    /**
+      Create a directed hyperedge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+    directed_hyperedge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated);
+
 
     /**
       A directed hyperedge is out_incident to vertex `v` iff `v` is in the tail
@@ -234,6 +250,22 @@ namespace reticula {
     template <ranges::input_range R>
     requires std::convertible_to<ranges::range_value_t<R>, VertT>
     explicit undirected_hyperedge(const R& verts);
+
+    /**
+      Create an undirected hyperedge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices.
+      @param mutated Range of mutated vertices.
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+    undirected_hyperedge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated);
 
     /**
       An undirected hyperedge is incident to vertex `v` iff `v` is one of its
@@ -423,6 +455,34 @@ namespace reticula {
   }
 
   template <network_vertex VertexType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_hyperedge<VertexType>::directed_hyperedge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated) {
+    if constexpr (ranges::sized_range<MutatorRange>)
+      _tails.reserve(ranges::size(mutators));
+    ranges::copy(mutators, std::back_inserter(_tails));
+
+    if constexpr (ranges::sized_range<MutatedRange>)
+      _heads.reserve(ranges::size(mutated));
+    ranges::copy(mutated, std::back_inserter(_heads));
+
+    ranges::sort(_heads);
+    auto [hfirst, hlast] = ranges::unique(_heads);
+    _heads.erase(hfirst, hlast);
+    _heads.shrink_to_fit();
+
+    ranges::sort(_tails);
+    auto [tfirst, tlast] = ranges::unique(_tails);
+    _tails.erase(tfirst, tlast);
+    _tails.shrink_to_fit();
+  }
+
+  template <network_vertex VertexType>
   inline bool directed_hyperedge<VertexType>::is_out_incident(
       const VertexType& vert) const {
     return std::binary_search(_tails.begin(), _tails.end(), vert);
@@ -515,6 +575,42 @@ namespace reticula {
     if constexpr (ranges::sized_range<R>)
       _verts.reserve(ranges::size(verts));
     ranges::copy(verts, std::back_inserter(_verts));
+
+    ranges::sort(_verts);
+    auto [first, last] = ranges::unique(_verts);
+    _verts.erase(first, last);
+    _verts.shrink_to_fit();
+  }
+
+  template <network_vertex VertexType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  undirected_hyperedge<VertexType>::undirected_hyperedge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated) {
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    // Check for empty ranges
+    if (mutator_verts.empty() && mutated_verts.empty())
+      throw std::invalid_argument(
+        "undirected_hyperedge requires non-empty ranges");
+    
+    if (!ranges::equal(mutator_verts, mutated_verts))
+      throw std::invalid_argument(
+        "undirected_hyperedge requires mutator and mutated ranges to be equal");
+
+    std::size_t total_size = mutator_verts.size() + mutated_verts.size();
+    if (total_size > 0)
+      _verts.reserve(total_size);
+    
+    ranges::copy(mutator_verts, std::back_inserter(_verts));
+    ranges::copy(mutated_verts, std::back_inserter(_verts));
 
     ranges::sort(_verts);
     auto [first, last] = ranges::unique(_verts);

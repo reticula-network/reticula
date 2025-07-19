@@ -120,6 +120,26 @@ namespace reticula {
         const StaticProjectionType& projection, TimeType time);
 
     /**
+      Create a directed temporal edge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+      @param cause_time Timestamp at which the event "happened".
+      @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+    directed_temporal_edge(
+        uniform_const_t tag,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
+
+    /**
       Static edge that encompasses all the non-temporal information about this
       edge.
      */
@@ -340,6 +360,26 @@ namespace reticula {
         TimeType cause_time, TimeType effect_time);
 
     /**
+      Create a directed delayed temporal edge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+      @param cause_time The timestamp at which the event "happened".
+      @param effect_time The timestamp at which the event was "received".
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+    directed_delayed_temporal_edge(
+        uniform_const_t tag,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
+
+    /**
       Static edge that encompasses all the non-temporal information about this
       edge.
      */
@@ -527,6 +567,26 @@ namespace reticula {
     */
     undirected_temporal_edge(
         const StaticProjectionType& projection, TimeType time);
+
+    /**
+      Create an undirected temporal edge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices.
+      @param mutated Range of mutated vertices.
+      @param cause_time Timestamp at which the event "happened".
+      @param effect_time Timestamp at which the event was "received" (must equal cause_time for instantaneous edges).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+    undirected_temporal_edge(
+        uniform_const_t tag,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated,
+        TimeType cause_time,
+        TimeType effect_time);
 
     /**
       Static edge that encompasses all the non-temporal information about this
@@ -761,6 +821,38 @@ namespace reticula {
     : _time(time), _verts({projection.tail(), projection.head()}) {}
 
   template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_temporal_edge<VertexType, TimeType>::directed_temporal_edge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) : _time(cause_time) {
+    if (cause_time != effect_time)
+      throw std::invalid_argument(
+        "unequal cause_time and effect_time");
+
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() || mutated_verts.empty())
+      throw std::invalid_argument(
+        "directed_temporal_edge requires non-empty mutator and mutated ranges");
+
+    if (mutator_verts.size() != 1 || mutated_verts.size() != 1)
+      throw std::invalid_argument(
+        "exactly one element must be provided in each range");
+
+    _verts[0] = mutator_verts[0];
+    _verts[1] = mutated_verts[0];
+  }
+
+  template <network_vertex VertexType, typename TimeType>
   directed_edge<VertexType>
   directed_temporal_edge<VertexType, TimeType>::static_projection() const {
     return directed_edge<VertexType>(_verts[0], _verts[1]);
@@ -887,6 +979,54 @@ namespace reticula {
     if (_effect_time < _cause_time)
       throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
           " cause_time larger than effect_time");
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_delayed_temporal_edge<VertexType, TimeType>::
+    directed_delayed_temporal_edge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) :
+      _cause_time(cause_time), _effect_time(effect_time) {
+    if (_effect_time < _cause_time)
+      throw std::invalid_argument("directed_delayed_temporal_edge cannot have a"
+        " cause_time larger than effect_time");
+
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() || mutated_verts.empty())
+      throw std::invalid_argument(
+        "directed_delayed_temporal_edge requires non-empty mutator and mutated "
+        "ranges");
+
+    if (ranges::equal(mutator_verts, mutated_verts)) {
+      if (mutator_verts.size() == 2) {
+        _verts[0] = mutator_verts[0];
+        _verts[1] = mutator_verts[1];
+        return;
+      } else if (mutator_verts.size() != 1) {
+        throw std::invalid_argument(
+          "directed_delayed_temporal_edge requires exactly one or two elements "
+          "when ranges are equal");
+      }
+    }
+
+    if (mutator_verts.size() != 1 || mutated_verts.size() != 1)
+      throw std::invalid_argument(
+        "directed_delayed_temporal_edge requires exactly one element in each "
+        "range when ranges are different");
+
+    _verts[0] = mutator_verts[0];
+    _verts[1] = mutated_verts[0];
   }
 
   template <network_vertex VertexType, typename TimeType>
@@ -1020,6 +1160,46 @@ namespace reticula {
       _verts[1] = verts[1];
     else
       _verts[1] = verts[0];
+  }
+
+  template <network_vertex VertexType, typename TimeType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  undirected_temporal_edge<VertexType, TimeType>::undirected_temporal_edge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated,
+      TimeType cause_time,
+      TimeType effect_time) : _time(cause_time) {
+    if (cause_time != effect_time)
+      throw std::invalid_argument("unequal cause_time and effect_time");
+
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() || mutated_verts.empty())
+      throw std::invalid_argument(
+        "undirected_temporal_edge requires non-empty mutator and mutated "
+        "ranges");
+
+    if (!ranges::equal(mutator_verts, mutated_verts))
+      throw std::invalid_argument(
+        "undirected_temporal_edge requires mutator and mutated ranges to be "
+        "equal");
+
+    if (mutator_verts.size() == 1) {
+      _verts = {mutator_verts[0], mutator_verts[0]};
+    } else if (mutator_verts.size() == 2) {
+      auto [l, h] = std::minmax(mutator_verts[0], mutator_verts[1]);
+      _verts = {l, h};
+    } else {
+      throw std::invalid_argument(
+        "undirected_temporal_edge requires exactly 1 or 2 vertices");
+    }
   }
 
   template <network_vertex VertexType, typename TimeType>

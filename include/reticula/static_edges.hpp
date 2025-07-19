@@ -74,6 +74,22 @@ namespace reticula {
      */
     directed_edge(const VertexType& v1, const VertexType& v2);
 
+    /**
+      Create a directed edge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices (tail vertices).
+      @param mutated Range of mutated vertices (head vertices).
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+    directed_edge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated);
+
 
     /**
       A directed edge is out_incident to vertex `v` iff `v` is the tail vertex
@@ -217,6 +233,22 @@ namespace reticula {
       Create an undirected edge. Order of the parameters are arbitrary.
      */
     undirected_edge(const VertexType& v1, const VertexType& v2);
+
+    /**
+      Create an undirected edge from mutator and mutated vertex ranges.
+
+      @param tag Uniform construction tag.
+      @param mutators Range of mutator vertices.
+      @param mutated Range of mutated vertices.
+     */
+    template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+    undirected_edge(
+        uniform_const_t,
+        MutatorRange&& mutators,
+        MutatedRange&& mutated);
 
     /**
       An undirected edge is incident to vertex `v` iff `v` is either of its
@@ -377,6 +409,30 @@ namespace reticula {
       : _verts({tail, head}) {}
 
   template <network_vertex VertexType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+  requires
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+  directed_edge<VertexType>::directed_edge(
+      uniform_const_t,
+      MutatorRange&& mutators,
+      MutatedRange&& mutated) {
+    std::vector<VertexType> mutator_verts(ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() || mutated_verts.empty())
+      throw std::invalid_argument(
+        "directed_edge requires non-empty mutator and mutated ranges");
+
+    if (mutator_verts.size() != 1 || mutated_verts.size() != 1)
+      throw std::invalid_argument(
+        "directed_edge requires exactly one element in each range");
+
+    _verts[0] = mutator_verts[0];
+    _verts[1] = mutated_verts[0];
+  }
+
+  template <network_vertex VertexType>
   inline bool
   directed_edge<VertexType>::is_out_incident(const VertexType& vert) const {
     return (_verts[0] == vert);
@@ -469,6 +525,38 @@ namespace reticula {
       const VertexType& v1, const VertexType& v2) {
     auto [l, h] = std::minmax(v1, v2);
     _verts = {l, h};
+  }
+
+  template <network_vertex VertexType>
+  template <ranges::input_range MutatorRange, ranges::input_range MutatedRange>
+    requires std::convertible_to<
+               ranges::range_value_t<MutatorRange>, VertexType> &&
+             std::convertible_to<
+               ranges::range_value_t<MutatedRange>, VertexType>
+  undirected_edge<VertexType>::undirected_edge(
+    uniform_const_t, MutatorRange&& mutators, MutatedRange&& mutated) {
+    std::vector<VertexType> mutator_verts(
+      ranges::begin(mutators), ranges::end(mutators));
+    std::vector<VertexType> mutated_verts(
+      ranges::begin(mutated), ranges::end(mutated));
+
+    if (mutator_verts.empty() || mutated_verts.empty())
+      throw std::invalid_argument(
+        "undirected_edge requires non-empty mutator and mutated ranges");
+
+    if (!ranges::equal(mutator_verts, mutated_verts))
+      throw std::invalid_argument(
+        "undirected_edge requires mutator and mutated ranges to be equal");
+
+    if (mutator_verts.size() == 1) {
+      _verts = {mutator_verts[0], mutator_verts[0]};
+    } else if (mutator_verts.size() == 2) {
+      auto [l, h] = std::minmax(mutator_verts[0], mutator_verts[1]);
+      _verts = {l, h};
+    } else {
+      throw std::invalid_argument(
+        "undirected_edge requires exactly 1 or 2 vertices");
+    }
   }
 
   template <network_vertex VertexType>
