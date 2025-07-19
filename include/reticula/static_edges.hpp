@@ -84,8 +84,8 @@ namespace reticula {
     template <
       ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
-      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
     directed_edge(
         uniform_const_t,
         MutatorRange&& mutators,
@@ -245,8 +245,8 @@ namespace reticula {
     template <
       ranges::input_range MutatorRange, ranges::input_range MutatedRange>
     requires
-      std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-      std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
+      std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+      std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
     undirected_edge(
         uniform_const_t,
         MutatorRange&& mutators,
@@ -410,13 +410,13 @@ namespace reticula {
       const VertexType& tail, const VertexType& head)
       : _verts({tail, head}) {}
 
-  template <network_vertex VertexType>
+  template <network_vertex VertT>
   template <
     ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires
-    std::convertible_to<ranges::range_value_t<MutatorRange>, VertexType> &&
-    std::convertible_to<ranges::range_value_t<MutatedRange>, VertexType>
-  directed_edge<VertexType>::directed_edge(
+    std::convertible_to<ranges::range_value_t<MutatorRange>, VertT> &&
+    std::convertible_to<ranges::range_value_t<MutatedRange>, VertT>
+  directed_edge<VertT>::directed_edge(
       uniform_const_t,
       MutatorRange&& mutators,
       MutatedRange&& mutated) {
@@ -532,14 +532,14 @@ namespace reticula {
     _verts = {l, h};
   }
 
-  template <network_vertex VertexType>
+  template <network_vertex VertT>
   template <
     ranges::input_range MutatorRange, ranges::input_range MutatedRange>
   requires std::convertible_to<
-               ranges::range_value_t<MutatorRange>, VertexType> &&
+               ranges::range_value_t<MutatorRange>, VertT> &&
            std::convertible_to<
-               ranges::range_value_t<MutatedRange>, VertexType>
-  undirected_edge<VertexType>::undirected_edge(
+               ranges::range_value_t<MutatedRange>, VertT>
+  undirected_edge<VertT>::undirected_edge(
       uniform_const_t,
       MutatorRange&& mutators,
       MutatedRange&& mutated) {
