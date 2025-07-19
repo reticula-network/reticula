@@ -1,6 +1,6 @@
 # AGENTS directives for reticula repository
 ## Build & Test
-- cmake -S . -B build && cmake --build build -j$(nproc) -t reticula_tests
+- cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo && cmake --build build -j$(nproc) -t reticula_tests
 - ctest --test-dir build --output-on-failure -j$(nproc)
 - ctest --test-dir build -R <test_name> --output-on-failure
 ## Lint & Formatting
@@ -15,5 +15,6 @@
 - #ifndef guard in headers; group includes: project, third-party, std
 - Use exceptions (std::runtime_error) with clear messages
 - No trailing whitespace; ensure final newline
+- No lines above 80 characters
 
 *Update AGENTS.md when build or style tools change.*
