@@ -31,8 +31,9 @@ FetchContent_Declare(
   GIT_TAG v1.0.0)
 FetchContent_Declare(
   csv
+  SYSTEM
   GIT_REPOSITORY https://github.com/arashbm/csv-parser.git
-  GIT_TAG 8bda02dabbb6b3b64d24841efee912c0a17fdf00
+  GIT_TAG bd406db93928fcf1c00ca1640e843a637ff13389
   GIT_SHALLOW TRUE)
 FetchContent_Declare(
   json
@@ -41,17 +42,6 @@ FetchContent_Declare(
   DOWNLOAD_EXTRACT_TIMESTAMP true)
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
-
-add_library(csv_system INTERFACE)
-target_link_libraries(csv_system INTERFACE csv)
-
-get_target_property(_csv_inc csv INTERFACE_INCLUDE_DIRECTORIES)
-
-set_property(TARGET csv PROPERTY INTERFACE_INCLUDE_DIRECTORIES "")
-
-set_property(TARGET csv APPEND PROPERTY
-    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
-        "$<BUILD_INTERFACE:${_csv_inc}>")
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(

@@ -2,7 +2,6 @@
 #define INCLUDE_RETICULA_IO_HPP_
 
 #include <filesystem>
-#include <internal/csv_reader.hpp>
 #include <utility>
 
 #include <csv.hpp>
