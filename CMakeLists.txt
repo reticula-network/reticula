@@ -125,7 +125,7 @@ if (is_standalone)
 endif()
 
 install(
-  TARGETS ${PROJECT_NAME} csv_system nlohmann_json
+  TARGETS ${PROJECT_NAME} csv_system csv nlohmann_json
   EXPORT ${PROJECT_NAME}_Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
