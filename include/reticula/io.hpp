@@ -2,14 +2,35 @@
 #define INCLUDE_RETICULA_IO_HPP_
 
 #include <filesystem>
+#include <internal/csv_reader.hpp>
+#include <utility>
+
+#include <csv.hpp>
 
 #include "network_concepts.hpp"
 #include "networks.hpp"
 
 namespace reticula {
+  template <
+    network_edge EdgeT,
+    ranges::input_range VertRange>
+  network<EdgeT> read_edgelist(std::istream& in, VertRange&& extra_verts);
+
+  template <network_edge EdgeT>
+  network<EdgeT> read_edgelist(std::istream& in);
+
+
+  template <
+    network_edge EdgeT,
+    ranges::input_range VertRange>
+  network<EdgeT> read_edgelist(
+      const std::filesystem::path& p,
+      VertRange&& extra_verts);
+
   template <network_edge EdgeT>
   network<EdgeT> read_edgelist(
-      std::filesystem::path path);
+      const std::filesystem::path& path);
+
 
   template <network_edge EdgeT>
   void write_edgelist(
@@ -18,10 +39,11 @@ namespace reticula {
 }  // namespace reticula
 
 // Implementation
-#include <csv.hpp>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+
+#include <csv.hpp>
 
 #include "networks.hpp"
 
@@ -135,22 +157,81 @@ namespace reticula {
         return ss.str();
       }
     };
+
+    template <network_edge EdgeT>
+    auto edgelist_edges(csv::CSVReader& rows) {
+      return views::transform(
+        rows, [](auto&& row) -> EdgeT {
+          return edge_from_edgelist_row<EdgeT>{}(row);
+        });
+    }
+
+    template <network_edge EdgeT>
+    auto edgelist_rows(const network<EdgeT>& net) {
+      return views::transform(net.edges(), [](const EdgeT& e) {
+        return edgelist_row_from_edge<EdgeT>{}(e);
+      });
+    }
+
+    template <
+      network_edge EdgeT, ranges::input_range VertRange>
+    network<EdgeT> read_edgelist(csv::CSVReader& rows, VertRange&& extra_verts) {
+      auto edge_view = detail::edgelist_edges<EdgeT>(rows);
+      return network<EdgeT>{edge_view, std::forward<VertRange>(extra_verts)};
+    }
+
+    template <network_edge EdgeT>
+    network<EdgeT> read_edgelist(csv::CSVReader& rows) {
+      return read_edgelist<EdgeT>(rows, std::vector<typename EdgeT::VertexType>{});
+    }
+
   }  // namespace detail
 
+  template <
+    network_edge EdgeT,
+    ranges::input_range VertRange>
+  network<EdgeT> read_edgelist(std::istream& in, VertRange&& extra_verts) {
+    csv::CSVFormat fmt;
+    fmt.delimiter(' ').quote('"').no_header();
+
+    csv::CSVReader reader(in, fmt);
+    return detail::read_edgelist<EdgeT>(
+      reader, std::forward<VertRange>(extra_verts));
+  }
+
   template <network_edge EdgeT>
-  network<EdgeT> read_edgelist(std::filesystem::path path) {
-    csv::CSVFormat format;
-    format.delimiter(' ');
-    format.quote('"');
-    format.no_header();
+  network<EdgeT> read_edgelist(std::istream& in) {
+    return read_edgelist<EdgeT>(in, std::vector<typename EdgeT::VertexType>{});
+  }
 
-    csv::CSVReader reader(std::filesystem::canonical(path).string(), format);
+  template <
+    network_edge EdgeT,
+    ranges::input_range VertRange>
+  network<EdgeT> read_edgelist(
+      const std::filesystem::path& p,
+      VertRange&& extra_verts) {
+    csv::CSVFormat fmt;
+    fmt.delimiter(' ').quote('"').no_header();
+    csv::CSVReader reader(std::filesystem::canonical(p).string(), fmt);
 
-    std::vector<EdgeT> edges;
-    for (auto& row: reader)
-      edges.push_back(detail::edge_from_edgelist_row<EdgeT>{}(row));
+    return detail::read_edgelist<EdgeT>(
+      reader, std::forward<VertRange>(extra_verts));
+  }
 
-    return network<EdgeT>(edges);
+  template <network_edge EdgeT>
+  network<EdgeT> read_edgelist(
+      const std::filesystem::path& p) {
+    return read_edgelist<EdgeT>(
+        p, std::vector<typename EdgeT::VertexType>{});
+  }
+
+
+  // writes
+
+  template <network_edge EdgeT>
+  void write_edgelist(const network<EdgeT>& net, std::ostream& out) {
+    for (auto&& row : detail::edgelist_rows(net))
+      out << row;
   }
 
   template <network_edge EdgeT>
@@ -161,8 +242,7 @@ namespace reticula {
     file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     file.open(path, std::ofstream::out | std::ofstream::trunc);
 
-    for (auto&& edge: network.edges())
-      file << detail::edgelist_row_from_edge<EdgeT>{}(edge);
+    write_edgelist<EdgeT>(network, file);
   }
 }  // namespace reticula
 

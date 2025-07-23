@@ -17,28 +17,33 @@ include(FetchContent)
 FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
+  GIT_SHALLOW TRUE
   GIT_TAG v1.0.0)
 FetchContent_Declare(
   indexed_set
   GIT_REPOSITORY https://github.com/arashbm/indexed_set.git
+  GIT_SHALLOW TRUE
   GIT_TAG v1.0.0)
 FetchContent_Declare(
   disjoint_set
   GIT_REPOSITORY https://github.com/arashbm/disjoint_set.git
+  GIT_SHALLOW TRUE
   GIT_TAG v1.0.0)
 FetchContent_Declare(
-  csvparser
-  URL https://raw.githubusercontent.com/vincentlaucsb/csv-parser/refs/tags/2.3.0/single_include/csv.hpp
-  URL_HASH MD5=c7f7832d8f52039ead7cec25cb30ab73
-  DOWNLOAD_NO_EXTRACT YES)
+  csv
+  GIT_REPOSITORY https://github.com/arashbm/csv-parser.git
+  GIT_TAG 8bda02dabbb6b3b64d24841efee912c0a17fdf00
+  GIT_SHALLOW TRUE)
+FetchContent_Declare(
+  json
+  URL_HASH MD5=e155202b2a589137f6804724bd182f12
+  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csvparser)
+FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
 
-add_library(csv INTERFACE)
-target_include_directories(csv
-  SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${csvparser_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+get_target_property(csv_includes csv INTERFACE_INCLUDE_DIRECTORIES)
+set_property(TARGET csv
+    PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${csv_includes}")
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(
@@ -47,7 +52,7 @@ target_include_directories(
   $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE
-  disjoint_set hyperloglog indexed_set csv)
+  disjoint_set hyperloglog indexed_set csv nlohmann_json::nlohmann_json)
 
 if (is_standalone)
   FetchContent_Declare(
@@ -117,7 +122,7 @@ if (is_standalone)
 endif()
 
 install(
-  TARGETS ${PROJECT_NAME} csv
+  TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}_Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
