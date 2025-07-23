@@ -86,6 +86,15 @@ TEST_CASE("out component", "[reticula::out_component]") {
     REQUIRE_THAT(std::vector<int>(c7.begin(), c7.end()),
       UnorderedRangeEquals(std::vector<int>({7, 3, 4, 5, 6})));
   }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+
+    BENCHMARK("out_component") {
+      return reticula::out_component(dg, 0);
+    };
+  }
 }
 
 TEST_CASE("out components", "[reticula::out_components]") {
@@ -288,6 +297,15 @@ TEST_CASE("out components", "[reticula::out_components]") {
     auto comp_size_ests = reticula::out_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg = reticula::random_directed_gnp_graph<int>(256, 0.032, gen);
+
+    BENCHMARK("out_components") {
+      return reticula::out_components(dg);
+    };
+  }
 }
 
 TEST_CASE("in component", "[reticula::in_component]") {
@@ -346,6 +364,15 @@ TEST_CASE("in component", "[reticula::in_component]") {
     auto c5 = reticula::in_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
       UnorderedRangeEquals(std::vector<int>({1, 2, 3, 5, 7})));
+  }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+
+    BENCHMARK("in_component") {
+      return reticula::in_component(dg, 0);
+    };
   }
 }
 
@@ -493,6 +520,15 @@ TEST_CASE("in components", "[reticula::in_components]") {
 
     auto comp_size_ests = reticula::in_component_size_estimates(graph, 0);
     REQUIRE(comp_size_ests.size() == graph.vertices().size());
+  }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg = reticula::random_directed_gnp_graph<int>(256, 0.032, gen);
+
+    BENCHMARK("in_components") {
+      return reticula::in_components(dg);
+    };
   }
 }
 
@@ -656,6 +692,14 @@ TEST_CASE("largest weakly connected component",
       reticula::largest_weakly_connected_component(graph);
     REQUIRE(comp.empty());
   }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+    BENCHMARK("largest weakly connected component") {
+      return reticula::largest_weakly_connected_component(dg);
+    };
+  }
 }
 
 TEST_CASE("weakly connected components",
@@ -673,6 +717,14 @@ TEST_CASE("weakly connected components",
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
         UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
+
+    SECTION("benchmark") {
+      std::mt19937_64 gen(42);
+      auto dg = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+      BENCHMARK("weakly connected components") {
+        return reticula::weakly_connected_components(dg);
+      };
+    }
   }
 
   SECTION("works for directed hypergraph") {
@@ -763,6 +815,14 @@ TEST_CASE("largest connected component",
       reticula::largest_connected_component(graph);
     REQUIRE(comp.empty());
   }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto g = reticula::random_gnp_graph<int>(8192, 0.001, gen);
+    BENCHMARK("largest connected component") {
+      return reticula::largest_connected_component(g);
+    };
+  }
 }
 
 
@@ -782,11 +842,13 @@ TEST_CASE("connected components", "[reticula::connected_components]") {
         UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
 
-    std::mt19937_64 gen(42);
-    auto g = reticula::random_gnp_graph<int>(16384, 0.001, gen);
-    BENCHMARK("connected components") {
-      return reticula::connected_components(g);
-    };
+    SECTION("benchmark") {
+      std::mt19937_64 gen(42);
+      auto g = reticula::random_gnp_graph<int>(16384, 0.001, gen);
+      BENCHMARK("connected_components") {
+        return reticula::connected_components(g);
+      };
+    }
   }
 
   SECTION("works for undirected hypergraph") {
@@ -816,6 +878,14 @@ TEST_CASE("is connected?", "[reticula::is_connected]") {
 
   reticula::undirected_network<int> empty;
   REQUIRE(reticula::is_connected(empty));
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto g = reticula::random_gnp_graph<int>(8192, 0.001, gen);
+    BENCHMARK("is_connected") {
+      return reticula::is_connected(g);
+    };
+  }
 }
 
 TEST_CASE("is reachable (static networks)", "[reticula::is_reachable]") {
@@ -926,13 +996,14 @@ TEST_CASE("is graphic", "[reticula::is_graphic]") {
   REQUIRE_FALSE(reticula::is_graphic(std::vector<int>({4, 3, 3, 2, 2, 1})));
   REQUIRE_FALSE(reticula::is_graphic(std::vector<int>({4, 3, 2, 1})));
 
-  std::mt19937_64 gen(42);
-  auto ds = reticula::degree_sequence(
-    reticula::random_gnp_graph<int>(
-      16384, 0.001, gen));
-  BENCHMARK("is_graphic") {
-    return reticula::is_graphic(ds);
-  };
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto g_large = reticula::random_gnp_graph<int>(16384, 0.001, gen);
+    auto ds = reticula::degree_sequence(g_large);
+    BENCHMARK("is_graphic") {
+      return reticula::is_graphic(ds);
+    };
+  }
 }
 
 TEST_CASE("is digraphic", "[reticula::is_digraphic]") {
@@ -960,13 +1031,14 @@ TEST_CASE("is digraphic", "[reticula::is_digraphic]") {
           {{4, 0}, {0, 1}, {1, 1}, {3, 1}, {0, 1}})));
 
 
-  std::mt19937_64 gen(42);
-  auto dds = reticula::in_out_degree_pair_sequence(
-    reticula::random_directed_gnp_graph<int>(
-      16384, 0.001, gen));
-  BENCHMARK("is_digraphic") {
-    return reticula::is_digraphic(dds);
-  };
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto g_large = reticula::random_gnp_graph<int>(16384, 0.001, gen);
+    auto ds = reticula::in_out_degree_pair_sequence(g_large);
+    BENCHMARK("is_digraphic") {
+      return reticula::is_digraphic(ds);
+    };
+  }
 }
 
 TEST_CASE("shortest path from vert", "[reticula::shortest_path_lengths_from]") {
@@ -976,6 +1048,14 @@ TEST_CASE("shortest path from vert", "[reticula::shortest_path_lengths_from]") {
   REQUIRE(reticula::shortest_path_lengths_from(dg, 1) ==
       std::unordered_map<int, std::size_t, reticula::hash<int>>{
         {1, 0}, {2, 1}, {3, 2}, {5, 3}, {6, 4}, {4, 4}});
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg_large = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+    BENCHMARK("shortest_path_lengths_from") {
+      return reticula::shortest_path_lengths_from(dg_large, 0);
+    };
+  }
 }
 
 TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
@@ -985,6 +1065,14 @@ TEST_CASE("shortest path to vert", "[reticula::shortest_path_lengths_to]") {
   REQUIRE(reticula::shortest_path_lengths_to(dg, 4) ==
       std::unordered_map<int, std::size_t, reticula::hash<int>>{
         {1, 4}, {2, 3}, {3, 2}, {5, 1}, {4, 0}});
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    auto dg_large = reticula::random_directed_gnp_graph<int>(8192, 0.001, gen);
+    BENCHMARK("shortest_path_lengths_to") {
+      return reticula::shortest_path_lengths_to(dg_large, 0);
+    };
+  }
 }
 
 TEST_CASE("edge degree functions",
@@ -1520,6 +1608,23 @@ TEST_CASE(
 
     REQUIRE_THROWS_AS(
       reticula::two_colouring(g), reticula::utils::not_bipartite_error);
+  }
+
+  SECTION("benchmark") {
+    std::mt19937_64 gen(42);
+    std::vector<reticula::undirected_edge<int>> edges;
+    int n = 8192;
+    std::uniform_int_distribution dist(0, n-1);
+    for (int i = 0; i < 10000; ++i)
+      edges.emplace_back(dist(gen), n + dist(gen));
+    reticula::undirected_network<int> g(edges, std::ranges::iota_view(0, 2*n));
+
+    BENCHMARK("try_two_colouring") {
+      return reticula::try_two_colouring(g);
+    };
+    BENCHMARK("is_bipartite") {
+      return reticula::is_bipartite(g);
+    };
   }
 }
 

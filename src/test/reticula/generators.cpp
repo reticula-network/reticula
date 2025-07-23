@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
 
 #include <reticula/utils.hpp>
 #include <reticula/networks.hpp>
@@ -123,7 +124,7 @@ TEST_CASE("path graph", "[reticula::path_graph]") {
 
       return d2.size() == 3;
     };
-    REQUIRE(std::all_of(verts.begin(), verts.end(), check_locality));
+    REQUIRE(std::ranges::all_of(verts, check_locality));
   }
 
   SECTION("aperiodic") {
@@ -194,7 +195,7 @@ TEST_CASE("cycle graph", "[reticula::cycle_graph]") {
 
     return d2.size() == 3;
   };
-  REQUIRE(std::all_of(verts.begin(), verts.end(), check_locality));
+  REQUIRE(std::ranges::all_of(verts, check_locality));
 }
 
 TEST_CASE("regular ring lattice", "[reticula::regular_ring_lattice]") {
@@ -225,7 +226,7 @@ TEST_CASE("regular ring lattice", "[reticula::regular_ring_lattice]") {
 
     return d2.size() == k*2+1;
   };
-  REQUIRE(std::all_of(verts.begin(), verts.end(), check_locality));
+  REQUIRE(std::ranges::all_of(verts, check_locality));
 }
 
 TEST_CASE("complete graph", "[reticula::complete_graph]") {

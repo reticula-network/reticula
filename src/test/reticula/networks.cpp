@@ -2,13 +2,15 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_range_equals.hpp>
 #include <catch2/matchers/catch_matchers_contains.hpp>
+#include <catch2/benchmark/catch_benchmark.hpp>
+
 using Catch::Matchers::RangeEquals;
 using Catch::Matchers::Contains;
 using Catch::Matchers::UnorderedRangeEquals;
 
-#include <reticula/ranges.hpp>
 #include <reticula/static_edges.hpp>
 #include <reticula/temporal_edges.hpp>
+#include <reticula/generators.hpp>
 
 #include <reticula/networks.hpp>
 
@@ -103,18 +105,18 @@ TEST_CASE("undirected networks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -127,23 +129,41 @@ TEST_CASE("undirected networks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
                   }));
     }
+  }
+
+  SECTION("network construction benchmarks") {
+    int n = 200;
+    auto g = reticula::complete_graph<int>(n);
+    auto edges = g.edges();
+    std::vector<reticula::undirected_edge<int>> edge_vec(edges.begin(), edges.end());
+
+    BENCHMARK("undirected_network construction from edges") {
+      return reticula::undirected_network<int>(
+        edge_vec);
+    };
+
+    BENCHMARK("undirected_network construction from edges and iota") {
+      return reticula::undirected_network<int>(
+        edge_vec,
+        std::ranges::iota_view(0, n));
+    };
   }
 }
 
@@ -228,18 +248,18 @@ TEST_CASE("undirected hypernetworks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -252,18 +272,18 @@ TEST_CASE("undirected hypernetworks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -350,18 +370,18 @@ TEST_CASE("directed networks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -374,23 +394,41 @@ TEST_CASE("directed networks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
                   }));
     }
+  }
+
+  SECTION("network construction benchmarks") {
+    int n = 200;
+    auto directed_g = reticula::complete_directed_graph<int>(n);
+    auto directed_edges = directed_g.edges();
+    std::vector<reticula::directed_edge<int>> directed_edge_vec(
+      directed_edges.begin(), directed_edges.end());
+
+    BENCHMARK("directed_network construction from edges") {
+      return reticula::directed_network<int>(directed_edge_vec);
+    };
+
+    BENCHMARK("directed_network construction from edges and iota") {
+      return reticula::directed_network<int>(
+        directed_edge_vec,
+        std::ranges::iota_view(0, n));
+    };
   }
 }
 
@@ -477,18 +515,18 @@ TEST_CASE("directed hypernetworks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -501,18 +539,18 @@ TEST_CASE("directed hypernetworks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -599,18 +637,18 @@ TEST_CASE("undirected temporal networks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -623,18 +661,18 @@ TEST_CASE("undirected temporal networks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -727,18 +765,18 @@ TEST_CASE("undirected temporal hypernetworks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -751,18 +789,18 @@ TEST_CASE("undirected temporal hypernetworks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -849,18 +887,18 @@ TEST_CASE("directed temporal networks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -873,18 +911,18 @@ TEST_CASE("directed temporal networks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -979,18 +1017,18 @@ TEST_CASE("directed temporal hypernetworks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -1003,18 +1041,18 @@ TEST_CASE("directed temporal hypernetworks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e))
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -1107,10 +1145,10 @@ TEST_CASE("directed delayed temporal networks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e,
                                   [](auto e1, auto e2) {
                                     return effect_lt(e1, e2);
@@ -1118,10 +1156,10 @@ TEST_CASE("directed delayed temporal networks",
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -1134,10 +1172,10 @@ TEST_CASE("directed delayed temporal networks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e,
                                   [](auto e1, auto e2) {
                                     return effect_lt(e1, e2);
@@ -1145,10 +1183,10 @@ TEST_CASE("directed delayed temporal networks",
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -1246,10 +1284,10 @@ TEST_CASE("directed delayed temporal hypernetworks",
       for (const auto& edge : graph.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e,
                                   [](auto e1, auto e2) {
                                     return effect_lt(e1, e2);
@@ -1257,10 +1295,10 @@ TEST_CASE("directed delayed temporal hypernetworks",
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(graph.edges(),
+      REQUIRE(std::ranges::all_of(graph.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
@@ -1273,10 +1311,10 @@ TEST_CASE("directed delayed temporal hypernetworks",
       for (const auto& edge : other.edges_effect())
         REQUIRE_THAT(u.edges_effect(), Contains(edge));
 
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutated_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.in_edges(v), e,
                                   [](auto e1, auto e2) {
                                     return effect_lt(e1, e2);
@@ -1284,10 +1322,10 @@ TEST_CASE("directed delayed temporal hypernetworks",
                               return false;
                       return true;
                   }));
-      REQUIRE(reticula::ranges::all_of(other.edges(),
+      REQUIRE(std::ranges::all_of(other.edges(),
                   [&u](const auto& e) {
                       for (auto& v: e.mutator_verts())
-                          if (!reticula::ranges::binary_search(
+                          if (!std::ranges::binary_search(
                                 u.out_edges(v), e))
                               return false;
                       return true;
