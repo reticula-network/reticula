@@ -38,7 +38,7 @@ FetchContent_Declare(
   json
   URL_HASH MD5=e155202b2a589137f6804724bd182f12
   URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
-  DOWNLOAD_EXTRACT_TIMESTAMP)
+  DOWNLOAD_EXTRACT_TIMESTAMP true)
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
 
@@ -123,7 +123,7 @@ if (is_standalone)
 endif()
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS ${PROJECT_NAME} csv nlohmann_json
   EXPORT ${PROJECT_NAME}_Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
