@@ -283,6 +283,21 @@ namespace reticula {
       const typename EdgeT::VertexType& source,
       const typename EdgeT::VertexType& destination);
 
+  template <static_network_edge EdgeT>
+  std::optional<std::pair<
+    component<typename EdgeT::VertexType>,
+    component<typename EdgeT::VertexType>>>
+  try_two_colouring(const network<EdgeT>& net);
+
+  template <static_network_edge EdgeT>
+  std::pair<
+    component<typename EdgeT::VertexType>,
+    component<typename EdgeT::VertexType>>
+  two_colouring(const network<EdgeT>& net);
+
+  template <static_network_edge EdgeT>
+  bool is_bipartite(const network<EdgeT>& net);
+
   /**
     Checks if the sequence can be the degree sequence of a valid undirected
     graph, containing no multi-edges or loops, based on the Erdős--Gallai
@@ -1120,6 +1135,64 @@ namespace reticula {
           const typename EdgeT::VertexType&, const EdgeT&,
           const typename EdgeT::VertexType& v){ return v != destination; },
         false, false, 0).contains(destination);
+  }
+
+  template <static_network_edge EdgeT>
+  std::optional<std::pair<
+    component<typename EdgeT::VertexType>,
+    component<typename EdgeT::VertexType>>>
+  try_two_colouring(const network<EdgeT>& net) {
+    using V = typename EdgeT::VertexType;
+
+    component<V> first, second;
+    std::unordered_map<V, bool, hash<V>> colours;
+    colours.reserve(net.vertices().size());
+
+    auto assign = [&](const V& from, const EdgeT&, const V& to) {
+      colours[to] = !colours[from];
+      if (colours[to])
+        second.insert(to);
+      else
+        first.insert(to);
+      return true;
+    };
+
+    for (const auto& v : net.vertices()) {
+      if (!colours.contains(v)) {
+        colours[v] = false;
+        first.insert(v);
+        breadth_first_search(net, v, assign, false, true, 0);
+      }
+    }
+
+    for (const auto& e : net.edges()) {
+      auto verts = e.incident_verts();
+      if (verts.size() < 2)
+        return std::nullopt;
+      for (std::size_t i = 0; i < verts.size(); ++i)
+        for (std::size_t j = i + 1; j < verts.size(); ++j)
+          if (colours[verts[i]] == colours[verts[j]])
+            return std::nullopt;
+    }
+
+    return std::pair{first, second};
+  }
+
+  template <static_network_edge EdgeT>
+  bool is_bipartite(const network<EdgeT>& net) {
+    return try_two_colouring(net).has_value();
+  }
+
+  template <static_network_edge EdgeT>
+  std::pair<
+    component<typename EdgeT::VertexType>,
+    component<typename EdgeT::VertexType>>
+  two_colouring(const network<EdgeT>& net) {
+    auto maybe_colours = try_two_colouring(net);
+    if (maybe_colours)
+      return *maybe_colours;
+    else
+      throw utils::not_bipartite_error("argument net must be bipartite");
   }
 
   template <ranges::forward_range Range>

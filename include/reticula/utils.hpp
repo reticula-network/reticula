@@ -63,6 +63,18 @@ namespace reticula {
     };
 
     /**
+      Indicates that the specified network is not bipartite, but a function
+      requiring bipartiteness was called on it.
+    */
+    class not_bipartite_error : public std::domain_error {
+    public:
+      explicit not_bipartite_error(const std::string& what_arg)
+        : std::domain_error(what_arg) {}
+      explicit not_bipartite_error(const char* what_arg)
+        : std::domain_error(what_arg) {}
+    };
+
+    /**
       Indicates that the specified vertex type cannot label required number of
       unique vertices.
      */

@@ -1,14 +1,17 @@
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
+#include <catch2/matchers/catch_matchers_contains.hpp>
 #include <catch2/catch_approx.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
 using Catch::Approx;
-using Catch::Matchers::UnorderedEquals;
+using Catch::Matchers::UnorderedRangeEquals;
+using Catch::Matchers::RangeEquals;
 using Catch::Matchers::Contains;
-using Catch::Matchers::Equals;
 
 #include <reticula/ranges.hpp>
 #include <reticula/utils.hpp>
@@ -24,15 +27,15 @@ TEST_CASE("out component", "[reticula::out_component]") {
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
     auto c2 = reticula::out_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
 
     auto c5 = reticula::out_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
 
     auto c6 = reticula::out_component(graph, 6);
     REQUIRE_THAT(std::vector<int>(c6.begin(), c6.end()),
-      UnorderedEquals(std::vector<int>({6})));
+      UnorderedRangeEquals(std::vector<int>({6})));
   }
 
   SECTION("gives correct answer on a cyclic hypergraph") {
@@ -41,19 +44,19 @@ TEST_CASE("out component", "[reticula::out_component]") {
         {{5}, {4}}, {{4}, {2, 3}}});
     auto c2 = reticula::out_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
 
     auto c5 = reticula::out_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
 
     auto c6 = reticula::out_component(graph, 6);
     REQUIRE_THAT(std::vector<int>(c6.begin(), c6.end()),
-      UnorderedEquals(std::vector<int>({6})));
+      UnorderedRangeEquals(std::vector<int>({6})));
 
     auto c7 = reticula::out_component(graph, 7);
     REQUIRE_THAT(std::vector<int>(c7.begin(), c7.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6, 7})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6, 7})));
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -61,11 +64,11 @@ TEST_CASE("out component", "[reticula::out_component]") {
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
     auto c2 = reticula::out_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
 
     auto c5 = reticula::out_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({5, 4, 6})));
+      UnorderedRangeEquals(std::vector<int>({5, 4, 6})));
   }
 
   SECTION("gives correct answer on acyclic hypergraphs") {
@@ -73,15 +76,15 @@ TEST_CASE("out component", "[reticula::out_component]") {
         {{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
     auto c2 = reticula::out_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
 
     auto c5 = reticula::out_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({5, 4, 6})));
+      UnorderedRangeEquals(std::vector<int>({5, 4, 6})));
 
     auto c7 = reticula::out_component(graph, 7);
     REQUIRE_THAT(std::vector<int>(c7.begin(), c7.end()),
-      UnorderedEquals(std::vector<int>({7, 3, 4, 5, 6})));
+      UnorderedRangeEquals(std::vector<int>({7, 3, 4, 5, 6})));
   }
 }
 
@@ -93,22 +96,22 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({3, 4, 5, 6, 2})));
+            UnorderedRangeEquals(std::vector<int>({3, 4, 5, 6, 2})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4, 2, 3, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({4, 2, 3, 5, 6})));
       else if (v == 5)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4, 2, 3, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({4, 2, 3, 5, 6})));
       else if (v == 6)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({6})));
+            UnorderedRangeEquals(std::vector<int>({6})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -131,16 +134,16 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3})));
+            UnorderedRangeEquals(std::vector<int>({2, 3})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3})));
+            UnorderedRangeEquals(std::vector<int>({2, 3})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4})));
+            UnorderedRangeEquals(std::vector<int>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -163,16 +166,16 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1})));
+            UnorderedRangeEquals(std::vector<int>({1})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3})));
+            UnorderedRangeEquals(std::vector<int>({2, 3})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({3})));
+            UnorderedRangeEquals(std::vector<int>({3})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4})));
+            UnorderedRangeEquals(std::vector<int>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -196,16 +199,16 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 3, 4, 5, 6, 2})));
+            UnorderedRangeEquals(std::vector<int>({1, 3, 4, 5, 6, 2})));
       else if (v == 7)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 4, 2, 3, 5, 6, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 4, 2, 3, 5, 6, 7})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -227,16 +230,16 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({3, 4, 5, 6})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4})));
+            UnorderedRangeEquals(std::vector<int>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -258,19 +261,19 @@ TEST_CASE("out components", "[reticula::out_components]") {
     for (auto& [v, c]: reticula::out_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({2, 3, 4, 5, 6})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({3, 4, 5, 6})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({4})));
+            UnorderedRangeEquals(std::vector<int>({4})));
       else if (v == 7)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({7, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({7, 3, 4, 5, 6})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<int, std::size_t> comp_map;
@@ -293,15 +296,15 @@ TEST_CASE("in component", "[reticula::in_component]") {
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
     auto c2 = reticula::in_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
 
     auto c5 = reticula::in_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
 
     auto c1 = reticula::in_component(graph, 1);
     REQUIRE_THAT(std::vector<int>(c1.begin(), c1.end()),
-      UnorderedEquals(std::vector<int>({1})));
+      UnorderedRangeEquals(std::vector<int>({1})));
   }
 
   SECTION("gives correct answer on a cyclic hypergraph") {
@@ -310,15 +313,15 @@ TEST_CASE("in component", "[reticula::in_component]") {
         {{5}, {4}}, {{4}, {2, 3}}});
     auto c2 = reticula::in_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
 
     auto c5 = reticula::in_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
 
     auto c1 = reticula::in_component(graph, 7);
     REQUIRE_THAT(std::vector<int>(c1.begin(), c1.end()),
-      UnorderedEquals(std::vector<int>({7})));
+      UnorderedRangeEquals(std::vector<int>({7})));
   }
 
   SECTION("gives correct answer on acyclic graphs") {
@@ -326,11 +329,11 @@ TEST_CASE("in component", "[reticula::in_component]") {
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
     auto c2 = reticula::in_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({2, 1})));
+      UnorderedRangeEquals(std::vector<int>({2, 1})));
 
     auto c5 = reticula::in_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 5})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 5})));
   }
 
   SECTION("gives correct answer on acyclic hypergraphs") {
@@ -338,11 +341,11 @@ TEST_CASE("in component", "[reticula::in_component]") {
         {{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
     auto c2 = reticula::in_component(graph, 2);
     REQUIRE_THAT(std::vector<int>(c2.begin(), c2.end()),
-      UnorderedEquals(std::vector<int>({2, 1})));
+      UnorderedRangeEquals(std::vector<int>({2, 1})));
 
     auto c5 = reticula::in_component(graph, 5);
     REQUIRE_THAT(std::vector<int>(c5.begin(), c5.end()),
-      UnorderedEquals(std::vector<int>({1, 2, 3, 5, 7})));
+      UnorderedRangeEquals(std::vector<int>({1, 2, 3, 5, 7})));
   }
 }
 
@@ -354,22 +357,22 @@ TEST_CASE("in components", "[reticula::in_components]") {
     for (auto& [v, c]: reticula::in_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1})));
+            UnorderedRangeEquals(std::vector<int>({1})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
       else if (v == 5)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
       else if (v == 6)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 6})));
 
 
     auto comp_sizes = reticula::in_component_sizes(graph);
@@ -395,16 +398,16 @@ TEST_CASE("in components", "[reticula::in_components]") {
     for (auto& [v, c]: reticula::in_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
       else if (v == 7)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({7})));
+            UnorderedRangeEquals(std::vector<int>({7})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
@@ -428,16 +431,16 @@ TEST_CASE("in components", "[reticula::in_components]") {
     for (auto& [v, c]: reticula::in_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1})));
+            UnorderedRangeEquals(std::vector<int>({1})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2})));
+            UnorderedRangeEquals(std::vector<int>({1, 2})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
@@ -460,22 +463,22 @@ TEST_CASE("in components", "[reticula::in_components]") {
     for (auto& [v, c]: reticula::in_components(graph))
       if (v == 1)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1})));
+            UnorderedRangeEquals(std::vector<int>({1})));
       else if (v == 2)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2})));
+            UnorderedRangeEquals(std::vector<int>({1, 2})));
       else if (v == 3)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 7})));
       else if (v == 4)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 4, 5, 7})));
       else if (v == 6)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({1, 2, 3, 5, 6, 7})));
+            UnorderedRangeEquals(std::vector<int>({1, 2, 3, 5, 6, 7})));
       else if (v == 7)
         REQUIRE_THAT(std::vector<int>(c.begin(), c.end()),
-            UnorderedEquals(std::vector<int>({7})));
+            UnorderedRangeEquals(std::vector<int>({7})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
@@ -540,8 +543,8 @@ TEST_CASE("try topological ordering", "[reticula::try_topological_order]") {
             {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}}));
     REQUIRE(maybe_topo);
     REQUIRE_THAT(maybe_topo.value(),
-        Equals(std::vector<int>({1, 2, 3, 5, 4, 6})) ||
-        Equals(std::vector<int>({1, 2, 3, 5, 6, 4})));
+        RangeEquals(std::vector<int>({1, 2, 3, 5, 4, 6})) ||
+        RangeEquals(std::vector<int>({1, 2, 3, 5, 6, 4})));
   }
 
   SECTION("returns a correct answer on an acyclic graph with isolated node") {
@@ -550,10 +553,10 @@ TEST_CASE("try topological ordering", "[reticula::try_topological_order]") {
             {{1, 2}, {2, 3}}, {0, 1, 2, 3}));
     REQUIRE(maybe_topo);
     REQUIRE_THAT(maybe_topo.value(),
-        Equals(std::vector<int>({0, 1, 2, 3})) ||
-        Equals(std::vector<int>({1, 0, 2, 3})) ||
-        Equals(std::vector<int>({1, 2, 0, 3})) ||
-        Equals(std::vector<int>({1, 2, 3, 0})));
+        RangeEquals(std::vector<int>({0, 1, 2, 3})) ||
+        RangeEquals(std::vector<int>({1, 0, 2, 3})) ||
+        RangeEquals(std::vector<int>({1, 2, 0, 3})) ||
+        RangeEquals(std::vector<int>({1, 2, 3, 0})));
   }
 
   SECTION("returns a correct answer on an acyclic hypergraph") {
@@ -562,8 +565,8 @@ TEST_CASE("try topological ordering", "[reticula::try_topological_order]") {
             {{1}, {2, 3}}, {{2}, {4}}, {{3}, {4}}, {{4}, {5}}}));
     REQUIRE(maybe_topo);
     REQUIRE_THAT(maybe_topo.value(),
-        Equals(std::vector<int>({1, 2, 3, 4, 5})) ||
-        Equals(std::vector<int>({1, 3, 2, 4, 5})));
+        RangeEquals(std::vector<int>({1, 2, 3, 4, 5})) ||
+        RangeEquals(std::vector<int>({1, 3, 2, 4, 5})));
   }
 
 
@@ -601,8 +604,8 @@ TEST_CASE("topological ordering", "[reticula::topological_order]") {
     reticula::directed_network<int> graph({
         {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
     auto topo = reticula::topological_order(graph);
-    REQUIRE_THAT(topo, Equals(std::vector<int>({1, 2, 3, 5, 4, 6})) ||
-                        Equals(std::vector<int>({1, 2, 3, 5, 6, 4})));
+    REQUIRE_THAT(topo, RangeEquals(std::vector<int>({1, 2, 3, 5, 4, 6})) ||
+                        RangeEquals(std::vector<int>({1, 2, 3, 5, 6, 4})));
   }
 
 
@@ -611,8 +614,8 @@ TEST_CASE("topological ordering", "[reticula::topological_order]") {
           reticula::directed_hypernetwork<int>({
             {{1}, {2, 3}}, {{2}, {4}}, {{3}, {4}}, {{4}, {5}}}));
     REQUIRE_THAT(topo,
-        Equals(std::vector<int>({1, 2, 3, 4, 5})) ||
-        Equals(std::vector<int>({1, 3, 2, 4, 5})));
+        RangeEquals(std::vector<int>({1, 2, 3, 4, 5})) ||
+        RangeEquals(std::vector<int>({1, 3, 2, 4, 5})));
   }
 
   SECTION("gives a correct answer on a larger acyclic ") {
@@ -666,9 +669,9 @@ TEST_CASE("weakly connected components",
     auto comps = reticula::weakly_connected_components(graph);
     REQUIRE(comps.size() == 2);
     REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
   }
 
@@ -681,9 +684,9 @@ TEST_CASE("weakly connected components",
     auto comps = reticula::weakly_connected_components(graph);
     REQUIRE(comps.size() == 2);
     REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
   }
 }
@@ -711,13 +714,13 @@ TEST_CASE("weakly connected component",
     for (auto i: weak1) {
       auto comp = reticula::weakly_connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak1));
+          UnorderedRangeEquals(weak1));
     }
 
     for (auto i: weak2) {
       auto comp = reticula::weakly_connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak2));
+          UnorderedRangeEquals(weak2));
     }
   }
 
@@ -730,13 +733,13 @@ TEST_CASE("weakly connected component",
     for (auto i: weak1) {
       auto comp = reticula::weakly_connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak1));
+          UnorderedRangeEquals(weak1));
     }
 
     for (auto i: weak2) {
       auto comp = reticula::weakly_connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak2));
+          UnorderedRangeEquals(weak2));
     }
   }
 }
@@ -774,9 +777,9 @@ TEST_CASE("connected components", "[reticula::connected_components]") {
     auto comps = reticula::connected_components(graph);
     REQUIRE(comps.size() == 2);
     REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
 
     std::mt19937_64 gen(42);
@@ -795,9 +798,9 @@ TEST_CASE("connected components", "[reticula::connected_components]") {
     auto comps = reticula::connected_components(graph);
     REQUIRE(comps.size() == 2);
     REQUIRE_THAT(std::vector<int>(comps[0].begin(), comps[0].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE_THAT(std::vector<int>(comps[1].begin(), comps[1].end()),
-        UnorderedEquals(weak1) || UnorderedEquals(weak2));
+        UnorderedRangeEquals(weak1) || UnorderedRangeEquals(weak2));
     REQUIRE(comps[0] != comps[1]);
   }
 }
@@ -881,13 +884,13 @@ TEST_CASE("connected component", "[reticula::connected_component]") {
     for (auto i: weak1) {
       auto comp = reticula::connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak1));
+          UnorderedRangeEquals(weak1));
     }
 
     for (auto i: weak2) {
       auto comp = reticula::connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak2));
+          UnorderedRangeEquals(weak2));
     }
   }
 
@@ -900,13 +903,13 @@ TEST_CASE("connected component", "[reticula::connected_component]") {
     for (auto i: weak1) {
       auto comp = reticula::connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak1));
+          UnorderedRangeEquals(weak1));
     }
 
     for (auto i: weak2) {
       auto comp = reticula::connected_component(graph, i);
       REQUIRE_THAT(std::vector<int>(comp.begin(), comp.end()),
-          UnorderedEquals(weak2));
+          UnorderedRangeEquals(weak2));
     }
   }
 }
@@ -1475,3 +1478,48 @@ TEST_CASE("network density", "[reticula::density]") {
       {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
   REQUIRE(reticula::density(dg) == Approx(0.2));
 }
+TEST_CASE(
+    "two-colouring and bipartite check",
+    "[reticula::try_two_colouring][reticula::is_bipartite]") {
+  SECTION("bipartite graph is coloured") {
+    reticula::undirected_network<int> g({{1, 2}, {2, 3}, {3, 4}, {4, 1}});
+    auto colouring = reticula::try_two_colouring(g);
+    REQUIRE(colouring.has_value());
+    auto [c11, c12] = *colouring;
+    REQUIRE(c11.size() + c12.size() == g.vertices().size());
+
+    std::unordered_set<int> vs(c11.begin(), c11.end());
+    vs.insert(c12.begin(), c12.end());
+    REQUIRE_THAT(vs, UnorderedRangeEquals(g.vertices()));
+
+    for (const auto& e : g.edges()) {
+      auto vs = e.incident_verts();
+      if (vs.size() == 2)
+        REQUIRE((c11.contains(vs[0]) != c11.contains(vs[1])));
+    }
+
+    auto [c21, c22] = reticula::two_colouring(g);
+    REQUIRE(c21.size() + c22.size() == g.vertices().size());
+
+    std::unordered_set<int> vs2(c21.begin(), c21.end());
+    vs2.insert(c22.begin(), c22.end());
+    REQUIRE_THAT(vs2, UnorderedRangeEquals(g.vertices()));
+
+    for (const auto& e : g.edges()) {
+      auto vs2 = e.incident_verts();
+      if (vs2.size() == 2)
+        REQUIRE((c21.contains(vs2[0]) != c21.contains(vs2[1])));
+    }
+    REQUIRE(reticula::is_bipartite(g));
+  }
+
+  SECTION("non-bipartite graph is rejected") {
+    reticula::undirected_network<int> g({{1, 2}, {2, 3}, {3, 1}});
+    REQUIRE_FALSE(reticula::try_two_colouring(g).has_value());
+    REQUIRE_FALSE(reticula::is_bipartite(g));
+
+    REQUIRE_THROWS_AS(
+      reticula::two_colouring(g), reticula::utils::not_bipartite_error);
+  }
+}
+
