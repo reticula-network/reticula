@@ -152,7 +152,8 @@ TEST_CASE("undirected networks",
     int n = 200;
     auto g = reticula::complete_graph<int>(n);
     auto edges = g.edges();
-    std::vector<reticula::undirected_edge<int>> edge_vec(edges.begin(), edges.end());
+    std::vector<reticula::undirected_edge<int>> edge_vec(
+      edges.begin(), edges.end());
 
     BENCHMARK("undirected_network construction from edges") {
       return reticula::undirected_network<int>(
