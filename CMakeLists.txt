@@ -37,7 +37,8 @@ FetchContent_Declare(
 FetchContent_Declare(
   json
   URL_HASH MD5=e155202b2a589137f6804724bd182f12
-  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+  DOWNLOAD_EXTRACT_TIMESTAMP)
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
 

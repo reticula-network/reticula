@@ -175,14 +175,16 @@ namespace reticula {
 
     template <
       network_edge EdgeT, ranges::input_range VertRange>
-    network<EdgeT> read_edgelist(csv::CSVReader& rows, VertRange&& extra_verts) {
+    network<EdgeT> read_edgelist(
+        csv::CSVReader& rows, VertRange&& extra_verts) {
       auto edge_view = detail::edgelist_edges<EdgeT>(rows);
       return network<EdgeT>{edge_view, std::forward<VertRange>(extra_verts)};
     }
 
     template <network_edge EdgeT>
     network<EdgeT> read_edgelist(csv::CSVReader& rows) {
-      return read_edgelist<EdgeT>(rows, std::vector<typename EdgeT::VertexType>{});
+      return read_edgelist<EdgeT>(
+        rows, std::vector<typename EdgeT::VertexType>{});
     }
 
   }  // namespace detail
