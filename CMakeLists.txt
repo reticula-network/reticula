@@ -42,9 +42,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
 
+add_library(csv_system INTERFACE)
+target_link_libraries(csv_system INTERFACE csv)
+
 get_target_property(csv_includes csv INTERFACE_INCLUDE_DIRECTORIES)
-set_property(TARGET csv
-    PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${csv_includes}")
+target_include_directories(csv_system SYSTEM INTERFACE "${csv_includes}")
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(
@@ -53,7 +55,7 @@ target_include_directories(
   $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(${PROJECT_NAME} INTERFACE
-  disjoint_set hyperloglog indexed_set csv nlohmann_json::nlohmann_json)
+  disjoint_set hyperloglog indexed_set csv_system nlohmann_json::nlohmann_json)
 
 if (is_standalone)
   FetchContent_Declare(
@@ -123,7 +125,7 @@ if (is_standalone)
 endif()
 
 install(
-  TARGETS ${PROJECT_NAME} csv nlohmann_json
+  TARGETS ${PROJECT_NAME} csv_system nlohmann_json
   EXPORT ${PROJECT_NAME}_Targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
