@@ -43,7 +43,7 @@ namespace reticula {
   template <integer_network_vertex VertT>
   undirected_network<VertT> path_graph(VertT size, bool periodic) {
     std::vector<undirected_edge<VertT>> edges;
-    edges.reserve(size);
+    edges.reserve(static_cast<std::size_t>(size));
 
     for (VertT i = {}; i < size-1; i++)
       edges.emplace_back(i, i+1);
