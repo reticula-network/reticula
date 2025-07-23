@@ -1,8 +1,6 @@
 #ifndef INCLUDE_RETICULA_GENERATORS_HPP_
 #define INCLUDE_RETICULA_GENERATORS_HPP_
 
-#include <numeric>
-
 #include "network_concepts.hpp"
 #include "networks.hpp"
 
@@ -69,7 +67,7 @@ namespace reticula {
       throw std::invalid_argument("degree should be divisible by two");
 
     std::vector<undirected_edge<VertT>> edges;
-    edges.reserve(size*degree/2);
+    edges.reserve(static_cast<std::size_t>(size * degree / 2));
 
     for (VertT i = {}; i < size; i++)
       for (VertT j = i + 1; j <= i + degree/2; j++)

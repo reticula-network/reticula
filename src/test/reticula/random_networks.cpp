@@ -6,11 +6,11 @@
 #include <reticula/random_networks.hpp>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 
-using Catch::Matchers::UnorderedEquals;
+using Catch::Matchers::UnorderedRangeEquals;
 
 TEMPLATE_TEST_CASE("Random G(n, p) graph",
     "[reticula::random_gnp_graph]",
@@ -132,6 +132,32 @@ TEMPLATE_TEST_CASE("Barabasi-Albert random graph",
   };
 }
 
+TEMPLATE_TEST_CASE("Watts-Strogatz random graph",
+    "[reticula::random_watts_strogatz_graph]",
+    std::size_t, int) {
+  std::mt19937_64 gen(42);
+  TestType n = 1000, k = 4;
+
+  SECTION("no rewiring") {
+    auto ws = reticula::random_watts_strogatz_graph<TestType>(n, k, 0.0, gen);
+    auto ring = reticula::regular_ring_lattice<TestType>(n, k);
+
+    REQUIRE(ws.edges().size() == static_cast<std::size_t>(n * k / 2));
+    REQUIRE_THAT(ws.edges(), UnorderedRangeEquals(ring.edges()));
+  }
+
+  SECTION("degree preserved") {
+    double p = 0.5;
+    auto ws = reticula::random_watts_strogatz_graph<TestType>(n, k, p, gen);
+
+    REQUIRE(ws.vertices().size() == static_cast<std::size_t>(n));
+    REQUIRE(ws.edges().size() == static_cast<std::size_t>(n * k / 2));
+    REQUIRE(reticula::ranges::none_of(ws.edges(), [](const auto& e) {
+      return e.incident_verts().size() == 1;
+    }));
+  }
+}
+
 TEMPLATE_TEST_CASE("random k-regular graph", "[reticula::random_regular_graph]",
     std::size_t, int) {
   std::mt19937_64 gen(42);
@@ -190,7 +216,7 @@ TEST_CASE("random directed degree sequence graph",
           static_cast<int>(g.in_degree(v)),
           static_cast<int>(g.out_degree(v)));
 
-    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+    REQUIRE_THAT(degrees, UnorderedRangeEquals(degree_sequence));
 
     REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -211,7 +237,7 @@ TEST_CASE("random directed degree sequence graph",
           static_cast<int>(g.in_degree(v)),
           static_cast<int>(g.out_degree(v)));
 
-    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+    REQUIRE_THAT(degrees, UnorderedRangeEquals(degree_sequence));
 
     REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -262,7 +288,7 @@ TEST_CASE("random degree sequence graph",
     for (auto v: g.vertices())
       degrees.push_back(static_cast<int>(g.degree(v)));
 
-    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+    REQUIRE_THAT(degrees, UnorderedRangeEquals(degree_sequence));
 
     REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -279,7 +305,7 @@ TEST_CASE("random degree sequence graph",
     for (auto v: g.vertices())
       degrees.push_back(static_cast<int>(g.degree(v)));
 
-    REQUIRE_THAT(degrees, UnorderedEquals(degree_sequence));
+    REQUIRE_THAT(degrees, UnorderedRangeEquals(degree_sequence));
 
     REQUIRE(reticula::ranges::none_of(g.edges(),
           [](const auto& e) {
@@ -354,8 +380,8 @@ TEST_CASE("random expected degree sequence graph",
               std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
-              double wu = static_cast<double>(u);
-              double wv = static_cast<double>(v);
+              auto wu = static_cast<double>(u);
+              auto wv = static_cast<double>(v);
               double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
               double puv = std::min(wu*wv/s, 1.0);
               if (u == v) puv *= 2.0;
@@ -383,8 +409,8 @@ TEST_CASE("random expected degree sequence graph",
               std::pair<int, int>,
               std::size_t>& kv) {
               auto& [u, v] = kv.first;
-              double wu = static_cast<double>(u);
-              double wv = static_cast<double>(v);
+              auto wu = static_cast<double>(u);
+              auto wv = static_cast<double>(v);
               double s = static_cast<double>(n)*static_cast<double>(n-1)/2.0;
               double puv = std::min(wu*wv/s, 1.0);
               if (u == v) puv = 0;
@@ -876,7 +902,7 @@ TEST_CASE("random directed fully-mixed temporal network",
       n, rate, max_t, gen);
 
   double per_event_mean = max_t*rate;
-  double edges = static_cast<double>(n*(n-1));
+  auto edges = static_cast<double>(n*(n-1));
 
   REQUIRE(static_cast<double>(g.edges().size()) >
       edges*per_event_mean - 3*std::sqrt(edges*per_event_mean));

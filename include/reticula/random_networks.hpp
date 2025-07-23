@@ -30,6 +30,11 @@ namespace reticula {
 
   template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
   undirected_network<VertT>
+  random_watts_strogatz_graph(VertT n, VertT k, double p, Gen& generator);
+
+
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
+  undirected_network<VertT>
   random_regular_graph(
       VertT size, VertT degree,
       Gen& generator);
@@ -443,6 +448,67 @@ namespace reticula {
         repeated_nodes.push_back(current_node);
       }
     }
+
+    return undirected_network<VertT>(edges, views::iota(VertT{}, n));
+  }
+
+  template <integer_network_vertex VertT, std::uniform_random_bit_generator Gen>
+  undirected_network<VertT>
+  random_watts_strogatz_graph(VertT n, VertT k, double p, Gen& generator) {
+    if (n < 0)
+      throw std::domain_error("n must be non-negative");
+
+    if (k >= n)
+      throw std::invalid_argument("k must be less than n");
+
+    if (k % 2 != 0)
+      throw std::invalid_argument("k must be divisible by two");
+
+    if (p < 0.0 || p > 1.0)
+      throw std::invalid_argument("rewiring probability p should be in [0,1]");
+
+    if (n == 0)
+        return undirected_network<VertT>();
+
+    std::vector<std::unordered_set<VertT, hash<VertT>>> adj(
+      static_cast<std::size_t>(n));
+
+    std::uniform_real_distribution<> real_dist(0.0, 1.0);
+    std::uniform_int_distribution<VertT> vert_dist(0, n - 1);
+
+    for (VertT i = {}; i < n; i++) {
+      auto& ai = adj[static_cast<std::size_t>(i)];
+      for (VertT d = 1; d <= k / 2; d++) {
+        VertT j = (i + d) % n;
+        ai.insert(j);
+        adj[static_cast<std::size_t>(j)].insert(i);
+      }
+    }
+
+    if (p > 0.0) {
+      for (VertT i = {}; i < n; i++) {
+        auto& ai = adj[static_cast<std::size_t>(i)];
+        for (VertT d = 1; d <= k / 2; d++) {
+          VertT j = (i + d) % n;
+          auto& aj = adj[static_cast<std::size_t>(j)];
+          if (real_dist(generator) < p) {
+            VertT r = vert_dist(generator);
+            while (ai.contains(r) || r == i)
+              r = vert_dist(generator);
+            ai.erase(j);
+            aj.erase(i);
+            ai.insert(r);
+            adj[static_cast<std::size_t>(r)].insert(i);
+          }
+        }
+      }
+    }
+
+    std::vector<undirected_edge<VertT>> edges;
+    edges.reserve(static_cast<std::size_t>(n * k / 2));
+    for (VertT i = {}; i < n; i++)
+      for (const auto& j: adj[static_cast<std::size_t>(i)])
+        if (i < j) edges.emplace_back(i, j);
 
     return undirected_network<VertT>(edges, views::iota(VertT{}, n));
   }
