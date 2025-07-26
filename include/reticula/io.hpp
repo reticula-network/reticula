@@ -314,7 +314,8 @@ namespace reticula {
       validate_network_type<VertT>(hif_data, false);
 
       if (!hif_data.contains("incidences"))
-        throw std::runtime_error("HIF file missing required 'incidences' field");
+        throw std::runtime_error(
+          "HIF file missing required 'incidences' field");
 
       std::unordered_map<
         std::variant<std::string, std::int64_t>, std::vector<VertT>>
