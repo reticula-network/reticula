@@ -508,7 +508,7 @@ TEST_CASE("HIF roundtrip", "[reticula::read_hif][reticula::write_hif]") {
 TEST_CASE("HIF file I/O", "[reticula::read_hif][reticula::write_hif]") {
   SECTION("file-based I/O") {
     std::vector<reticula::undirected_hyperedge<std::string>> edges = {
-      {{"alice", "bob", "charlie"}}, {{"bob", "david"}}};
+      {{"alice", "باب", "charlie"}}, {{"باب", "david"}}};
     reticula::network<reticula::undirected_hyperedge<std::string>> net(edges);
 
     auto temp_dir = std::filesystem::temp_directory_path();
