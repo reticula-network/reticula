@@ -32,9 +32,9 @@ jobs:
     - name: cmake build
       run: |
         mkdir build
-        cmake -Bbuild -S.
-        cmake --build build/ --target reticula_tests -j 2 --verbose
+        cmake -Bbuild -S. -DCMAKE_BUILD_TYPE=Release
+        cmake --build build/ --target reticula_tests -j 2 --verbose --config=Release
 
     - name: Run tests
       working-directory: build
-      run: ctest -C Debug --output-on-failure -j 2
+      run: ctest -C Release --output-on-failure -j 2
