@@ -3,6 +3,7 @@
 #include <concepts>
 #include <initializer_list>
 #include <ranges>
+#include <unordered_map>
 #include <unordered_set>
 
 #include <reticula/algorithms/properties.hpp>
@@ -32,7 +33,7 @@ public:
   void insert(const EdgeT& e, const AdjT& adj);
 
   template <adjacency::adjacency<EdgeType> AdjT, std::ranges::input_range R>
-    requires std::convertible_to<std::ranges::range_value_t<R>, EdgeT>
+    requires std::convertible_to<std::ranges::range_value_t<R>, EdgeType>
   void insert(R&& e, const AdjT& adj);
 
   template <adjacency::adjacency<EdgeType> AdjT>
@@ -137,7 +138,7 @@ private:
 
 namespace reticula {
 template <temporal_network_edge EdgeT>
-template <adjacency::adjacency<EdgeT> AdjT>
+template <adjacency::adjacency<typename temporal_cluster<EdgeT>::EdgeType> AdjT>
 void temporal_cluster<EdgeT>::insert(const EdgeT& e, const AdjT& adj) {
   events_.insert(e);
   double effect = e.effect_time();
@@ -152,8 +153,11 @@ void temporal_cluster<EdgeT>::insert(const EdgeT& e, const AdjT& adj) {
 }
 
 template <temporal_network_edge EdgeT>
-template <adjacency::adjacency<EdgeT> AdjT, std::ranges::input_range R>
-  requires std::convertible_to<std::ranges::range_value_t<R>, EdgeT>
+template <
+  adjacency::adjacency<typename temporal_cluster<EdgeT>::EdgeType> AdjT,
+  std::ranges::input_range R>
+  requires std::convertible_to<
+    std::ranges::range_value_t<R>, typename temporal_cluster<EdgeT>::EdgeType>
 void temporal_cluster<EdgeT>::insert(R&& e, const AdjT& adj) {
   if constexpr (std::ranges::sized_range<R>)
     events_.reserve(events_.size() + std::ranges::size(e));
@@ -163,7 +167,7 @@ void temporal_cluster<EdgeT>::insert(R&& e, const AdjT& adj) {
 }
 
 template <temporal_network_edge EdgeT>
-template <adjacency::adjacency<EdgeT> AdjT>
+template <adjacency::adjacency<typename temporal_cluster<EdgeT>::EdgeType> AdjT>
 void temporal_cluster<EdgeT>::insert(
   const std::initializer_list<EdgeT>& e, const AdjT& adj) {
   insert(std::ranges::views::all(e), adj);
@@ -188,15 +192,20 @@ void temporal_cluster_sketch<EdgeT>::insert(
 }
 
 template <temporal_network_edge EdgeT>
-template <adjacency::adjacency<EdgeT> AdjT, std::ranges::input_range R>
-  requires std::convertible_to<std::ranges::range_value_t<R>, EdgeT>
+template <
+  adjacency::adjacency<typename temporal_cluster_sketch<EdgeT>::EdgeType> AdjT,
+  std::ranges::input_range R>
+  requires std::convertible_to<
+    std::ranges::range_value_t<R>,
+    typename temporal_cluster_sketch<EdgeT>::EdgeType>
 void temporal_cluster_sketch<EdgeT>::insert(R&& e, const AdjT& adj) {
   for (const auto& edge : e)
     insert(edge, adj);
 }
 
 template <temporal_network_edge EdgeT>
-template <adjacency::adjacency<EdgeT> AdjT>
+template <
+  adjacency::adjacency<typename temporal_cluster_sketch<EdgeT>::EdgeType> AdjT>
 void temporal_cluster_sketch<EdgeT>::insert(
   const std::initializer_list<EdgeType>& e, const AdjT& adj) {
   insert(std::ranges::views::all(e), adj);
