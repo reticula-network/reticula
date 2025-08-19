@@ -25,7 +25,7 @@ FetchContent_Declare(
   hyperloglog
   GIT_REPOSITORY https://github.com/arashbm/hyperloglog.git
   GIT_SHALLOW TRUE
-  GIT_TAG v1.0.0)
+  GIT_TAG v1.0.1)
 FetchContent_Declare(
   indexed_set
   GIT_REPOSITORY https://github.com/arashbm/indexed_set.git
