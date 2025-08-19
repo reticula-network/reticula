@@ -88,7 +88,7 @@ auto reticula::complete_graph(VertexType size) -> undirected_network {
   if (size == 0)
     return {};
 
-  auto edges = std::views::cartesian_product(
+  auto edges = views::cartesian_product(
                  std::views::iota(VertexType{}, size),
                  std::views::iota(VertexType{}, size)) |
                std::views::filter([](const auto& pair) {
@@ -124,7 +124,7 @@ auto reticula::complete_directed_graph(VertexType size) -> directed_network {
   if (size == 0)
     return {};
 
-  auto edges = std::views::cartesian_product(
+  auto edges = views::cartesian_product(
                  std::views::iota(VertexType{}, size),
                  std::views::iota(VertexType{}, size)) |
                std::views::filter([](const auto& pair) {
