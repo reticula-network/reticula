@@ -1,10 +1,10 @@
-#include "reticula/networks.hpp"
 #include <functional>
 #include <numeric>
 #include <ranges>
 #include <vector>
 
 #include <reticula/concepts.hpp>
+#include <reticula/networks.hpp>
 #include <reticula/generation/deterministic.hpp>
 #include <reticula/views/cartesian_product.hpp>
 #include <reticula/views/chain.hpp>
