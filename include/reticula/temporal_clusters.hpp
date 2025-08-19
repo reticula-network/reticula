@@ -1,6 +1,8 @@
 #pragma once
 
+#include <concepts>
 #include <initializer_list>
+#include <ranges>
 #include <unordered_set>
 
 #include <reticula/algorithms/properties.hpp>
