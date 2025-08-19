@@ -172,7 +172,7 @@ public:
   auto vertex_id(VertexType v) const -> std::size_t;
 
   [[nodiscard]]
-  auto id_vertex(std::size_t idx) const -> std::size_t;
+  auto id_vertex(std::size_t idx) const -> VertexType;
 
   auto has_vertex(VertexType v) const -> bool;
   auto contains(VertexType v) const -> bool;
