@@ -1,3 +1,4 @@
+#include <reticula/views/enumerate.hpp>
 #include <optional>
 #include <random>
 
@@ -72,14 +73,14 @@ auto try_random_regular_graph(
       }
 
       stubs.clear();
-      for (const auto [node, count] : unpaired_degree | std::views::enumerate)
+      for (const auto [node, count] : unpaired_degree | views::enumerate)
         for (std::size_t i = 0; i < count; i++)
           stubs.emplace_back(node);
 
       bool has_available_pair = false;
       std::vector<VertexType> keys;
       keys.reserve(unpaired_degree.size());
-      for (const auto [node, cnt] : unpaired_degree | std::views::enumerate)
+      for (const auto [node, cnt] : unpaired_degree | views::enumerate)
         if (cnt)
           keys.push_back(static_cast<VertexType>(node));
 
@@ -159,10 +160,10 @@ auto try_directed_random_regular_graph(
 
       out_stubs.clear();
       in_stubs.clear();
-      for (const auto [u, c] : out_unpaired | std::views::enumerate)
+      for (const auto [u, c] : out_unpaired | views::enumerate)
         for (std::size_t k = 0; k < c; ++k)
           out_stubs.emplace_back(u);
-      for (const auto [v, c] : in_unpaired | std::views::enumerate)
+      for (const auto [v, c] : in_unpaired | views::enumerate)
         for (std::size_t k = 0; k < c; ++k)
           in_stubs.emplace_back(v);
 
@@ -171,10 +172,10 @@ auto try_directed_random_regular_graph(
       out_keys.reserve(out_unpaired.size());
       std::vector<VertexType> in_keys;
       in_keys.reserve(in_unpaired.size());
-      for (const auto [u, c] : out_unpaired | std::views::enumerate)
+      for (const auto [u, c] : out_unpaired | views::enumerate)
         if (c)
           out_keys.push_back(static_cast<reticula::VertexType>(u));
-      for (const auto& [v, c] : in_unpaired | std::views::enumerate)
+      for (const auto& [v, c] : in_unpaired | views::enumerate)
         if (c)
           in_keys.push_back(static_cast<reticula::VertexType>(v));
 
@@ -204,4 +205,4 @@ auto random_directed_regular_graph(VertexType size, VertexType degree, Gen& gen)
     maybe_g = try_directed_random_regular_graph(size, degree, gen, 1000);
   return *maybe_g;
 }
-} // namespace reticula
+} // nam<space reticula

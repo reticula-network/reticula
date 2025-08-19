@@ -86,6 +86,7 @@ add_executable(
   # views
   views/chain.cpp
   views/cartesian_product.cpp
+  views/enumerate.cpp
   # misc
   temporal_clusters.cpp
   temporal_adjacency.cpp

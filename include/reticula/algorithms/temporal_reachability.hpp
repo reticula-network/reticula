@@ -4,6 +4,7 @@
 #include <reticula/networks.hpp>
 #include <reticula/temporal_adjacency.hpp>
 #include <reticula/temporal_clusters.hpp>
+#include <reticula/views/enumerate.hpp>
 
 namespace reticula {
 
@@ -274,7 +275,7 @@ auto generic_weak_cluster(const NetT& net, const AdjT& adj, bool singletons)
 
   std::unordered_map<typename NetT::EdgeType, std::size_t> edge_id;
   edge_id.reserve(net.edges().size());
-  for (auto& [i, e] : net.edges() | std::views::enumerate) {
+  for (auto& [i, e] : net.edges() | views::enumerate) {
     edge_id.emplace(e, i);
   }
 
