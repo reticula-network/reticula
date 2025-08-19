@@ -24,7 +24,6 @@ add_executable(
   ${PROJECT_NAME}_tests
   compile.cpp
   stats.cpp
-  enumeration.cpp
   components.cpp
   # networks
   networks/directed.cpp
