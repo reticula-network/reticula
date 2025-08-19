@@ -1,14 +1,11 @@
 #pragma once
 
+#include <utility>
 #include <concepts>
 #include <cstdint>
 #include <random>
 #include <ranges>
 
-namespace std {
-template <typename>
-struct hash;
-}
 namespace hll {
 template <typename>
 struct hash;
