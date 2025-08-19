@@ -207,95 +207,116 @@ TEST_CASE("out-component", "[reticula::out_component]") {
 
 TEST_CASE("in-component", "[reticula::in_component]") {
   SECTION("gives correct answer on a cyclic graph") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+    reticula::directed_network graph(
+      {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
     auto c2 = reticula::in_component(graph, 2);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c2.begin(), c2.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c2.begin(), c2.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
 
     auto c5 = reticula::in_component(graph, 5);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c5.begin(), c5.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c5.begin(), c5.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
 
     auto c1 = reticula::in_component(graph, 1);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c1.begin(), c1.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c1.begin(), c1.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
   }
 
   SECTION("gives correct answer on a cyclic hypergraph") {
-    reticula::directed_hypernetwork graph({
-        {{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}},
-        {{5}, {4}}, {{4}, {2, 3}}});
+    reticula::directed_hypernetwork graph(
+      {{{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}}, {{5}, {4}}, {{4}, {2, 3}}});
     auto c2 = reticula::in_component(graph, 2);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c2.begin(), c2.end()),
-      UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c2.begin(), c2.end()),
+      UnorderedRangeEquals(
+        std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
 
     auto c5 = reticula::in_component(graph, 5);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c5.begin(), c5.end()),
-      UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c5.begin(), c5.end()),
+      UnorderedRangeEquals(
+        std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
 
     auto c1 = reticula::in_component(graph, 7);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c1.begin(), c1.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c1.begin(), c1.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({7})));
   }
 
   SECTION("gives correct answer on acyclic graphs") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
+    reticula::directed_network graph({{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
     auto c2 = reticula::in_component(graph, 2);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c2.begin(), c2.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c2.begin(), c2.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 1})));
 
     auto c5 = reticula::in_component(graph, 5);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c5.begin(), c5.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c5.begin(), c5.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 5})));
   }
 
   SECTION("gives correct answer on acyclic hypergraphs") {
-    reticula::directed_hypernetwork graph({
-        {{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
+    reticula::directed_hypernetwork graph(
+      {{{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
     auto c2 = reticula::in_component(graph, 2);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c2.begin(), c2.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c2.begin(), c2.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 1})));
 
     auto c5 = reticula::in_component(graph, 5);
-    REQUIRE_THAT(std::vector<reticula::VertexType>(c5.begin(), c5.end()),
+    REQUIRE_THAT(
+      std::vector<reticula::VertexType>(c5.begin(), c5.end()),
       UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 5, 7})));
   }
 }
 
 TEST_CASE("out-components", "[reticula::out_components]") {
   SECTION("gives correct answer on a cyclic graph") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+    reticula::directed_network graph(
+      {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
 
-    for (auto& [v, c]: reticula::out_components(graph))
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({3, 4, 5, 6, 2})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({3, 4, 5, 6, 2})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4, 2, 3, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({4, 2, 3, 5, 6})));
       else if (v == 5)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4, 2, 3, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({4, 2, 3, 5, 6})));
       else if (v == 6)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({6})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 6}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 1}});
+      {{1, 6}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -304,30 +325,33 @@ TEST_CASE("out-components", "[reticula::out_components]") {
   }
 
   SECTION("gives correct answer on another cyclic graph") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 2}}, {4, 1, 2, 3});
+    reticula::directed_network graph({{1, 2}, {2, 3}, {3, 2}}, {4, 1, 2, 3});
 
-    for (auto& [v, c]: reticula::out_components(graph))
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 3}, {2, 2}, {3, 2}, {4, 1}});
+      {{1, 3}, {2, 2}, {3, 2}, {4, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -336,30 +360,33 @@ TEST_CASE("out-components", "[reticula::out_components]") {
   }
 
   SECTION("gives correct answer on another cyclic graph with self-loops") {
-    reticula::directed_network graph({
-        {1, 1}, {2, 3}}, {1, 2, 3, 4});
+    reticula::directed_network graph({{1, 1}, {2, 3}}, {1, 2, 3, 4});
 
-    for (auto& [v, c]: reticula::out_components(graph))
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({3})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 1}, {2, 2}, {3, 1}, {4, 1}});
+      {{1, 1}, {2, 2}, {3, 1}, {4, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -368,31 +395,38 @@ TEST_CASE("out-components", "[reticula::out_components]") {
   }
 
   SECTION("gives correct answer on a cyclic hypergraph") {
-    reticula::directed_hypernetwork graph({
-        {{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}},
-        {{5}, {4}}, {{4}, {2, 3}}});
+    reticula::directed_hypernetwork graph(
+      {{{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}}, {{5}, {4}}, {{4}, {2, 3}}});
 
-    for (auto& [v, c]: reticula::out_components(graph))
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 3, 4, 5, 6, 2})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 3, 4, 5, 6, 2})));
       else if (v == 7)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 4, 2, 3, 5, 6, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 4, 2, 3, 5, 6, 7})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6}, {6, 1}, {7, 7}});
+      {{1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6}, {6, 1}, {7, 7}});
 
     REQUIRE(comp_map == res);
 
@@ -401,29 +435,35 @@ TEST_CASE("out-components", "[reticula::out_components]") {
   }
 
   SECTION("gives correct answer on acyclic graphs") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
-    for (auto& [v, c]: reticula::out_components(graph))
+    reticula::directed_network graph({{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({3, 4, 5, 6})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 6}, {2, 5}, {3, 4}, {4, 1}, {5, 3}, {6, 1}});
+      {{1, 6}, {2, 5}, {3, 4}, {4, 1}, {5, 3}, {6, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -432,32 +472,41 @@ TEST_CASE("out-components", "[reticula::out_components]") {
   }
 
   SECTION("gives correct answer on acyclic hypergraphs") {
-    reticula::directed_hypernetwork graph({
-        {{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
-    for (auto& [v, c]: reticula::out_components(graph))
+    reticula::directed_hypernetwork graph(
+      {{{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
+    for (auto& [v, c] : reticula::out_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({2, 3, 4, 5, 6})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({3, 4, 5, 6})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({4})));
       else if (v == 7)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({7, 3, 4, 5, 6})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({7, 3, 4, 5, 6})));
 
     auto comp_sizes = reticula::out_component_sizes(graph);
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 6}, {2, 5}, {3, 4}, {4, 1}, {5, 3}, {6, 1}, {7, 5}});
+      {{1, 6}, {2, 5}, {3, 4}, {4, 1}, {5, 3}, {6, 1}, {7, 5}});
 
     REQUIRE(comp_map == res);
 
@@ -468,38 +517,48 @@ TEST_CASE("out-components", "[reticula::out_components]") {
 
 TEST_CASE("in-components", "[reticula::in_components]") {
   SECTION("gives correct answer on a cyclic graph") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
+    reticula::directed_network graph(
+      {{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}, {4, 2}});
 
-    for (auto& [v, c]: reticula::in_components(graph))
+    for (auto& [v, c] : reticula::in_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
       else if (v == 5)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
       else if (v == 6)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
-
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 6})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 1}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 6}});
+      {{1, 1}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 6}});
 
     REQUIRE(comp_map == res);
 
@@ -508,32 +567,38 @@ TEST_CASE("in-components", "[reticula::in_components]") {
   }
 
   SECTION("gives correct answer on a cyclic hypergraph") {
-    reticula::directed_hypernetwork graph({
-        {{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}},
-        {{5}, {4}}, {{4}, {2, 3}}});
+    reticula::directed_hypernetwork graph(
+      {{{7, 1, 2}, {3}}, {{3}, {5}}, {{5}, {6, 1}}, {{5}, {4}}, {{4}, {2, 3}}});
 
-    for (auto& [v, c]: reticula::in_components(graph))
+    for (auto& [v, c] : reticula::in_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
       else if (v == 7)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({7})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6}, {6, 7}, {7, 1}});
+      {{1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6}, {6, 7}, {7, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -541,32 +606,35 @@ TEST_CASE("in-components", "[reticula::in_components]") {
     // REQUIRE(comp_size_ests.size() == graph.vertices().size());
   }
 
-
   SECTION("gives correct answer on acyclic graphs") {
-    reticula::directed_network graph({
-        {1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
-    for (auto& [v, c]: reticula::in_components(graph))
+    reticula::directed_network graph({{1, 2}, {2, 3}, {3, 5}, {5, 6}, {5, 4}});
+    for (auto& [v, c] : reticula::in_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 1}, {2, 2}, {3, 3}, {4, 5}, {5, 4}, {6, 5}});
+      {{1, 1}, {2, 2}, {3, 3}, {4, 5}, {5, 4}, {6, 5}});
 
     REQUIRE(comp_map == res);
 
@@ -575,36 +643,45 @@ TEST_CASE("in-components", "[reticula::in_components]") {
   }
 
   SECTION("gives correct answer on acyclic hypergraphs") {
-    reticula::directed_hypernetwork graph({
-        {{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
-    for (auto& [v, c]: reticula::in_components(graph))
+    reticula::directed_hypernetwork graph(
+      {{{1}, {2}}, {{7, 2}, {3}}, {{3}, {5, 6}}, {{5}, {6}}, {{5}, {4}}});
+    for (auto& [v, c] : reticula::in_components(graph))
       if (v == 1)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1})));
       else if (v == 2)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2})));
       else if (v == 3)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 7})));
       else if (v == 4)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 4, 5, 7})));
       else if (v == 6)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({1, 2, 3, 5, 6, 7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(
+            std::vector<reticula::VertexType>({1, 2, 3, 5, 6, 7})));
       else if (v == 7)
-        REQUIRE_THAT(std::vector<reticula::VertexType>(c.begin(), c.end()),
-            UnorderedRangeEquals(std::vector<reticula::VertexType>({7})));
+        REQUIRE_THAT(
+          std::vector<reticula::VertexType>(c.begin(), c.end()),
+          UnorderedRangeEquals(std::vector<reticula::VertexType>({7})));
 
     auto comp_sizes = reticula::in_component_sizes(graph);
 
     std::unordered_map<reticula::VertexType, std::size_t> comp_map;
-    for (auto [v, c]: comp_sizes)
+    for (auto [v, c] : comp_sizes)
       comp_map[v] = c;
 
     std::unordered_map<reticula::VertexType, std::size_t> res(
-          {{1, 1}, {2, 2}, {3, 4}, {4, 6}, {5, 5}, {6, 6}, {7, 1}});
+      {{1, 1}, {2, 2}, {3, 4}, {4, 6}, {5, 5}, {6, 6}, {7, 1}});
 
     REQUIRE(comp_map == res);
 
@@ -618,7 +695,16 @@ TEST_CASE(
   "[reticula::strongly_connected_components]") {
   SECTION("works for directed graph") {
     reticula::directed_network graph(
-      {{1, 2}, {2, 3}, {3, 1}, {3, 5}, {5, 6}, {5, 4}, {4, 2}, {7, 8}, {8, 9}});
+      {{1, 2},
+       {2, 3},
+       {3, 1},
+       {3, 5},
+       {5, 6},
+       {5, 4},
+       {4, 2},
+       {7, 8},
+       {8, 9},
+       {9, 1}});
 
     std::vector<reticula::component> res{{6}, {1, 2, 3, 4, 5}, {9}, {8}, {7}};
 
