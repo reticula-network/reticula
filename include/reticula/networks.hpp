@@ -226,8 +226,8 @@ network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
   std::ranges::copy(
     std::forward<EdgeRange>(edges), std::back_inserter(edges_cause_));
   std::ranges::sort(edges_cause_);
-  const auto [b, e] = std::ranges::unique(edges_cause_);
-  edges_cause_.erase(b, e);
+  const auto [beg, end] = std::ranges::unique(edges_cause_);
+  edges_cause_.erase(beg, end);
   edges_cause_.shrink_to_fit();
 
   std::unordered_set<VertexType> verts_set;
