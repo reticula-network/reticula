@@ -1,0 +1,6 @@
+function(enable_sanitizers tgt)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    target_compile_options(${tgt} PRIVATE -fsanitize=address,undefined)
+    target_link_options(${tgt} PRIVATE -fsanitize=address,undefined)
+  endif()
+endfunction()

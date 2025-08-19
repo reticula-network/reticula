@@ -1,16 +1,23 @@
-cmake_minimum_required(VERSION 3.14)
-project(reticula LANGUAGES CXX VERSION 0.1)
-set(CMAKE_CXX_STANDARD 20)
+cmake_minimum_required(VERSION 3.25)
+
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-get_directory_property(is_subproject PARENT_DIRECTORY)
-if(NOT is_subproject)
-  set(is_standalone YES)
-else()
-  set(is_standalone NO)
-endif()
+project(
+  reticula
+  LANGUAGES CXX
+  VERSION 0.2.0)
 
-include(GNUInstallDirs)
+option(RETICULA_BUILD_TESTS "Build unit tests" "${PROJECT_IS_TOP_LEVEL}")
+option(RETICULA_BUILD_BENCHMARKS "Build benchmarks" "${PROJECT_IS_TOP_LEVEL}")
+option(RETICULA_ENABLE_WARNINGS "Enable warnings" on)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+# Dependencies
 
 include(FetchContent)
 
@@ -30,130 +37,145 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   GIT_TAG v1.0.0)
 FetchContent_Declare(
-  csv
+  bbhash
+  URL https://raw.githubusercontent.com/rizkg/BBHash/be4220c8f8580299b212a0c6c6c867528a0f07ac/BooPHF.h
+  URL_HASH
+    SHA256=ac24587636b77aa3dbb5878d889515010a1e1ab11dece6668a70b04149d205c1
   SYSTEM
-  GIT_REPOSITORY https://github.com/arashbm/csv-parser.git
-  GIT_TAG bd406db93928fcf1c00ca1640e843a637ff13389
-  GIT_SHALLOW TRUE)
-FetchContent_Declare(
-  json
-  URL_HASH MD5=e155202b2a589137f6804724bd182f12
-  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
-  DOWNLOAD_EXTRACT_TIMESTAMP true)
+  DOWNLOAD_NO_EXTRACT yes)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set csv json)
+FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set bbhash)
 
-add_library(${PROJECT_NAME} INTERFACE)
+file(READ "${bbhash_SOURCE_DIR}/BooPHF.h" _bbhash_h)
+string(REPLACE "hash_pair_t bbhash;" "hash_pair_t bbhash{0,0};" _bbhash_h
+               "${_bbhash_h}")
+file(WRITE "${bbhash_SOURCE_DIR}/BooPHF.h" "${_bbhash_h}")
+
+add_library(bbhash INTERFACE)
 target_include_directories(
+  bbhash SYSTEM INTERFACE $<BUILD_INTERFACE:${bbhash_SOURCE_DIR}>
+                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+add_library(
   ${PROJECT_NAME}
-  INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>/include/
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(${PROJECT_NAME} INTERFACE
-  disjoint_set hyperloglog indexed_set csv nlohmann_json::nlohmann_json)
+  include/reticula/reticula.hpp
+  src/stats.cpp
+  src/networks.cpp
+  # static edges
+  src/edges/directed_edge.cpp
+  src/edges/undirected_edge.cpp
+  # static hyperedges
+  src/edges/undirected_hyperedge.cpp
+  src/edges/directed_hyperedge.cpp
+  # temporal edges
+  src/edges/undirected_temporal_edge.cpp
+  src/edges/directed_temporal_edge.cpp
+  src/edges/directed_delayed_temporal_edge.cpp
+  # temporal hyperedges
+  src/edges/undirected_temporal_hyperedge.cpp
+  src/edges/directed_temporal_hyperedge.cpp
+  src/edges/directed_delayed_temporal_hyperedge.cpp
+  # algorithms
+  src/algorithms/vertex_degree.cpp
+  src/algorithms/edge_degree.cpp
+  src/algorithms/graphicallity.cpp
+  src/algorithms/properties.cpp
+  src/algorithms/assortativity.cpp
+  src/algorithms/static_reachability.cpp
+  src/algorithms/temporal_reachability.cpp
+  src/algorithms/dag.cpp
+  src/algorithms/bipartite.cpp
+  src/algorithms/distance.cpp
+  # operations
+  src/operations/algebraic.cpp
+  src/operations/addition.cpp
+  src/operations/removal.cpp
+  src/operations/occupation.cpp
+  src/operations/projections.cpp
+  src/operations/subgraph.cpp
+  src/operations/relabel.cpp
+  # generation
+  src/generation/deterministic.cpp
+  src/generation/gnp.cpp
+  src/generation/gnm.cpp
+  src/generation/barabasi_albert.cpp
+  src/generation/watts_strogatz.cpp
+  src/generation/regular.cpp
+  src/generation/expected_degree_sequence.cpp
+  src/generation/degree_sequence.cpp
+  src/generation/uniform_hypergraph.cpp
+  src/generation/fully_mixed.cpp
+  src/generation/link_activation.cpp
+  # others
+  src/temporal_adjacency.cpp
+  src/temporal_clusters.cpp
+  src/event_graphs.cpp
+  src/interval_sets.cpp
+  src/components.cpp
+  src/stats.cpp
+  src/enumeration.cpp)
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if (is_standalone)
-  FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.7.1)
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-  FetchContent_MakeAvailable(Catch2)
-  list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+target_link_libraries(${PROJECT_NAME} PUBLIC disjoint_set hyperloglog
+                                             indexed_set bbhash)
 
-  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+include(CompilerWarnings)
+enable_project_warnings(${PROJECT_NAME})
 
-  set(TEST_FILES
-    src/test/reticula/stats.cpp
-    src/test/reticula/utils.cpp
-    src/test/reticula/intervals.cpp
-    src/test/reticula/temporal_adjacency.cpp
-    src/test/reticula/operations.cpp
-    src/test/reticula/algorithms.cpp
-    src/test/reticula/temporal_algorithms.cpp
-    src/test/reticula/compile.cpp
-    src/test/reticula/edge_tests.cpp
-    src/test/reticula/generators.cpp
-    src/test/reticula/implicit_event_graphs.cpp
-    src/test/reticula/implicit_event_graph_components.cpp
-    src/test/reticula/networks.cpp
-    src/test/reticula/io.cpp
-    src/test/reticula/random_networks.cpp
-    src/test/reticula/distributions.cpp
-    src/test/reticula/components.cpp
-    src/test/reticula/temporal_clusters.cpp
-    src/test/reticula/microcanonical_reference_models.cpp
-    src/test/reticula/traits.cpp)
-    
+# Installation
 
-  add_executable(${PROJECT_NAME}_tests EXCLUDE_FROM_ALL ${TEST_FILES})
-  target_link_libraries(${PROJECT_NAME}_tests
-    PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-  target_compile_options(reticula_tests PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:
-        -Werror -Wall -Wextra -Wconversion -Wsign-conversion -Wpedantic
-        -Wnull-dereference -Wold-style-cast -Wcast-align -Wunused
-        -Woverloaded-virtual -Wimplicit-fallthrough
-        -Wmisleading-indentation
-        $<$<CONFIG:Debug>:-g -fsanitize=address,undefined>>
-    $<$<CXX_COMPILER_ID:GNU>:
-        -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast>
-    $<$<CXX_COMPILER_ID:MSVC>:
-        /bigobj /W4 /permissive- /w14242 /w14254 /w14263 /w14265 /w14287
-        /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555
-        /w14619 /w14640 /w14826 /w14905 /w14906 /w14928>)
-
-  target_link_options(reticula_tests PRIVATE
-    $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:GNU,Clang,AppleClang>>:
-        -fsanitize=address,undefined>)
-
-  include(CTest)
-  include(Catch)
-  catch_discover_tests(${PROJECT_NAME}_tests EXTRA_ARGS --skip-benchmarks)
-
-  add_executable(${PROJECT_NAME}_benchmarks EXCLUDE_FROM_ALL ${TEST_FILES})
-  target_link_libraries(${PROJECT_NAME}_benchmarks
-    PRIVATE ${PROJECT_NAME} Catch2::Catch2WithMain)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(${PROJECT_NAME}_benchmarks PRIVATE /bigobj)
-  endif()
-endif()
-
-install(
-  TARGETS ${PROJECT_NAME} csv nlohmann_json
-  EXPORT ${PROJECT_NAME}_Targets
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
+include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+install(
+  TARGETS ${PROJECT_NAME} bbhash
+  EXPORT ${PROJECT_NAME}-targets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  INCLUDES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(FILES ${bbhash_SOURCE_DIR}/BooPHF.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bbhash)
+
+install(
+  EXPORT ${PROJECT_NAME}-targets
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+set(ConfigFile ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake)
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}-config.cmake.in ${ConfigFile}
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
 write_basic_package_version_file(
-  "${PROJECT_NAME}-config-version.cmake"
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
   VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion)
 
-if(NOT INCLUDE_INSTALL_DIR)
-  set(INCLUDE_INSTALL_DIR include/)
+install(FILES ${ConfigFile}
+              ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+# Testing
+
+if(RETICULA_BUILD_TESTS)
+  enable_testing()
+
+  add_subdirectory(tests)
 endif()
 
-configure_package_config_file(
-  "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}-config.cmake.in"
-  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake
-  PATH_VARS INCLUDE_INSTALL_DIR)
+# Benchmarking
 
-install(
-  EXPORT ${PROJECT_NAME}_Targets
-  FILE ${PROJECT_NAME}Targets.cmake
-  NAMESPACE ${PROJECT_NAME}::
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+if(RETICULA_BUILD_BENCHMARKS)
+  add_subdirectory(benchmarks)
+endif()
 
-install(
-  FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
-  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+# Packaging helper
 
-install(
-  DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+include(CPack)

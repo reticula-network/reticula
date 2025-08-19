@@ -1,68 +1,57 @@
-#ifndef INCLUDE_RETICULA_STATS_HPP_
-#define INCLUDE_RETICULA_STATS_HPP_
+#pragma once
 
-#include <cmath>
-
-#include "ranges.hpp"
-#include "network_concepts.hpp"
-
-namespace reticula {
-  /**
-    Calculates Pearson's correlation coefficient of the two variables in the
-    vector f.
-  */
-  template <ranges::forward_range AttrPairRange>
-  requires is_pairlike_of<
-      ranges::range_value_t<AttrPairRange>, double, double>
-  double pearson_correlation_coefficient(AttrPairRange&& f);
-}  // namespace reticula
-
-
-// Implementation
 #include <cmath>
 #include <limits>
 
-#include "ranges.hpp"
-#include "network_concepts.hpp"
+#include <reticula/concepts.hpp>
 
 namespace reticula {
-  template <ranges::forward_range AttrPairRange>
-  requires is_pairlike_of<
-      ranges::range_value_t<AttrPairRange>, double, double>
-  double pearson_correlation_coefficient(AttrPairRange&& f) {
-    if (f.size() < 2)
-      return std::numeric_limits<double>::quiet_NaN();
+template <typename R, typename U, typename V>
+concept attribute_pairlike_range =
+  std::ranges::input_range<R> &&
+  requires {
+    typename std::tuple_size<
+      std::remove_cvref_t<std::ranges::range_reference_t<R>>>;
+  } &&
+  std::convertible_to<
+    std::tuple_element_t<
+      0, std::remove_cvref_t<std::ranges::range_reference_t<R>>>,
+    U> &&
+  std::convertible_to<
+    std::tuple_element_t<
+      1, std::remove_cvref_t<std::ranges::range_reference_t<R>>>,
+    V>;
 
-    double mean_x = 0.0, mean_y = 0.0;
-    auto length = static_cast<double>(f.size());
-    auto& [first_x, first_y] = *std::begin(f);
-    bool eq_x = true, eq_y = true;
-    for (auto& [x, y]: f) {
-      if (x != first_x)
-        eq_x = false;
-      if (y != first_y)
-        eq_y = false;
-      mean_x += x/length;
-      mean_y += y/length;
-    }
+/**
+  Calculates Pearson's correlation coefficient of the two variables in the
+  vector f.
+*/
+auto pearson_correlation_coefficient(
+  attribute_pairlike_range<double, double> auto&& attrs) -> double;
+} // namespace reticula
 
-    // avoid floating-point error turning constant-vector NaN correlation into a
-    // 1.0 correlation coefficient
-    if (eq_x)
-      mean_x = first_x;
-    if (eq_y)
-      mean_y = first_y;
+namespace reticula {
+auto pearson_correlation_coefficient(
+  attribute_pairlike_range<double, double> auto&& attrs) -> double {
+  std::size_t n = 0;
+  double mx = 0.0, my = 0.0;
+  double sx = 0.0, sy = 0.0, cov = 0.0;
 
-    double sum_sq_x = 0.0, sum_sq_y = 0.0, sum_mul = 0.0;
-    for (auto& [x, y]: f) {
-      sum_mul += (x - mean_x)*(y - mean_y);
-      sum_sq_x += (x - mean_x)*(x - mean_x);
-      sum_sq_y += (y - mean_y)*(y - mean_y);
-    }
+  for (auto [x, y] : attrs) {
+    ++n;
+    double dx = x - mx;
+    mx += dx / static_cast<double>(n);
+    double dy = y - my;
+    my += dy / static_cast<double>(n);
 
-    return sum_mul/(std::sqrt(sum_sq_x)*std::sqrt(sum_sq_y));
+    sx += dx * (x - mx);
+    sy += dy * (y - my);
+    cov += dx * (y - my);
   }
-}  // namespace reticula
 
+  if (n < 2 || sx == 0.0 || sy == 0.0)
+    return std::numeric_limits<double>::quiet_NaN();
 
-#endif  // INCLUDE_RETICULA_STATS_HPP_
+  return cov / std::sqrt(sx * sy);
+}
+} // namespace reticula
