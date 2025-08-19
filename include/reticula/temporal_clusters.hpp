@@ -32,7 +32,7 @@ public:
   void insert(const EdgeT& e, const AdjT& adj);
 
   template <adjacency::adjacency<EdgeType> AdjT, std::ranges::input_range R>
-    requires std::convertible_to<std::ranges::range_value_t<R>, EdgeType>
+    requires std::convertible_to<std::ranges::range_value_t<R>, EdgeT>
   void insert(R&& e, const AdjT& adj);
 
   template <adjacency::adjacency<EdgeType> AdjT>
