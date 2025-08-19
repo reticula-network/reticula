@@ -28,7 +28,6 @@ TEST_CASE("temporal cluster properties", "[reticula::temporal_cluster]") {
       std::unordered_set<EdgeType>(comp.begin(), comp.end()) ==
       std::unordered_set<EdgeType>(
         {{{1, 2}, 1.0}, {{1, 3}, 3.0}, {{2, 5}, 3.0}, {{4, 5}, 5.0}}));
-    std::cerr << std::format("window: {}", comp.lifetime()) << std::endl;
     REQUIRE(comp.lifetime() == reticula::window{1.0, 8.0});
     REQUIRE(comp.mass() == 21.0);
     REQUIRE(comp.volume() == 5);

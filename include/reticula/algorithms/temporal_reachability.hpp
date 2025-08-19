@@ -222,41 +222,25 @@ auto generic_clusters(
   };
 
   for (auto& edge : order) {
-    std::cerr << std::format("processing {}...\n", edge);
     auto cluster = make_cluster();
     cluster.insert(edge, adj);
     ongoing_clusters.emplace(edge, std::move(cluster));
 
     in_counts.emplace(edge, in_edges_size(edge));
-    std::cerr << "in_edges_size: " << in_edges_size(edge) << std::endl;
 
     for (auto& other : out_edges(edge)) {
-      std::cerr << std::format("other={}...\n", other);
-      if (!ongoing_clusters.contains(other))
-        std::cerr << std::format("other[{}] does not exist\n", other);
       ongoing_clusters.at(edge).merge(ongoing_clusters.at(other));
       in_counts.at(other)--;
 
-      if (!in_counts.contains(other))
-        std::cerr << std::format("in_counts[{}] does not exist\n", other);
       if (in_counts.at(other) == 0) {
-        if (!ongoing_clusters.contains(other))
-          std::cerr << std::format("other[{}] does not exist\n", other);
         res.emplace_back(other, std::move(ongoing_clusters.at(other)));
-        std::cerr << std::format(
-          "erasing edge {} from ongoing clusters\n", other);
         in_counts.erase(other);
         ongoing_clusters.erase(other);
       }
     }
 
-    if (!in_counts.contains(edge))
-      std::cerr << std::format("in_counts[{}] does not exist\n", edge);
     if (in_counts.at(edge) == 0) {
-      if (!ongoing_clusters.contains(edge))
-        std::cerr << std::format("ongoing_clusters[{}] does not exist\n", edge);
       res.emplace_back(edge, std::move(ongoing_clusters.at(edge)));
-      std::cerr << std::format("erasing edge {} from ongoing clusters\n", edge);
       in_counts.erase(edge);
       ongoing_clusters.erase(edge);
     }
