@@ -7,7 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <BooPHF.h>
+#include <ankerl/unordered_dense.h>
 
 #include <reticula/concepts.hpp>
 #include <reticula/edges.hpp>
@@ -174,10 +174,10 @@ public:
   [[nodiscard]]
   auto id_vertex(std::size_t idx) const -> VertexType;
 
-  auto has_vertex(VertexType v) const -> bool;
-  auto contains(VertexType v) const -> bool;
+  [[nodiscard]] auto has_vertex(VertexType v) const -> bool;
+  [[nodiscard]] auto contains(VertexType v) const -> bool;
 
-  auto has_edge(const EdgeType& e) const -> bool;
+  [[nodiscard]] auto has_edge(const EdgeType& e) const -> bool;
 
 private:
   static constexpr bool instantaneous_undirected =
@@ -193,7 +193,6 @@ private:
   std::vector<EdgeType> out_edges_;
 
   struct offsets {
-    VertexType vertex;
     [[no_unique_address]]
     std::conditional_t<instantaneous_undirected, std::monostate, std::size_t>
       in_offset;
@@ -201,11 +200,9 @@ private:
 
     [[nodiscard]] auto operator==(const offsets& other) const noexcept -> bool;
   };
-  std::vector<offsets> offsets_;
 
-  using mphf_t =
-    boomphf::mphf<VertexType, boomphf::SingleHashFunctor<VertexType>>;
-  mphf_t offset_map_;
+  std::vector<offsets> offsets_;
+  ankerl::unordered_dense::map<VertexType, std::size_t> offset_map_;
 };
 
 template <network_edge EdgeT>
@@ -263,14 +260,15 @@ network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
   std::ranges::copy(verts_set, std::back_inserter(verts_));
   std::ranges::sort(verts_);
 
-  offset_map_ = mphf_t{verts_.size(), verts_, 1, 2.0, false, false, 0.03f};
+  offset_map_.reserve(verts_.size());
   offsets_.resize(verts_.size() + 1);
-  for (unsigned long v : verts_) {
-    const auto idx = offset_map_.lookup(v);
+  for (std::size_t i = 0uz; unsigned long v : verts_) {
+    auto idx = i++;
+    offset_map_[v] = idx;
     if constexpr (!instantaneous_undirected)
-      offsets_[idx] = {v, in_counts[v], out_counts[v]};
+      offsets_[idx] = {in_counts[v], out_counts[v]};
     else
-      offsets_[idx] = {v, std::monostate{}, out_counts[v]};
+      offsets_[idx] = {std::monostate{}, out_counts[v]};
   }
 
   std::size_t acc_out = 0, acc_in = 0;
@@ -290,7 +288,7 @@ network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
   std::vector<std::size_t> cursor(verts_.size(), 0uz);
   for (const auto& e : edges_cause_) {
     for (auto&& v : e.mutator_verts()) {
-      const auto idx = offset_map_.lookup(v);
+      const auto idx = offset_map_[v];
       out_edges_[offsets_[idx].out_offset + cursor[idx]] = e;
       ++cursor[idx];
     }
@@ -305,7 +303,7 @@ network<EdgeT>::network(EdgeRange&& edges, VertRange&& verts) {
     in_edges_.resize(acc_in);
     for (const auto& e : edges_effect_) {
       for (auto&& v : e.mutated_verts()) {
-        const auto idx = offset_map_.lookup(v);
+        const auto idx = offset_map_[v];
         in_edges_[offsets_[idx].in_offset + cursor[idx]] = e;
         ++cursor[idx];
       }

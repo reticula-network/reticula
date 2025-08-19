@@ -37,24 +37,13 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
   GIT_TAG v1.0.0)
 FetchContent_Declare(
-  bbhash
-  URL https://raw.githubusercontent.com/rizkg/BBHash/be4220c8f8580299b212a0c6c6c867528a0f07ac/BooPHF.h
-  URL_HASH
-    SHA256=ac24587636b77aa3dbb5878d889515010a1e1ab11dece6668a70b04149d205c1
+  unordered_dense
+  GIT_REPOSITORY https://github.com/martinus/unordered_dense.git
+  GIT_SHALLOW TRUE
   SYSTEM
-  DOWNLOAD_NO_EXTRACT yes)
+  GIT_TAG v4.5.0)
 
-FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set bbhash)
-
-file(READ "${bbhash_SOURCE_DIR}/BooPHF.h" _bbhash_h)
-string(REPLACE "hash_pair_t bbhash;" "hash_pair_t bbhash{0,0};" _bbhash_h
-               "${_bbhash_h}")
-file(WRITE "${bbhash_SOURCE_DIR}/BooPHF.h" "${_bbhash_h}")
-
-add_library(bbhash INTERFACE)
-target_include_directories(
-  bbhash SYSTEM INTERFACE $<BUILD_INTERFACE:${bbhash_SOURCE_DIR}>
-                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+FetchContent_MakeAvailable(disjoint_set hyperloglog indexed_set unordered_dense)
 
 add_library(
   ${PROJECT_NAME}
@@ -121,7 +110,7 @@ target_include_directories(
                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC disjoint_set hyperloglog
-                                             indexed_set bbhash)
+                                             indexed_set unordered_dense)
 
 include(CompilerWarnings)
 enable_project_warnings(${PROJECT_NAME})
@@ -132,16 +121,13 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 install(
-  TARGETS ${PROJECT_NAME} bbhash
+  TARGETS ${PROJECT_NAME} unordered_dense
   EXPORT ${PROJECT_NAME}-targets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   INCLUDES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-install(FILES ${bbhash_SOURCE_DIR}/BooPHF.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bbhash)
 
 install(
   EXPORT ${PROJECT_NAME}-targets

@@ -53,10 +53,11 @@ auto network<EdgeT>::in_edges(VertexType v) const -> std::span<const EdgeT> {
   if constexpr (instantaneous_undirected)
     return out_edges(v);
   else {
-    auto idx = const_cast<mphf_t&>(offset_map_).lookup(v);
-    if (idx >= offsets_.size() || offsets_[idx].vertex != v)
+    auto it = offset_map_.find(v);
+    if (it == offset_map_.end())
       return {};
 
+    const auto idx = it->second;
     std::span<const EdgeT> in_edges{in_edges_};
     const std::size_t first = offsets_[idx].in_offset;
     const std::size_t count = offsets_[idx + 1].in_offset - first;
@@ -67,10 +68,11 @@ auto network<EdgeT>::in_edges(VertexType v) const -> std::span<const EdgeT> {
 
 template <network_edge EdgeT>
 auto network<EdgeT>::out_edges(VertexType v) const -> std::span<const EdgeT> {
-  auto idx = const_cast<mphf_t&>(offset_map_).lookup(v);
-  if (idx >= offsets_.size() || offsets_[idx].vertex != v)
+  auto it = offset_map_.find(v);
+  if (it == offset_map_.end())
     return {};
 
+  const auto idx = it->second;
   std::span<const EdgeT> out_edges{out_edges_};
   const std::size_t first = offsets_[idx].out_offset;
   const std::size_t count = offsets_[idx + 1].out_offset - first;
@@ -166,23 +168,22 @@ auto network<EdgeT>::neighbours(VertexType v) const -> std::vector<VertexType> {
 
 template <network_edge EdgeT>
 auto network<EdgeT>::vertex_id(VertexType v) const -> std::size_t {
-  std::size_t idx = const_cast<mphf_t&>(offset_map_).lookup(v);
-  if (idx >= offsets_.size() || offsets_[idx].vertex != v)
+  auto it = offset_map_.find(v);
+  if (it == offset_map_.end())
     throw std::out_of_range("Vertex not found in the network");
-  return idx;
+  return it->second;
 }
 
 template <network_edge EdgeT>
 auto network<EdgeT>::id_vertex(std::size_t idx) const -> VertexType {
-  if (idx >= offsets_.size())
+  if (idx >= verts_.size())
     throw std::out_of_range("Vertex not found in the network");
-  return offsets_[idx].vertex;
+  return verts_[idx];
 }
 
 template <network_edge EdgeT>
 auto network<EdgeT>::has_vertex(VertexType v) const -> bool {
-  std::size_t idx = const_cast<mphf_t&>(offset_map_).lookup(v);
-  return idx < offsets_.size() && offsets_[idx].vertex == v;
+  return offset_map_.contains(v);
 }
 
 template <network_edge EdgeT>
