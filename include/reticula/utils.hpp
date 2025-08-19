@@ -6,10 +6,6 @@
 
 #include <reticula/concepts.hpp>
 
-namespace std {
-template <typename>
-struct hash;
-}
 namespace hll {
 template <typename>
 struct hash;
