@@ -15,7 +15,29 @@ auto create_random_directed_network(std::size_t n_vertices, std::size_t n_edges)
     auto v1 = dist(gen);
     auto v2 = dist(gen);
     if (v1 != v2)
-      edges.emplace(dist(gen), dist(gen));
+      edges.emplace(v1, v2);
+  }
+
+  auto vertices = std::ranges::iota_view{0uz, n_vertices};
+  return reticula::directed_network(edges, vertices);
+}
+
+auto create_strong_random_directed_network(
+  std::size_t n_vertices, std::size_t n_edges) -> reticula::directed_network {
+  if (n_vertices < 3)
+    throw std::invalid_argument("n_vertices must be at least 3");
+
+  std::unordered_set<reticula::directed_edge> edges;
+  for (std::size_t i = 0; i < n_vertices; ++i)
+    edges.emplace(i, (i + 1) % n_vertices);
+
+  std::mt19937 gen(42);
+  std::uniform_int_distribution<std::size_t> dist(0, n_vertices - 1);
+  while (edges.size() < n_edges) {
+    auto v1 = dist(gen);
+    auto v2 = dist(gen);
+    if (v1 != v2)
+      edges.emplace(v1, v2);
   }
 
   auto vertices = std::ranges::iota_view{0uz, n_vertices};
@@ -30,6 +52,28 @@ auto create_random_undirected_network(
   std::unordered_set<reticula::undirected_edge> edges;
   edges.reserve(n_edges);
 
+  while (edges.size() < n_edges) {
+    auto v1 = dist(gen);
+    auto v2 = dist(gen);
+    if (v1 != v2)
+      edges.emplace(v1, v2);
+  }
+
+  auto vertices = std::ranges::iota_view{0uz, n_vertices};
+  return reticula::undirected_network(edges, vertices);
+}
+
+auto create_connected_random_undirected_network(
+  std::size_t n_vertices, std::size_t n_edges) -> reticula::undirected_network {
+  if (n_vertices < 3)
+    throw std::invalid_argument("n_vertices must be at least 3");
+
+  std::unordered_set<reticula::undirected_edge> edges;
+  for (std::size_t i = 0; i < n_vertices - 1; ++i)
+    edges.emplace(i, i + 1);
+
+  std::mt19937 gen(42);
+  std::uniform_int_distribution<std::size_t> dist(0, n_vertices - 1);
   while (edges.size() < n_edges) {
     auto v1 = dist(gen);
     auto v2 = dist(gen);

@@ -186,7 +186,7 @@ auto reticula::square_grid_graph(
 
   auto outward_edges = [=, &stride](VertexType vid) {
     return std::views::iota(std::size_t{0}, d) |
-           std::views::filter([&](std::size_t k) {
+           std::views::filter([=, &stride](std::size_t k) {
              const auto dimk = dimensions[k];
              const auto ck = (vid / stride[k]) % dimk;
              return periodic ? (dimk > 1) : (ck + 1 < dimk);

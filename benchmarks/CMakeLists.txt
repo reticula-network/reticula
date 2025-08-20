@@ -28,6 +28,7 @@ add_executable(
   algorithms/bipartite.cpp
   algorithms/dag.cpp
   algorithms/graphicallity.cpp
+  algorithms/distance.cpp
   networks/directed.cpp
   networks/undirected.cpp
   networks/temporal.cpp)
