@@ -1,0 +1,50 @@
+name: Benchmarks
+on:
+  push:
+    branches: [ next ]
+
+permissions:
+  checks: write
+
+jobs:
+  build:
+    name: Tests on ${{ matrix.os }}
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install Pre-requisits on ubuntu
+      run: |
+        sudo apt-get -qy update
+        sudo apt-get install g++ ninja-build cmake
+        ninja --version
+        cmake --version
+        g++ --version
+
+    - name: Configure
+      run: cmake --build build-rel --config Release --target reticula_benchmarks -j 4 --verbose
+
+    - name: Install Bencher CLI
+      uses: bencherdev/bencher@main
+
+    - name: Run benchmarks
+      run: |
+        bencher run \
+          --project "reticula" \
+          --token "${{ secrets.BENCHER_API_TOKEN }}" \
+            --branch "${{ github.ref_name }}" \
+            --testbed "ubuntu-24.04" \
+            --github-actions "${{ secrets.GITHUB_TOKEN }}" \
+            --adapter cpp_google \
+            ./build-rel/benchmarks/reticula_benchmarks \
+            --benchmark_format=json \
+            --benchmark_out=googlebench.json \
+            --benchmark_out_format=json"
+
+    - name: Upload raw JSON artefact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: google-benchmark-json
+        path: googlebench.json
