@@ -40,12 +40,11 @@ jobs:
         bencher run \
           --project "reticula" \
           --token "${{ secrets.BENCHER_API_TOKEN }}" \
-            --branch "${{ github.ref_name }}" \
-            --testbed "ubuntu-24.04" \
-            --github-actions "${{ secrets.GITHUB_TOKEN }}" \
-            --adapter cpp_google \
-            ./build-rel/benchmarks/reticula_benchmarks \
-            --benchmark_format=json
+          --branch "${{ github.ref_name }}" \
+          --testbed "ubuntu-24.04" \
+          --github-actions "${{ secrets.GITHUB_TOKEN }}" \
+          --adapter cpp_google \
+          "./build-rel/benchmarks/reticula_benchmarks --benchmark_format=json"
 
     - name: Upload raw JSON artefact
       if: always()
