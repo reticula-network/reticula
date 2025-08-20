@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build:
-    name: Tests on ${{ matrix.os }}
+    name: Benchmarks
     runs-on: ubuntu-24.04
 
     steps:
@@ -47,7 +47,7 @@ jobs:
             ./build-rel/benchmarks/reticula_benchmarks \
             --benchmark_format=json \
             --benchmark_out=googlebench.json \
-            --benchmark_out_format=json"
+            --benchmark_out_format=json
 
     - name: Upload raw JSON artefact
       if: always()
