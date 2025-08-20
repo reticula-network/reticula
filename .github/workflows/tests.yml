@@ -27,7 +27,7 @@ jobs:
         choco install ninja cmake --no-progress
         cmake --version
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: cmake build
       run: |
