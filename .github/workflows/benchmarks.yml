@@ -23,6 +23,13 @@ jobs:
         g++ --version
 
     - name: Configure
+      run: >
+        cmake -S . -B build-rel -G Ninja
+        -DCMAKE_BUILD_TYPE=Release
+        -DRETICULA_BUILD_BENCHMARKS=on
+        -DRETICULA_BUILD_TESTS=off
+
+    - name: Build
       run: cmake --build build-rel --config Release --target reticula_benchmarks -j 4 --verbose
 
     - name: Install Bencher CLI
