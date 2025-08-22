@@ -45,10 +45,3 @@ jobs:
           --github-actions "${{ secrets.GITHUB_TOKEN }}" \
           --adapter cpp_google \
           "./build-rel/benchmarks/reticula_benchmarks --benchmark_format=json"
-
-    - name: Upload raw JSON artefact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: google-benchmark-json
-        path: googlebench.json
