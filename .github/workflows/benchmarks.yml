@@ -33,7 +33,7 @@ jobs:
       run: cmake --build build-rel --config Release --target reticula_benchmarks -j 4 --verbose
 
     - name: Run benchmarks and send to Benchboard
-      uses: arashbm/benchboard-client@main
+      uses: arashbm/benchboard-action@main
       with:
         project: 'reticula'
         benchmark-command: './build-rel/benchmark --benchmark_format=json --benchmark_filter=.*'
