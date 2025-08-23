@@ -32,16 +32,11 @@ jobs:
     - name: Build
       run: cmake --build build-rel --config Release --target reticula_benchmarks -j 4 --verbose
 
-    - name: Install Bencher CLI
-      uses: bencherdev/bencher@main
-
-    - name: Run benchmarks
-      run: |
-        bencher run \
-          --project "reticula" \
-          --token "${{ secrets.BENCHER_API_TOKEN }}" \
-          --branch "${{ github.ref_name }}" \
-          --testbed "ubuntu-24.04" \
-          --github-actions "${{ secrets.GITHUB_TOKEN }}" \
-          --adapter cpp_google \
-          "./build-rel/benchmarks/reticula_benchmarks --benchmark_format=json"
+    - name: Run benchmarks and send to Benchboard
+      uses: arashbm/benchboard-client@v0.0.1
+      with:
+        project: 'reticula'
+        benchmark-command: './build-rel/benchmark --benchmark_format=json --benchmark_filter=.*'
+        token: ${{ secrets.BENCHBOARD_TOKEN }}
+        machine-name: 'gh-action-ubuntu-24.04'
+        endpoint: "https://benchboard.fly.dev"
