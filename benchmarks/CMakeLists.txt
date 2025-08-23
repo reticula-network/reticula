@@ -23,6 +23,7 @@ add_executable(
   algorithms/vertex_degree.cpp
   algorithms/edge_degree.cpp
   algorithms/static_reachability.cpp
+  algorithms/temporal_reachability.cpp
   algorithms/properties.cpp
   algorithms/assortativity.cpp
   algorithms/bipartite.cpp

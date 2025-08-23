@@ -276,3 +276,77 @@ TEST_CASE("in-clusters", "[reticula::in_clusters]") {
       REQUIRE_THAT(cluster, UnorderedRangeEquals(expected.at(edge)));
   }
 }
+
+TEST_CASE("out-clusters", "[reticula::out_clusters]") {
+  SECTION("undirected temporal network") {
+    using EdgeType = reticula::undirected_temporal_edge;
+    using AdjType = reticula::adjacency::limited_waiting_time;
+    reticula::network<EdgeType> net(
+      {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
+    AdjType adj(2.5);
+
+    auto clusters = reticula::out_clusters(net, adj);
+    std::unordered_map<EdgeType, std::vector<EdgeType>> expected = {
+      {{3, 4, 8}, {{3, 4, 8}}},
+      {{2, 3, 6}, {{2, 3, 6}, {3, 4, 8}}},
+      {{1, 2, 5}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
+      {{5, 6, 1}, {{5, 6, 1}}},
+      {{2, 1, 2}, {{2, 1, 2}}},
+      {{1, 2, 1}, {{1, 2, 1}, {2, 1, 2}}}};
+    REQUIRE_THAT(
+      clusters | std::views::keys,
+      UnorderedRangeEquals(expected | std::views::keys));
+    for (auto& [edge, cluster] : clusters)
+      REQUIRE_THAT(cluster, UnorderedRangeEquals(expected.at(edge)));
+  }
+
+  SECTION("directed temporal network") {
+    using EdgeType = reticula::directed_temporal_edge;
+    using AdjType = reticula::adjacency::limited_waiting_time;
+    reticula::network<EdgeType> net(
+      {{1, 2, 1}, {2, 1, 2}, {1, 2, 5}, {2, 3, 6}, {3, 4, 8}, {5, 6, 1}});
+    AdjType adj(2.5);
+
+    auto clusters = reticula::out_clusters(net, adj);
+    std::unordered_map<EdgeType, std::vector<EdgeType>> expected = {
+      {{3, 4, 8}, {{3, 4, 8}}},
+      {{2, 3, 6}, {{2, 3, 6}, {3, 4, 8}}},
+      {{1, 2, 5}, {{1, 2, 5}, {2, 3, 6}, {3, 4, 8}}},
+      {{5, 6, 1}, {{5, 6, 1}}},
+      {{2, 1, 2}, {{2, 1, 2}}},
+      {{1, 2, 1}, {{1, 2, 1}, {2, 1, 2}}}};
+    REQUIRE_THAT(
+      clusters | std::views::keys,
+      UnorderedRangeEquals(expected | std::views::keys));
+    for (auto& [edge, cluster] : clusters)
+      REQUIRE_THAT(cluster, UnorderedRangeEquals(expected.at(edge)));
+  }
+
+  SECTION("directed delayed temporal network") {
+    using EdgeType = reticula::directed_delayed_temporal_edge;
+    using AdjType = reticula::adjacency::limited_waiting_time;
+    reticula::network<EdgeType> net(
+      {{1, 2, 1, 5},
+       {2, 1, 2, 3},
+       {1, 2, 5, 5},
+       {2, 3, 6, 7},
+       {3, 4, 8, 9},
+       {5, 6, 1, 3}});
+    AdjType adj(2.5);
+
+    auto clusters = reticula::out_clusters(net, adj);
+    std::unordered_map<EdgeType, std::vector<EdgeType>> expected = {
+      {{3, 4, 8, 9}, {{3, 4, 8, 9}}},
+      {{1, 2, 5, 5}, {{1, 2, 5, 5}, {3, 4, 8, 9}, {2, 3, 6, 7}}},
+      {{2, 1, 2, 3}, {{2, 1, 2, 3}, {2, 3, 6, 7}, {3, 4, 8, 9}, {1, 2, 5, 5}}},
+      {{2, 3, 6, 7}, {{2, 3, 6, 7}, {3, 4, 8, 9}}},
+      {{1, 2, 1, 5}, {{1, 2, 1, 5}, {3, 4, 8, 9}, {2, 3, 6, 7}}},
+      {{5, 6, 1, 3}, {{5, 6, 1, 3}}}};
+
+    REQUIRE_THAT(
+      clusters | std::views::keys,
+      UnorderedRangeEquals(expected | std::views::keys));
+    for (auto& [edge, cluster] : clusters)
+      REQUIRE_THAT(cluster, UnorderedRangeEquals(expected.at(edge)));
+  }
+}

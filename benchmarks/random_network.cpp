@@ -130,3 +130,53 @@ auto create_bipartite_network(
   auto vertices = std::ranges::iota_view{0uz, n_vertices_a + n_vertices_b};
   return reticula::undirected_network(edges, vertices);
 }
+
+auto create_random_temporal_network(std::size_t n_vertices, double mean_iet)
+  -> reticula::undirected_temporal_network {
+  std::mt19937 gen(42);
+  std::uniform_int_distribution<std::size_t> vertex_dist(0, n_vertices - 1);
+  double t_max = 10.0;
+  double n_links =
+    static_cast<double>(n_vertices) * static_cast<double>(n_vertices - 1) / 2.0;
+  double n_events = (t_max / mean_iet) * n_links;
+  std::uniform_real_distribution<double> time_dist(0.0, 100.0);
+
+  std::unordered_set<reticula::undirected_temporal_edge> edges;
+  edges.reserve(static_cast<std::size_t>(n_events));
+
+  while (edges.size() < static_cast<std::size_t>(n_events)) {
+    auto v1 = vertex_dist(gen);
+    auto v2 = vertex_dist(gen);
+    if (v1 != v2)
+      edges.emplace(v1, v2, time_dist(gen));
+  }
+
+  auto vertices = std::ranges::iota_view{0uz, n_vertices};
+  return reticula::undirected_temporal_network(edges, vertices);
+}
+
+auto create_random_directed_temporal_network(
+  std::size_t n_vertices, double mean_iet)
+  -> reticula::directed_temporal_network {
+  std::mt19937 gen(42);
+  std::uniform_int_distribution<std::size_t> vertex_dist(0, n_vertices - 1);
+  std::uniform_real_distribution<double> time_dist(0.0, 100.0);
+
+  double t_max = 10.0;
+  double n_links =
+    static_cast<double>(n_vertices) * static_cast<double>(n_vertices - 1);
+  double n_events = (t_max / mean_iet) * n_links;
+
+  std::unordered_set<reticula::directed_temporal_edge> edges;
+  edges.reserve(static_cast<std::size_t>(n_events));
+
+  while (edges.size() < static_cast<std::size_t>(n_events)) {
+    auto v1 = vertex_dist(gen);
+    auto v2 = vertex_dist(gen);
+    if (v1 != v2)
+      edges.emplace(v1, v2, time_dist(gen));
+  }
+
+  auto vertices = std::ranges::iota_view{0uz, n_vertices};
+  return reticula::directed_temporal_network(edges, vertices);
+}
