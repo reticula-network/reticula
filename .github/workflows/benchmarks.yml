@@ -37,6 +37,6 @@ jobs:
       with:
         project: 'reticula'
         benchmark-command: './build-rel/benchmark --benchmark_format=json --benchmark_filter=.*'
-        token: ${{ secrets.BENCHBOARD_TOKEN }}
+        token: ${{ secrets.BENCHBOARD_INGEST_TOKEN }}
         machine-name: 'gh-action-ubuntu-24.04'
         endpoint: "https://benchboard.fly.dev"
