@@ -253,15 +253,14 @@ template <
   temporal_network_like NetT,
   adjacency::adjacency<typename NetT::EdgeType> AdjT,
   std::constructible_from<temporal_cluster<typename NetT::EdgeType>> Res>
-auto generic_weak_cluster(const NetT& net, const AdjT& adj, bool singletons)
+auto generic_weak_clusters(const NetT& net, const AdjT& adj, bool singletons)
   -> std::vector<Res> {
   auto disj_set = ds::disjoint_set<std::size_t>(net.edges().size());
 
   std::unordered_map<typename NetT::EdgeType, std::size_t> edge_id;
   edge_id.reserve(net.edges().size());
-  for (auto& [i, e] : net.edges() | views::enumerate) {
+  for (auto&& [i, e] : net.edges() | views::enumerate)
     edge_id.emplace(e, i);
-  }
 
   auto events = net.edges_cause();
   auto iter = events.begin();
@@ -281,7 +280,7 @@ auto generic_weak_cluster(const NetT& net, const AdjT& adj, bool singletons)
   for (const auto& [idx, set] : sets) {
     temporal_cluster<typename NetT::EdgeType> current_set(set.size());
     for (const auto& event_idx : set)
-      current_set.insert(events[event_idx]);
+      current_set.insert(events[event_idx], adj);
 
     res.emplace_back(std::move(current_set));
   }
@@ -397,7 +396,7 @@ template <
   adjacency::adjacency<typename NetT::EdgeType> AdjT>
 auto weak_clusters(const NetT& net, const AdjT& adj, bool singletons)
   -> std::vector<temporal_cluster<typename NetT::EdgeType>> {
-  return detail::generic_weak_cluster<
+  return detail::generic_weak_clusters<
     NetT, AdjT, temporal_cluster<typename NetT::EdgeType>>(
     net, adj, singletons);
 }
@@ -431,7 +430,7 @@ template <
   adjacency::adjacency<typename NetT::EdgeType> AdjT>
 auto weak_cluster_sizes(const NetT& net, const AdjT& adj, bool singletons)
   -> std::vector<temporal_cluster_size> {
-  return detail::generic_weak_cluster<NetT, AdjT, temporal_cluster_size>(
+  return detail::generic_weak_clusters<NetT, AdjT, temporal_cluster_size>(
     net, adj, singletons);
 }
 
