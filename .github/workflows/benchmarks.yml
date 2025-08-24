@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+      fetch-depth: 20
 
     - name: Install Pre-requisits on ubuntu
       run: |
