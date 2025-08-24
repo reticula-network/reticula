@@ -1,9 +1,9 @@
-#include <reticula/views/enumerate.hpp>
 #include <optional>
 #include <random>
 
 #include <reticula/concepts.hpp>
 #include <reticula/networks.hpp>
+#include <reticula/views/enumerate.hpp>
 
 namespace reticula {
 template <std::uniform_random_bit_generator Gen>
@@ -19,7 +19,7 @@ auto random_regular_graph(VertexType size, VertexType degree, Gen& gen)
 
 template <std::uniform_random_bit_generator Gen>
 [[nodiscard]]
-auto try_directed_random_regular_graph(
+auto try_random_directed_regular_graph(
   VertexType size, VertexType degree, Gen& gen, std::size_t max_tries)
   -> std::optional<directed_network>;
 
@@ -110,7 +110,7 @@ auto random_regular_graph(VertexType size, VertexType degree, Gen& gen)
 }
 
 template <std::uniform_random_bit_generator Gen>
-auto try_directed_random_regular_graph(
+auto try_random_directed_regular_graph(
   VertexType size, VertexType degree, Gen& gen, std::size_t max_tries)
   -> std::optional<directed_network> {
   if (size == 0)
@@ -202,7 +202,7 @@ auto random_directed_regular_graph(VertexType size, VertexType degree, Gen& gen)
   -> directed_network {
   std::optional<directed_network> maybe_g = std::nullopt;
   while (!maybe_g)
-    maybe_g = try_directed_random_regular_graph(size, degree, gen, 1000);
+    maybe_g = try_random_directed_regular_graph(size, degree, gen, 1000);
   return *maybe_g;
 }
-} // nam<space reticula
+} // namespace reticula
