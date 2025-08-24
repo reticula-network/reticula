@@ -50,6 +50,10 @@ auto directed_temporal_edge::mutated_verts() const
   return std::span<const VertexType, 1>(&verts_[1], 1);
 }
 
+auto directed_temporal_edge::tail() const -> VertexType { return verts_[0]; }
+
+auto directed_temporal_edge::head() const -> VertexType { return verts_[1]; }
+
 auto effect_cmp(
   const directed_temporal_edge& a, const directed_temporal_edge& b) -> bool {
   return std::make_tuple(a.time_, a.verts_[1], a.verts_[0]) <
