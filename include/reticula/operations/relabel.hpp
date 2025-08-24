@@ -10,7 +10,7 @@ auto relabel(const NetT& g) -> reticula::network<typename NetT::EdgeType>;
 
 template <network_like NetT, mapping<VertexType, VertexType> MapT>
 [[nodiscard]]
-auto relabel(const NetT& g, MapT&& mapping)
+auto relabel(const NetT& g, const MapT& mapping)
   -> reticula::network<typename NetT::EdgeType>;
 
 template <network_like NetT, std::invocable<VertexType> MapF>

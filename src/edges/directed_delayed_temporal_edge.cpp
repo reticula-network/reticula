@@ -59,6 +59,14 @@ auto directed_delayed_temporal_edge::mutated_verts() const
   return std::span<const VertexType, 1>(&verts_[1], 1);
 }
 
+auto directed_delayed_temporal_edge::tail() const -> VertexType {
+  return verts_[0];
+}
+
+auto directed_delayed_temporal_edge::head() const -> VertexType {
+  return verts_[1];
+}
+
 auto effect_cmp(
   const directed_delayed_temporal_edge& a,
   const directed_delayed_temporal_edge& b) -> bool {

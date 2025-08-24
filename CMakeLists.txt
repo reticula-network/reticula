@@ -95,6 +95,7 @@ add_library(
   src/generation/uniform_hypergraph.cpp
   src/generation/fully_mixed.cpp
   src/generation/link_activation.cpp
+  src/generation/node_activation.cpp
   # others
   src/temporal_adjacency.cpp
   src/temporal_clusters.cpp
