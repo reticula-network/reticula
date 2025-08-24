@@ -1,0 +1,80 @@
+[project]
+name = "reticula"
+version = "0.14.0"
+description="Analyse temporal network and hypergraphs efficiently."
+authors = [{name="Arash Badie-Modiri", email="arashbm@gmail.com"}]
+requires-python = ">=3.10"
+license = {text = "MIT"}
+readme = "README.md"
+keywords = [
+    "Complex Networks", "Networks", "network",
+    "Graphs", "Graph Theory", "graph",
+    "Temporal Networks", "temporal network",
+    "Hypergraphs", "hypergraph", "hyper-graph"
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis"
+]
+
+[project.urls]
+homepage = "https://reticula.network/"
+documentation = "https://docs.reticula.network/"
+repository = "https://github.com/reticula-network/reticula"
+bug-tracker= "https://github.com/reticula-network/reticula/issues"
+
+[project.optional-dependencies]
+test = ["pytest", "hypothesis", "pytest-xdist", "networkx"]
+
+[build-system]
+requires = [
+    "scikit-build-core>=0.10.7",
+    "nanobind==2.8.0"
+]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+wheel.py-api = "cp312"
+wheel.license-files = ["../LICENSE"]
+build-dir = "build/{wheel_tag}"
+
+[tool.scikit-build.cmake]
+source-dir = ".."
+
+[tool.scikit-build.cmake.define]
+RETICULA_BUILD_TESTS = false
+RETICULA_BUILD_BENCHMARKS = false
+RETICULA_BUILD_PYTHON = true
+
+[tool.cibuildwheel]
+build-verbosity = 2
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "10.15"
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+before-build = "pip install delvewheel"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
+
+[tool.autopep8]
+max_line_length = 80

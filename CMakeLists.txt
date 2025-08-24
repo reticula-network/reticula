@@ -11,6 +11,7 @@ project(
 
 option(RETICULA_BUILD_TESTS "Build unit tests" "${PROJECT_IS_TOP_LEVEL}")
 option(RETICULA_BUILD_BENCHMARKS "Build benchmarks" "${PROJECT_IS_TOP_LEVEL}")
+option(RETICULA_BUILD_PYTHON "Build python bindings" "${PROJECT_IS_TOP_LEVEL}")
 option(RETICULA_ENABLE_WARNINGS "Enable warnings" on)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -111,6 +112,7 @@ target_include_directories(
 
 target_link_libraries(${PROJECT_NAME} PUBLIC disjoint_set hyperloglog
                                              indexed_set unordered_dense)
+set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 include(CompilerWarnings)
 enable_project_warnings(${PROJECT_NAME})
@@ -160,6 +162,12 @@ endif()
 
 if(RETICULA_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
+endif()
+
+# Python
+
+if(RETICULA_BUILD_PYTHON)
+  add_subdirectory(python)
 endif()
 
 # Packaging helper

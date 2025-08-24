@@ -1,0 +1,8 @@
+#pragma once
+
+#include <string_view>
+
+namespace reticula::python {
+static constexpr std::string_view version = "@SKBUILD_PROJECT_VERSION@";
+static constexpr std::string_view full_version = "@SKBUILD_PROJECT_VERSION_FULL@";
+} // namespace reticula::python
