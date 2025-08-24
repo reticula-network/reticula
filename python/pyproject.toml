@@ -35,7 +35,7 @@ repository = "https://github.com/reticula-network/reticula"
 bug-tracker= "https://github.com/reticula-network/reticula/issues"
 
 [project.optional-dependencies]
-test = ["pytest", "hypothesis", "pytest-xdist", "networkx"]
+test = ["networkx"]
 
 [build-system]
 requires = [
@@ -59,6 +59,8 @@ RETICULA_BUILD_PYTHON = true
 
 [tool.cibuildwheel]
 build-verbosity = 2
+test-requires = ["pytest", "hypothesis", "pytest-xdist", "networkx"]
+test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
