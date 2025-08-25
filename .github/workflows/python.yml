@@ -9,7 +9,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022, macos-15]
+        - os: linux-intel
+          runs-on: ubuntu-latest
+        - os: linux-arm
+          runs-on: ubuntu-24.04-arm
+        - os: windows-intel
+          runs-on: windows-latest
+        - os: windows-arm
+          runs-on: windows-11-arm
+        - os: macos-intel
+          runs-on: macos-latest
+        - os: macos-arm
+          runs-on: macos-latest
+        - os: pyodide
+          runs-on: ubuntu-latest
+          platform: pyodide
 
     steps:
     - uses: actions/checkout@v5
@@ -17,9 +31,24 @@ jobs:
     - name: Build wheels
       uses: pypa/cibuildwheel@v3.1.4
       with:
+        platform: ${{ matrix.platform || 'auto' }}
         package-dir: python
 
     - uses: actions/upload-artifact@v4
       with:
         name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
         path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build sdist
+        run: pipx run build ./python --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
