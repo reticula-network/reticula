@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <format>
 #include <functional>
 #include <span>
