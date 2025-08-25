@@ -35,19 +35,6 @@ nanobind_add_module(
   src/edges/directed_delayed_temporal_edge.cpp
   # networks
   src/networks.cpp
-  # generation
-  src/generation/deterministic.cpp
-  src/generation/gnp.cpp
-  src/generation/gnm.cpp
-  src/generation/barabasi_albert.cpp
-  src/generation/watts_strogatz.cpp
-  src/generation/regular.cpp
-  src/generation/expected_degree_sequence.cpp
-  src/generation/degree_sequence.cpp
-  src/generation/uniform_hypergraph.cpp
-  src/generation/fully_mixed.cpp
-  src/generation/link_activation.cpp
-  src/generation/node_activation.cpp
   # operations
   src/operations/algebraic.cpp
   src/operations/addition.cpp
@@ -65,7 +52,34 @@ target_include_directories(
           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
           $<INSTALL_INTERFACE:include>)
 set_target_properties(_reticula_ext PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
 enable_project_warnings(_reticula_ext)
-
 install(TARGETS _reticula_ext LIBRARY DESTINATION reticula)
+
+nanobind_add_module(
+  _reticula_generation
+  NB_DOMAIN
+  reticula
+  NB_SUPPRESS_WARNINGS
+  NB_STATIC
+  STABLE_ABI
+  LTO
+  # generation
+  src/generation/deterministic.cpp
+  src/generation/gnp.cpp
+  src/generation/gnm.cpp
+  src/generation/barabasi_albert.cpp
+  src/generation/watts_strogatz.cpp
+  src/generation/regular.cpp
+  src/generation/expected_degree_sequence.cpp
+  src/generation/degree_sequence.cpp
+  src/generation/uniform_hypergraph.cpp
+  src/generation/fully_mixed.cpp
+  src/generation/link_activation.cpp
+  src/generation/node_activation.cpp
+  # main
+  src/generation.cpp)
+target_link_libraries(_reticula_generation PRIVATE reticula)
+set_target_properties(_reticula_generation PROPERTIES POSITION_INDEPENDENT_CODE
+                                                      ON)
+enable_project_warnings(_reticula_generation)
+install(TARGETS _reticula_generation LIBRARY DESTINATION reticula)

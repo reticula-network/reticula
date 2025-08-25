@@ -18,20 +18,42 @@ from ._reticula_ext import (
 )
 
 
+# Operations
+
 from ._reticula_ext import (
+    with_vertices,
+    with_edges,
+    without_isolated_vertices,
+    without_vertices,
+    without_edges,
+    uniformly_occupy_vertices,
+    occupy_vertices,
+    uniformly_occupy_edges,
+    occupy_edges,
+    static_projection,
+    directed_projection,
+    clique_expansion,
+    vertex_induced_subgraph,
+    edge_induced_subgraph,
+    relabel,
+)
+
+# Generation
+
+from ._reticula_generation import (
     path_graph, cycle_graph, star_graph, wheel_graph, complete_graph,
     complete_bipartite_graph, complete_bipartite_directed_graph,
     complete_directed_graph, regular_ring_lattice
 )
 
-from ._reticula_ext import (
+from ._reticula_generation import (
     random_gnp_graph, random_directed_gnp_graph,
     random_gnm_graph, random_directed_gnm_graph,
     random_barabasi_albert_graph,
     random_watts_strogatz_graph
 )
 
-from ._reticula_ext import (
+from ._reticula_generation import (
     try_random_regular_graph,
     random_regular_graph,
     try_random_directed_regular_graph,
@@ -50,24 +72,6 @@ from ._reticula_ext import (
     random_directed_fully_mixed_temporal_network,
     random_link_activation_temporal_network,
     random_node_activation_temporal_network,
-)
-
-from ._reticula_ext import (
-    with_vertices,
-    with_edges,
-    without_isolated_vertices,
-    without_vertices,
-    without_edges,
-    uniformly_occupy_vertices,
-    occupy_vertices,
-    uniformly_occupy_edges,
-    occupy_edges,
-    static_projection,
-    directed_projection,
-    clique_expansion,
-    vertex_induced_subgraph,
-    edge_induced_subgraph,
-    relabel,
 )
 
 __all__ = [
@@ -90,6 +94,31 @@ __all__ = [
     "undirected_temporal_hypernetwork",
     "directed_temporal_hypernetwork",
     "directed_delayed_temporal_hypernetwork",
+
+    # Operations
+    # - algebraic
+    # - addition
+    "with_vertices",
+    "with_edges",
+    # - removal
+    "without_isolated_vertices",
+    "without_vertices",
+    "without_edges",
+    # - occupation
+    "uniformly_occupy_vertices",
+    "occupy_vertices",
+    "uniformly_occupy_edges",
+    "occupy_edges",
+    # - projections
+    "static_projection",
+    "directed_projection",
+    "clique_expansion",
+    # - subgraphs
+    "vertex_induced_subgraph",
+    "edge_induced_subgraph",
+    # - relabel
+    "relabel",
+
     # generation
     # - deterministic
     "path_graph",
@@ -136,27 +165,4 @@ __all__ = [
     # - node activation
     "random_node_activation_temporal_network",
 
-    # Operations
-    # - algebraic
-    # - addition
-    "with_vertices",
-    "with_edges",
-    # - removal
-    "without_isolated_vertices",
-    "without_vertices",
-    "without_edges",
-    # - occupation
-    "uniformly_occupy_vertices",
-    "occupy_vertices",
-    "uniformly_occupy_edges",
-    "occupy_edges",
-    # - projections
-    "static_projection",
-    "directed_projection",
-    "clique_expansion",
-    # - subgraphs
-    "vertex_induced_subgraph",
-    "edge_induced_subgraph",
-    # - relabel
-    "relabel",
 ]
