@@ -13,18 +13,14 @@ void define_undirected_temporal_edge(nanobind::module_& m);
 void define_directed_temporal_edge(nanobind::module_& m);
 void define_directed_delayed_temporal_edge(nanobind::module_& m);
 
+void define_undirected_hyperedge(nanobind::module_& m);
+void define_directed_hyperedge(nanobind::module_& m);
+void define_undirected_temporal_hyperedge(nanobind::module_& m);
+void define_directed_temporal_hyperedge(nanobind::module_& m);
+void define_directed_delayed_temporal_hyperedge(nanobind::module_& m);
+
 // networks
 void define_networks(nanobind::module_& m);
-
-
-// operations
-void define_algebraic(nanobind::module_& m);
-void define_addition(nanobind::module_& m);
-void define_removal(nanobind::module_& m);
-void define_occupation(nanobind::module_& m);
-void define_projections(nanobind::module_& m);
-void define_subgraph(nanobind::module_& m);
-void define_relabel(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m) {
@@ -37,13 +33,11 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_directed_temporal_edge(m);
   reticula::python::define_directed_delayed_temporal_edge(m);
 
-  reticula::python::define_networks(m);
+  reticula::python::define_undirected_hyperedge(m);
+  reticula::python::define_directed_hyperedge(m);
+  reticula::python::define_undirected_temporal_hyperedge(m);
+  reticula::python::define_directed_temporal_hyperedge(m);
+  reticula::python::define_directed_delayed_temporal_hyperedge(m);
 
-  // reticula::python::define_algebraic(m);
-  reticula::python::define_addition(m);
-  reticula::python::define_removal(m);
-  reticula::python::define_occupation(m);
-  reticula::python::define_projections(m);
-  reticula::python::define_subgraph(m);
-  reticula::python::define_relabel(m);
+  reticula::python::define_networks(m);
 }

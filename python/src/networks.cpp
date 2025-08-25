@@ -15,10 +15,10 @@ void define_network(nanobind::module_& m, const std::string& name) {
   using NetT = network<EdgeT>;
   nanobind::class_<NetT>(m, name.c_str())
     .def(nanobind::init<>())
-    .def(nanobind::init<std::vector<EdgeT>>(),
-         nanobind::arg("edges"))
-    .def(nanobind::init<std::vector<EdgeT>, std::vector<VertexType>>(),
-         nanobind::arg("edges"), nanobind::arg("verts"))
+    .def(nanobind::init<std::vector<EdgeT>>(), nanobind::arg("edges"))
+    .def(
+      nanobind::init<std::vector<EdgeT>, std::vector<VertexType>>(),
+      nanobind::arg("edges"), nanobind::arg("verts"))
     .def(nanobind::self != nanobind::self)
     .def(nanobind::self == nanobind::self)
     .def(

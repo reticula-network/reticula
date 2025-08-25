@@ -1,3 +1,4 @@
+#include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 
 #include <reticula/edges/directed_edge.hpp>

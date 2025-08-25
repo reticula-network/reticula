@@ -6,6 +6,9 @@ from ._reticula_ext import (
     undirected_edge, directed_edge,
     undirected_temporal_edge, directed_temporal_edge,
     directed_delayed_temporal_edge,
+    undirected_hyperedge, directed_hyperedge,
+    undirected_temporal_hyperedge, directed_temporal_hyperedge,
+    directed_delayed_temporal_hyperedge,
 )
 
 from ._reticula_ext import (
@@ -20,7 +23,7 @@ from ._reticula_ext import (
 
 # Operations
 
-from ._reticula_ext import (
+from ._reticula_operations import (
     with_vertices,
     with_edges,
     without_isolated_vertices,
@@ -74,6 +77,23 @@ from ._reticula_generation import (
     random_node_activation_temporal_network,
 )
 
+from ._reticula_algorithms import (
+    in_degree, out_degree,
+    incident_degree, degree,
+    in_degree_sequence, out_degree_sequence,
+    incident_degree_sequence, degree_sequence,
+    in_out_degree_pair_sequence,
+    edge_in_degree,
+    edge_out_degree,
+    edge_incident_degree,
+    edge_degree,
+    edge_in_degree_sequence,
+    edge_out_degree_sequence,
+    edge_incident_degree_sequence,
+    edge_degree_sequence,
+    edge_in_out_degree_pair_sequence,
+)
+
 __all__ = [
     "__version__",
     "mersenne_twister",
@@ -83,6 +103,11 @@ __all__ = [
     "undirected_temporal_edge",
     "directed_temporal_edge",
     "directed_delayed_temporal_edge",
+    "undirected_hyperedge",
+    "directed_hyperedge",
+    "undirected_temporal_hyperedge",
+    "directed_temporal_hyperedge",
+    "directed_delayed_temporal_hyperedge",
     # networks
     "undirected_network",
     "directed_network",
@@ -165,4 +190,25 @@ __all__ = [
     # - node activation
     "random_node_activation_temporal_network",
 
+    # algorithms
+    # - vertex-degree
+    "in_degree",
+    "out_degree",
+    "incident_degree",
+    "degree",
+    "in_degree_sequence",
+    "out_degree_sequence",
+    "incident_degree_sequence",
+    "degree_sequence",
+    "in_out_degree_pair_sequence",
+    # - edge degree
+    "edge_in_degree",
+    "edge_out_degree",
+    "edge_incident_degree",
+    "edge_degree",
+    "edge_in_degree_sequence",
+    "edge_out_degree_sequence",
+    "edge_incident_degree_sequence",
+    "edge_degree_sequence",
+    "edge_in_out_degree_pair_sequence",
 ]

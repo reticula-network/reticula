@@ -33,16 +33,13 @@ nanobind_add_module(
   src/edges/undirected_temporal_edge.cpp
   src/edges/directed_temporal_edge.cpp
   src/edges/directed_delayed_temporal_edge.cpp
+  src/edges/undirected_hyperedge.cpp
+  src/edges/directed_hyperedge.cpp
+  src/edges/undirected_temporal_hyperedge.cpp
+  src/edges/directed_temporal_hyperedge.cpp
+  src/edges/directed_delayed_temporal_hyperedge.cpp
   # networks
   src/networks.cpp
-  # operations
-  src/operations/algebraic.cpp
-  src/operations/addition.cpp
-  src/operations/removal.cpp
-  src/operations/occupation.cpp
-  src/operations/projections.cpp
-  src/operations/subgraph.cpp
-  src/operations/relabel.cpp
   # main
   src/main.cpp)
 target_link_libraries(_reticula_ext PRIVATE reticula)
@@ -83,3 +80,48 @@ set_target_properties(_reticula_generation PROPERTIES POSITION_INDEPENDENT_CODE
                                                       ON)
 enable_project_warnings(_reticula_generation)
 install(TARGETS _reticula_generation LIBRARY DESTINATION reticula)
+
+nanobind_add_module(
+  _reticula_operations
+  NB_DOMAIN
+  reticula
+  NB_SUPPRESS_WARNINGS
+  NB_STATIC
+  STABLE_ABI
+  LTO
+  # operations
+  src/operations/algebraic.cpp
+  src/operations/addition.cpp
+  src/operations/removal.cpp
+  src/operations/occupation.cpp
+  src/operations/projections.cpp
+  src/operations/subgraph.cpp
+  src/operations/relabel.cpp
+  # main
+  src/operations.cpp)
+target_link_libraries(_reticula_operations PRIVATE reticula)
+set_target_properties(_reticula_operations PROPERTIES POSITION_INDEPENDENT_CODE
+                                                      ON)
+
+enable_project_warnings(_reticula_operations)
+install(TARGETS _reticula_operations LIBRARY DESTINATION reticula)
+
+nanobind_add_module(
+  _reticula_algorithms
+  NB_DOMAIN
+  reticula
+  NB_SUPPRESS_WARNINGS
+  NB_STATIC
+  STABLE_ABI
+  LTO
+  # operations
+  src/algorithms/vertex_degree.cpp
+  src/algorithms/edge_degree.cpp
+  # main
+  src/algorithms.cpp)
+target_link_libraries(_reticula_algorithms PRIVATE reticula)
+set_target_properties(_reticula_algorithms PROPERTIES POSITION_INDEPENDENT_CODE
+                                                      ON)
+
+enable_project_warnings(_reticula_operations)
+install(TARGETS _reticula_algorithms LIBRARY DESTINATION reticula)
