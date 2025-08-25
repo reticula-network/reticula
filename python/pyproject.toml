@@ -77,6 +77,7 @@ MACOSX_DEPLOYMENT_TARGET = "11.0"
 [tool.cibuildwheel.windows]
 build-verbosity = 2
 repair-wheel-command = "pipx run delvewheel repair -w {dest_dir} {wheel}"
+test-skip = ["cp310-win_arm64"]
 skip = ["*-win32"]
 
 [tool.cibuildwheel.pyodide.config-settings]
