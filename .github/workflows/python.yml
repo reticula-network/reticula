@@ -31,8 +31,9 @@ jobs:
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v3.1.4
+      env:
+        CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
       with:
-        platform: ${{ matrix.platform || 'auto' }}
         package-dir: python
 
     - uses: actions/upload-artifact@v4
