@@ -79,8 +79,8 @@ build-verbosity = 2
 repair-wheel-command = "pipx run delvewheel repair -w {dest_dir} {wheel}"
 skip = ["*-win32"]
 
-[tool.cibuildwheel.pyodide]
-config-settings = ["cmake.define.RETICULA_ENABLE_WARNINGS=off"]
+[tool.cibuildwheel.pyodide.config-settings]
+"cmake.define.RETICULA_ENABLE_WARNINGS"= "off"
 
 [tool.autopep8]
 max_line_length = 80
