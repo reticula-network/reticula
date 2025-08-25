@@ -27,7 +27,12 @@ constexpr auto minmax_array(const T& a, const T& b) -> std::array<T, 2> {
   return (b < a) ? std::array<T, 2>{b, a} : std::array<T, 2>{a, b};
 }
 
-constexpr std::size_t golden_ratio = 0x9E3779B97F4A7C15;
+constexpr std::size_t golden_ratio = [] -> std::size_t {
+  if constexpr (sizeof(std::size_t) == 4)
+    return 0x9E3779B9;
+  else
+    return 0x9E3779B97F4A7C15;
+}();
 
 /**
   Calculates hash of `other` and combines it with a seed.
