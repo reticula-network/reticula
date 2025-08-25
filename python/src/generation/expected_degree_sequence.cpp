@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
 
 #include <random>
 #include <reticula/generation/expected_degree_sequence.hpp>

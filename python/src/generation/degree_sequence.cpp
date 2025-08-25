@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/vector.h>
 #include <nanobind/stl/optional.h>
 
 #include <reticula/generation/degree_sequence.hpp>
