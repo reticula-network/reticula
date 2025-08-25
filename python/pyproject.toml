@@ -60,7 +60,7 @@ RETICULA_BUILD_PYTHON = true
 [tool.cibuildwheel]
 build-verbosity = 2
 test-requires = ["pytest", "hypothesis", "pytest-xdist", "networkx"]
-test-command = "pytest ,"
+test-command = "pytest ."
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
