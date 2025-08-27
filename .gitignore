@@ -38,3 +38,7 @@ out
 
 callgrind.out.*
 compile_commands.json
+
+__pycache__/
+*.py[codz]
+*$py.class
