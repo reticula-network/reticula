@@ -44,6 +44,8 @@ nanobind_add_module(
   src/vector.cpp
   # span
   src/span.cpp
+  # components
+  src/components.cpp
   # main
   src/main.cpp)
 target_link_libraries(_reticula_ext PRIVATE reticula)
@@ -118,9 +120,11 @@ nanobind_add_module(
   NB_STATIC
   STABLE_ABI
   LTO
-  # operations
+  # algorithms
   src/algorithms/vertex_degree.cpp
   src/algorithms/edge_degree.cpp
+  src/algorithms/properties.cpp
+  src/algorithms/static_reachability.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

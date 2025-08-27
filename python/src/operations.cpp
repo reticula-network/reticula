@@ -12,7 +12,7 @@ void define_relabel(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_operations, m) {
-  // reticula::python::define_algebraic(m);
+  reticula::python::define_algebraic(m);
   reticula::python::define_addition(m);
   reticula::python::define_removal(m);
   reticula::python::define_occupation(m);

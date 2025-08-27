@@ -78,3 +78,21 @@ def test_temporal_hypernetwork_creation():
     net = ret.directed_temporal_hypernetwork(edges, verts=[5])
     assert sorted(net.edges()) == sorted(edges)
     assert net.vertices() == [0, 1, 2, 3, 5]
+
+
+def test_edge_degree_functions():
+    edge = ret.directed_edge(0, 1)
+    assert ret.edge_in_degree(edge) == 1
+    assert ret.edge_out_degree(edge) == 1
+    assert ret.edge_incident_degree(edge) == 2
+
+    edge = ret.directed_hyperedge([0, 1, 2], [2, 3, 4, 5])
+    assert ret.edge_in_degree(edge) == 3
+    assert ret.edge_out_degree(edge) == 4
+    assert ret.edge_incident_degree(edge) == 6
+
+    edge = ret.undirected_edge(0, 1)
+    assert ret.edge_degree(edge) == 2
+    assert ret.edge_in_degree(edge) == 2
+    assert ret.edge_out_degree(edge) == 2
+    assert ret.edge_incident_degree(edge) == 2

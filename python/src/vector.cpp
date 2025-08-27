@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <reticula/edges.hpp>
+#include <reticula/components.hpp>
 
 #include <nanobind/make_iterator.h>
 #include <nanobind/nanobind.h>
@@ -459,5 +460,9 @@ void define_vector_types(nanobind::module_& m) {
   define_vector<directed_temporal_hyperedge>(m, "directed_temporal_hyperedge");
   define_vector<directed_delayed_temporal_hyperedge>(
     m, "directed_delayed_temporal_hyperedge");
+
+  define_vector<component>(m, "component");
+  define_vector<std::pair<VertexType, component>>(m, "pair_uint64_component");
+  define_vector<std::pair<VertexType, double>>(m, "pair_uint64_double");
 }
 } // namespace reticula::python

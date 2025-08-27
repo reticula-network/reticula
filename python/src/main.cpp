@@ -26,6 +26,9 @@ void define_networks(nanobind::module_& m);
 void define_vector_types(nanobind::module_& m);
 // spans
 void define_span_types(nanobind::module_& m);
+
+// components
+void define_component(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m) {
@@ -49,4 +52,6 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_vector_types(m);
 
   reticula::python::define_span_types(m);
+
+  reticula::python::define_component(m);
 }

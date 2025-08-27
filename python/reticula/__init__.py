@@ -33,7 +33,10 @@ from ._reticula_ext import (
     vector_directed_delayed_temporal_hyperedge,
     vector_uint64,
     vector_int64,
-    vector_double)
+    vector_double,
+    vector_pair_uint64_uint64,
+    vector_pair_double_double,
+)
 
 from ._reticula_ext import (
     span_undirected_edge,
@@ -48,13 +51,21 @@ from ._reticula_ext import (
     span_directed_delayed_temporal_hyperedge,
     span_uint64,
     span_int64,
-    span_double
+    span_double,
+    span_pair_uint64_uint64,
+    span_pair_double_double,
 )
 
 
-# Operations
+from ._reticula_ext import (
+    component)
 
+# Operations
 from ._reticula_operations import (
+    graph_union,
+    disjoint_union,
+    graph_intersection,
+    complement_graph,
     with_vertices,
     with_edges,
     without_isolated_vertices,
@@ -77,7 +88,7 @@ from ._reticula_operations import (
 from ._reticula_generation import (
     path_graph, cycle_graph, star_graph, wheel_graph, complete_graph,
     complete_bipartite_graph, complete_bipartite_directed_graph,
-    complete_directed_graph, regular_ring_lattice
+    complete_directed_graph, regular_ring_lattice, square_grid_graph
 )
 
 from ._reticula_generation import (
@@ -123,6 +134,38 @@ from ._reticula_algorithms import (
     edge_incident_degree_sequence,
     edge_degree_sequence,
     edge_in_out_degree_pair_sequence,
+    density,
+    time_window,
+    cause_time_window,
+    effect_time_window,
+    link_timeline,
+    window,
+)
+
+from ._reticula_algorithms import (
+    weakly_connected_components,
+    largest_weakly_connected_component,
+    weakly_connected_component,
+    is_weakly_connected,
+    is_weakly_reachable,
+    in_components,
+    out_components,
+    in_component,
+    out_component,
+    in_component_sizes,
+    out_component_sizes,
+    in_component_size_estimates,
+    out_component_size_estimates,
+    strongly_connected_components,
+    largest_strongly_connected_component,
+    strongly_connected_component,
+    is_strongly_connected,
+    is_strongly_reachable,
+    connected_components,
+    largest_connected_component,
+    connected_component,
+    is_connected,
+    is_reachable,
 )
 
 __all__ = [
@@ -150,6 +193,8 @@ __all__ = [
     "undirected_temporal_hypernetwork",
     "directed_temporal_hypernetwork",
     "directed_delayed_temporal_hypernetwork",
+    # component
+    "component",
 
     # Vectors
     "vector_undirected_edge",
@@ -165,6 +210,8 @@ __all__ = [
     "vector_uint64",
     "vector_int64",
     "vector_double",
+    "vector_pair_uint64_uint64",
+    "vector_pair_double_double",
 
     # Spans
     "span_undirected_edge",
@@ -180,9 +227,15 @@ __all__ = [
     "span_uint64",
     "span_int64",
     "span_double",
+    "span_pair_uint64_uint64",
+    "span_pair_double_double",
 
     # Operations
     # - algebraic
+    "graph_union",
+    "disjoint_union",
+    "graph_intersection",
+    "complement_graph",
     # - addition
     "with_vertices",
     "with_edges",
@@ -216,6 +269,7 @@ __all__ = [
     "complete_bipartite_directed_graph",
     "complete_directed_graph",
     "regular_ring_lattice",
+    "square_grid_graph",
     # - gnp
     "random_gnp_graph",
     "random_directed_gnp_graph",
@@ -272,4 +326,35 @@ __all__ = [
     "edge_incident_degree_sequence",
     "edge_degree_sequence",
     "edge_in_out_degree_pair_sequence",
+    # - properties
+    "density",
+    "time_window",
+    "cause_time_window",
+    "effect_time_window",
+    "link_timeline",
+    "window",
+    # - static reachability
+    "weakly_connected_components",
+    "largest_weakly_connected_component",
+    "weakly_connected_component",
+    "is_weakly_connected",
+    "is_weakly_reachable",
+    "in_components",
+    "out_components",
+    "in_component",
+    "out_component",
+    "in_component_sizes",
+    "out_component_sizes",
+    "in_component_size_estimates",
+    "out_component_size_estimates",
+    "strongly_connected_components",
+    "largest_strongly_connected_component",
+    "strongly_connected_component",
+    "is_strongly_connected",
+    "is_strongly_reachable",
+    "connected_components",
+    "largest_connected_component",
+    "connected_component",
+    "is_connected",
+    "is_reachable",
 ]
