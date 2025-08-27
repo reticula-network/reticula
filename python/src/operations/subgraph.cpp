@@ -1,5 +1,4 @@
 #include <nanobind/nanobind.h>
-#include <nanobind/stl/vector.h>
 
 #include <reticula/concepts.hpp>
 #include <reticula/networks.hpp>

@@ -20,6 +20,37 @@ from ._reticula_ext import (
     directed_delayed_temporal_hypernetwork,
 )
 
+from ._reticula_ext import (
+    vector_undirected_edge,
+    vector_directed_edge,
+    vector_undirected_temporal_edge,
+    vector_directed_temporal_edge,
+    vector_directed_delayed_temporal_edge,
+    vector_undirected_hyperedge,
+    vector_directed_hyperedge,
+    vector_undirected_temporal_hyperedge,
+    vector_directed_temporal_hyperedge,
+    vector_directed_delayed_temporal_hyperedge,
+    vector_uint64,
+    vector_int64,
+    vector_double)
+
+from ._reticula_ext import (
+    span_undirected_edge,
+    span_directed_edge,
+    span_undirected_temporal_edge,
+    span_directed_temporal_edge,
+    span_directed_delayed_temporal_edge,
+    span_undirected_hyperedge,
+    span_directed_hyperedge,
+    span_undirected_temporal_hyperedge,
+    span_directed_temporal_hyperedge,
+    span_directed_delayed_temporal_hyperedge,
+    span_uint64,
+    span_int64,
+    span_double
+)
+
 
 # Operations
 
@@ -119,6 +150,36 @@ __all__ = [
     "undirected_temporal_hypernetwork",
     "directed_temporal_hypernetwork",
     "directed_delayed_temporal_hypernetwork",
+
+    # Vectors
+    "vector_undirected_edge",
+    "vector_directed_edge",
+    "vector_undirected_temporal_edge",
+    "vector_directed_temporal_edge",
+    "vector_directed_delayed_temporal_edge",
+    "vector_undirected_hyperedge",
+    "vector_directed_hyperedge",
+    "vector_undirected_temporal_hyperedge",
+    "vector_directed_temporal_hyperedge",
+    "vector_directed_delayed_temporal_hyperedge",
+    "vector_uint64",
+    "vector_int64",
+    "vector_double",
+
+    # Spans
+    "span_undirected_edge",
+    "span_directed_edge",
+    "span_undirected_temporal_edge",
+    "span_directed_temporal_edge",
+    "span_directed_delayed_temporal_edge",
+    "span_undirected_hyperedge",
+    "span_directed_hyperedge",
+    "span_undirected_temporal_hyperedge",
+    "span_directed_temporal_hyperedge",
+    "span_directed_delayed_temporal_hyperedge",
+    "span_uint64",
+    "span_int64",
+    "span_double",
 
     # Operations
     # - algebraic

@@ -1,5 +1,4 @@
 #include <nanobind/nanobind.h>
-#include <nanobind/stl/vector.h>
 
 #include <reticula/algorithms/vertex_degree.hpp>
 #include <reticula/concepts.hpp>

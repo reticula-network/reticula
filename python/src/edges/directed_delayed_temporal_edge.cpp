@@ -1,6 +1,5 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
-#include <nanobind/stl/vector.h>
 
 #include <reticula/edges/directed_delayed_temporal_edge.hpp>
 

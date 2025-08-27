@@ -3,8 +3,6 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
 
-#include "spans.hpp"
-
 namespace reticula::python {
 struct edge_properties : nanobind::def_visitor<edge_properties> {
   template <typename Class, typename... Extra>
@@ -26,13 +24,13 @@ struct edge_properties : nanobind::def_visitor<edge_properties> {
       .def("is_in_incident", &EdgeT::is_in_incident)
       .def("is_out_incident", &EdgeT::is_out_incident)
       .def(
-        "mutator_verts", utils::ndarray_output<&EdgeT::mutator_verts>(),
+        "mutator_verts", &EdgeT::mutator_verts,
         nanobind::rv_policy::reference_internal)
       .def(
-        "mutated_verts", utils::ndarray_output<&EdgeT::mutated_verts>(),
+        "mutated_verts", &EdgeT::mutated_verts,
         nanobind::rv_policy::reference_internal)
       .def(
-        "incident_verts", utils::ndarray_output<&EdgeT::incident_verts>(),
+        "incident_verts", &EdgeT::incident_verts,
         nanobind::rv_policy::reference_internal);
   }
 };

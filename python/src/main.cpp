@@ -21,6 +21,11 @@ void define_directed_delayed_temporal_hyperedge(nanobind::module_& m);
 
 // networks
 void define_networks(nanobind::module_& m);
+
+// vectors
+void define_vector_types(nanobind::module_& m);
+// spans
+void define_span_types(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m) {
@@ -40,4 +45,8 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_directed_delayed_temporal_hyperedge(m);
 
   reticula::python::define_networks(m);
+
+  reticula::python::define_vector_types(m);
+
+  reticula::python::define_span_types(m);
 }

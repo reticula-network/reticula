@@ -34,9 +34,6 @@ documentation = "https://docs.reticula.network/"
 repository = "https://github.com/reticula-network/reticula"
 bug-tracker= "https://github.com/reticula-network/reticula/issues"
 
-[project.optional-dependencies]
-test = ["networkx"]
-
 [build-system]
 requires = [
     "scikit-build-core>=0.10.7",

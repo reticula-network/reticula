@@ -40,6 +40,10 @@ nanobind_add_module(
   src/edges/directed_delayed_temporal_hyperedge.cpp
   # networks
   src/networks.cpp
+  # vectors
+  src/vector.cpp
+  # span
+  src/span.cpp
   # main
   src/main.cpp)
 target_link_libraries(_reticula_ext PRIVATE reticula)

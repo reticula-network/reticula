@@ -1,12 +1,9 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
-#include <nanobind/stl/vector.h>
 
 #include <reticula/concepts.hpp>
 #include <reticula/networks.hpp>
-
-#include "spans.hpp"
 
 namespace reticula::python {
 namespace {
@@ -28,18 +25,20 @@ void define_network(nanobind::module_& m, const std::string& name) {
                " edges and " + std::to_string(net.vertices().size()) +
                " vertices>";
       })
-    .def("edges", &NetT::edges)
-    .def("edges_cause", &NetT::edges_cause)
-    .def("edges_effect", &NetT::edges_effect)
+    .def("edges", &NetT::edges, nanobind::rv_policy::reference_internal)
     .def(
-      "vertices", utils::ndarray_output<&NetT::vertices>(),
+      "edges_cause", &NetT::edges_cause,
       nanobind::rv_policy::reference_internal)
+    .def(
+      "edges_effect", &NetT::edges_effect,
+      nanobind::rv_policy::reference_internal)
+    .def("vertices", &NetT::vertices, nanobind::rv_policy::reference_internal)
     .def("incident_edges", &NetT::incident_edges)
-    .def("out_edges", &NetT::out_edges)
-    .def("in_edges", &NetT::in_edges)
-    .def("successors", utils::ndarray_output<&NetT::successors>())
-    .def("predecessors", utils::ndarray_output<&NetT::predecessors>())
-    .def("neighbours", utils::ndarray_output<&NetT::neighbours>());
+    .def("out_edges", &NetT::out_edges, nanobind::rv_policy::reference_internal)
+    .def("in_edges", &NetT::in_edges, nanobind::rv_policy::reference_internal)
+    .def("successors", &NetT::successors)
+    .def("predecessors", &NetT::predecessors)
+    .def("neighbours", &NetT::neighbours);
 }
 } // namespace
 
