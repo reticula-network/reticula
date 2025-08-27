@@ -2,7 +2,6 @@
 #include <cstddef>
 #include <cstring>
 #include <format>
-#include <ranges>
 #include <span>
 #include <vector>
 
@@ -20,42 +19,52 @@ struct buffer_format;
 
 template <>
 struct buffer_format<std::int64_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "q";
 };
 template <>
 struct buffer_format<std::uint64_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "Q";
 };
 template <>
 struct buffer_format<std::int32_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "i";
 };
 template <>
 struct buffer_format<std::uint32_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "I";
 };
 template <>
 struct buffer_format<std::int16_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "h";
 };
 template <>
 struct buffer_format<std::uint16_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "H";
 };
 template <>
 struct buffer_format<std::int8_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "b";
 };
 template <>
 struct buffer_format<std::uint8_t> {
+  [[maybe_unused]]
   static constexpr const char* value = "B";
 };
 template <>
 struct buffer_format<double> {
+  [[maybe_unused]]
   static constexpr const char* value = "d";
 };
 template <>
 struct buffer_format<float> {
+  [[maybe_unused]]
   static constexpr const char* value = "f";
 };
 
