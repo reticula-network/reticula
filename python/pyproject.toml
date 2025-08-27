@@ -77,6 +77,9 @@ repair-wheel-command = "pipx run delvewheel repair -w {dest_dir} {wheel}"
 test-skip = ["cp310-win_arm64"]
 skip = ["*-win32"]
 
+[tool.cibuildwheel.pyodide]
+skip = ["cp312-*"]  # skip pyodide 0.27
+
 [tool.cibuildwheel.pyodide.config-settings]
 "cmake.define.RETICULA_ENABLE_WARNINGS"= "off"
 
