@@ -17,10 +17,6 @@ namespace reticula {
 
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
-auto is_strongly_reachable(const NetT& net, VertexType v1, VertexType v2)
-  -> bool;
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType>
 auto weakly_connected_components(const NetT& net, bool singletons = true)
   -> std::vector<component>;
 

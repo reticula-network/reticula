@@ -26,7 +26,7 @@ template <network_like NetT1, network_like NetT2>
 auto graph_intersection(const NetT1& g1, const NetT2& g2)
   -> reticula::network<typename NetT1::EdgeType>;
 
-template <network_like NetT>
+template <static_network_like NetT>
   requires is_dyadic_v<NetT>
 [[nodiscard]]
 auto complement_graph(const NetT& g)
@@ -87,7 +87,7 @@ auto graph_intersection(const NetT1& g1, const NetT2& g2)
   return reticula::network<typename NetT1::EdgeType>(edges, vertices);
 }
 
-template <network_like NetT>
+template <static_network_like NetT>
   requires is_dyadic_v<NetT>
 auto complement_graph(const NetT& g)
   -> reticula::network<typename NetT::EdgeType> {
@@ -113,8 +113,9 @@ auto complement_graph(const NetT& g)
       if (v2 == v1)
         continue;
 
-      if (!g.has_edge(v1, v2))
-        edges.emplace_back(v1, v2);
+      typename NetT::EdgeType e{v1, v2};
+      if (!g.has_edge(e))
+        edges.emplace_back(e);
     }
   }
 

@@ -99,9 +99,10 @@ template <
   std::constructible_from<Comp> Res, network_like NetT>
 [[nodiscard]] auto generic_reachability_components(const NetT& net)
   -> std::vector<std::pair<VertexType, Res>> {
-  if (auto maybe_topo = try_topological_order(net); maybe_topo)
-    return generic_reachability_components_dag<Dir, Comp, Res>(
-      net, *maybe_topo);
+  if constexpr (is_directed_v<NetT>)
+    if (auto maybe_topo = try_topological_order(net); maybe_topo)
+      return generic_reachability_components_dag<Dir, Comp, Res>(
+        net, *maybe_topo);
 
   auto sccs = scc_tarjan(net, true);
   std::unordered_map<VertexType, std::size_t> scc_idx;
