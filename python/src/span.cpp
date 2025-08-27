@@ -258,6 +258,8 @@ void define_span_types(nanobind::module_& m) {
   define_span<std::uint64_t, 1>(m, "uint64");
   define_span<std::uint64_t>(m, "uint64");
   define_span<std::int64_t>(m, "int64");
+  define_span<std::uint32_t>(m, "uint32");
+  define_span<std::int32_t>(m, "int32");
   define_span<double>(m, "double");
   define_span<float>(m, "float");
 

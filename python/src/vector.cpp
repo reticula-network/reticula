@@ -439,6 +439,8 @@ void define_vector(nanobind::module_& m, std::string name) {
 void define_vector_types(nanobind::module_& m) {
   define_vector<std::uint64_t>(m, "uint64");
   define_vector<std::int64_t>(m, "int64");
+  define_vector<std::uint32_t>(m, "uint32");
+  define_vector<std::int32_t>(m, "int32");
   define_vector<double>(m, "double");
   define_vector<float>(m, "float");
 
