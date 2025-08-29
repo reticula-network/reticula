@@ -7,61 +7,61 @@
 
 namespace reticula {
 template <network_edge EdgeT>
-auto edge_in_degree(const EdgeT& edge) -> std::size_t;
+auto edge_in_degree(const EdgeT& edge) -> VertexType;
 
 template <network_edge EdgeT>
-auto edge_out_degree(const EdgeT& edge) -> std::size_t;
+auto edge_out_degree(const EdgeT& edge) -> VertexType;
 
 template <network_edge EdgeT>
-auto edge_incident_degree(const EdgeT& edge) -> std::size_t;
+auto edge_incident_degree(const EdgeT& edge) -> VertexType;
 
 template <network_edge EdgeT>
   requires is_undirected_v<EdgeT>
-auto edge_degree(const EdgeT& edge) -> std::size_t;
+auto edge_degree(const EdgeT& edge) -> VertexType;
 
 template <network_like NetT>
-auto edge_in_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto edge_in_degree_sequence(const NetT& net) -> std::vector<VertexType>;
 
 template <network_like NetT>
-auto edge_out_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto edge_out_degree_sequence(const NetT& net) -> std::vector<VertexType>;
 
 template <network_like NetT>
 auto edge_in_out_degree_pair_sequence(const NetT& net)
-  -> std::vector<std::pair<std::size_t, std::size_t>>;
+  -> std::vector<std::pair<VertexType, VertexType>>;
 
 template <network_like NetT>
-auto edge_incident_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto edge_incident_degree_sequence(const NetT& net) -> std::vector<VertexType>;
 
 template <network_like NetT>
   requires is_undirected_v<NetT>
-auto edge_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto edge_degree_sequence(const NetT& net) -> std::vector<VertexType>;
 } // namespace reticula
 
 namespace reticula {
 template <network_edge EdgeT>
-auto edge_in_degree(const EdgeT& edge) -> std::size_t {
-  return edge.mutator_verts().size();
+auto edge_in_degree(const EdgeT& edge) -> VertexType {
+  return static_cast<VertexType>(edge.mutator_verts().size());
 }
 
 template <network_edge EdgeT>
-auto edge_out_degree(const EdgeT& edge) -> std::size_t {
-  return edge.mutated_verts().size();
+auto edge_out_degree(const EdgeT& edge) -> VertexType {
+  return static_cast<VertexType>(edge.mutated_verts().size());
 }
 
 template <network_edge EdgeT>
-auto edge_incident_degree(const EdgeT& edge) -> std::size_t {
-  return edge.incident_verts().size();
+auto edge_incident_degree(const EdgeT& edge) -> VertexType {
+  return static_cast<VertexType>(edge.incident_verts().size());
 }
 
 template <network_edge EdgeT>
   requires is_undirected_v<EdgeT>
-auto edge_degree(const EdgeT& edge) -> std::size_t {
+auto edge_degree(const EdgeT& edge) -> VertexType {
   return edge_incident_degree(edge);
 }
 
 template <network_like NetT>
-auto edge_in_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> degrees;
+auto edge_in_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> degrees;
   degrees.reserve(net.edges().size());
 
   for (const auto& edge : net.edges())
@@ -71,8 +71,8 @@ auto edge_in_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 }
 
 template <network_like NetT>
-auto edge_out_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> degrees;
+auto edge_out_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> degrees;
   degrees.reserve(net.edges().size());
 
   for (const auto& edge : net.edges())
@@ -83,8 +83,8 @@ auto edge_out_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 
 template <network_like NetT>
 auto edge_in_out_degree_pair_sequence(const NetT& net)
-  -> std::vector<std::pair<std::size_t, std::size_t>> {
-  std::vector<std::pair<std::size_t, std::size_t>> degrees;
+  -> std::vector<std::pair<VertexType, VertexType>> {
+  std::vector<std::pair<VertexType, VertexType>> degrees;
   degrees.reserve(net.edges().size());
 
   for (const auto& edge : net.edges())
@@ -94,9 +94,8 @@ auto edge_in_out_degree_pair_sequence(const NetT& net)
 }
 
 template <network_like NetT>
-auto edge_incident_degree_sequence(const NetT& net)
-  -> std::vector<std::size_t> {
-  std::vector<std::size_t> degrees;
+auto edge_incident_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> degrees;
   degrees.reserve(net.edges().size());
 
   for (const auto& edge : net.edges())
@@ -107,8 +106,8 @@ auto edge_incident_degree_sequence(const NetT& net)
 
 template <network_like NetT>
   requires is_undirected_v<NetT>
-auto edge_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> degrees;
+auto edge_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> degrees;
   degrees.reserve(net.edges().size());
 
   for (const auto& edge : net.edges())

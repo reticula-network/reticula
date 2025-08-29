@@ -96,17 +96,17 @@ auto network<EdgeT>::incident_edges(VertexType v) const -> std::vector<EdgeT> {
 }
 
 template <network_edge EdgeT>
-auto network<EdgeT>::in_degree(VertexType v) const -> std::size_t {
+auto network<EdgeT>::in_degree(VertexType v) const -> VertexType {
   return in_edges(v).size();
 }
 
 template <network_edge EdgeT>
-auto network<EdgeT>::out_degree(VertexType v) const -> std::size_t {
+auto network<EdgeT>::out_degree(VertexType v) const -> VertexType {
   return out_edges(v).size();
 }
 
 template <network_edge EdgeT>
-auto network<EdgeT>::degree(VertexType v) const -> std::size_t {
+auto network<EdgeT>::degree(VertexType v) const -> VertexType {
   if constexpr (instantaneous_undirected)
     return out_degree(v);
 
