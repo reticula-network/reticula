@@ -18,7 +18,7 @@ jobs:
             arch: aarch64
           - os: windows-intel
             runs-on: windows-latest
-            arch: x86_64
+            arch: AMD64
           - os: windows-arm
             runs-on: windows-11-arm
             arch: ARM64
