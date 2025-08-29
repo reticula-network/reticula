@@ -466,8 +466,5 @@ void define_vector_types(nanobind::module_& m) {
   define_vector<component>(m, "component");
   define_vector<std::pair<VertexType, component>>(m, "pair_uint64_component");
   define_vector<std::pair<VertexType, double>>(m, "pair_uint64_double");
-
-  if constexpr (!std::same_as<std::size_t, std::uint64_t>)
-    define_vector<std::size_t>(m, "sizet");
 }
 } // namespace reticula::python

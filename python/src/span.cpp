@@ -280,8 +280,5 @@ void define_span_types(nanobind::module_& m) {
   define_span<directed_temporal_hyperedge>(m, "directed_temporal_hyperedge");
   define_span<directed_delayed_temporal_hyperedge>(
     m, "directed_delayed_temporal_hyperedge");
-
-  if constexpr (!std::same_as<std::size_t, std::uint64_t>)
-    define_span<std::size_t>(m, "sizet");
 }
 } // namespace reticula::python
