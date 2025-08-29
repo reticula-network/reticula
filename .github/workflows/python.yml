@@ -12,19 +12,26 @@ jobs:
         include:
           - os: linux-intel
             runs-on: ubuntu-latest
+            arch: x86_64
           - os: linux-arm
             runs-on: ubuntu-24.04-arm
+            arch: aarch64
           - os: windows-intel
             runs-on: windows-latest
+            arch: x86_64
           - os: windows-arm
             runs-on: windows-11-arm
+            arch: ARM64
           - os: macos-intel
             runs-on: macos-latest
+            arch: x86_64
           - os: macos-arm
             runs-on: macos-latest
-          - os: pyodide
+            arch: arm64
+          - os: pyodide-wasm32
             runs-on: ubuntu-latest
             platform: pyodide
+            arch: wasm32
 
     steps:
     - uses: actions/checkout@v5
@@ -33,6 +40,7 @@ jobs:
       uses: pypa/cibuildwheel@v3.1.4
       env:
         CIBW_PLATFORM: ${{ matrix.platform || 'auto' }}
+        CIBW_ARCHS: ${{ matrix.arch }}
       with:
         package-dir: python
 
