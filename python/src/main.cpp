@@ -1,3 +1,6 @@
+#include <numeric>
+#include <vector>
+
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string_view.h>
 
@@ -32,7 +35,6 @@ void define_component(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m) {
-  m.def("__version__", []() { return reticula::python::full_version; });
   reticula::python::define_random_state(m);
 
   reticula::python::define_undirected_edge(m);
@@ -54,4 +56,13 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_span_types(m);
 
   reticula::python::define_component(m);
+
+  m.def("__version__", []() { return reticula::python::full_version; });
+
+  auto m_helpers = m.def_submodule("test_helpers");
+  m_helpers.def(
+    "test_vector", []() { return std::vector<std::size_t>{1, 2, 3, 4, 5}; });
+  m_helpers.def("vector_sum", [](const std::vector<std::size_t>& v) {
+    return std::accumulate(v.begin(), v.end(), 0);
+  });
 }
