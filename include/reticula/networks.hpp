@@ -123,21 +123,21 @@ public:
     Number of edges incident to `vert`. Similart to `in_edges(vert).size()`
    */
   [[nodiscard]]
-  auto in_degree(VertexType vert) const -> std::size_t;
+  auto in_degree(VertexType vert) const -> VertexType;
 
   /**
     Number of edges that `vert` is incident to. Similart to
     `out_edges(vert).size()`
    */
   [[nodiscard]]
-  auto out_degree(VertexType vert) const -> std::size_t;
+  auto out_degree(VertexType vert) const -> VertexType;
 
   /**
     Number of edges that `vert` participates in. Similart to
     `incident_edges(vert).size()`
    */
   [[nodiscard]]
-  auto degree(VertexType vert) const -> std::size_t;
+  auto degree(VertexType vert) const -> VertexType;
 
   /**
     List of vertices that are mutators in at least one edge where 'v' is
