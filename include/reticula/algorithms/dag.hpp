@@ -14,8 +14,8 @@ namespace reticula {
 
   @param dir Directed network in question
 */
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto try_topological_order(const NetT& net)
   -> std::optional<std::vector<VertexType>>;
 
@@ -27,8 +27,8 @@ template <network_like NetT>
 
   @param dir Directed network in question
 */
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto topological_order(const NetT& net)
   -> std::vector<VertexType>;
 
@@ -40,8 +40,8 @@ template <network_like NetT>
 
   @param net Directed network in question
 */
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto is_acyclic(const NetT& net) -> bool;
 } // namespace reticula
 
@@ -51,8 +51,8 @@ template <network_like NetT>
 #include <reticula/utils.hpp>
 
 namespace reticula {
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto try_topological_order(const NetT& net)
   -> std::optional<std::vector<VertexType>> {
   auto verts = net.vertices();
@@ -92,8 +92,8 @@ template <network_like NetT>
   return topo;
 }
 
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto topological_order(const NetT& net)
   -> std::vector<VertexType> {
   auto maybe_topo = try_topological_order(net);
@@ -103,8 +103,8 @@ template <network_like NetT>
     throw not_acyclic_error("The network is not acyclic.");
 }
 
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType> && is_directed_v<NetT>
+template <static_network_like NetT>
+  requires is_directed_v<NetT>
 [[nodiscard]] auto is_acyclic(const NetT& net) -> bool {
   return try_topological_order(net).has_value();
 }
