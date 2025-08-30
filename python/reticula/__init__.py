@@ -178,6 +178,9 @@ from ._reticula_algorithms import (
     is_bipartite,
     try_two_colouring,
     two_colouring,
+    attribute_assortativity,
+    degree_assortativity,
+    direction,
 )
 
 __all__ = [
@@ -384,4 +387,8 @@ __all__ = [
     "is_bipartite",
     "try_two_colouring",
     "two_colouring",
+    # - assortativity
+    "attribute_assortativity",
+    "degree_assortativity",
+    "direction",
 ]

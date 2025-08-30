@@ -1,3 +1,5 @@
+import math
+
 import reticula as ret
 
 import pytest
@@ -207,13 +209,18 @@ def test_bipartite():
 #         assert ret.out_degree(net, v) >= 0
 
 
-# def test_attribute_assortativity():
-#     g = ret.undirected_network([(0, 1), (1, 2), (2, 3)])
-#     attrs = {0: 1.0, 1: 2.0, 2: 2.0, 3: 1.0}
-#
-#     r = ret.attribute_assortativity(g, attrs, 0.0)
-#     assert isinstance(r, float)
-#     assert r == pytest.approx(-0.5)
-#
-#     r = ret.attribute_assortativity(g, {}, 1.0)
-#     assert math.isnan(r)
+def test_attribute_assortativity():
+    g = ret.undirected_network([(0, 1), (1, 2), (2, 3)])
+    attrs = {0: 1.0, 1: 2.0, 2: 2.0, 3: 1.0}
+
+    r = ret.attribute_assortativity(g, attrs, 0.0)
+    assert isinstance(r, float)
+    assert r == pytest.approx(-0.5)
+
+    r = ret.attribute_assortativity(g, {}, 1.0)
+    assert math.isnan(r)
+    #
+    # assert ret.degree_assortativity(g) == pytest.approx(-0.5)
+    # r = ret.degree_assortativity(
+    #     g, tail=ret.direction.in_deg, head=ret.direction.out_deg)
+    # assert r == pytest.approx(-0.5)

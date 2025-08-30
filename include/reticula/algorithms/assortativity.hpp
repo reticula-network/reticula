@@ -7,49 +7,45 @@
 
 namespace reticula {
 
-template <network_like NetT, std::invocable<VertexType> AttrFun>
-  requires is_undirected_v<NetT> && static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT, std::invocable<VertexType> AttrFun>
+  requires is_undirected_v<NetT>
 [[nodiscard]] auto attribute_assortativity(const NetT& net, AttrFun&& attr_fun)
   -> double;
 
-template <network_like NetT, mapping<VertexType, double> AttrMap>
-  requires is_undirected_v<NetT> && static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT, mapping<VertexType, double> AttrMap>
+  requires is_undirected_v<NetT>
 [[nodiscard]] auto attribute_assortativity(
   const NetT& net, const AttrMap& attr_map, double default_value) -> double;
 
 template <
-  network_like NetT, std::invocable<VertexType> AttrFun1,
+  static_network_like NetT, std::invocable<VertexType> AttrFun1,
   std::invocable<VertexType> AttrFun2>
-  requires static_network_edge<typename NetT::EdgeType>
 [[nodiscard]] auto attribute_assortativity(
   const NetT& net, AttrFun1&& mutator_attribute_fun,
   AttrFun2&& mutated_attribute_fun) -> double;
 
 template <
-  network_like NetT, mapping<VertexType, double> MutatorAttrMap,
+  static_network_like NetT, mapping<VertexType, double> MutatorAttrMap,
   mapping<VertexType, double> MutatedAttrMap>
-  requires static_network_edge<typename NetT::EdgeType>
 [[nodiscard]] auto attribute_assortativity(
   const NetT& net, const MutatorAttrMap& mutator_attr_map,
   const MutatedAttrMap& mutated_attr_map, double mutator_default_value,
   double mutated_default_value) -> double;
 
-template <network_like NetT>
-  requires is_undirected_v<NetT> &&
-           undirected_static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT>
+  requires is_undirected_v<NetT>
 [[nodiscard]] auto degree_assortativity(const NetT& net) -> double;
 
 enum struct direction { in, out };
 
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT>
 [[nodiscard]] auto
 degree_assortativity(const NetT& net, direction tail, direction head) -> double;
 } // namespace reticula
 
 namespace reticula {
-template <network_like NetT, std::invocable<VertexType> AttrFun>
-  requires is_undirected_v<NetT> && static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT, std::invocable<VertexType> AttrFun>
+  requires is_undirected_v<NetT>
 auto attribute_assortativity(const NetT& net, AttrFun&& attr_fun) -> double {
   std::vector<std::pair<double, double>> vals;
   vals.reserve(net.edges().size());
@@ -62,8 +58,8 @@ auto attribute_assortativity(const NetT& net, AttrFun&& attr_fun) -> double {
   return pearson_correlation_coefficient(vals);
 }
 
-template <network_like NetT, mapping<VertexType, double> AttrMap>
-  requires is_undirected_v<NetT> && static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT, mapping<VertexType, double> AttrMap>
+  requires is_undirected_v<NetT>
 auto attribute_assortativity(
   const NetT& net, const AttrMap& attr_map, double default_value) -> double {
   return attribute_assortativity(
@@ -77,9 +73,8 @@ auto attribute_assortativity(
 }
 
 template <
-  network_like NetT, std::invocable<VertexType> AttrFun1,
+  static_network_like NetT, std::invocable<VertexType> AttrFun1,
   std::invocable<VertexType> AttrFun2>
-  requires static_network_edge<typename NetT::EdgeType>
 auto attribute_assortativity(
   const NetT& net, AttrFun1&& mutator_attribute_fun,
   AttrFun2&& mutated_attribute_fun) -> double {
@@ -93,9 +88,8 @@ auto attribute_assortativity(
 }
 
 template <
-  network_like NetT, mapping<VertexType, double> MutatorAttrMap,
+  static_network_like NetT, mapping<VertexType, double> MutatorAttrMap,
   mapping<VertexType, double> MutatedAttrMap>
-  requires static_network_edge<typename NetT::EdgeType>
 auto attribute_assortativity(
   const NetT& net, const MutatorAttrMap& mutator_attr_map,
   const MutatedAttrMap& mutated_attr_map, double mutator_default_value,
@@ -118,16 +112,14 @@ auto attribute_assortativity(
     });
 }
 
-template <network_like NetT>
-  requires is_undirected_v<NetT> &&
-           undirected_static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT>
+  requires is_undirected_v<NetT>
 auto degree_assortativity(const NetT& net) -> double {
   return attribute_assortativity(
     net, [&net](VertexType v) { return static_cast<double>(net.degree(v)); });
 }
 
-template <network_like NetT>
-  requires static_network_edge<typename NetT::EdgeType>
+template <static_network_like NetT>
 auto degree_assortativity(const NetT& net, direction tail, direction head)
   -> double {
   std::function<double(VertexType)> in_d = [&net](VertexType v) {
