@@ -62,18 +62,18 @@ TEST_CASE(
 
   REQUIRE(
     reticula::in_degree_sequence(graph) ==
-    std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1});
+    std::vector<reticula::VertexType>{0, 2, 3, 2, 3, 3, 1});
   REQUIRE(
     reticula::out_degree_sequence(graph) ==
-    std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1});
+    std::vector<reticula::VertexType>{0, 2, 3, 2, 3, 3, 1});
   REQUIRE(
     reticula::incident_degree_sequence(graph) ==
-    std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1});
+    std::vector<reticula::VertexType>{0, 2, 3, 2, 3, 3, 1});
   REQUIRE(
     reticula::degree_sequence(graph) ==
-    std::vector<std::size_t>{0, 2, 3, 2, 3, 3, 1});
+    std::vector<reticula::VertexType>{0, 2, 3, 2, 3, 3, 1});
   REQUIRE(
     reticula::in_out_degree_pair_sequence(graph) ==
-    std::vector<std::pair<std::size_t, std::size_t>>{
+    std::vector<std::pair<reticula::VertexType, reticula::VertexType>>{
       {0, 0}, {2, 2}, {3, 3}, {2, 2}, {3, 3}, {3, 3}, {1, 1}});
 }
