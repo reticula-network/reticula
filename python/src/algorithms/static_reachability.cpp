@@ -1,5 +1,4 @@
 #include <nanobind/nanobind.h>
-#include <nanobind/operators.h>
 
 #include <reticula/algorithms/static_reachability.hpp>
 #include <reticula/concepts.hpp>

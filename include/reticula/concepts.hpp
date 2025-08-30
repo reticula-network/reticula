@@ -29,7 +29,7 @@ concept vertex_range =
 template <typename R>
 concept degree_range =
   std::ranges::forward_range<R> &&
-  std::convertible_to<std::ranges::range_reference_t<R>, std::size_t>;
+  std::convertible_to<std::ranges::range_reference_t<R>, VertexType>;
 
 template <typename T, typename V1, typename V2>
 concept pairlike_of =
@@ -44,7 +44,7 @@ template <typename R>
 concept degree_pair_range =
   std::ranges::forward_range<R> &&
   std::convertible_to<
-    std::ranges::range_reference_t<R>, std::pair<std::size_t, std::size_t>>;
+    std::ranges::range_reference_t<R>, std::pair<VertexType, VertexType>>;
 
 template <typename T, typename KeyT, typename ValueT>
 concept mapping = std::indirectly_readable<typename T::const_iterator> &&

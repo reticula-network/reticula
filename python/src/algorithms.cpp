@@ -8,6 +8,7 @@ void define_vertex_degree(nanobind::module_& m);
 void define_edge_degree(nanobind::module_& m);
 void define_properties(nanobind::module_& m);
 void define_static_reachability(nanobind::module_& m);
+void define_graphicallity(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_algorithms, m) {
@@ -15,4 +16,5 @@ NB_MODULE(_reticula_algorithms, m) {
   reticula::python::define_edge_degree(m);
   reticula::python::define_properties(m);
   reticula::python::define_static_reachability(m);
+  reticula::python::define_graphicallity(m);
 }
