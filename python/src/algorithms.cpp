@@ -12,6 +12,7 @@ void define_graphicallity(nanobind::module_& m);
 void define_dag(nanobind::module_& m);
 void define_bipartite(nanobind::module_& m);
 void define_assortativity(nanobind::module_& m);
+void define_distance(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_algorithms, m) {
@@ -23,4 +24,5 @@ NB_MODULE(_reticula_algorithms, m) {
   reticula::python::define_dag(m);
   reticula::python::define_bipartite(m);
   reticula::python::define_assortativity(m);
+  reticula::python::define_distance(m);
 }

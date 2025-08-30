@@ -129,6 +129,7 @@ nanobind_add_module(
   src/algorithms/dag.cpp
   src/algorithms/bipartite.cpp
   src/algorithms/assortativity.cpp
+  src/algorithms/distance.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)
