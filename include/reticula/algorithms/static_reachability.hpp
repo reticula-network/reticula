@@ -59,12 +59,12 @@ auto out_component(const NetT& net, VertexType v) -> component;
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
 auto in_component_sizes(const NetT& net)
-  -> std::vector<std::pair<VertexType, std::size_t>>;
+  -> std::vector<std::pair<VertexType, VertexType>>;
 
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
 auto out_component_sizes(const NetT& net)
-  -> std::vector<std::pair<VertexType, std::size_t>>;
+  -> std::vector<std::pair<VertexType, VertexType>>;
 
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
@@ -186,7 +186,7 @@ auto generic_weakly_connected_components(const NetT& net, bool singletons)
 }
 
 struct component_size {
-  std::size_t size;
+  VertexType size;
 
   component_size(const component& c) : size{c.size()} {}
 };
@@ -279,12 +279,12 @@ auto out_components(const NetT& net)
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
 auto in_component_sizes(const NetT& net)
-  -> std::vector<std::pair<VertexType, std::size_t>> {
+  -> std::vector<std::pair<VertexType, VertexType>> {
   auto ic =
     detail::generic_reachability_components<
       detail::component_direction::in, component, detail::component_size>(net) |
     std::views::transform(
-      [](const auto& p) -> std::pair<VertexType, std::size_t> {
+      [](const auto& p) -> std::pair<VertexType, VertexType> {
         return {p.first, p.second.size};
       });
 
@@ -294,13 +294,13 @@ auto in_component_sizes(const NetT& net)
 template <network_like NetT>
   requires static_network_edge<typename NetT::EdgeType>
 auto out_component_sizes(const NetT& net)
-  -> std::vector<std::pair<VertexType, std::size_t>> {
+  -> std::vector<std::pair<VertexType, VertexType>> {
   auto oc =
     detail::generic_reachability_components<
       detail::component_direction::out, component, detail::component_size>(
       net) |
     std::views::transform(
-      [](const auto& p) -> std::pair<VertexType, std::size_t> {
+      [](const auto& p) -> std::pair<VertexType, VertexType> {
         return {p.first, p.second.size};
       });
 
