@@ -1,6 +1,6 @@
 #include <nanobind/nanobind.h>
-#include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/tuple.h>
 
 #include <reticula/edges/undirected_hyperedge.hpp>
 
@@ -17,5 +17,8 @@ void define_undirected_hyperedge(nanobind::module_& m) {
                reticula::utils::join(e.incident_verts(), ", ") + ")";
       })
     .def(edge_properties());
+
+  nanobind::implicitly_convertible<
+    std::vector<VertexType>, undirected_hyperedge>();
 }
 } // namespace reticula::python
