@@ -7,61 +7,61 @@
 
 namespace reticula {
 template <network_like NetT>
-auto in_degree(const NetT& net, const VertexType& v) -> std::size_t;
+auto in_degree(const NetT& net, const VertexType& v) -> VertexType;
 
 template <network_like NetT>
-auto out_degree(const NetT& net, const VertexType& v) -> std::size_t;
+auto out_degree(const NetT& net, const VertexType& v) -> VertexType;
 
 template <network_like NetT>
-auto incident_degree(const NetT& net, const VertexType& v) -> std::size_t;
-
-template <network_like NetT>
-  requires is_undirected_v<NetT>
-auto degree(const NetT& net, const VertexType& v) -> std::size_t;
-
-template <network_like NetT>
-auto in_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
-
-template <network_like NetT>
-auto out_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
-
-template <network_like NetT>
-auto incident_degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto incident_degree(const NetT& net, const VertexType& v) -> VertexType;
 
 template <network_like NetT>
   requires is_undirected_v<NetT>
-auto degree_sequence(const NetT& net) -> std::vector<std::size_t>;
+auto degree(const NetT& net, const VertexType& v) -> VertexType;
+
+template <network_like NetT>
+auto in_degree_sequence(const NetT& net) -> std::vector<VertexType>;
+
+template <network_like NetT>
+auto out_degree_sequence(const NetT& net) -> std::vector<VertexType>;
+
+template <network_like NetT>
+auto incident_degree_sequence(const NetT& net) -> std::vector<VertexType>;
+
+template <network_like NetT>
+  requires is_undirected_v<NetT>
+auto degree_sequence(const NetT& net) -> std::vector<VertexType>;
 
 template <network_like NetT>
 auto in_out_degree_pair_sequence(const NetT& net)
-  -> std::vector<std::pair<std::size_t, std::size_t>>;
+  -> std::vector<std::pair<VertexType, VertexType>>;
 } // namespace reticula
 
 namespace reticula {
 template <network_like NetT>
-auto in_degree(const NetT& net, const VertexType& v) -> std::size_t {
+auto in_degree(const NetT& net, const VertexType& v) -> VertexType {
   return net.in_degree(v);
 }
 
 template <network_like NetT>
-auto out_degree(const NetT& net, const VertexType& v) -> std::size_t {
+auto out_degree(const NetT& net, const VertexType& v) -> VertexType {
   return net.out_degree(v);
 }
 
 template <network_like NetT>
-auto incident_degree(const NetT& net, const VertexType& v) -> std::size_t {
+auto incident_degree(const NetT& net, const VertexType& v) -> VertexType {
   return net.degree(v);
 }
 
 template <network_like NetT>
   requires is_undirected_v<NetT>
-auto degree(const NetT& net, const VertexType& v) -> std::size_t {
+auto degree(const NetT& net, const VertexType& v) -> VertexType {
   return net.degree(v);
 }
 
 template <network_like NetT>
-auto in_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> res;
+auto in_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> res;
   res.reserve(net.vertices().size());
 
   for (const auto& v : net.vertices())
@@ -71,8 +71,8 @@ auto in_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 }
 
 template <network_like NetT>
-auto out_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> res;
+auto out_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> res;
   res.reserve(net.vertices().size());
 
   for (const auto& v : net.vertices())
@@ -82,8 +82,8 @@ auto out_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 }
 
 template <network_like NetT>
-auto incident_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> res;
+auto incident_degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> res;
   res.reserve(net.vertices().size());
 
   for (const auto& v : net.vertices())
@@ -94,8 +94,8 @@ auto incident_degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 
 template <network_like NetT>
   requires is_undirected_v<NetT>
-auto degree_sequence(const NetT& net) -> std::vector<std::size_t> {
-  std::vector<std::size_t> res;
+auto degree_sequence(const NetT& net) -> std::vector<VertexType> {
+  std::vector<VertexType> res;
   res.reserve(net.vertices().size());
 
   for (const auto& v : net.vertices())
@@ -106,8 +106,8 @@ auto degree_sequence(const NetT& net) -> std::vector<std::size_t> {
 
 template <network_like NetT>
 auto in_out_degree_pair_sequence(const NetT& net)
-  -> std::vector<std::pair<std::size_t, std::size_t>> {
-  std::vector<std::pair<std::size_t, std::size_t>> res;
+  -> std::vector<std::pair<VertexType, VertexType>> {
+  std::vector<std::pair<VertexType, VertexType>> res;
   res.reserve(net.vertices().size());
 
   for (const auto& v : net.vertices())

@@ -61,8 +61,8 @@ NB_MODULE(_reticula_ext, m) {
 
   auto m_helpers = m.def_submodule("test_helpers");
   m_helpers.def(
-    "test_vector", []() { return std::vector<std::size_t>{1, 2, 3, 4, 5}; });
-  m_helpers.def("vector_sum", [](const std::vector<std::size_t>& v) {
+    "test_vector", []() { return std::vector<std::uint64_t>{1, 2, 3, 4, 5}; });
+  m_helpers.def("vector_sum", [](const std::vector<std::uint64_t>& v) {
     return std::accumulate(v.begin(), v.end(), 0);
   });
 }
