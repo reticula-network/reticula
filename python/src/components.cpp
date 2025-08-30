@@ -12,7 +12,7 @@ void define_component(nanobind::module_& m) {
       nanobind::arg("size_hint") = 0, nanobind::arg("seed") = 0)
     .def(
       nanobind::init<
-        std::initializer_list<VertexType>, std::size_t, std::size_t>(),
+        std::vector<VertexType>, std::size_t, std::size_t>(),
       nanobind::arg("verts"), nanobind::arg("size_hint") = 0,
       nanobind::arg("seed") = 0)
     .def(
