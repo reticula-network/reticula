@@ -1,5 +1,6 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
+#include <nanobind/stl/unordered_map.h>
 
 #include <reticula/algorithms/distance.hpp>
 #include <reticula/concepts.hpp>
