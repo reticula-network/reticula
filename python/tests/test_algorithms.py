@@ -159,6 +159,24 @@ def test_degree_sequence():
     assert set(inc_deg_seq) == {2, 2, 2}
 
 
+def test_bipartite():
+    g = ret.undirected_network([(0, 3), (1, 3), (1, 4), (2, 4)], verts=range(5))
+    assert ret.is_bipartite(g)
+    assert ret.try_two_colouring(g) is not None
+    parts = ret.two_colouring(g)
+    assert set(frozenset(p) for p in parts) == {
+        frozenset({0, 1, 2}), frozenset({3, 4})}
+
+    g = ret.directed_delayed_temporal_network(
+        [(0, 3, 1, 2), (1, 3, 5, 7), (1, 4, 1, 3), (2, 4, 9, 12)],
+        verts=range(5))
+
+    assert ret.is_bipartite(g)
+    assert ret.try_two_colouring(g) is not None
+    parts = ret.two_colouring(g)
+    assert set(frozenset(p) for p in parts) == {
+        frozenset({0, 1, 2}), frozenset({3, 4})}
+
 # @given(any_undirected_network)
 # def test_degree_properties(net):
 #     for v in net.vertices():

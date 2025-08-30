@@ -127,6 +127,7 @@ nanobind_add_module(
   src/algorithms/static_reachability.cpp
   src/algorithms/graphicallity.cpp
   src/algorithms/dag.cpp
+  src/algorithms/bipartite.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

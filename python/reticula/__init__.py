@@ -175,6 +175,9 @@ from ._reticula_algorithms import (
     is_acyclic,
     topological_order,
     try_topological_order,
+    is_bipartite,
+    try_two_colouring,
+    two_colouring,
 )
 
 __all__ = [
@@ -377,4 +380,8 @@ __all__ = [
     "is_acyclic",
     "topological_order",
     "try_topological_order",
+    # - bipartite
+    "is_bipartite",
+    "try_two_colouring",
+    "two_colouring",
 ]
