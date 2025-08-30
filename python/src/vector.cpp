@@ -4,8 +4,8 @@
 #include <format>
 #include <vector>
 
-#include <reticula/edges.hpp>
 #include <reticula/components.hpp>
+#include <reticula/edges.hpp>
 
 #include <nanobind/make_iterator.h>
 #include <nanobind/nanobind.h>
