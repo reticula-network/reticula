@@ -125,6 +125,8 @@ nanobind_add_module(
   src/algorithms/edge_degree.cpp
   src/algorithms/properties.cpp
   src/algorithms/static_reachability.cpp
+  src/algorithms/graphicallity.cpp
+  src/algorithms/dag.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

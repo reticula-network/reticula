@@ -170,6 +170,11 @@ from ._reticula_algorithms import (
     connected_component,
     is_connected,
     is_reachable,
+    is_graphic,
+    is_digraphic,
+    is_acyclic,
+    topological_order,
+    try_topological_order,
 )
 
 __all__ = [
@@ -365,4 +370,11 @@ __all__ = [
     "connected_component",
     "is_connected",
     "is_reachable",
+    # - graphic
+    "is_graphic",
+    "is_digraphic",
+    # - dag
+    "is_acyclic",
+    "topological_order",
+    "try_topological_order",
 ]
