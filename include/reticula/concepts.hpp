@@ -139,7 +139,7 @@ concept dense_id_network =
   };
 
 template <typename T, typename Result>
-concept random_number_distribution = requires(T dist, std::mt19937_64& gen) {
+concept point_process = requires(T dist, std::mt19937_64& gen) {
   { dist(gen) } -> std::convertible_to<Result>;
 };
 

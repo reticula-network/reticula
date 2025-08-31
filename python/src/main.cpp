@@ -32,6 +32,9 @@ void define_span_types(nanobind::module_& m);
 
 // components
 void define_component(nanobind::module_& m);
+
+// processes
+void define_processes(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m) {
@@ -56,6 +59,8 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_span_types(m);
 
   reticula::python::define_component(m);
+
+  reticula::python::define_processes(m);
 
   m.def(
     "__version__", []() { return reticula::python::full_version; },

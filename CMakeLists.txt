@@ -103,7 +103,8 @@ add_library(
   src/event_graphs.cpp
   src/interval_sets.cpp
   src/components.cpp
-  src/stats.cpp)
+  src/stats.cpp
+  src/processes.cpp)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_include_directories(

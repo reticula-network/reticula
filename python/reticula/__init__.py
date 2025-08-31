@@ -64,6 +64,12 @@ from ._reticula_ext import (
 from ._reticula_ext import (
     component)
 
+from ._reticula_ext import (
+    power_law,
+    residual_power_law,
+    hawkes_univariate_exponential,
+    delta_distribution)
+
 # Operations
 from ._reticula_operations import (
     graph_union,
@@ -226,6 +232,11 @@ __all__ = [
     "directed_delayed_temporal_hypernetwork",
     # component
     "component",
+    # processes
+    "power_law",
+    "residual_power_law",
+    "hawkes_univariate_exponential",
+    "delta_distribution",
 
     # Vectors
     "vector_undirected_edge",

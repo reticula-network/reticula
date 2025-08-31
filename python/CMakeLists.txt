@@ -46,6 +46,8 @@ nanobind_add_module(
   src/span.cpp
   # components
   src/components.cpp
+  # processes
+  src/processes.cpp
   # main
   src/main.cpp)
 target_link_libraries(_reticula_ext PRIVATE reticula)

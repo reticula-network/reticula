@@ -90,7 +90,8 @@ add_executable(
   temporal_clusters.cpp
   temporal_adjacency.cpp
   event_graphs.cpp
-  interval_sets.cpp)
+  interval_sets.cpp
+  processes.cpp)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2WithMain
                                                     ${PROJECT_NAME})
 

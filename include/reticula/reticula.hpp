@@ -7,3 +7,5 @@
 #include <reticula/algorithms.hpp>
 #include <reticula/operations.hpp>
 #include <reticula/generation.hpp>
+#include <reticula/components.hpp>
+#include <reticula/processes.hpp>

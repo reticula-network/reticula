@@ -9,16 +9,15 @@
 
 namespace reticula {
 template <
-  static_network_edge EdgeT, random_number_distribution<double> IETDist,
-  random_number_distribution<double> ResDist,
-  std::uniform_random_bit_generator Gen>
+  static_network_edge EdgeT, point_process<double> IETDist,
+  point_process<double> ResDist, std::uniform_random_bit_generator Gen>
 [[nodiscard]] auto random_node_activation_temporal_network(
   const network<EdgeT>& base_network, double max_t, IETDist iet_dist,
   ResDist res_dist, Gen& gen, std::size_t size_hint = 0)
   -> network<detail::temporal_activation_t<EdgeT>>;
 
 template <
-  static_network_edge EdgeT, random_number_distribution<double> IETDist,
+  static_network_edge EdgeT, point_process<double> IETDist,
   std::uniform_random_bit_generator Gen>
 [[nodiscard]] auto random_node_activation_temporal_network(
   const network<EdgeT>& base_network, double max_t, IETDist iet_dist, Gen& gen,
@@ -30,9 +29,8 @@ template <
 namespace reticula {
 
 template <
-  static_network_edge EdgeT, random_number_distribution<double> IETDist,
-  random_number_distribution<double> ResDist,
-  std::uniform_random_bit_generator Gen>
+  static_network_edge EdgeT, point_process<double> IETDist,
+  point_process<double> ResDist, std::uniform_random_bit_generator Gen>
 auto random_node_activation_temporal_network(
   const network<EdgeT>& base_net, double max_t, IETDist iet_dist,
   ResDist res_dist, Gen& gen, std::size_t size_hint)
@@ -56,7 +54,7 @@ auto random_node_activation_temporal_network(
 }
 
 template <
-  static_network_edge EdgeT, random_number_distribution<double> IETDist,
+  static_network_edge EdgeT, point_process<double> IETDist,
   std::uniform_random_bit_generator Gen>
 auto random_node_activation_temporal_network(
   const network<EdgeT>& base_net, double max_t, IETDist iet_dist, Gen& gen,
