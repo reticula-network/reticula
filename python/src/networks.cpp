@@ -11,11 +11,16 @@ template <network_edge EdgeT>
 void define_network(nanobind::module_& m, const std::string& name) {
   using NetT = network<EdgeT>;
   nanobind::class_<NetT>(m, name.c_str())
-    .def(nanobind::init<>())
-    .def(nanobind::init<std::vector<EdgeT>>(), nanobind::arg("edges"))
+    .def(
+      nanobind::init<>(), "Create an empty network.",
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      nanobind::init<std::vector<EdgeT>>(), nanobind::arg("edges"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       nanobind::init<std::vector<EdgeT>, std::vector<VertexType>>(),
-      nanobind::arg("edges"), nanobind::arg("verts"))
+      nanobind::arg("edges"), nanobind::arg("verts"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(nanobind::self != nanobind::self)
     .def(nanobind::self == nanobind::self)
     .def(
@@ -24,21 +29,40 @@ void define_network(nanobind::module_& m, const std::string& name) {
         return "<" + name + " with " + std::to_string(net.edges().size()) +
                " edges and " + std::to_string(net.vertices().size()) +
                " vertices>";
-      })
-    .def("edges", &NetT::edges, nanobind::rv_policy::reference_internal)
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "edges", &NetT::edges, nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "edges_cause", &NetT::edges_cause,
-      nanobind::rv_policy::reference_internal)
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "edges_effect", &NetT::edges_effect,
-      nanobind::rv_policy::reference_internal)
-    .def("vertices", &NetT::vertices, nanobind::rv_policy::reference_internal)
-    .def("incident_edges", &NetT::incident_edges)
-    .def("out_edges", &NetT::out_edges, nanobind::rv_policy::reference_internal)
-    .def("in_edges", &NetT::in_edges, nanobind::rv_policy::reference_internal)
-    .def("successors", &NetT::successors)
-    .def("predecessors", &NetT::predecessors)
-    .def("neighbours", &NetT::neighbours);
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "vertices", &NetT::vertices, nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "incident_edges", &NetT::incident_edges,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "out_edges", &NetT::out_edges, nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "in_edges", &NetT::in_edges, nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "successors", &NetT::successors,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "predecessors", &NetT::predecessors,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "neighbours", &NetT::neighbours,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

@@ -9,12 +9,14 @@ void define_fully_mixed(nanobind::module_& m) {
     "random_fully_mixed_temporal_network",
     &reticula::random_fully_mixed_temporal_network<std::mt19937_64>,
     nanobind::arg("n"), nanobind::arg("rate"), nanobind::arg("max_t"),
-    nanobind::arg("random_state"));
+    nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "random_directed_fully_mixed_temporal_network",
     &reticula::random_directed_fully_mixed_temporal_network<std::mt19937_64>,
     nanobind::arg("n"), nanobind::arg("rate"), nanobind::arg("max_t"),
-    nanobind::arg("random_state"));
+    nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace reticula::python

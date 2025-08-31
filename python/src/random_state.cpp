@@ -16,13 +16,17 @@ void define_random_state(nanobind::module_& m) {
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__copy__",
-      [](const std::mt19937_64& self) { return std::mt19937_64(self); })
+      [](const std::mt19937_64& self) { return std::mt19937_64(self); },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__deepcopy__",
       [](const std::mt19937_64& self, nanobind::dict) {
         return std::mt19937_64(self);
       },
-      nanobind::arg("memo"))
-    .def("__call__", [](std::mt19937_64& self) { return self(); });
+      nanobind::arg("memo"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__", [](std::mt19937_64& self) { return self(); },
+      nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace reticula::python

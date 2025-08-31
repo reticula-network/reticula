@@ -57,12 +57,18 @@ NB_MODULE(_reticula_ext, m) {
 
   reticula::python::define_component(m);
 
-  m.def("__version__", []() { return reticula::python::full_version; });
+  m.def(
+    "__version__", []() { return reticula::python::full_version; },
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   auto m_helpers = m.def_submodule("test_helpers");
   m_helpers.def(
-    "test_vector", []() { return std::vector<std::uint64_t>{1, 2, 3, 4, 5}; });
-  m_helpers.def("vector_sum", [](const std::vector<std::uint64_t>& v) {
-    return std::accumulate(v.begin(), v.end(), 0);
-  });
+    "test_vector", []() { return std::vector<std::uint64_t>{1, 2, 3, 4, 5}; },
+    nanobind::call_guard<nanobind::gil_scoped_release>());
+  m_helpers.def(
+    "vector_sum",
+    [](const std::vector<std::uint64_t>& v) {
+      return std::accumulate(v.begin(), v.end(), 0);
+    },
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }

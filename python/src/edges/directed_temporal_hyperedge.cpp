@@ -12,7 +12,8 @@ void define_directed_temporal_hyperedge(nanobind::module_& m) {
     m, "directed_temporal_hyperedge")
     .def(
       nanobind::init<
-        std::vector<VertexType>, std::vector<VertexType>, double>())
+        std::vector<VertexType>, std::vector<VertexType>, double>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](
@@ -31,15 +32,20 @@ void define_directed_temporal_hyperedge(nanobind::module_& m) {
                reticula::utils::join(e.heads(), ", ") + ", " +
                std::to_string(e.cause_time()) + ", " +
                std::to_string(e.effect_time()) + ")";
-      })
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "tails", &directed_temporal_hyperedge::tails,
-      nanobind::rv_policy::reference_internal)
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "heads", &directed_temporal_hyperedge::heads,
-      nanobind::rv_policy::reference_internal)
-    .def("cause_time", &directed_temporal_hyperedge::cause_time)
-    .def("effect_time", &directed_temporal_hyperedge::effect_time)
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("cause_time", &directed_temporal_hyperedge::cause_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("effect_time", &directed_temporal_hyperedge::effect_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<

@@ -19,7 +19,8 @@ void define_node_activation_for_edge(nanobind::module_& m) {
       EdgeT, dist_type, dist_type, std::mt19937_64>,
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("res_dist"),
-    nanobind::arg("random_state"), nanobind::arg("size_hint") = 0);
+    nanobind::arg("random_state"), nanobind::arg("size_hint") = 0,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "random_node_activation_temporal_network",
@@ -27,7 +28,8 @@ void define_node_activation_for_edge(nanobind::module_& m) {
       EdgeT, dist_type, std::mt19937_64>,
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("random_state"),
-    nanobind::arg("size_hint") = 0);
+    nanobind::arg("size_hint") = 0,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

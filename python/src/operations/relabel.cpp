@@ -10,16 +10,20 @@ namespace reticula::python {
 namespace {
 template <network_like NetT>
 void define_relabel_for_net(nanobind::module_& m) {
-  m.def("relabel", reticula::relabel<NetT>, nanobind::arg("g"));
+  m.def(
+    "relabel", reticula::relabel<NetT>, nanobind::arg("g"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "relabel", reticula::relabel<NetT, std::function<VertexType(VertexType)>>,
-    nanobind::arg("g"), nanobind::arg("mapping"));
+    nanobind::arg("g"), nanobind::arg("mapping"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "relabel",
     reticula::relabel<NetT, std::unordered_map<VertexType, VertexType>>,
-    nanobind::arg("g"), nanobind::arg("mapping"));
+    nanobind::arg("g"), nanobind::arg("mapping"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

@@ -10,7 +10,8 @@ namespace reticula::python {
 void define_undirected_temporal_hyperedge(nanobind::module_& m) {
   nanobind::class_<undirected_temporal_hyperedge>(
     m, "undirected_temporal_hyperedge")
-    .def(nanobind::init<std::vector<VertexType>, double>())
+    .def(nanobind::init<std::vector<VertexType>, double>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](
@@ -25,9 +26,12 @@ void define_undirected_temporal_hyperedge(nanobind::module_& m) {
         return "undirected_temporal_hyperedge(" +
                reticula::utils::join(e.incident_verts(), ", ") + ", " +
                std::to_string(e.cause_time()) + ")";
-      })
-    .def("cause_time", &undirected_temporal_hyperedge::cause_time)
-    .def("effect_time", &undirected_temporal_hyperedge::effect_time)
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("cause_time", &undirected_temporal_hyperedge::cause_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("effect_time", &undirected_temporal_hyperedge::effect_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<

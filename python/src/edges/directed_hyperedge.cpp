@@ -9,7 +9,8 @@
 namespace reticula::python {
 void define_directed_hyperedge(nanobind::module_& m) {
   nanobind::class_<directed_hyperedge>(m, "directed_hyperedge")
-    .def(nanobind::init<std::vector<VertexType>, std::vector<VertexType>>())
+    .def(nanobind::init<std::vector<VertexType>, std::vector<VertexType>>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](
@@ -23,13 +24,16 @@ void define_directed_hyperedge(nanobind::module_& m) {
       [](const directed_hyperedge& e) {
         return "directed_hyperedge(" + reticula::utils::join(e.tails(), ", ") +
                ", " + reticula::utils::join(e.heads(), ", ") + ")";
-      })
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "tails", &directed_hyperedge::tails,
-      nanobind::rv_policy::reference_internal)
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "heads", &directed_hyperedge::heads,
-      nanobind::rv_policy::reference_internal)
+      nanobind::rv_policy::reference_internal,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<

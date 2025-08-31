@@ -15,37 +15,43 @@ void define_occupation_for_net(nanobind::module_& m) {
   m.def(
     "uniformly_occupy_vertices",
     reticula::uniformly_occupy_vertices<NetT, std::mt19937_64>,
-    nanobind::arg("g"), nanobind::arg("p"), nanobind::arg("random_state"));
+    nanobind::arg("g"), nanobind::arg("p"), nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "occupy_vertices",
     reticula::occupy_vertices<
       NetT, std::function<double(VertexType)>, std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_func"),
-    nanobind::arg("random_state"));
+    nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "occupy_vertices",
     reticula::occupy_vertices<
       NetT, std::unordered_map<VertexType, double>, std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_map"),
-    nanobind::arg("random_state"), nanobind::arg("default_prob"));
+    nanobind::arg("random_state"), nanobind::arg("default_prob"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "uniformly_occupy_edges",
     reticula::uniformly_occupy_edges<NetT, std::mt19937_64>, nanobind::arg("g"),
-    nanobind::arg("p"), nanobind::arg("random_state"));
+    nanobind::arg("p"), nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "occupy_edges",
     reticula::occupy_edges<
       NetT, std::function<double(typename NetT::EdgeType)>, std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_func"),
-    nanobind::arg("random_state"));
+    nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "occupy_edges",
     reticula::occupy_edges<
       NetT, std::unordered_map<typename NetT::EdgeType, double>,
       std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_map"),
-    nanobind::arg("random_state"), nanobind::arg("default_prob"));
+    nanobind::arg("random_state"), nanobind::arg("default_prob"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

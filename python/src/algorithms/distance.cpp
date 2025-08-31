@@ -13,42 +13,63 @@ void define_distance_for_net(nanobind::module_& m) {
   m.def(
     "shortest_path_lengths_from", reticula::shortest_path_lengths_from<NetT>,
     nanobind::arg("net"), nanobind::arg("source"),
-    nanobind::arg("size_hint") = 0);
+    nanobind::arg("size_hint") = 0,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "shortest_path_lengths_to", reticula::shortest_path_lengths_to<NetT>,
     nanobind::arg("net"), nanobind::arg("destination"),
-    nanobind::arg("size_hint") = 0);
+    nanobind::arg("size_hint") = 0,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
-  m.def("try_diameter", reticula::try_diameter<NetT>, nanobind::arg("net"));
-  m.def("diameter", reticula::diameter<NetT>, nanobind::arg("net"));
+  m.def(
+    "try_diameter", reticula::try_diameter<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
+  m.def(
+    "diameter", reticula::diameter<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "try_out_eccentricity", reticula::try_out_eccentricity<NetT>,
-    nanobind::arg("net"), nanobind::arg("v"));
+    nanobind::arg("net"), nanobind::arg("v"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "out_eccentricity", reticula::out_eccentricity<NetT>, nanobind::arg("net"),
-    nanobind::arg("v"));
+    nanobind::arg("v"), nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "try_in_eccentricity", reticula::try_in_eccentricity<NetT>,
-    nanobind::arg("net"), nanobind::arg("v"));
+    nanobind::arg("net"), nanobind::arg("v"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "in_eccentricity", reticula::in_eccentricity<NetT>, nanobind::arg("net"),
-    nanobind::arg("v"));
+    nanobind::arg("v"), nanobind::call_guard<nanobind::gil_scoped_release>());
 
-  m.def("try_out_radius", reticula::try_out_radius<NetT>, nanobind::arg("net"));
-  m.def("out_radius", reticula::out_radius<NetT>, nanobind::arg("net"));
-  m.def("try_in_radius", reticula::try_in_radius<NetT>, nanobind::arg("net"));
-  m.def("in_radius", reticula::in_radius<NetT>, nanobind::arg("net"));
+  m.def(
+    "try_out_radius", reticula::try_out_radius<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
+  m.def(
+    "out_radius", reticula::out_radius<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
+  m.def(
+    "try_in_radius", reticula::try_in_radius<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
+  m.def(
+    "in_radius", reticula::in_radius<NetT>, nanobind::arg("net"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   if constexpr (is_undirected_v<NetT>) {
     m.def(
       "try_eccentricity", reticula::try_eccentricity<NetT>,
-      nanobind::arg("net"), nanobind::arg("v"));
+      nanobind::arg("net"), nanobind::arg("v"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
     m.def(
       "eccentricity", reticula::eccentricity<NetT>, nanobind::arg("net"),
-      nanobind::arg("v"));
-    m.def("try_radius", reticula::try_radius<NetT>, nanobind::arg("net"));
-    m.def("radius", reticula::radius<NetT>, nanobind::arg("net"));
+      nanobind::arg("v"), nanobind::call_guard<nanobind::gil_scoped_release>());
+    m.def(
+      "try_radius", reticula::try_radius<NetT>, nanobind::arg("net"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+    m.def(
+      "radius", reticula::radius<NetT>, nanobind::arg("net"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
   }
 }
 } // namespace

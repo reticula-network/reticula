@@ -9,7 +9,8 @@
 namespace reticula::python {
 void define_undirected_temporal_edge(nanobind::module_& m) {
   nanobind::class_<undirected_temporal_edge>(m, "undirected_temporal_edge")
-    .def(nanobind::init<VertexType, VertexType, double>())
+    .def(nanobind::init<VertexType, VertexType, double>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](
@@ -26,9 +27,12 @@ void define_undirected_temporal_edge(nanobind::module_& m) {
                std::to_string(e.incident_verts().front()) + ", " +
                std::to_string(e.incident_verts().back()) + ", " +
                std::to_string(e.cause_time()) + ")";
-      })
-    .def("cause_time", &undirected_temporal_edge::cause_time)
-    .def("effect_time", &undirected_temporal_edge::effect_time)
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("cause_time", &undirected_temporal_edge::cause_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("effect_time", &undirected_temporal_edge::effect_time,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<

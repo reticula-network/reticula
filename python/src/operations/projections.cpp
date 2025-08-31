@@ -13,14 +13,17 @@ void define_projections_for_net(nanobind::module_& m) {
   if constexpr (temporal_network_edge<typename NetT::EdgeType>) {
     m.def(
       "static_projection", reticula::static_projection<NetT>,
-      nanobind::arg("net"));
+      nanobind::arg("net"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
   } else {
     m.def(
       "directed_projection", reticula::directed_projection<NetT>,
-      nanobind::arg("net"));
+      nanobind::arg("net"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
     m.def(
       "clique_expansion", reticula::clique_expansion<NetT>,
-      nanobind::arg("net"));
+      nanobind::arg("net"),
+      nanobind::call_guard<nanobind::gil_scoped_release>());
   }
 }
 } // namespace

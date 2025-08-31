@@ -11,11 +11,13 @@ void define_subgraph_for_net(nanobind::module_& m) {
   m.def(
     "vertex_induced_subgraph",
     reticula::vertex_induced_subgraph<NetT, std::vector<VertexType>>,
-    nanobind::arg("g"), nanobind::arg("vertices"));
+    nanobind::arg("g"), nanobind::arg("vertices"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
   m.def(
     "edge_induced_subgraph",
     reticula::edge_induced_subgraph<NetT, std::vector<typename NetT::EdgeType>>,
-    nanobind::arg("g"), nanobind::arg("edges"));
+    nanobind::arg("g"), nanobind::arg("edges"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

@@ -10,12 +10,14 @@ template <network_like NetT>
 void define_addition_for_net(nanobind::module_& m) {
   m.def(
     "with_vertices", reticula::with_vertices<NetT, std::vector<VertexType>>,
-    nanobind::arg("g"), nanobind::arg("vertices"));
+    nanobind::arg("g"), nanobind::arg("vertices"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "with_edges",
     reticula::with_edges<NetT, std::vector<typename NetT::EdgeType>>,
-    nanobind::arg("g"), nanobind::arg("edges"));
+    nanobind::arg("g"), nanobind::arg("edges"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
 

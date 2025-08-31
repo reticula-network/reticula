@@ -9,7 +9,8 @@
 namespace reticula::python {
 void define_undirected_edge(nanobind::module_& m) {
   nanobind::class_<undirected_edge>(m, "undirected_edge")
-    .def(nanobind::init<VertexType, VertexType>())
+    .def(nanobind::init<VertexType, VertexType>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](undirected_edge* e, std::tuple<VertexType, VertexType> t) {
@@ -21,7 +22,8 @@ void define_undirected_edge(nanobind::module_& m) {
       [](const undirected_edge& e) {
         return "undirected_edge(" + std::to_string(e.incident_verts().front()) +
                ", " + std::to_string(e.incident_verts().back()) + ")";
-      })
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<

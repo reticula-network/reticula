@@ -10,21 +10,24 @@ void define_expected_degree_sequence(nanobind::module_& m) {
     &reticula::expected_degree_sequence_graph<
       std::mt19937_64, std::vector<double>>,
     nanobind::arg("weight_sequence"), nanobind::arg("random_state"),
-    nanobind::arg("self_loops") = false);
+    nanobind::arg("self_loops") = false,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "directed_expected_degree_sequence_graph",
     &reticula::directed_expected_degree_sequence_graph<
       std::mt19937_64, std::vector<std::pair<double, double>>>,
     nanobind::arg("in_out_weight_sequence"), nanobind::arg("random_state"),
-    nanobind::arg("self_loops") = false);
+    nanobind::arg("self_loops") = false,
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "expected_degree_sequence_hypergraph",
     &reticula::expected_degree_sequence_hypergraph<
       std::mt19937_64, std::vector<double>, std::vector<double>>,
     nanobind::arg("vertex_weight_sequence"),
-    nanobind::arg("edge_weight_sequence"), nanobind::arg("random_state"));
+    nanobind::arg("edge_weight_sequence"), nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
     "directed_expected_degree_sequence_hypergraph",
@@ -32,7 +35,7 @@ void define_expected_degree_sequence(nanobind::module_& m) {
       std::mt19937_64, std::vector<std::pair<double, double>>,
       std::vector<std::pair<double, double>>>,
     nanobind::arg("vertex_in_out_weight_sequence"),
-    nanobind::arg("edge_in_out_weight_sequence"),
-    nanobind::arg("random_state"));
+    nanobind::arg("edge_in_out_weight_sequence"), nanobind::arg("random_state"),
+    nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace reticula::python

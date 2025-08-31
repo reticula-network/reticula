@@ -9,7 +9,8 @@
 namespace reticula::python {
 void define_directed_edge(nanobind::module_& m) {
   nanobind::class_<directed_edge>(m, "directed_edge")
-    .def(nanobind::init<VertexType, VertexType>())
+    .def(nanobind::init<VertexType, VertexType>(),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "__init__",
       [](directed_edge* e, std::tuple<VertexType, VertexType> t) {
@@ -21,9 +22,12 @@ void define_directed_edge(nanobind::module_& m) {
       [](const directed_edge& e) {
         return "directed_edge(" + std::to_string(e.tail()) + ", " +
                std::to_string(e.head()) + ")";
-      })
-    .def("tail", &directed_edge::tail)
-    .def("head", &directed_edge::head)
+      },
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("tail", &directed_edge::tail,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def("head", &directed_edge::head,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 
   nanobind::implicitly_convertible<
