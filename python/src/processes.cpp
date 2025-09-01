@@ -1,5 +1,6 @@
 #include <nanobind/nanobind.h>
 
+#include <random>
 #include <reticula/processes.hpp>
 
 namespace reticula::python {
@@ -81,6 +82,113 @@ void define_processes(nanobind::module_& m) {
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "mean", &delta_distribution::mean,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::exponential_distribution<double>>(
+    m, "exponential_distribution")
+    .def(
+      nanobind::init<double>(), nanobind::arg("lmbda"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::exponential_distribution<double>& ed, std::mt19937_64& g) {
+        return ed(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "lmbda", &std::exponential_distribution<double>::lambda,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::uniform_real_distribution<double>>(
+    m, "uniform_distribution")
+    .def(
+      nanobind::init<double, double>(), nanobind::arg("a"), nanobind::arg("b"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::uniform_real_distribution<double>& urd, std::mt19937_64& g) {
+        return urd(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "a", &std::uniform_real_distribution<double>::a,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "b", &std::uniform_real_distribution<double>::b,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::lognormal_distribution<double>>(
+    m, "lognormal_distribution")
+    .def(
+      nanobind::init<double, double>(), nanobind::arg("m"), nanobind::arg("s"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::lognormal_distribution<double>& lnd, std::mt19937_64& g) {
+        return lnd(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "m", &std::lognormal_distribution<double>::m,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "s", &std::lognormal_distribution<double>::s,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::gamma_distribution<double>>(m, "gamma_distribution")
+    .def(
+      nanobind::init<double, double>(), nanobind::arg("alpha"),
+      nanobind::arg("beta"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::gamma_distribution<double>& gd, std::mt19937_64& g) {
+        return gd(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "alpha", &std::gamma_distribution<double>::alpha,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "beta", &std::gamma_distribution<double>::beta,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::weibull_distribution<double>>(m, "weibull_distribution")
+    .def(
+      nanobind::init<double, double>(), nanobind::arg("a"), nanobind::arg("b"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::weibull_distribution<double>& wd, std::mt19937_64& g) {
+        return wd(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "a", &std::weibull_distribution<double>::a,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "b", &std::weibull_distribution<double>::b,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  nanobind::class_<std::geometric_distribution<std::uint64_t>>(
+    m, "geometric_distribution")
+    .def(
+      nanobind::init<double>(), nanobind::arg("p"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__call__",
+      [](std::geometric_distribution<std::uint64_t>& gd, std::mt19937_64& g) {
+        return static_cast<double>(gd(g));
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "p", &std::geometric_distribution<std::uint64_t>::p,
       nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace reticula::python
