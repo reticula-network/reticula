@@ -23,8 +23,8 @@ void define_node_activation_for_edge(nanobind::module_& m) {
     nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
-    "random_node_activation_temporal_network",
-    &reticula::random_node_activation_temporal_network<
+    "random_node_activation_temporal_network_with_burn_in",
+    &reticula::random_node_activation_temporal_network_with_burn_in<
       EdgeT, dist_type, std::mt19937_64>,
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("random_state"),

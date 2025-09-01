@@ -1,5 +1,5 @@
-#include <random>
 #include <functional>
+#include <random>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/function.h>
@@ -23,15 +23,15 @@ void define_link_activation_for_edge(nanobind::module_& m) {
     nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
-    "random_link_activation_temporal_network",
-    &reticula::random_link_activation_temporal_network<
+    "random_link_activation_temporal_network_with_burn_in",
+    &reticula::random_link_activation_temporal_network_with_burn_in<
       EdgeT, dist_type, std::mt19937_64>,
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("random_state"),
     nanobind::arg("size_hint") = 0,
     nanobind::call_guard<nanobind::gil_scoped_release>());
 }
-}
+} // namespace
 
 void define_link_activation(nanobind::module_& m) {
   define_link_activation_for_edge<undirected_edge>(m);

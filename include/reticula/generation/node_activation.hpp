@@ -19,7 +19,7 @@ template <
 template <
   static_network_edge EdgeT, point_process<double> IETDist,
   std::uniform_random_bit_generator Gen>
-[[nodiscard]] auto random_node_activation_temporal_network(
+[[nodiscard]] auto random_node_activation_temporal_network_with_burn_in(
   const network<EdgeT>& base_network, double max_t, IETDist iet_dist, Gen& gen,
   std::size_t size_hint = 0) -> network<detail::temporal_activation_t<EdgeT>>;
 } // namespace reticula
@@ -56,7 +56,7 @@ auto random_node_activation_temporal_network(
 template <
   static_network_edge EdgeT, point_process<double> IETDist,
   std::uniform_random_bit_generator Gen>
-auto random_node_activation_temporal_network(
+auto random_node_activation_temporal_network_with_burn_in(
   const network<EdgeT>& base_net, double max_t, IETDist iet_dist, Gen& gen,
   std::size_t size_hint) -> network<detail::temporal_activation_t<EdgeT>> {
   std::vector<detail::temporal_activation_t<EdgeT>> edges;
