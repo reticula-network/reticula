@@ -3,20 +3,39 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/function.h>
+#include <nanobind/stl/variant.h>
 
 #include <reticula/concepts.hpp>
 #include <reticula/generation/link_activation.hpp>
+#include <reticula/processes.hpp>
 
 namespace reticula::python {
 namespace {
 template <static_network_edge EdgeT>
 void define_link_activation_for_edge(nanobind::module_& m) {
-  using dist_type = std::function<double(std::mt19937_64&)>;
+  using dist_variant = std::variant<
+    power_law, residual_power_law, hawkes_univariate_exponential,
+    std::exponential_distribution<double>,
+    std::uniform_real_distribution<double>, std::normal_distribution<double>,
+    std::lognormal_distribution<double>, std::gamma_distribution<double>,
+    std::weibull_distribution<double>,
+    std::geometric_distribution<std::uint64_t>,
+    std::function<double(std::mt19937_64&)>>;
 
   m.def(
     "random_link_activation_temporal_network",
-    &reticula::random_link_activation_temporal_network<
-      EdgeT, dist_type, dist_type, std::mt19937_64>,
+    [](
+      const network<EdgeT>& base_network, double max_t, dist_variant iet_dist,
+      dist_variant res_dist, std::mt19937_64& random_state,
+      std::size_t size_hint) {
+      return std::visit(
+        [&](auto&& iet, auto&& res) {
+          return reticula::random_link_activation_temporal_network<
+            EdgeT, decltype(iet), decltype(res), std::mt19937_64>(
+            base_network, max_t, iet, res, random_state, size_hint);
+        },
+        iet_dist, res_dist);
+    },
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("res_dist"),
     nanobind::arg("random_state"), nanobind::arg("size_hint") = 0,
@@ -24,8 +43,17 @@ void define_link_activation_for_edge(nanobind::module_& m) {
 
   m.def(
     "random_link_activation_temporal_network_with_burn_in",
-    &reticula::random_link_activation_temporal_network_with_burn_in<
-      EdgeT, dist_type, std::mt19937_64>,
+    [](
+      const network<EdgeT>& base_network, double max_t, dist_variant iet_dist,
+      std::mt19937_64& random_state, std::size_t size_hint) {
+      return std::visit(
+        [&](auto&& dist) {
+          return reticula::random_link_activation_temporal_network_with_burn_in<
+            EdgeT, decltype(dist), std::mt19937_64>(
+            base_network, max_t, dist, random_state, size_hint);
+        },
+        iet_dist);
+    },
     nanobind::arg("base_network"), nanobind::arg("max_t"),
     nanobind::arg("iet_dist"), nanobind::arg("random_state"),
     nanobind::arg("size_hint") = 0,

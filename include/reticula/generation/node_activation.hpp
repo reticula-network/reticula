@@ -45,7 +45,8 @@ auto random_node_activation_temporal_network(
       continue;
 
     std::uniform_int_distribution<std::size_t> idx(0, links.size() - 1);
-    for (auto t = res_dist(gen); t < max_t; t += iet_dist(gen))
+    for (auto t = static_cast<double>(res_dist(gen)); t < max_t;
+         t += static_cast<double>(iet_dist(gen)))
       edges.emplace_back(links[idx(gen)], t);
   }
 
@@ -68,7 +69,7 @@ auto random_node_activation_temporal_network_with_burn_in(
     if (links.empty())
       continue;
 
-    for (double t = -max_t; t < max_t; t += iet_dist(gen))
+    for (double t = -max_t; t < max_t; t += static_cast<double>(iet_dist(gen)))
       if (t >= 0)
         edges.emplace_back(
           links[std::uniform_int_distribution<std::size_t>(0, links.size() - 1)(

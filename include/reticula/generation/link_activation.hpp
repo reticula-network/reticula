@@ -38,7 +38,8 @@ auto random_link_activation_temporal_network(
   edges.reserve(size_hint);
 
   for (const auto& e : base_net.edges())
-    for (auto t = res_dist(gen); t < max_t; t += iet_dist(gen))
+    for (auto t = static_cast<double>(res_dist(gen)); t < max_t;
+         t += static_cast<double>(iet_dist(gen)))
       edges.emplace_back(e, t);
 
   return network<detail::temporal_activation_t<EdgeT>>(
@@ -55,7 +56,7 @@ auto random_link_activation_temporal_network_with_burn_in(
   edges.reserve(size_hint);
 
   for (const auto& e : base_net.edges())
-    for (double t = -max_t; t < max_t; t += iet_dist(gen))
+    for (double t = -max_t; t < max_t; t += static_cast<double>(iet_dist(gen)))
       if (t >= 0)
         edges.emplace_back(e, t);
 
