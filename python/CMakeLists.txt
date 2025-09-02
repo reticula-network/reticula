@@ -48,6 +48,8 @@ nanobind_add_module(
   src/components.cpp
   # processes
   src/processes.cpp
+  # event graph
+  src/event_graphs.cpp
   # main
   src/main.cpp)
 target_link_libraries(_reticula_ext PRIVATE reticula)
@@ -127,6 +129,7 @@ nanobind_add_module(
   src/algorithms/edge_degree.cpp
   src/algorithms/properties.cpp
   src/algorithms/static_reachability.cpp
+  src/algorithms/temporal_reachability.cpp
   src/algorithms/graphicallity.cpp
   src/algorithms/dag.cpp
   src/algorithms/bipartite.cpp
@@ -137,6 +140,18 @@ nanobind_add_module(
 target_link_libraries(_reticula_algorithms PRIVATE reticula)
 set_target_properties(_reticula_algorithms PROPERTIES POSITION_INDEPENDENT_CODE
                                                       ON)
-
 enable_project_warnings(_reticula_operations)
 install(TARGETS _reticula_algorithms LIBRARY DESTINATION reticula)
+
+nanobind_add_stub(
+  reticula_stub
+  VERBOSE
+  MODULE
+  reticula
+  OUTPUT
+  ${SKBUILD_PLATLIB_DIR}/reticula/__init__.pyi
+  MARKER_FILE
+  ${SKBUILD_PLATLIB_DIR}/reticula/py.typed
+  PYTHON_PATH
+  $<TARGET_FILE_DIR:reticula>
+  INSTALL_TIME)

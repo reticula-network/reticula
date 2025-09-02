@@ -1,6 +1,7 @@
+#include <random>
+
 #include <nanobind/nanobind.h>
 
-#include <random>
 #include <reticula/processes.hpp>
 
 namespace reticula::python {

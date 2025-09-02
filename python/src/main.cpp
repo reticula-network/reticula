@@ -35,9 +35,15 @@ void define_component(nanobind::module_& m);
 
 // processes
 void define_processes(nanobind::module_& m);
+
+// event graphs
+void define_event_graph(nanobind::module_& m);
 } // namespace reticula::python
 
-NB_MODULE(_reticula_ext, m) {
+NB_MODULE(_reticula_ext, m_) {
+  (void)m_;
+  nanobind::module_ m = nanobind::module_::import_("reticula");
+
   reticula::python::define_random_state(m);
 
   reticula::python::define_undirected_edge(m);
@@ -61,6 +67,8 @@ NB_MODULE(_reticula_ext, m) {
   reticula::python::define_component(m);
 
   reticula::python::define_processes(m);
+
+  reticula::python::define_event_graph(m);
 
   m.def(
     "__version__", []() { return reticula::python::full_version; },

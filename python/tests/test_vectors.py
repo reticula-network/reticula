@@ -1,5 +1,5 @@
 import reticula as ret
-from reticula._reticula_ext import test_helpers as ret_test
+import reticula.test_helpers as ret_test
 
 import pytest
 

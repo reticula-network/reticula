@@ -16,7 +16,10 @@ void define_link_activation(nanobind::module_& m);
 void define_node_activation(nanobind::module_& m);
 } // namespace reticula::python
 
-NB_MODULE(_reticula_generation, m) {
+NB_MODULE(_reticula_generation, m_) {
+  (void)m_;
+  nanobind::module_ m = nanobind::module_::import_("reticula");
+
   reticula::python::define_deterministic(m);
   reticula::python::define_gnp(m);
   reticula::python::define_gnm(m);

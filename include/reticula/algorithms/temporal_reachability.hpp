@@ -130,7 +130,9 @@ template <temporal_network_edge EdgeT>
   requires(!is_dyadic_v<EdgeT>)
 struct make_loop_t<EdgeT> {
   auto operator()(VertexType v, double time) const -> EdgeT {
-    if constexpr (is_instantaneous_v<EdgeT>)
+    if constexpr (is_undirected_v<EdgeT>)
+      return EdgeT({v}, time);
+    else if constexpr (is_instantaneous_v<EdgeT>)
       return EdgeT({v}, {v}, time);
     else
       return EdgeT({v}, {v}, time, time);

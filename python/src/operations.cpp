@@ -11,7 +11,10 @@ void define_subgraph(nanobind::module_& m);
 void define_relabel(nanobind::module_& m);
 } // namespace reticula::python
 
-NB_MODULE(_reticula_operations, m) {
+NB_MODULE(_reticula_operations, m_) {
+  (void)m_;
+  nanobind::module_ m = nanobind::module_::import_("reticula");
+
   reticula::python::define_algebraic(m);
   reticula::python::define_addition(m);
   reticula::python::define_removal(m);
