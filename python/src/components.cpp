@@ -1,8 +1,10 @@
-#include "reticula/concepts.hpp"
 #include <nanobind/make_iterator.h>
 #include <nanobind/nanobind.h>
 
 #include <reticula/components.hpp>
+#include <reticula/concepts.hpp>
+
+#include "vector_properties.hpp"
 
 namespace reticula::python {
 void define_component(nanobind::module_& m) {
@@ -47,5 +49,8 @@ void define_component(nanobind::module_& m) {
     .def(
       "__len__", &component::size,
       nanobind::call_guard<nanobind::gil_scoped_release>());
+
+  define_vector<component>(m, "component");
+  define_vector<std::pair<VertexType, component>>(m, "pair_uint64_component");
 }
 } // namespace reticula::python

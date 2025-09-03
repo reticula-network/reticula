@@ -46,6 +46,8 @@ nanobind_add_module(
   src/span.cpp
   # components
   src/components.cpp
+  # clusters
+  src/temporal_clusters.cpp
   # processes
   src/processes.cpp
   # event graph
@@ -135,6 +137,8 @@ nanobind_add_module(
   src/algorithms/bipartite.cpp
   src/algorithms/assortativity.cpp
   src/algorithms/distance.cpp
+  # adjacency
+  src/temporal_adjacency.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

@@ -33,6 +33,9 @@ void define_span_types(nanobind::module_& m);
 // components
 void define_component(nanobind::module_& m);
 
+// clusters
+void define_temporal_clusters(nanobind::module_& m);
+
 // processes
 void define_processes(nanobind::module_& m);
 
@@ -65,6 +68,8 @@ NB_MODULE(_reticula_ext, m_) {
   reticula::python::define_span_types(m);
 
   reticula::python::define_component(m);
+
+  reticula::python::define_temporal_clusters(m);
 
   reticula::python::define_processes(m);
 

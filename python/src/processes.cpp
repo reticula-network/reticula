@@ -102,7 +102,7 @@ void define_processes(nanobind::module_& m) {
       nanobind::call_guard<nanobind::gil_scoped_release>());
 
   nanobind::class_<std::uniform_real_distribution<double>>(
-    m, "uniform_distribution")
+    m, "uniform_real_distribution")
     .def(
       nanobind::init<double, double>(), nanobind::arg("a"), nanobind::arg("b"),
       nanobind::call_guard<nanobind::gil_scoped_release>())

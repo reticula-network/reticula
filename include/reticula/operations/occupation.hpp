@@ -16,7 +16,7 @@ template <
   std::uniform_random_bit_generator Gen>
 [[nodiscard]]
 auto occupy_vertices(
-  const NetT& g, const ProbMapT& prob_map, Gen& gen, double default_prob)
+  const NetT& g, const ProbMapT& prob_map, Gen& gen, double default_prob = 0.0)
   -> reticula::network<typename NetT::EdgeType>;
 
 template <
@@ -37,7 +37,7 @@ template <
   std::uniform_random_bit_generator Gen>
 [[nodiscard]]
 auto occupy_edges(
-  const NetT& g, const ProbMapT& prob_map, Gen& gen, double default_prob)
+  const NetT& g, const ProbMapT& prob_map, Gen& gen, double default_prob = 0.0)
   -> reticula::network<typename NetT::EdgeType>;
 
 template <
@@ -49,7 +49,6 @@ template <
 auto occupy_edges(const NetT& g, ProbF&& prob_func, Gen& gen)
   -> reticula::network<typename NetT::EdgeType>;
 } // namespace reticula
-
 
 #include <reticula/operations/removal.hpp>
 

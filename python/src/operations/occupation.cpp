@@ -29,7 +29,7 @@ void define_occupation_for_net(nanobind::module_& m) {
     reticula::occupy_vertices<
       NetT, std::unordered_map<VertexType, double>, std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_map"),
-    nanobind::arg("random_state"), nanobind::arg("default_prob"),
+    nanobind::arg("random_state"), nanobind::arg("default_prob") = 0.0,
     nanobind::call_guard<nanobind::gil_scoped_release>());
 
   m.def(
@@ -50,7 +50,7 @@ void define_occupation_for_net(nanobind::module_& m) {
       NetT, std::unordered_map<typename NetT::EdgeType, double>,
       std::mt19937_64>,
     nanobind::arg("g"), nanobind::arg("prob_map"),
-    nanobind::arg("random_state"), nanobind::arg("default_prob"),
+    nanobind::arg("random_state"), nanobind::arg("default_prob") = 0.0,
     nanobind::call_guard<nanobind::gil_scoped_release>());
 }
 } // namespace
