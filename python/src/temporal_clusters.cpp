@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/make_iterator.h>
 
 #include <reticula/edges.hpp>
 #include <reticula/temporal_clusters.hpp>
@@ -27,11 +28,13 @@ void define_temporal_cluster(nanobind::module_& m, std::string name) {
       "empty", &temporal_cluster<EdgeT>::empty,
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "begin", &temporal_cluster<EdgeT>::begin,
-      nanobind::call_guard<nanobind::gil_scoped_release>())
-    .def(
-      "end", &temporal_cluster<EdgeT>::end,
-      nanobind::call_guard<nanobind::gil_scoped_release>())
+      "__iter__",
+      [](const temporal_cluster<EdgeT>& c) {
+        return nanobind::make_iterator(
+          nanobind::type<temporal_cluster<EdgeT>>(), "iterator", c.begin(),
+          c.end());
+      },
+      nanobind::keep_alive<0, 1>())
     .def(
       "intervals", &temporal_cluster<EdgeT>::intervals, nanobind::arg("vertex"),
       nanobind::call_guard<nanobind::gil_scoped_release>())

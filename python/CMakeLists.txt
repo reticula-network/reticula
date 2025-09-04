@@ -139,6 +139,8 @@ nanobind_add_module(
   src/algorithms/distance.cpp
   # adjacency
   src/temporal_adjacency.cpp
+  # interval sets
+  src/interval_sets.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

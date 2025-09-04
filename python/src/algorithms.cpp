@@ -17,6 +17,9 @@ void define_distance(nanobind::module_& m);
 
 // adjacency
 void define_adjacency(nanobind::module_& m);
+
+// interval sets
+void define_interval_set(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_algorithms, m_) {
@@ -35,4 +38,6 @@ NB_MODULE(_reticula_algorithms, m_) {
   reticula::python::define_distance(m);
 
   reticula::python::define_adjacency(m);
+
+  reticula::python::define_interval_set(m);
 }
