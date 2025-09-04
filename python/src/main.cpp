@@ -41,6 +41,9 @@ void define_processes(nanobind::module_& m);
 
 // event graphs
 void define_event_graph(nanobind::module_& m);
+
+// concepts
+void define_concepts(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_ext, m_) {
@@ -74,6 +77,8 @@ NB_MODULE(_reticula_ext, m_) {
   reticula::python::define_processes(m);
 
   reticula::python::define_event_graph(m);
+
+  reticula::python::define_concepts(m);
 
   m.def(
     "__version__", []() { return reticula::python::full_version; },

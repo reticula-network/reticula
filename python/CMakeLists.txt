@@ -38,6 +38,8 @@ nanobind_add_module(
   src/edges/undirected_temporal_hyperedge.cpp
   src/edges/directed_temporal_hyperedge.cpp
   src/edges/directed_delayed_temporal_hyperedge.cpp
+  # concepts
+  src/concepts.cpp
   # networks
   src/networks.cpp
   # vectors
