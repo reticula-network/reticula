@@ -82,6 +82,8 @@ add_executable(
   generation/uniform_hypergraph.cpp
   generation/fully_mixed.cpp
   generation/link_activation.cpp
+  # randomisation
+  randomisation/link_shuffling.cpp
   # views
   views/chain.cpp
   views/cartesian_product.cpp
