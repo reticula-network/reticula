@@ -143,6 +143,8 @@ nanobind_add_module(
   src/temporal_adjacency.cpp
   # interval sets
   src/interval_sets.cpp
+  # randomisation
+  src/randomisation/link_shufflings.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

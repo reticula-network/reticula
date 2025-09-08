@@ -2,7 +2,6 @@
 #include <nanobind/stl/string_view.h>
 
 namespace reticula::python {
-void define_random_state(nanobind::module_& m);
 // algorithms
 void define_vertex_degree(nanobind::module_& m);
 void define_edge_degree(nanobind::module_& m);
@@ -20,6 +19,9 @@ void define_adjacency(nanobind::module_& m);
 
 // interval sets
 void define_interval_set(nanobind::module_& m);
+
+// randomisation
+void define_link_shufflings(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_algorithms, m_) {
@@ -40,4 +42,6 @@ NB_MODULE(_reticula_algorithms, m_) {
   reticula::python::define_adjacency(m);
 
   reticula::python::define_interval_set(m);
+
+  reticula::python::define_link_shufflings(m);
 }

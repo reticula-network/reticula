@@ -255,4 +255,12 @@ __all__ = [
     "eccentricity",
     "try_radius",
     "radius",
+
+    # randomisation
+    # - link shufflings
+    "link_shuffling",
+    "connected_link_shuffling",
+    "topology_constrained_link_shuffling",
+    "degree_constrained_link_shuffling",
+    "connected_degree_constrained_link_shuffling",
 ]
