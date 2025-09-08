@@ -256,22 +256,21 @@ auto link_shuffling(
   const std::vector<typename NetT::EdgeType::StaticProjectionType>&
     unobserved_links) -> network<typename NetT::EdgeType> {
   using EdgeT = NetT::EdgeType;
-  using LinkT = EdgeT::StaticProjectionType;
 
   auto proj = with_edges(static_projection(net), unobserved_links);
   auto new_links = detail::shuffling_mapping(proj, generator);
 
-  auto events = std::views::zip_transform(
-                  [&net](const LinkT& from, const LinkT& to) {
-                    return link_timeline(net, from) |
-                           std::views::transform([to](const EdgeT& e) -> EdgeT {
-                             if constexpr (is_instantaneous_v<EdgeT>)
-                               return {to, e.cause_time()};
-                             else
-                               return {to, e.cause_time(), e.effect_time()};
-                           });
-                  },
-                  proj.edges(), new_links) |
+  auto events = std::views::zip(proj.edges(), new_links) |
+                std::views::transform([&net](const auto& pair) {
+                  const auto& [from, to] = pair;
+                  return link_timeline(net, from) |
+                         std::views::transform([to](const EdgeT& e) -> EdgeT {
+                           if constexpr (is_instantaneous_v<EdgeT>)
+                             return {to, e.cause_time()};
+                           else
+                             return {to, e.cause_time(), e.effect_time()};
+                         });
+                }) |
                 std::views::join;
 
   return network<EdgeT>(events, proj.vertices());
@@ -306,17 +305,17 @@ auto connected_link_shuffling(
                    }) |
                    std::views::join;
 
-  auto events = std::views::zip_transform(
-                  [&net](const LinkT& from, const LinkT& to) {
-                    return link_timeline(net, from) |
-                           std::views::transform([to](const EdgeT& e) -> EdgeT {
-                             if constexpr (is_instantaneous_v<EdgeT>)
-                               return {to, e.cause_time()};
-                             else
-                               return {to, e.cause_time(), e.effect_time()};
-                           });
-                  },
-                  old_links, new_links) |
+  auto events = std::views::zip(old_links, new_links) |
+                std::views::transform([&net](const auto& pair) {
+                  const auto& [from, to] = pair;
+                  return link_timeline(net, from) |
+                         std::views::transform([to](const EdgeT& e) -> EdgeT {
+                           if constexpr (is_instantaneous_v<EdgeT>)
+                             return {to, e.cause_time()};
+                           else
+                             return {to, e.cause_time(), e.effect_time()};
+                         });
+                }) |
                 std::views::join;
 
   return network<EdgeT>(events, proj.vertices());
@@ -337,17 +336,17 @@ auto topology_constrained_link_shuffling(
   std::vector<LinkT> new_links_v(old_links.begin(), old_links.end());
   std::ranges::shuffle(new_links_v, generator);
 
-  auto events = std::views::zip_transform(
-                  [&net](const LinkT& from, const LinkT& to) {
-                    return link_timeline(net, from) |
-                           std::views::transform([to](const EdgeT& e) -> EdgeT {
-                             if constexpr (is_instantaneous_v<EdgeT>)
-                               return {to, e.cause_time()};
-                             else
-                               return {to, e.cause_time(), e.effect_time()};
-                           });
-                  },
-                  old_links, new_links_v) |
+  auto events = std::views::zip(old_links, new_links_v) |
+                std::views::transform([&net](const auto& pair) {
+                  const auto& [from, to] = pair;
+                  return link_timeline(net, from) |
+                         std::views::transform([to](const EdgeT& e) -> EdgeT {
+                           if constexpr (is_instantaneous_v<EdgeT>)
+                             return {to, e.cause_time()};
+                           else
+                             return {to, e.cause_time(), e.effect_time()};
+                         });
+                }) |
                 std::views::join;
   return network<EdgeT>(events, proj.vertices());
 }
@@ -360,22 +359,21 @@ auto degree_constrained_link_shuffling(
     unobserved_links,
   std::size_t iters) -> network<typename NetT::EdgeType> {
   using EdgeT = NetT::EdgeType;
-  using LinkT = EdgeT::StaticProjectionType;
 
   auto proj = with_edges(static_projection(net), unobserved_links);
   auto new_links = detail::curveball_mapping(proj, generator, iters);
 
-  auto events = std::views::zip_transform(
-                  [&net](const LinkT& from, const LinkT& to) {
-                    return link_timeline(net, from) |
-                           std::views::transform([to](const EdgeT& e) -> EdgeT {
-                             if constexpr (is_instantaneous_v<EdgeT>)
-                               return {to, e.cause_time()};
-                             else
-                               return {to, e.cause_time(), e.effect_time()};
-                           });
-                  },
-                  proj.edges(), new_links) |
+  auto events = std::views::zip(proj.edges(), new_links) |
+                std::views::transform([&net](const auto& pair) {
+                  const auto& [from, to] = pair;
+                  return link_timeline(net, from) |
+                         std::views::transform([to](const EdgeT& e) -> EdgeT {
+                           if constexpr (is_instantaneous_v<EdgeT>)
+                             return {to, e.cause_time()};
+                           else
+                             return {to, e.cause_time(), e.effect_time()};
+                         });
+                }) |
                 std::views::join;
 
   return network<EdgeT>(events, proj.vertices());
@@ -410,17 +408,17 @@ auto connected_degree_constrained_link_shuffling(
                    }) |
                    std::views::join;
 
-  auto events = std::views::zip_transform(
-                  [&net](const LinkT& from, const LinkT& to) {
-                    return link_timeline(net, from) |
-                           std::views::transform([to](const EdgeT& e) -> EdgeT {
-                             if constexpr (is_instantaneous_v<EdgeT>)
-                               return {to, e.cause_time()};
-                             else
-                               return {to, e.cause_time(), e.effect_time()};
-                           });
-                  },
-                  old_links, new_links) |
+  auto events = std::views::zip(old_links, new_links) |
+                std::views::transform([&net](const auto& pair) {
+                  const auto& [from, to] = pair;
+                  return link_timeline(net, from) |
+                         std::views::transform([to](const EdgeT& e) -> EdgeT {
+                           if constexpr (is_instantaneous_v<EdgeT>)
+                             return {to, e.cause_time()};
+                           else
+                             return {to, e.cause_time(), e.effect_time()};
+                         });
+                }) |
                 std::views::join;
 
   return network<EdgeT>(events, proj.vertices());
