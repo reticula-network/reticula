@@ -98,7 +98,7 @@ add_library(
   src/generation/link_activation.cpp
   src/generation/node_activation.cpp
   # randomisation
-  src/randomisation/link_shuffling.cpp
+  src/randomisation/link_shufflings.cpp
   # others
   src/temporal_adjacency.cpp
   src/temporal_clusters.cpp

@@ -52,6 +52,7 @@ auto connected_degree_constrained_link_shuffling(
 #include <vector>
 
 #include <reticula/algorithms/properties.hpp>
+#include <reticula/algorithms/static_reachability.hpp>
 #include <reticula/operations/addition.hpp>
 #include <reticula/operations/projections.hpp>
 #include <reticula/operations/subgraph.hpp>
