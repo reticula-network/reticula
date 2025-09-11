@@ -1,3 +1,5 @@
+#include "reticula/operations/projections.hpp"
+#include <iostream>
 #include <random>
 #include <ranges>
 
@@ -136,30 +138,60 @@ TEST_CASE(
   auto g = random_uneven_temporal_network(gen);
   std::vector<reticula::directed_temporal_edge> extra_edges;
   for (auto v : g.vertices())
-    if (v != 1)
+    if (v > 1)
       extra_edges.emplace_back(v, v - 1, 0);
   g = reticula::with_edges(g, extra_edges);
 
-  auto shuffled = reticula::degree_constrained_link_shuffling(g, gen);
+  SECTION("simple directed") {
+    auto shuffled = reticula::degree_constrained_link_shuffling(g, gen);
 
-  REQUIRE_THAT(g.vertices(), RangeEquals(shuffled.vertices()));
-  REQUIRE_THAT(
-    timestamps(g.edges_cause()),
-    RangeEquals(timestamps(shuffled.edges_cause())));
-  REQUIRE(
-    reticula::static_projection(g).edges().size() ==
-    reticula::static_projection(shuffled).edges().size());
-  REQUIRE_THAT(
-    reticula::static_projection(g).edges(),
-    !RangeEquals(reticula::static_projection(shuffled).edges()));
-  REQUIRE_THAT(
-    reticula::in_degree_sequence(reticula::static_projection(g)),
-    UnorderedRangeEquals(
-      reticula::in_degree_sequence(reticula::static_projection(shuffled))));
-  REQUIRE_THAT(
-    reticula::out_degree_sequence(reticula::static_projection(g)),
-    UnorderedRangeEquals(
-      reticula::out_degree_sequence(reticula::static_projection(shuffled))));
+    REQUIRE_THAT(g.vertices(), RangeEquals(shuffled.vertices()));
+    REQUIRE(
+      reticula::static_projection(g).edges().size() ==
+      reticula::static_projection(shuffled).edges().size());
+    REQUIRE_THAT(
+      reticula::static_projection(g).edges(),
+      !RangeEquals(reticula::static_projection(shuffled).edges()));
+    REQUIRE_THAT(
+      reticula::in_degree_sequence(reticula::static_projection(g)),
+      UnorderedRangeEquals(
+        reticula::in_degree_sequence(reticula::static_projection(shuffled))));
+    REQUIRE_THAT(
+      reticula::out_degree_sequence(reticula::static_projection(g)),
+      UnorderedRangeEquals(
+        reticula::out_degree_sequence(reticula::static_projection(shuffled))));
+    REQUIRE_THAT(
+      timestamps(g.edges_cause()),
+      RangeEquals(timestamps(shuffled.edges_cause())));
+  }
+
+  SECTION("with self link") {
+    g = reticula::with_edges(g, {{0, 0, 12}});
+    auto shuffled = reticula::degree_constrained_link_shuffling(g, gen);
+
+    for (auto proj = reticula::static_projection(shuffled);
+         auto e : proj.edges())
+      std::cerr << std::format("{}", e) << "\n";
+
+    REQUIRE_THAT(g.vertices(), RangeEquals(shuffled.vertices()));
+    REQUIRE(
+      reticula::static_projection(g).edges().size() ==
+      reticula::static_projection(shuffled).edges().size());
+    REQUIRE_THAT(
+      reticula::static_projection(g).edges(),
+      !RangeEquals(reticula::static_projection(shuffled).edges()));
+    REQUIRE_THAT(
+      reticula::in_degree_sequence(reticula::static_projection(g)),
+      UnorderedRangeEquals(
+        reticula::in_degree_sequence(reticula::static_projection(shuffled))));
+    REQUIRE_THAT(
+      reticula::out_degree_sequence(reticula::static_projection(g)),
+      UnorderedRangeEquals(
+        reticula::out_degree_sequence(reticula::static_projection(shuffled))));
+    REQUIRE_THAT(
+      timestamps(g.edges_cause()),
+      RangeEquals(timestamps(shuffled.edges_cause())));
+  }
 }
 
 TEST_CASE(

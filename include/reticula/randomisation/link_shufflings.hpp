@@ -85,15 +85,21 @@ auto curveball_mapping(
   const network<EdgeT>& proj, Gen& generator, std::size_t iters)
   -> std::vector<EdgeT> {
   auto nodes = proj.vertices();
+  auto edges = proj.edges();
   if (nodes.size() < 2)
-    return {};
+    return {edges.begin(), edges.end()};
 
   std::unordered_map<VertexType, std::vector<VertexType>> successors;
   successors.reserve(nodes.size());
-  for (auto v : nodes) {
-    successors[v] = proj.successors(v);
-    std::ranges::sort(successors[v]);
-  }
+
+  // making sure to include self-loops
+  for (auto e : edges)
+    for (auto mv = e.mutator_verts(); auto u : mv)
+      for (auto v : e.mutated_verts())
+        if (u != v || mv.size() == 1)
+          successors[u].push_back(v);
+  for (auto& [v, succs] : successors)
+    std::ranges::sort(succs);
 
   std::vector<VertexType> new_v, new_w;
 
@@ -106,8 +112,8 @@ auto curveball_mapping(
     VertexType v = nodes[vid];
     VertexType w = nodes[wid];
 
-    const auto& sv = successors.at(v);
-    const auto& sw = successors.at(w);
+    const auto& sv = successors[v];
+    const auto& sw = successors[w];
 
     std::size_t k = 0;
     std::size_t m = 0;
@@ -115,11 +121,11 @@ auto curveball_mapping(
       auto i = sv.begin(), j = sw.begin();
       while (i != sv.end() || j != sw.end()) {
         if (j == sw.end() || (i != sv.end() && *i < *j)) {
-          if (*i != w)
+          if (*i != v && *i != w)
             ++k;
           ++i;
         } else if (i == sv.end() || *j < *i) {
-          if (*j != v)
+          if (*j != v && *j != w)
             ++m;
           ++j;
         } else {
@@ -144,9 +150,9 @@ auto curveball_mapping(
     auto i = sv.begin(), j = sw.begin();
     while (i != sv.end() || j != sw.end()) {
       if (j == sw.end() || (i != sv.end() && *i < *j)) {
-        // the v-w link
-        if (*i == w) {
-          new_v.push_back(w);
+        // the v-w link or v-v link
+        if (*i == v || *i == w) {
+          new_v.push_back(*i);
           ++i;
           continue;
         }
@@ -161,9 +167,9 @@ auto curveball_mapping(
         --remaining;
         ++i;
       } else if (i == sv.end() || *j < *i) {
-        // the v-w link
-        if (*j == v) {
-          new_w.push_back(v);
+        // the v-w link or w-w link
+        if (*j == v || *j == w) {
+          new_w.push_back(*j);
           ++j;
           continue;
         }
@@ -242,7 +248,7 @@ auto curveball_mapping(
   res.reserve(total);
   for (auto& [v, succs] : successors)
     for (auto s : succs)
-      if (is_directed_v<EdgeT> || v < s)
+      if (is_directed_v<EdgeT> || v <= s)
         res.emplace_back(v, s);
   std::ranges::shuffle(res, generator);
   return res;
