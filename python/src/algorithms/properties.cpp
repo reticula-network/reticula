@@ -1,5 +1,6 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
+#include <nanobind/stl/string.h>
 
 #include <reticula/algorithms/properties.hpp>
 #include <reticula/concepts.hpp>
