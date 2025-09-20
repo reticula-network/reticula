@@ -263,4 +263,9 @@ __all__ = [
     "topology_constrained_link_shuffling",
     "degree_constrained_link_shuffling",
     "connected_degree_constrained_link_shuffling",
+    # - event shufflings
+    "instant_event_shuffling",
+    # - timeline shufflings
+    "timeline_shuffling",
+    "inter_event_shuffling",
 ]

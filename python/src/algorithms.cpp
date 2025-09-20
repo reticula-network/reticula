@@ -22,6 +22,8 @@ void define_interval_set(nanobind::module_& m);
 
 // randomisation
 void define_link_shufflings(nanobind::module_& m);
+void define_event_shufflings(nanobind::module_& m);
+void define_timeline_shufflings(nanobind::module_& m);
 } // namespace reticula::python
 
 NB_MODULE(_reticula_algorithms, m_) {
@@ -44,4 +46,6 @@ NB_MODULE(_reticula_algorithms, m_) {
   reticula::python::define_interval_set(m);
 
   reticula::python::define_link_shufflings(m);
+  reticula::python::define_event_shufflings(m);
+  reticula::python::define_timeline_shufflings(m);
 }

@@ -145,6 +145,8 @@ nanobind_add_module(
   src/interval_sets.cpp
   # randomisation
   src/randomisation/link_shufflings.cpp
+  src/randomisation/event_shufflings.cpp
+  src/randomisation/timeline_shufflings.cpp
   # main
   src/algorithms.cpp)
 target_link_libraries(_reticula_algorithms PRIVATE reticula)

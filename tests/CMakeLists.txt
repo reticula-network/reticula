@@ -84,6 +84,8 @@ add_executable(
   generation/link_activation.cpp
   # randomisation
   randomisation/link_shuffling.cpp
+  randomisation/event_shufflings.cpp
+  randomisation/timeline_shufflings.cpp
   # views
   views/chain.cpp
   views/cartesian_product.cpp

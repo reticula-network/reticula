@@ -1,4 +1,3 @@
-#include "reticula/operations/projections.hpp"
 #include <iostream>
 #include <random>
 #include <ranges>
@@ -10,6 +9,7 @@
 #include <reticula/algorithms/vertex_degree.hpp>
 #include <reticula/generation/fully_mixed.hpp>
 #include <reticula/networks.hpp>
+#include <reticula/operations/projections.hpp>
 
 #include <reticula/randomisation/link_shufflings.hpp>
 
