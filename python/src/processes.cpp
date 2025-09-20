@@ -1,6 +1,8 @@
+#include <format>
 #include <random>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
 
 #include <reticula/processes.hpp>
 
@@ -11,6 +13,12 @@ void define_processes(nanobind::module_& m) {
       nanobind::init<double, double>(), nanobind::arg("exponent"),
       nanobind::arg("mean"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const power_law& pl) {
+        return std::format(
+          "reticula.power_law(exponent={}, mean={})", pl.exponent(), pl.mean());
+      })
     .def(
       "__call__", [](const power_law& pl, std::mt19937_64& g) { return pl(g); },
       nanobind::arg("generator"),
@@ -30,6 +38,13 @@ void define_processes(nanobind::module_& m) {
       nanobind::init<double, double>(), nanobind::arg("exponent"),
       nanobind::arg("mean"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const residual_power_law& rpl) {
+        return std::format(
+          "reticula.residual_power_law(exponent={}, mean={})", rpl.exponent(),
+          rpl.mean());
+      })
     .def(
       "__call__",
       [](const residual_power_law& rpl, std::mt19937_64& g) { return rpl(g); },
@@ -52,6 +67,14 @@ void define_processes(nanobind::module_& m) {
       nanobind::arg("alpha"), nanobind::arg("theta"),
       nanobind::arg("phi") = 0.0,
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const hawkes_univariate_exponential& hue) {
+        return std::format(
+          "reticula.hawkes_univariate_exponential(mu={}, alpha={}, theta={}, "
+          "phi={})",
+          hue.mu(), hue.alpha(), hue.theta(), hue.phi());
+      })
     .def(
       "__call__",
       [](hawkes_univariate_exponential& hue, std::mt19937_64& g) {
@@ -77,6 +100,11 @@ void define_processes(nanobind::module_& m) {
       nanobind::init<double>(), nanobind::arg("mean"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
+      "__repr__",
+      [](const delta_distribution& dd) {
+        return std::format("reticula.delta_distribution(mean={})", dd.mean());
+      })
+    .def(
       "__call__",
       [](const delta_distribution& dd, std::mt19937_64& g) { return dd(g); },
       nanobind::arg("generator"),
@@ -90,6 +118,12 @@ void define_processes(nanobind::module_& m) {
     .def(
       nanobind::init<double>(), nanobind::arg("lmbda"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const std::exponential_distribution<double>& ed) {
+        return std::format(
+          "reticula.exponential_distribution(lmbda={})", ed.lambda());
+      })
     .def(
       "__call__",
       [](std::exponential_distribution<double>& ed, std::mt19937_64& g) {
@@ -106,6 +140,12 @@ void define_processes(nanobind::module_& m) {
     .def(
       nanobind::init<double, double>(), nanobind::arg("a"), nanobind::arg("b"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const std::uniform_real_distribution<double>& urd) {
+        return std::format(
+          "reticula.uniform_real_distribution(a={}, b={})", urd.a(), urd.b());
+      })
     .def(
       "__call__",
       [](std::uniform_real_distribution<double>& urd, std::mt19937_64& g) {
@@ -126,6 +166,12 @@ void define_processes(nanobind::module_& m) {
       nanobind::init<double, double>(), nanobind::arg("m"), nanobind::arg("s"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
+      "__repr__",
+      [](const std::lognormal_distribution<double>& lnd) {
+        return std::format(
+          "reticula.lognormal_distribution(m={}, s={})", lnd.m(), lnd.s());
+      })
+    .def(
       "__call__",
       [](std::lognormal_distribution<double>& lnd, std::mt19937_64& g) {
         return lnd(g);
@@ -145,6 +191,13 @@ void define_processes(nanobind::module_& m) {
       nanobind::arg("beta"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
+      "__repr__",
+      [](const std::gamma_distribution<double>& gd) {
+        return std::format(
+          "reticula.gamma_distribution(alpha={}, beta={})", gd.alpha(),
+          gd.beta());
+      })
+    .def(
       "__call__",
       [](std::gamma_distribution<double>& gd, std::mt19937_64& g) {
         return gd(g);
@@ -162,6 +215,12 @@ void define_processes(nanobind::module_& m) {
     .def(
       nanobind::init<double, double>(), nanobind::arg("a"), nanobind::arg("b"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const std::weibull_distribution<double>& wd) {
+        return std::format(
+          "reticula.weibull_distribution(a={}, b={})", wd.a(), wd.b());
+      })
     .def(
       "__call__",
       [](std::weibull_distribution<double>& wd, std::mt19937_64& g) {
@@ -181,6 +240,11 @@ void define_processes(nanobind::module_& m) {
     .def(
       nanobind::init<double>(), nanobind::arg("p"),
       nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const std::geometric_distribution<std::uint64_t>& gd) {
+        return std::format("reticula.geometric_distribution(p={})", gd.p());
+      })
     .def(
       "__call__",
       [](std::geometric_distribution<std::uint64_t>& gd, std::mt19937_64& g) {

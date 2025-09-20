@@ -1,4 +1,5 @@
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
 
 #include <reticula/edges.hpp>
 #include <reticula/temporal_adjacency.hpp>
@@ -37,12 +38,16 @@ void define_adjacency_linger(nanobind::class_<AdjT>& adj) {
 
 void define_adjacency(nanobind::module_& m) {
   auto adj = m.def_submodule("adjacency");
-  auto simple = nanobind::class_<adjacency::simple>(adj, "simple")
-                  .def(nanobind::init<>())
-                  .def(
-                    "maximum_linger", &adjacency::simple::maximum_linger,
-                    nanobind::arg("vertex"),
-                    nanobind::call_guard<nanobind::gil_scoped_release>());
+  auto simple =
+    nanobind::class_<adjacency::simple>(adj, "simple")
+      .def(nanobind::init<>())
+      .def(
+        "__repr__",
+        [](const adjacency::simple&) { return "reticula.adjacency.simple()"; })
+      .def(
+        "maximum_linger", &adjacency::simple::maximum_linger,
+        nanobind::arg("vertex"),
+        nanobind::call_guard<nanobind::gil_scoped_release>());
   define_adjacency_linger(simple);
 
   auto lwt =
@@ -51,6 +56,12 @@ void define_adjacency(nanobind::module_& m) {
       .def(
         nanobind::init<double>(), nanobind::arg("dt"),
         nanobind::call_guard<nanobind::gil_scoped_release>())
+      .def(
+        "__repr__",
+        [](const adjacency::limited_waiting_time& lwt) {
+          return std::format(
+            "reticula.adjacency.limited_waiting_time(dt={})", lwt.dt());
+        })
       .def(
         "dt", &adjacency::limited_waiting_time::dt,
         nanobind::call_guard<nanobind::gil_scoped_release>())
@@ -65,6 +76,13 @@ void define_adjacency(nanobind::module_& m) {
                  nanobind::init<double, std::size_t>(), nanobind::arg("rate"),
                  nanobind::arg("seed") = 0,
                  nanobind::call_guard<nanobind::gil_scoped_release>())
+               .def(
+                 "__repr__",
+                 [](const adjacency::exponential& exp) {
+                   return std::format(
+                     "reticula.adjacency.exponential(rate={}, seed={})",
+                     exp.rate(), exp.seed());
+                 })
                .def(
                  "rate", &adjacency::exponential::rate,
                  nanobind::call_guard<nanobind::gil_scoped_release>())
@@ -82,6 +100,13 @@ void define_adjacency(nanobind::module_& m) {
                   nanobind::init<double, std::size_t>(), nanobind::arg("p"),
                   nanobind::arg("seed") = 0,
                   nanobind::call_guard<nanobind::gil_scoped_release>())
+                .def(
+                  "__repr__",
+                  [](const adjacency::geometric& geom) {
+                    return std::format(
+                      "reticula.adjacency.geometric(p={}, seed={})", geom.p(),
+                      geom.seed());
+                  })
                 .def(
                   "p", &adjacency::geometric::p,
                   nanobind::call_guard<nanobind::gil_scoped_release>())
