@@ -268,4 +268,56 @@ __all__ = [
     # - timeline shufflings
     "timeline_shuffling",
     "inter_event_shuffling",
+
+    # python functions
+    "from_networkx",
+    "to_networkx",
 ]
+
+
+def from_networkx(g):
+    import networkx as nx
+
+    if not isinstance(g, (nx.Graph, nx.DiGraph,
+                          nx.MultiGraph, nx.MultiDiGraph)):
+        raise TypeError("Input must be a NetworkX graph.")
+    if g.is_multigraph():
+        raise NotImplementedError("MultiGraphs are not supported.")
+
+    vertices = list(g.nodes())
+    vert_map = {}
+    if not all(isinstance(v, int) and v >= 0 for v in vertices):
+        vert_map = {v: i for i, v in enumerate(vertices)}
+    else:
+        vert_map = {v: v for v in vertices}
+    edges = [(vert_map[u], vert_map[v]) for u, v in g.edges()]
+
+    if g.is_directed():
+        return (
+            directed_network(edges, verts=vert_map.values()),
+            vert_map)
+    else:
+        return (
+            undirected_network(edges, verts=vert_map.values()),
+            vert_map)
+
+
+def to_networkx(g):
+    import networkx as nx
+
+    if not isinstance(g, (directed_network, undirected_network)):
+        raise TypeError("Input must be a dyadic static Reticula network.")
+    edges = []
+    if is_directed(g):
+        nx_g = nx.DiGraph()
+        edges = [(e.tail(), e.head()) for e in g.edges()]
+    else:
+        nx_g = nx.Graph()
+        for e in g.edges():
+            vs = e.incident_verts()
+            edges.append((vs[0], vs[-1]))
+
+    nx_g.add_nodes_from(g.vertices())
+    nx_g.add_edges_from(edges)
+
+    return nx_g
