@@ -37,15 +37,17 @@ void define_directed_delayed_temporal_hyperedge(nanobind::module_& m) {
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "tails", &directed_delayed_temporal_hyperedge::tails,
-      nanobind::rv_policy::reference_internal,
+      nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "heads", &directed_delayed_temporal_hyperedge::heads,
-      nanobind::rv_policy::reference_internal,
+      nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
-    .def("cause_time", &directed_delayed_temporal_hyperedge::cause_time,
+    .def(
+      "cause_time", &directed_delayed_temporal_hyperedge::cause_time,
       nanobind::call_guard<nanobind::gil_scoped_release>())
-    .def("effect_time", &directed_delayed_temporal_hyperedge::effect_time,
+    .def(
+      "effect_time", &directed_delayed_temporal_hyperedge::effect_time,
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 

@@ -32,27 +32,25 @@ void define_network(nanobind::module_& m, const std::string& name) {
       },
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "edges", &NetT::edges, nanobind::rv_policy::reference_internal,
+      "edges", &NetT::edges, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "edges_cause", &NetT::edges_cause,
-      nanobind::rv_policy::reference_internal,
+      "edges_cause", &NetT::edges_cause, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "edges_effect", &NetT::edges_effect,
-      nanobind::rv_policy::reference_internal,
+      "edges_effect", &NetT::edges_effect, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "vertices", &NetT::vertices, nanobind::rv_policy::reference_internal,
+      "vertices", &NetT::vertices, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "incident_edges", &NetT::incident_edges,
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "out_edges", &NetT::out_edges, nanobind::rv_policy::reference_internal,
+      "out_edges", &NetT::out_edges, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
-      "in_edges", &NetT::in_edges, nanobind::rv_policy::reference_internal,
+      "in_edges", &NetT::in_edges, nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "successors", &NetT::successors,

@@ -28,11 +28,11 @@ void define_directed_hyperedge(nanobind::module_& m) {
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "tails", &directed_hyperedge::tails,
-      nanobind::rv_policy::reference_internal,
+      nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(
       "heads", &directed_hyperedge::heads,
-      nanobind::rv_policy::reference_internal,
+      nanobind::keep_alive<0, 1>(),
       nanobind::call_guard<nanobind::gil_scoped_release>())
     .def(edge_properties());
 

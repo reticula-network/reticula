@@ -47,16 +47,13 @@ struct edge_properties : nanobind::def_visitor<edge_properties> {
         "is_out_incident", &EdgeT::is_out_incident,
         nanobind::call_guard<nanobind::gil_scoped_release>())
       .def(
-        "mutator_verts", &EdgeT::mutator_verts,
-        nanobind::rv_policy::reference_internal,
+        "mutator_verts", &EdgeT::mutator_verts, nanobind::keep_alive<0, 1>(),
         nanobind::call_guard<nanobind::gil_scoped_release>())
       .def(
-        "mutated_verts", &EdgeT::mutated_verts,
-        nanobind::rv_policy::reference_internal,
+        "mutated_verts", &EdgeT::mutated_verts, nanobind::keep_alive<0, 1>(),
         nanobind::call_guard<nanobind::gil_scoped_release>())
       .def(
-        "incident_verts", &EdgeT::incident_verts,
-        nanobind::rv_policy::reference_internal,
+        "incident_verts", &EdgeT::incident_verts, nanobind::keep_alive<0, 1>(),
         nanobind::call_guard<nanobind::gil_scoped_release>());
   }
 };
