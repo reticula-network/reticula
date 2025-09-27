@@ -23,3 +23,12 @@
 - Extensive use of C++20/23 features (ranges, concepts, spans)
 - Header-only interface with implementation in .cpp files for explicit instantiation
 - Network/graph algorithms with generic edge types (directed, undirected, temporal, hyper)
+
+## Benchmark Naming Convention
+- **Pattern**: `BM_Category_FileName_FunctionName_Variant` (if variants needed)
+- **Examples**:
+  - `BM_Algorithms_VertexDegree_InDegreeSequence_Directed`
+  - `BM_Generation_BarabasiAlbert_RandomBarabasiAlbertGraph`
+  - `BM_Generation_DegreeSequence_DegreeSequenceGraph`
+  - `BM_Networks_Directed_Construction`
+- **File Structure**: One benchmark file per source file, organized in category directories, same structure as src
