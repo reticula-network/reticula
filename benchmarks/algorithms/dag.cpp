@@ -30,7 +30,8 @@ static void BM_Algorithms_DAG_IsAcyclic_False(benchmark::State& state) {
   state.SetComplexityN(state.range(0) + state.range(1));
 }
 
-static void BM_Algorithms_DAG_TryTopologicalOrder_True(benchmark::State& state) {
+static void
+BM_Algorithms_DAG_TryTopologicalOrder_True(benchmark::State& state) {
   auto net = create_random_dag_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));
@@ -43,7 +44,8 @@ static void BM_Algorithms_DAG_TryTopologicalOrder_True(benchmark::State& state) 
   state.SetComplexityN(state.range(0) + state.range(1));
 }
 
-static void BM_Algorithms_DAG_TryTopologicalOrder_False(benchmark::State& state) {
+static void
+BM_Algorithms_DAG_TryTopologicalOrder_False(benchmark::State& state) {
   auto net = create_random_directed_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));

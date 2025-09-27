@@ -32,7 +32,15 @@ add_executable(
   algorithms/distance.cpp
   networks/directed.cpp
   networks/undirected.cpp
-  networks/temporal.cpp)
+  networks/temporal.cpp
+  generation/barabasi_albert.cpp
+  generation/degree_sequence.cpp
+  generation/deterministic.cpp
+  generation/fully_mixed.cpp
+  generation/gnm.cpp
+  generation/gnp.cpp
+  generation/regular.cpp
+  generation/watts_strogatz.cpp)
 
 target_link_libraries(
   reticula_benchmarks PRIVATE reticula::reticula benchmark::benchmark

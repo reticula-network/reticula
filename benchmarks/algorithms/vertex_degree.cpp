@@ -4,7 +4,8 @@
 
 #include "../random_network.hpp"
 
-static void BM_Algorithms_VertexDegree_InDegreeSequence_Directed(benchmark::State& state) {
+static void
+BM_Algorithms_VertexDegree_InDegreeSequence_Directed(benchmark::State& state) {
   auto net = create_random_directed_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));
@@ -17,7 +18,8 @@ static void BM_Algorithms_VertexDegree_InDegreeSequence_Directed(benchmark::Stat
   state.SetComplexityN(state.range(0));
 }
 
-static void BM_Algorithms_VertexDegree_OutDegreeSequence_Directed(benchmark::State& state) {
+static void
+BM_Algorithms_VertexDegree_OutDegreeSequence_Directed(benchmark::State& state) {
   auto net = create_random_directed_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));
@@ -30,7 +32,8 @@ static void BM_Algorithms_VertexDegree_OutDegreeSequence_Directed(benchmark::Sta
   state.SetComplexityN(state.range(0));
 }
 
-static void BM_Algorithms_VertexDegree_DegreeSequence_Undirected(benchmark::State& state) {
+static void
+BM_Algorithms_VertexDegree_DegreeSequence_Undirected(benchmark::State& state) {
   auto net = create_random_undirected_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));
@@ -44,7 +47,8 @@ static void BM_Algorithms_VertexDegree_DegreeSequence_Undirected(benchmark::Stat
   state.SetComplexityN(state.range(0));
 }
 
-static void BM_Algorithms_VertexDegree_InDegree_Single_Directed(benchmark::State& state) {
+static void
+BM_Algorithms_VertexDegree_InDegree_Single_Directed(benchmark::State& state) {
   auto net = create_random_directed_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));

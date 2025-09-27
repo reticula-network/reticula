@@ -4,7 +4,8 @@
 
 #include "../random_network.hpp"
 
-static void BM_Algorithms_EdgeDegree_EdgeDegreeSequence_Undirected(benchmark::State& state) {
+static void BM_Algorithms_EdgeDegree_EdgeDegreeSequence_Undirected(
+  benchmark::State& state) {
   auto net = create_random_undirected_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));

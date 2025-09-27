@@ -17,7 +17,8 @@ static void BM_Algorithms_Properties_Density_Directed(benchmark::State& state) {
   state.SetComplexityN(state.range(0) + state.range(1));
 }
 
-static void BM_Algorithms_Properties_Density_Undirected(benchmark::State& state) {
+static void
+BM_Algorithms_Properties_Density_Undirected(benchmark::State& state) {
   auto net = create_random_undirected_network(
     static_cast<std::size_t>(state.range(0)),
     static_cast<std::size_t>(state.range(1)));
