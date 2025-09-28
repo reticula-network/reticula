@@ -18,8 +18,7 @@ static void BM_Generation_WattsStrogatz_RandomWattsStrogatzGraph(benchmark::Stat
 }
 
 BENCHMARK(BM_Generation_WattsStrogatz_RandomWattsStrogatzGraph)
-  ->Args({100, 4})
+  ->Args({100, 6})
   ->Args({1000, 6})
-  ->Args({5000, 8})
-  ->Args({10000, 10})
+  ->Args({10000, 6})
   ->Complexity();

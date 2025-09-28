@@ -5,7 +5,7 @@
 
 static void BM_Generation_Gnm_RandomGnmGraph(benchmark::State& state) {
   auto n = static_cast<reticula::VertexType>(state.range(0));
-  auto m = static_cast<reticula::VertexType>(state.range(1));
+  auto m = n*10;
   std::mt19937_64 gen(42);
 
   for (auto _ : state) {
@@ -18,7 +18,7 @@ static void BM_Generation_Gnm_RandomGnmGraph(benchmark::State& state) {
 
 static void BM_Generation_Gnm_RandomDirectedGnmGraph(benchmark::State& state) {
   auto n = static_cast<reticula::VertexType>(state.range(0));
-  auto m = static_cast<reticula::VertexType>(state.range(1));
+  auto m = n*10;
   std::mt19937_64 gen(42);
 
   for (auto _ : state) {
@@ -30,15 +30,13 @@ static void BM_Generation_Gnm_RandomDirectedGnmGraph(benchmark::State& state) {
 }
 
 BENCHMARK(BM_Generation_Gnm_RandomGnmGraph)
-  ->Args({100, 200})
-  ->Args({1000, 2000})
-  ->Args({5000, 10000})
-  ->Args({10000, 20000})
+  ->Args({100})
+  ->Args({1000})
+  ->Args({10000})
   ->Complexity();
 
 BENCHMARK(BM_Generation_Gnm_RandomDirectedGnmGraph)
-  ->Args({100, 400})
-  ->Args({1000, 4000})
-  ->Args({5000, 20000})
-  ->Args({10000, 40000})
+  ->Args({100})
+  ->Args({1000})
+  ->Args({10000})
   ->Complexity();

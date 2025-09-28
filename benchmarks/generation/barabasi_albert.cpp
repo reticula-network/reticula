@@ -18,8 +18,8 @@ static void BM_Generation_BarabasiAlbert_RandomBarabasiAlbertGraph(
 }
 
 BENCHMARK(BM_Generation_BarabasiAlbert_RandomBarabasiAlbertGraph)
-  ->Args({100, 2})
-  ->Args({1000, 5})
-  ->Args({10000, 10})
-  ->Args({50000, 15})
+  ->Args({100, 8})
+  ->Args({1000, 8})
+  ->Args({10000, 8})
+  ->Args({50000, 8})
   ->Complexity();

@@ -158,10 +158,10 @@ BENCHMARK(BM_Generation_Deterministic_CompleteBipartiteGraph)
   ->Complexity();
 
 BENCHMARK(BM_Generation_Deterministic_RegularRingLattice)
-  ->Args({100, 4})
+  ->Args({100, 6})
   ->Args({1000, 6})
-  ->Args({10000, 8})
-  ->Args({50000, 10})
+  ->Args({10000, 6})
+  ->Args({50000, 6})
   ->Complexity();
 
 BENCHMARK(BM_Generation_Deterministic_SquareGridGraph)

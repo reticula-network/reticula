@@ -6,7 +6,7 @@
 static void BM_Generation_FullyMixed_RandomFullyMixedTemporalNetwork(
   benchmark::State& state) {
   auto n = static_cast<reticula::VertexType>(state.range(0));
-  double rate = 0.1;
+  double rate = 1.0/static_cast<double>(n);
   auto max_t = static_cast<double>(state.range(1));
   std::mt19937_64 gen(42);
 
@@ -22,7 +22,7 @@ static void BM_Generation_FullyMixed_RandomFullyMixedTemporalNetwork(
 static void BM_Generation_FullyMixed_RandomDirectedFullyMixedTemporalNetwork(
   benchmark::State& state) {
   auto n = static_cast<reticula::VertexType>(state.range(0));
-  double rate = 0.1;
+  double rate = 1.0/static_cast<double>(n);
   auto max_t = static_cast<double>(state.range(1));
   std::mt19937_64 gen(42);
 
@@ -36,15 +36,13 @@ static void BM_Generation_FullyMixed_RandomDirectedFullyMixedTemporalNetwork(
 }
 
 BENCHMARK(BM_Generation_FullyMixed_RandomFullyMixedTemporalNetwork)
-  ->Args({100, 1000})
-  ->Args({200, 2000})
-  ->Args({500, 5000})
-  ->Args({1000, 10000})
+  ->Args({100, 200})
+  ->Args({200, 200})
+  ->Args({500, 200})
   ->Complexity();
 
 BENCHMARK(BM_Generation_FullyMixed_RandomDirectedFullyMixedTemporalNetwork)
-  ->Args({100, 1000})
-  ->Args({200, 2000})
-  ->Args({500, 5000})
-  ->Args({1000, 10000})
+  ->Args({100, 200})
+  ->Args({200, 200})
+  ->Args({500, 200})
   ->Complexity();
