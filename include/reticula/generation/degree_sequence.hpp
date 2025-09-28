@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numeric>
 #include <optional>
 #include <random>
 #include <ranges>
@@ -92,8 +93,7 @@ auto try_degree_sequence_graph(
       return false;
     };
 
-    auto suitable_edges_remaining = has_possible_edge(repeated_stubs);
-    while (suitable_edges_remaining) {
+    while (has_possible_edge(repeated_stubs)) {
       std::size_t current_size = repeated_stubs.size();
       std::uniform_int_distribution<std::size_t> dist_u{0, current_size - 1};
       std::size_t idx_u = dist_u(gen);
@@ -126,9 +126,6 @@ auto try_degree_sequence_graph(
 
         stubs[u]--;
         stubs[v]--;
-
-        if (stubs[u] == 0 || stubs[v] == 0)
-          suitable_edges_remaining = has_possible_edge(repeated_stubs);
       }
     }
 
@@ -212,9 +209,7 @@ auto try_directed_degree_sequence_graph(
         return false;
       };
 
-    bool suitable_edges_remaining =
-      has_possible_directed_edge(in_repeated_stubs, out_repeated_stubs);
-    while (suitable_edges_remaining) {
+    while (has_possible_directed_edge(in_repeated_stubs, out_repeated_stubs)) {
       std::size_t out_size = out_repeated_stubs.size();
       std::uniform_int_distribution<std::size_t> dist{0, out_size - 1};
 
@@ -249,10 +244,6 @@ auto try_directed_degree_sequence_graph(
 
         out_stubs[u]--;
         in_stubs[v]--;
-
-        if (out_stubs[u] == 0 || in_stubs[v] == 0)
-          suitable_edges_remaining =
-            has_possible_directed_edge(in_repeated_stubs, out_repeated_stubs);
       }
     }
 
