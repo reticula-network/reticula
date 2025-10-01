@@ -43,7 +43,7 @@ __all__ = [
     "delta_distribution",
     "exponential_distribution",
     "uniform_real_distribution",
-    "log_normal_distribution",
+    "lognormal_distribution",
     "normal_distribution",
     "gamma_distribution",
     "poisson_distribution",
