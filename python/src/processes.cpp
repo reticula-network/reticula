@@ -185,6 +185,33 @@ void define_processes(nanobind::module_& m) {
       "s", &std::lognormal_distribution<double>::s,
       nanobind::call_guard<nanobind::gil_scoped_release>());
 
+  nanobind::class_<std::normal_distribution<double>>(
+    m, "normal_distribution")
+    .def(
+      nanobind::init<double, double>(), nanobind::arg("mean"),
+      nanobind::arg("stddev"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "__repr__",
+      [](const std::normal_distribution<double>& nd) {
+        return std::format(
+          "reticula.normal_distribution(mean={}, stddev={})", nd.mean(),
+          nd.stddev());
+      })
+    .def(
+      "__call__",
+      [](std::normal_distribution<double>& nd, std::mt19937_64& g) {
+        return nd(g);
+      },
+      nanobind::arg("generator"),
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "mean", &std::normal_distribution<double>::mean,
+      nanobind::call_guard<nanobind::gil_scoped_release>())
+    .def(
+      "stddev", &std::normal_distribution<double>::stddev,
+      nanobind::call_guard<nanobind::gil_scoped_release>());
+
   nanobind::class_<std::gamma_distribution<double>>(m, "gamma_distribution")
     .def(
       nanobind::init<double, double>(), nanobind::arg("alpha"),

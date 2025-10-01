@@ -41,6 +41,14 @@ __all__ = [
     "residual_power_law",
     "hawkes_univariate_exponential",
     "delta_distribution",
+    "exponential_distribution",
+    "uniform_real_distribution",
+    "log_normal_distribution",
+    "normal_distribution",
+    "gamma_distribution",
+    "poisson_distribution",
+    "weibull_distribution",
+    "geometric_distribution",
     # event graphs
     "event_graph",
 
